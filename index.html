@@ -1,0 +1,1162 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Галицька Свіжина — Адмінпанель</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     БРЕНД — змініть тут, щоб підставити точні фірмові значення
+     ============================================================ */
+  :root{
+    --brand:        #B01E28;   /* основний червоний (з логотипа) */
+    --brand-dark:   #8F151E;   /* темніший — для hover */
+    --brand-tint:   #FBEAEB;   /* м'яка заливка активних станів */
+    --brand-tint-2: #F6DCDD;
+
+    --ink:    #1B1714;   /* заголовки */
+    --slate:  #6B6560;   /* вторинний текст */
+    --muted:  #9B948E;   /* підписи / placeholder */
+    --line:   #ECE7E2;   /* розділювачі / рамки */
+    --surface:#FFFFFF;   /* картки */
+    --page:   #F7F5F2;   /* фон сторінки */
+
+    --ok:   #2E7D52;  --ok-bg:#E7F2EC;
+    --warn: #B8791A;  --warn-bg:#FBF1E1;
+    --info: #2563A8;  --info-bg:#E6EEF7;
+
+    --r: 12px;        /* радіус */
+    --sb: 248px;      /* ширина сайдбару */
+    --shadow: 0 1px 2px rgba(27,23,20,.04), 0 8px 24px rgba(27,23,20,.05);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Manrope',system-ui,-apple-system,sans-serif;
+    background:var(--page); color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    font-size:14px; line-height:1.45;
+  }
+  ::selection{background:var(--brand-tint);}
+
+  .app{display:grid; grid-template-columns:var(--sb) 1fr; min-height:100vh;}
+
+  /* ---------- Сайдбар ---------- */
+  .sidebar{
+    background:var(--surface); border-right:1px solid var(--line);
+    display:flex; flex-direction:column; position:sticky; top:0; height:100vh;
+  }
+  .brand{
+    display:flex; align-items:center; gap:12px;
+    padding:20px 20px 18px; border-bottom:1px solid var(--line);
+  }
+  /* Слот для лого: замініть .logo-mark на <img src="..."> з вашим логотипом */
+  .logo-mark{
+    width:38px; height:38px; border-radius:9px; flex:none;
+    background:var(--brand); color:#fff;
+    display:grid; place-items:center;
+    font-family:'Unbounded'; font-weight:800; font-size:18px;
+  }
+  .wordmark{line-height:1.02}
+  .wordmark b{
+    display:block; font-family:'Unbounded'; font-weight:700;
+    font-size:13px; letter-spacing:.04em; color:var(--brand); text-transform:uppercase;
+  }
+  .wordmark span{font-size:11px; color:var(--muted); letter-spacing:.06em; text-transform:uppercase;}
+
+  .nav{padding:14px 12px; display:flex; flex-direction:column; gap:2px; flex:1;}
+  .nav-label{font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); padding:12px 12px 6px;}
+  .nav-item{
+    display:flex; align-items:center; gap:11px;
+    padding:9px 12px; border-radius:9px; cursor:pointer;
+    color:var(--slate); font-weight:600; font-size:13.5px;
+    border:none; background:none; width:100%; text-align:left;
+    position:relative; transition:background .12s, color .12s;
+  }
+  .nav-item svg{width:18px; height:18px; flex:none; stroke-width:1.9;}
+  .nav-item:hover{background:#FAF7F5; color:var(--ink);}
+  .nav-item.active{background:var(--brand-tint); color:var(--brand);}
+  .nav-item.active::before{
+    content:""; position:absolute; left:-12px; top:7px; bottom:7px;
+    width:3px; border-radius:0 3px 3px 0; background:var(--brand);
+  }
+  .nav-item:focus-visible{outline:2px solid var(--brand); outline-offset:2px;}
+
+  .sb-foot{padding:14px; border-top:1px solid var(--line); display:flex; align-items:center; gap:10px;}
+  .avatar{width:34px;height:34px;border-radius:50%;background:var(--brand-tint-2);color:var(--brand);
+    display:grid;place-items:center;font-weight:800;font-size:13px;flex:none;}
+  .sb-foot .who{line-height:1.2;min-width:0}
+  .sb-foot .who b{display:block;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sb-foot .who span{font-size:11.5px;color:var(--muted)}
+
+  /* ---------- Контент ---------- */
+  .main{display:flex;flex-direction:column;min-width:0;}
+  .topbar{
+    background:var(--surface); border-bottom:1px solid var(--line);
+    padding:16px 28px; display:flex; align-items:center; gap:18px; position:sticky; top:0; z-index:5;
+  }
+  .topbar .eyebrow{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .topbar h1{font-size:19px;font-weight:800;letter-spacing:-.01em;margin-top:1px}
+  .search{
+    margin-left:auto; display:flex; align-items:center; gap:8px;
+    background:var(--page); border:1px solid var(--line); border-radius:10px;
+    padding:8px 12px; width:280px; color:var(--muted);
+  }
+  .search svg{width:16px;height:16px;stroke-width:2;flex:none}
+  .search input{border:none;background:none;outline:none;font:inherit;color:var(--ink);width:100%}
+  .live{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;color:var(--ink)}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--brand);
+    box-shadow:0 0 0 0 var(--brand);animation:pulse 1.8s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(176,30,40,.4)}70%{box-shadow:0 0 0 7px rgba(176,30,40,0)}100%{box-shadow:0 0 0 0 rgba(176,30,40,0)}}
+
+  .content{padding:26px 28px 60px; max-width:1180px; width:100%;}
+  .view{display:none; animation:fade .22s ease}
+  .view.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+  .page-head h2{font-size:22px;font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
+  .page-head h2 .ic{width:30px;height:30px;border-radius:8px;background:var(--brand-tint);color:var(--brand);display:grid;place-items:center}
+  .page-head h2 .ic svg{width:17px;height:17px;stroke-width:2}
+  .page-head p{color:var(--slate);font-size:13px;margin-top:4px;max-width:60ch}
+
+  .btn{font:inherit;font-weight:700;font-size:13px;border-radius:10px;padding:9px 16px;
+    border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;
+    display:inline-flex;align-items:center;gap:7px;transition:.12s}
+  .btn svg{width:16px;height:16px;stroke-width:2.2}
+  .btn:hover{border-color:var(--muted)}
+  .btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+  .btn.primary:hover{background:var(--brand-dark);border-color:var(--brand-dark)}
+  .btn:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+
+  /* KPI */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+  .kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow)}
+  .kpi .k-top{display:flex;align-items:center;justify-content:space-between;color:var(--slate);font-size:12px;font-weight:600}
+  .kpi .k-ic{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:var(--brand-tint);color:var(--brand)}
+  .kpi .k-ic svg{width:16px;height:16px;stroke-width:2}
+  .kpi .k-val{font-family:'Unbounded';font-weight:700;font-size:30px;letter-spacing:-.02em;margin-top:12px;line-height:1}
+  .kpi .k-sub{font-size:12px;margin-top:7px;color:var(--slate)}
+  .trend{font-weight:700}
+  .trend.up{color:var(--ok)} .trend.down{color:var(--brand)}
+
+  /* Картка / таблиця */
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+  .card + .card{margin-top:18px}
+  .card-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .card-head h3{font-size:14.5px;font-weight:800}
+  .filters{display:flex;gap:10px;align-items:center;margin-left:auto;flex-wrap:wrap}
+  .pill{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+  .pill svg{width:15px;height:15px;stroke-width:2}
+  select{font:inherit;font-weight:600;font-size:13px;border:1px solid var(--line);border-radius:9px;
+    padding:8px 30px 8px 12px;background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%236B6560' stroke-width='2.2' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;
+    -webkit-appearance:none;appearance:none;color:var(--ink);cursor:pointer}
+  select:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+
+  table{width:100%;border-collapse:collapse}
+  th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
+    font-weight:700;padding:11px 18px;border-bottom:1px solid var(--line);background:#FCFBFA}
+  td{padding:13px 18px;border-bottom:1px solid var(--line);font-size:13.5px;vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tbody tr{transition:background .1s}
+  tbody tr:hover{background:#FCFAF9}
+  .t-name{font-weight:700}
+  .t-name small{display:block;font-weight:500;color:var(--muted);font-size:12px;margin-top:2px}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:var(--page);
+    padding:2px 7px;border-radius:6px;color:var(--slate);border:1px solid var(--line)}
+
+  .badge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;
+    padding:4px 10px;border-radius:20px}
+  .badge::before{content:"";width:6px;height:6px;border-radius:50%}
+  .badge.ok{background:var(--ok-bg);color:var(--ok)} .badge.ok::before{background:var(--ok)}
+  .badge.warn{background:var(--warn-bg);color:var(--warn)} .badge.warn::before{background:var(--warn)}
+  .badge.off{background:var(--page);color:var(--muted)} .badge.off::before{background:var(--muted)}
+  .badge.info{background:var(--info-bg);color:var(--info)} .badge.info::before{background:var(--info)}
+
+  .row-act{display:flex;gap:6px;justify-content:flex-end}
+  .ico-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--line);background:var(--surface);
+    display:grid;place-items:center;cursor:pointer;color:var(--slate);transition:.12s}
+  .ico-btn svg{width:16px;height:16px;stroke-width:2}
+  .ico-btn:hover{color:var(--brand);border-color:var(--brand-tint-2);background:var(--brand-tint)}
+
+  /* toggle */
+  .switch{position:relative;display:inline-block;width:38px;height:22px;cursor:pointer}
+  .switch input{opacity:0;width:0;height:0}
+  .slider{position:absolute;inset:0;background:#D9D3CD;border-radius:20px;transition:.18s}
+  .slider::before{content:"";position:absolute;height:16px;width:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.18s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+  .switch input:checked + .slider{background:var(--brand)}
+  .switch input:checked + .slider::before{transform:translateX(16px)}
+  .switch input:focus-visible + .slider{outline:2px solid var(--brand);outline-offset:2px}
+
+  .empty{padding:48px 18px;text-align:center;color:var(--muted)}
+  .empty svg{width:34px;height:34px;stroke-width:1.6;margin-bottom:10px;color:var(--line)}
+
+  .two-col{display:grid;grid-template-columns:1.6fr 1fr;gap:18px}
+  .list-line{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--line)}
+  .list-line:last-child{border-bottom:none}
+  .list-line .dotc{width:9px;height:9px;border-radius:50%;flex:none}
+  .list-line b{font-weight:700;font-size:13px}
+  .list-line span{color:var(--muted);font-size:12px;margin-left:auto}
+
+  /* мобільне */
+  .burger{display:none}
+  @media(max-width:880px){
+    .app{grid-template-columns:1fr}
+    .sidebar{position:fixed;z-index:30;width:var(--sb);transform:translateX(-100%);transition:.2s;box-shadow:var(--shadow)}
+    .sidebar.open{transform:none}
+    .burger{display:grid;place-items:center;width:38px;height:38px;border:1px solid var(--line);border-radius:9px;background:var(--surface);cursor:pointer}
+    .burger svg{width:18px;height:18px;stroke-width:2}
+    .search{display:none}
+    .kpis{grid-template-columns:repeat(2,1fr)}
+    .two-col{grid-template-columns:1fr}
+    .content{padding:20px 16px 50px}
+    .topbar{padding:14px 16px}
+    .scrim{position:fixed;inset:0;background:rgba(27,23,20,.4);z-index:20;display:none}
+    .scrim.open{display:block}
+  }
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  /* ===== Матриці ===== */
+  .seg{display:inline-flex;background:var(--page);border:1px solid var(--line);border-radius:11px;padding:3px;gap:3px}
+  .seg button{font:inherit;font-weight:700;font-size:13px;border:none;background:none;color:var(--slate);
+    padding:8px 16px;border-radius:8px;cursor:pointer;transition:.12s}
+  .seg button.on{background:var(--surface);color:var(--brand);box-shadow:var(--shadow)}
+  .seg button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .mx-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:18px 0}
+  .mx-controls select{min-width:190px}
+  .mx-stats{display:flex;gap:22px;flex-wrap:wrap;color:var(--slate);font-size:12.5px;font-weight:600;margin-bottom:4px}
+  .mx-stats b{font-family:'Unbounded';font-weight:700;color:var(--ink);font-size:15px}
+  details.legend{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin:16px 0;box-shadow:var(--shadow)}
+  details.legend summary{cursor:pointer;padding:13px 18px;font-weight:800;font-size:13.5px;list-style:none;display:flex;align-items:center;gap:8px}
+  details.legend summary::-webkit-details-marker{display:none}
+  details.legend summary svg{width:16px;height:16px;stroke-width:2;transition:.15s}
+  details.legend[open] summary svg{transform:rotate(90deg)}
+  .legend-note{padding:0 18px 8px;color:var(--muted);font-size:12px}
+  .legend-grid{padding:6px 18px 16px;display:flex;flex-wrap:wrap;gap:8px}
+  .legend-grid .chip{cursor:default}
+  .mx-table-wrap{overflow-x:auto}
+  td.mx-dec{max-width:420px}
+  td.mx-dec b{font-weight:700;font-size:13.5px;display:block}
+  td.mx-dec .sla{display:block;color:var(--muted);font-size:11.5px;margin-top:3px}
+  td.mx-cat .cat-tag{display:inline-block;background:var(--page);border:1px solid var(--line);
+    border-radius:7px;padding:3px 9px;font-size:11.5px;font-weight:700;color:var(--slate);white-space:nowrap}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;
+    padding:4px 9px 4px 4px;border-radius:20px;background:var(--page);border:1px solid var(--line);max-width:280px}
+  .chip .co{font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:10.5px;letter-spacing:.02em;
+    padding:2px 6px;border-radius:12px;color:#fff;flex:none}
+  .chip .dn{color:var(--slate);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .more-chip{cursor:pointer;color:var(--brand);font-weight:700;background:var(--brand-tint);border-color:var(--brand-tint-2)}
+  .co.cc-A{background:#B01E28}.co.cc-R{background:#2E7D52}.co.cc-P{background:#2563A8}
+  .co.cc-I{background:#9B948E}.co.cc-V{background:#B8791A}.co.cc-DI{background:#6D4AA8}.co.cc-X{background:#5A6470}
+  .co.rc0{background:#2563A8}.co.rc1{background:#2E7D52}.co.rc2{background:#B8791A}
+  .co.rc3{background:#6D4AA8}.co.rc4{background:#0E7C86}.co.rc5{background:#B0561E}
+  .co.rc6{background:#9B948E}.co.rc7{background:#B01E28}.co.rc8{background:#5A6470}
+  .load-more{margin:16px auto 0;display:block}
+  @media(max-width:880px){td.mx-dec{max-width:none}.chip .dn{max-width:120px}}
+
+
+  /* ===== Компанія / Оргструктура ===== */
+  .org-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:20px}
+
+  .org-tree{list-style:none;padding:0;margin:0}
+  .org-tree ul{list-style:none;margin:0;padding:0 0 0 36px;position:relative}
+  .org-tree ul::before{
+    content:"";position:absolute;left:17px;top:4px;bottom:20px;
+    width:2px;border-radius:1px;
+    background:linear-gradient(to bottom,var(--line) 85%,transparent);
+  }
+  .org-node{position:relative;margin-top:8px}
+  .org-tree ul .org-node::before{
+    content:"";position:absolute;left:-19px;top:22px;
+    width:17px;height:2px;background:var(--line);border-radius:1px;
+  }
+  /* крапка на з'єднанні */
+  .org-tree ul .org-node::after{
+    content:"";position:absolute;left:-21px;top:19px;
+    width:6px;height:6px;border-radius:50%;
+    background:var(--brand-tint-2);border:1.5px solid var(--line);
+  }
+
+  .org-row{
+    display:flex;align-items:center;gap:8px;
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:11px;padding:10px 12px 10px 14px;
+    box-shadow:var(--shadow);position:relative;
+    transition:box-shadow .15s,border-color .15s;
+    min-width:0;
+  }
+  .org-row:hover{
+    box-shadow:0 2px 6px rgba(27,23,20,.06),0 12px 30px rgba(27,23,20,.09);
+    border-color:var(--brand-tint-2);
+  }
+  /* кольорова смуга за рівнем */
+  .org-row[data-lvl="0"]{border-left:4px solid var(--brand)}
+  .org-row[data-lvl="1"]{border-left:3px solid #2563A8}
+  .org-row[data-lvl="2"]{border-left:3px solid #2E7D52}
+  .org-row[data-lvl="3"]{border-left:3px solid #B8791A}
+  .org-row[data-lvl="4"]{border-left:3px solid #6D4AA8}
+  .org-row[data-lvl="5"]{border-left:2px solid #0E7C86}
+  .org-row[data-lvl="0"] .org-ic{background:var(--brand-tint);color:var(--brand)}
+  .org-row[data-lvl="1"] .org-ic{background:#E6EEF7;color:#2563A8}
+  .org-row[data-lvl="2"] .org-ic{background:#E7F2EC;color:#2E7D52}
+  .org-row[data-lvl="3"] .org-ic{background:#FBF1E1;color:#B8791A}
+  .org-row[data-lvl="4"] .org-ic{background:#F0ECFA;color:#6D4AA8}
+  .org-row[data-lvl="5"] .org-ic{background:#E3F4F5;color:#0E7C86}
+
+  .org-toggle{
+    width:24px;height:24px;border:none;background:var(--page);
+    border-radius:7px;cursor:pointer;display:grid;place-items:center;
+    color:var(--slate);flex:none;border:1px solid var(--line);
+    transition:background .12s,color .12s;
+  }
+  .org-toggle:hover{background:var(--brand-tint);color:var(--brand);border-color:var(--brand-tint-2)}
+  .org-toggle svg{width:13px;height:13px;stroke-width:2.4;transition:transform .15s}
+  .org-toggle.collapsed svg{transform:rotate(-90deg)}
+  .org-toggle.leaf{visibility:hidden}
+
+  .org-ic{width:30px;height:30px;border-radius:8px;flex:none;display:grid;place-items:center;transition:background .15s}
+  .org-ic svg{width:15px;height:15px;stroke-width:2}
+  .org-info{min-width:0;flex:1;overflow:hidden}
+  .org-info b{font-weight:700;font-size:13.5px;display:block;line-height:1.25;letter-spacing:-.01em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .org-info span{font-size:11.5px;color:var(--muted);display:block;margin-top:1px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .org-depth-badge{
+    font-size:9.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+    padding:2px 7px;border-radius:20px;flex:none;white-space:nowrap;
+    background:var(--page);border:1px solid var(--line);color:var(--muted);
+  }
+  .org-count{font-size:11px;font-weight:700;color:var(--slate);background:var(--page);
+    border:1px solid var(--line);border-radius:20px;padding:2px 8px;flex:none;white-space:nowrap}
+  .org-acts{display:flex;gap:5px;flex:none}
+  .org-acts .ico-btn{width:30px;height:30px}
+  .org-acts .ico-btn.del:hover{color:#fff;background:var(--brand);border-color:var(--brand)}
+  .org-confirm{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--brand);font-weight:600}
+  .org-confirm button{font:inherit;font-weight:700;font-size:12px;border-radius:7px;padding:5px 11px;cursor:pointer;border:1px solid var(--line);background:var(--surface)}
+  .org-confirm button.yes{background:var(--brand);color:#fff;border-color:var(--brand)}
+
+  /* модалка */
+  .modal-scrim{position:fixed;inset:0;background:rgba(27,23,20,.45);z-index:50;display:none;align-items:center;justify-content:center;padding:20px}
+  .modal-scrim.open{display:flex}
+  .modal{background:var(--surface);border-radius:16px;width:100%;max-width:440px;box-shadow:0 24px 60px rgba(27,23,20,.25);animation:fade .18s ease}
+  .modal h3{font-size:16px;font-weight:800;padding:18px 20px;border-bottom:1px solid var(--line)}
+  .modal .body{padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+  .modal label{font-size:12px;font-weight:700;color:var(--slate);display:block;margin-bottom:6px}
+  .modal input{width:100%;font:inherit;font-size:14px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--ink);outline:none}
+  .modal input:focus{border-color:var(--brand)}
+  .modal .foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px}
+
+
+  /* ===== Екран входу (Supabase Auth) ===== */
+  .auth-scrim{position:fixed;inset:0;background:var(--page);z-index:100;display:none;align-items:center;justify-content:center;padding:24px}
+  .auth-scrim.open{display:flex}
+  .auth-card{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:0 24px 60px rgba(27,23,20,.12);width:100%;max-width:382px;padding:30px 28px}
+  .auth-logo{width:50px;height:50px;border-radius:12px;background:var(--brand);color:#fff;display:grid;place-items:center;font-family:'Unbounded';font-weight:800;font-size:22px;margin-bottom:16px}
+  .auth-card h2{font-size:19px;font-weight:800;letter-spacing:-.01em}
+  .auth-card>p{color:var(--slate);font-size:13px;margin:4px 0 22px}
+  .auth-field{margin-bottom:12px}
+  .auth-field label{font-size:12px;font-weight:700;color:var(--slate);display:block;margin-bottom:6px}
+  .auth-field input{width:100%;font:inherit;font-size:14px;border:1px solid var(--line);border-radius:10px;padding:11px 12px;outline:none;color:var(--ink)}
+  .auth-field input:focus{border-color:var(--brand)}
+  .auth-btn{width:100%;margin-top:6px;font:inherit;font-weight:700;font-size:14px;border:none;border-radius:10px;padding:12px;background:var(--brand);color:#fff;cursor:pointer;transition:.12s}
+  .auth-btn:hover{background:var(--brand-dark)}
+  .auth-btn:disabled{opacity:.6;cursor:default}
+  .auth-err{color:var(--brand);font-size:12.5px;font-weight:600;min-height:18px;margin-top:10px}
+  .auth-hint{color:var(--muted);font-size:11.5px;margin-top:16px;text-align:center;line-height:1.4}
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+<div class="auth-scrim open" id="authScrim">
+  <div class="auth-card">
+    <div class="auth-logo">ГС</div>
+    <h2>Вхід до адмінпанелі</h2>
+    <p>Облік виробництва «Галицька Свіжина»</p>
+    <div class="auth-field"><label>Email</label><input id="authEmail" type="email" placeholder="you@company.com" autocomplete="username"></div>
+    <div class="auth-field"><label>Пароль</label><input id="authPass" type="password" placeholder="••••••••" autocomplete="current-password"></div>
+    <button class="auth-btn" id="authBtn" onclick="authSignIn()">Увійти</button>
+    <div class="auth-err" id="authErr"></div>
+    <div class="auth-hint">Доступ надає адміністратор:<br>Supabase → Authentication → Users</div>
+  </div>
+</div>
+
+<div class="app">
+
+  <!-- ============ САЙДБАР ============ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <!-- ЛОГОТИП: замініть цей div на <img src="ваш-логотип.svg" alt="Галицька Свіжина" style="height:38px"> -->
+      <div class="logo-mark">ГС</div>
+      <div class="wordmark">
+        <b>Галицька<br>Свіжина</b>
+        <span>облік виробництва</span>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <div class="nav-label">Управління</div>
+      <button class="nav-item active" data-view="dash">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Панель
+      </button>
+      <button class="nav-item" data-view="users">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>
+        Користувачі
+      </button>
+      <button class="nav-item" data-view="proc">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+        Процеси
+      </button>
+      <button class="nav-item" data-view="matrix">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+        Матриці
+      </button>
+      <button class="nav-item" data-view="company">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>
+        Компанія
+      </button>
+      <button class="nav-item" data-view="reports">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
+        Звіти
+      </button>
+      <button class="nav-item" data-view="analytics">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M7 15l3-4 3 3 4-6"/></svg>
+        Аналітика
+      </button>
+    </nav>
+
+    <div class="sb-foot">
+      <div class="avatar">ГС</div>
+      <div class="who"><b class="js-user">—</b><span>Авторизований</span></div>
+      <button class="ico-btn" title="Вийти" onclick="authSignOut()" style="margin-left:auto;flex:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      </button>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <!-- ============ ОСНОВНА ЧАСТИНА ============ -->
+  <div class="main">
+    <header class="topbar">
+      <button class="burger" id="burger" aria-label="Меню">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+      <div>
+        <div class="eyebrow">Облік виробництва</div>
+        <h1 id="crumb">Панель</h1>
+      </div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input placeholder="Знайти процес, користувача…" />
+      </div>
+      <div class="live"><span class="dot"></span>Зміна активна · 31:01</div>
+    </header>
+
+    <div class="content">
+
+      <!-- ===== ПАНЕЛЬ ===== -->
+      <section class="view active" id="view-dash">
+        <div class="page-head">
+          <div>
+            <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>Огляд за зміну</h2>
+            <p>Стан виробничих процесів цеху в реальному часі. Дані оновлюються щохвилини.</p>
+          </div>
+          <button class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Запустити процес</button>
+        </div>
+
+        <div class="kpis">
+          <div class="kpi"><div class="k-top">Активні процеси<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="3"/></svg></span></div><div class="k-val">7</div><div class="k-sub"><span class="trend up">+2</span> від учора</div></div>
+          <div class="kpi"><div class="k-top">Прийнято сировини<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></span></div><div class="k-val">4 280 <small style="font-size:14px;font-family:Manrope;color:var(--slate)">кг</small></div><div class="k-sub"><span class="trend up">+8%</span> до плану</div></div>
+          <div class="kpi"><div class="k-top">Операторів на зміні<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span></div><div class="k-val">12</div><div class="k-sub">з 14 запланованих</div></div>
+          <div class="kpi"><div class="k-top">Звітів сьогодні<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span></div><div class="k-val">38</div><div class="k-sub"><span class="trend down">3</span> потребують уваги</div></div>
+        </div>
+
+        <div class="two-col">
+          <div class="card">
+            <div class="card-head"><h3>Процеси в роботі</h3><span class="badge ok">Онлайн</span></div>
+            <table>
+              <thead><tr><th>Процес</th><th>Оператор</th><th>Стан</th><th>Прогрес</th></tr></thead>
+              <tbody>
+                <tr><td class="t-name">Приймання<small>chicken_receiving</small></td><td>О. Коваль</td><td><span class="badge ok">Активний</span></td><td>74%</td></tr>
+                <tr><td class="t-name">Забій та первинна розробка<small>chicken_slaughter</small></td><td>І. Гриценко</td><td><span class="badge ok">Активний</span></td><td>52%</td></tr>
+                <tr><td class="t-name">Ручний облік курки<small>chicken_manual_v1</small></td><td>М. Сорока</td><td><span class="badge warn">Очікує</span></td><td>—</td></tr>
+                <tr><td class="t-name">Пакування<small>chicken_packing</small></td><td>Бригада №2</td><td><span class="badge ok">Активний</span></td><td>33%</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Останні події</h3></div>
+            <div class="list-line"><span class="dotc" style="background:var(--ok)"></span><b>Приймання завершено</b><span>17:28</span></div>
+            <div class="list-line"><span class="dotc" style="background:var(--info)"></span><b>Нова партія №А-1182</b><span>17:14</span></div>
+            <div class="list-line"><span class="dotc" style="background:var(--warn)"></span><b>Відхилення ваги −2.1%</b><span>16:52</span></div>
+            <div class="list-line"><span class="dotc" style="background:var(--ok)"></span><b>Звіт пакування здано</b><span>16:40</span></div>
+            <div class="list-line"><span class="dotc" style="background:var(--brand)"></span><b>Оператор М. Сорока увійшов</b><span>16:31</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== КОРИСТУВАЧІ ===== -->
+      <section class="view" id="view-users">
+        <div class="page-head">
+          <div>
+            <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span>Користувачі</h2>
+            <p>Оператори, бригадири та адміністратори з доступом до системи обліку.</p>
+          </div>
+          <button class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Додати користувача</button>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <h3>Усі користувачі</h3>
+            <div class="filters">
+              <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 3H2l8 9.5V19l4 2v-8.5z"/></svg>Фільтр</span>
+              <select><option>Усі ролі</option><option>Адміністратор</option><option>Бригадир</option><option>Оператор</option></select>
+            </div>
+          </div>
+          <table>
+            <thead><tr><th>Ім'я</th><th>Роль</th><th>Цех / процес</th><th>Стан</th><th></th></tr></thead>
+            <tbody>
+              <tr><td class="t-name">Нагорнюк Юрій<small>y.nahorniuk</small></td><td>Адміністратор</td><td>Усі</td><td><span class="badge ok">Активний</span></td><td><div class="row-act"><button class="ico-btn" title="Редагувати"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button></div></td></tr>
+              <tr><td class="t-name">Коваль Олег<small>o.koval</small></td><td>Бригадир</td><td>Приймання</td><td><span class="badge ok">Активний</span></td><td><div class="row-act"><button class="ico-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button></div></td></tr>
+              <tr><td class="t-name">Сорока Марія<small>m.soroka</small></td><td>Оператор</td><td>Ручний облік</td><td><span class="badge warn">Перерва</span></td><td><div class="row-act"><button class="ico-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button></div></td></tr>
+              <tr><td class="t-name">Гриценко Іван<small>i.hrytsenko</small></td><td>Оператор</td><td>Забій</td><td><span class="badge ok">Активний</span></td><td><div class="row-act"><button class="ico-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button></div></td></tr>
+              <tr><td class="t-name">Петрів Андрій<small>a.petriv</small></td><td>Оператор</td><td>Пакування</td><td><span class="badge off">Офлайн</span></td><td><div class="row-act"><button class="ico-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== ПРОЦЕСИ (головний розділ) ===== -->
+      <section class="view" id="view-proc">
+        <div class="page-head">
+          <div>
+            <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="3"/></svg></span>Процеси</h2>
+            <p>Виробничі процеси обліку. Вмикайте, призначайте операторів та редагуйте конфігурацію кожного процесу.</p>
+          </div>
+          <button class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Новий процес</button>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <h3>Усі процеси</h3>
+            <div class="filters">
+              <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 3H2l8 9.5V19l4 2v-8.5z"/></svg>Фільтр</span>
+              <select><option>Усі цехи</option><option>Приймання</option><option>Забій</option><option>Пакування</option></select>
+              <select><option>Будь-який стан</option><option>Увімкнені</option><option>Вимкнені</option></select>
+            </div>
+          </div>
+          <table>
+            <thead><tr><th>Процес</th><th>Код</th><th>Оператори</th><th>Останній запуск</th><th>Стан</th><th>Увімкнено</th></tr></thead>
+            <tbody>
+              <tr><td class="t-name">Приймання сировини</td><td><code>chicken_receiving</code></td><td>3</td><td>сьогодні 17:28</td><td><span class="badge ok">Активний</span></td><td><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></td></tr>
+              <tr><td class="t-name">Ручний облік курки — віддалене виробництво v1 офлайн</td><td><code>chicken_manual_v1_offline</code></td><td>2</td><td>сьогодні 16:31</td><td><span class="badge warn">Очікує</span></td><td><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></td></tr>
+              <tr><td class="t-name">Забій та первинна розробка</td><td><code>chicken_slaughter</code></td><td>4</td><td>сьогодні 17:05</td><td><span class="badge ok">Активний</span></td><td><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></td></tr>
+              <tr><td class="t-name">Пакування та маркування</td><td><code>chicken_packing</code></td><td>5</td><td>сьогодні 16:40</td><td><span class="badge ok">Активний</span></td><td><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></td></tr>
+              <tr><td class="t-name">Відвантаження</td><td><code>chicken_shipping</code></td><td>2</td><td>учора 19:12</td><td><span class="badge off">Вимкнено</span></td><td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td></tr>
+              <tr><td class="t-name">Інвентаризація складу</td><td><code>warehouse_inventory</code></td><td>1</td><td>3 дні тому</td><td><span class="badge off">Вимкнено</span></td><td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== МАТРИЦІ ===== -->
+      <section class="view" id="view-matrix">
+        <div class="page-head">
+          <div>
+            <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg></span>Матриці</h2>
+            <p>Матриці повноважень та відповідальності за рішеннями й діями компанії, у розрізі департаментів. Дані імпортовано із загальної матриці.</p>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <div class="seg" id="mxSeg">
+              <button class="on" data-set="pov">Повноваження</button>
+              <button data-set="resp">Відповідальність</button>
+            </div>
+            <button class="btn" onclick="document.getElementById('mxImportFile').click()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg>Імпорт з Excel
+            </button>
+            <button class="btn" onclick="mxExport()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>Експорт в Excel
+            </button>
+            <input type="file" id="mxImportFile" accept=".xlsx,.xls" style="display:none" onchange="mxImport(event)">
+          </div>
+        </div>
+
+        <div class="mx-stats" id="mxStats"></div>
+
+        <details class="legend">
+          <summary><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18l6-6-6-6"/></svg>Легенда кодів</summary>
+          <div class="legend-note">Розшифровку кодів у вихідному файлі (аркуш «ЛІТЕРИ») не заповнено. Нижче — усі коди, що зустрічаються; впишіть значення у файлі-джерелі.</div>
+          <div class="legend-grid" id="mxLegend"></div>
+        </details>
+
+        <div class="mx-controls">
+          <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 3H2l8 9.5V19l4 2v-8.5z"/></svg>Фільтр</span>
+          <select id="mxSource"></select>
+          <select id="mxCat"></select>
+          <div class="search" style="margin-left:0;width:260px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input id="mxSearch" placeholder="Пошук рішення…" />
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="mx-table-wrap">
+            <table id="mxTable">
+              <thead><tr><th style="width:40px">#</th><th style="width:150px">Категорія</th><th>Рішення / дія</th><th>Відповідальні департаменти</th></tr></thead>
+              <tbody id="mxBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <button class="btn load-more" id="mxMore" style="display:none">Показати ще</button>
+      </section>
+
+      <!-- ===== КОМПАНІЯ ===== -->
+      <section class="view" id="view-company">
+        <div class="page-head">
+          <div>
+            <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3"/></svg></span>Компанія</h2>
+            <p>Структура компанії: департаменти та відділи. Додавайте підрозділи, призначайте керівників, редагуйте ієрархію. Структуру можна зберегти у файл та завантажити пізніше.</p>
+          </div>
+        </div>
+
+        <div class="kpis" style="grid-template-columns:repeat(3,1fr);margin-bottom:22px">
+          <div class="kpi"><div class="k-top">Департаментів<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3"/></svg></span></div><div class="k-val" id="orgKpiDep">0</div></div>
+          <div class="kpi"><div class="k-top">Усього підрозділів<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span></div><div class="k-val" id="orgKpiAll">0</div></div>
+          <div class="kpi"><div class="k-top">З призначеним керівником<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span></div><div class="k-val" id="orgKpiHead">0</div></div>
+        </div>
+
+        <div class="org-toolbar">
+          <button class="btn primary" onclick="orgOpen(null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Додати департамент</button>
+          <button class="btn" onclick="orgExpandAll(true)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg>Розгорнути все</button>
+          <button class="btn" onclick="orgExpandAll(false)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 11l-5-5-5 5M17 18l-5-5-5 5"/></svg>Згорнути все</button>
+          <span style="flex:1"></span>
+          <button class="btn" onclick="orgExport()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>Зберегти у файл</button>
+          <button class="btn" onclick="document.getElementById('orgImport').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg>Завантажити</button>
+          <input type="file" id="orgImport" accept="application/json" style="display:none" onchange="orgImport(event)">
+        </div>
+
+        <ul class="org-tree" id="orgTree"></ul>
+      </section>
+
+      <!-- модалка додавання/редагування -->
+      <div class="modal-scrim" id="orgModal">
+        <div class="modal">
+          <h3 id="orgModalTitle">Новий підрозділ</h3>
+          <div class="body">
+            <div><label>Назва підрозділу</label><input id="orgName" placeholder="Напр., Відділ маркетингу" /></div>
+            <div><label>Керівник (необов'язково)</label><input id="orgHead" placeholder="Напр., Іваненко І. І." /></div>
+            <div><label>Підпорядковується</label><select id="orgParentSel" style="width:100%;font:inherit;font-size:14px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--ink);outline:none"></select></div>
+          </div>
+          <div class="foot">
+            <button class="btn" onclick="orgCloseModal()">Скасувати</button>
+            <button class="btn primary" onclick="orgSave()">Зберегти</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== ЗВІТИ (як на скріні) ===== -->
+      <section class="view" id="view-reports">
+        <div class="page-head">
+          <div>
+            <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>Звіти</h2>
+            <p>Звіти, сформовані операторами за процесами. Фільтруйте за користувачем або процесом.</p>
+          </div>
+          <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>Експорт</button>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div class="filters" style="margin-left:0">
+              <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 3H2l8 9.5V19l4 2v-8.5z"/></svg></span>
+              <select><option>Усі користувачі</option><option>Коваль Олег</option><option>Сорока Марія</option><option>Гриценко Іван</option></select>
+              <select><option>Усі процеси</option><option>chicken_receiving</option><option>chicken_manual_v1_offline</option><option>chicken_packing</option></select>
+            </div>
+          </div>
+          <table>
+            <thead><tr><th>Назва</th><th>Процес</th><th>Оператор</th><th>Час</th><th></th></tr></thead>
+            <tbody>
+              <tr><td class="t-name">Приймання</td><td><code>chicken_receiving</code></td><td>О. Коваль</td><td>17:28</td><td><div class="row-act"><button class="ico-btn" title="Відкрити"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td></tr>
+              <tr><td class="t-name">Ручний Облік курки — віддалене виробництво v1 офлайн</td><td><code>chicken_manual_v1_offline</code></td><td>М. Сорока</td><td>16:31</td><td><div class="row-act"><button class="ico-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td></tr>
+              <tr><td class="t-name">Приймання</td><td><code>chicken_receiving</code></td><td>О. Коваль</td><td>15:02</td><td><div class="row-act"><button class="ico-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td></tr>
+              <tr><td class="t-name">Пакування партії А-1182</td><td><code>chicken_packing</code></td><td>Бригада №2</td><td>16:40</td><td><div class="row-act"><button class="ico-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== АНАЛІТИКА ===== -->
+      <section class="view" id="view-analytics">
+        <div class="page-head">
+          <div>
+            <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M7 15l3-4 3 3 4-6"/></svg></span>Аналітика</h2>
+            <p>Динаміка обсягів та продуктивності за тиждень.</p>
+          </div>
+          <select><option>Цей тиждень</option><option>Цей місяць</option><option>Квартал</option></select>
+        </div>
+        <div class="card" style="padding:18px 18px 8px">
+          <div class="card-head" style="padding:0 0 14px"><h3>Прийнято сировини, кг</h3></div>
+          <!-- проста SVG-діаграма -->
+          <svg viewBox="0 0 640 220" style="width:100%;height:auto" role="img" aria-label="Графік обсягів за тиждень">
+            <g stroke="var(--line)" stroke-width="1">
+              <line x1="40" y1="20" x2="640" y2="20"/><line x1="40" y1="70" x2="640" y2="70"/>
+              <line x1="40" y1="120" x2="640" y2="120"/><line x1="40" y1="170" x2="640" y2="170"/>
+            </g>
+            <polyline fill="none" stroke="var(--brand)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"
+              points="60,150 150,110 240,130 330,70 420,95 510,50 600,80"/>
+            <g fill="var(--brand)">
+              <circle cx="60" cy="150" r="4"/><circle cx="150" cy="110" r="4"/><circle cx="240" cy="130" r="4"/>
+              <circle cx="330" cy="70" r="4"/><circle cx="420" cy="95" r="4"/><circle cx="510" cy="50" r="4"/><circle cx="600" cy="80" r="4"/>
+            </g>
+            <g fill="var(--muted)" font-size="12" font-family="Manrope" text-anchor="middle">
+              <text x="60" y="200">Пн</text><text x="150" y="200">Вт</text><text x="240" y="200">Ср</text>
+              <text x="330" y="200">Чт</text><text x="420" y="200">Пт</text><text x="510" y="200">Сб</text><text x="600" y="200">Нд</text>
+            </g>
+          </svg>
+        </div>
+        <div class="kpis" style="margin-top:18px">
+          <div class="kpi"><div class="k-top">Середньодобовий обсяг</div><div class="k-val">3 940</div><div class="k-sub">кг / день</div></div>
+          <div class="kpi"><div class="k-top">Продуктивність</div><div class="k-val">94%</div><div class="k-sub"><span class="trend up">+3%</span> до плану</div></div>
+          <div class="kpi"><div class="k-top">Брак</div><div class="k-val">1.2%</div><div class="k-sub"><span class="trend up">−0.4%</span> покращення</div></div>
+          <div class="kpi"><div class="k-top">Завершені звіти</div><div class="k-val">182</div><div class="k-sub">за тиждень</div></div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<script id="matrixData" type="application/json">{"depsP":[],"depsR":[],"pov":[],"resp":[]}</script>
+<script>
+  // Перемикання розділів
+  const items = document.querySelectorAll('.nav-item');
+  const views = document.querySelectorAll('.view');
+  const crumb = document.getElementById('crumb');
+  items.forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      items.forEach(i=>i.classList.remove('active'));
+      btn.classList.add('active');
+      const id = btn.dataset.view;
+      views.forEach(v=>v.classList.toggle('active', v.id==='view-'+id));
+      crumb.textContent = btn.textContent.trim();
+      closeNav();
+      document.querySelector('.content').scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+
+  // Мобільне меню
+  const sb = document.getElementById('sidebar');
+  const scrim = document.getElementById('scrim');
+  function closeNav(){sb.classList.remove('open');scrim.classList.remove('open')}
+  document.getElementById('burger').addEventListener('click',()=>{
+    sb.classList.toggle('open');scrim.classList.toggle('open');
+  });
+  scrim.addEventListener('click',closeNav);
+
+  /* ===== Матриці: дані та рендер ===== */
+  let MX = {depsP:[],depsR:[],pov:[],resp:[]};
+  let mxSet='pov', mxPage=0; const MX_PAGE=120;
+  const $=id=>document.getElementById(id);
+
+  function depList(){return mxSet==='pov'?MX.depsP:MX.depsR}
+  function rows(){return mxSet==='pov'?MX.pov:MX.resp}
+
+  function codeClass(code){
+    if(mxSet==='pov'){
+      const u=code.toUpperCase().replace('І','I');
+      if(u.startsWith('ADI'))return'cc-A';
+      if(u==='A'||u==='A1'||u==='A2')return'cc-A';
+      if(u==='R'||u==='Р')return'cc-R';
+      if(u==='P')return'cc-P';
+      if(u==='I')return'cc-I';
+      if(u==='V')return'cc-V';
+      if(u.includes('DI'))return'cc-DI';
+      if(u.includes('V'))return'cc-V';
+      return'cc-X';
+    } else {
+      let h=0; for(const ch of code)h=(h*31+ch.charCodeAt(0))%9;
+      return'rc'+h;
+    }
+  }
+
+  function buildFilters(){
+    const rs=rows();
+    const srcs=[...new Set(rs.map(r=>r.s).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'uk'));
+    const cats=[...new Set(rs.map(r=>r.c).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'uk'));
+    $('mxSource').innerHTML='<option value="">Усі матриці ('+srcs.length+')</option>'+srcs.map(s=>'<option>'+esc(s)+'</option>').join('');
+    $('mxCat').innerHTML='<option value="">Усі категорії</option>'+cats.map(c=>'<option>'+esc(c)+'</option>').join('');
+  }
+
+  function buildLegend(){
+    const counts={};
+    rows().forEach(r=>Object.values(r.a).forEach(c=>counts[c]=(counts[c]||0)+1));
+    const items=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+    $('mxLegend').innerHTML=items.map(([c,n])=>
+      '<span class="chip"><span class="co '+codeClass(c)+'">'+esc(c)+'</span><span class="dn">'+n+' прив\u2019язок · значення —</span></span>').join('');
+  }
+
+  function esc(s){return (s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
+
+  function filtered(){
+    const src=$('mxSource').value, cat=$('mxCat').value, q=$('mxSearch').value.trim().toLowerCase();
+    return rows().filter(r=>
+      (!src||r.s===src)&&(!cat||r.c===cat)&&
+      (!q||(r.d&&r.d.toLowerCase().includes(q))||(r.s&&r.s.toLowerCase().includes(q))));
+  }
+
+  function chipHtml(r){
+    const deps=depList(), ents=Object.entries(r.a);
+    if(!ents.length)return '<span style="color:var(--muted);font-size:12px">—</span>';
+    const cap=8;
+    const make=([i,code])=>'<span class="chip" title="'+esc(deps[+i])+' · '+esc(code)+'"><span class="co '+codeClass(code)+'">'+esc(code)+'</span><span class="dn">'+esc(deps[+i])+'</span></span>';
+    let out=ents.slice(0,cap).map(make).join('');
+    if(ents.length>cap){
+      const rest=ents.slice(cap).map(make).join('');
+      out+='<span class="chip more-chip" onclick="this.outerHTML=\''+rest.replace(/'/g,"\\'")+'\'">+'+(ents.length-cap)+'</span>';
+    }
+    return '<div class="chips">'+out+'</div>';
+  }
+
+  function render(reset){
+    if(reset){mxPage=0}
+    const data=filtered(); const end=(mxPage+1)*MX_PAGE;
+    const slice=data.slice(0,end);
+    $('mxBody').innerHTML=slice.map((r,i)=>
+      '<tr><td style="color:var(--muted);font-size:12px">'+(i+1)+'</td>'+
+      '<td class="mx-cat">'+(r.c?'<span class="cat-tag">'+esc(r.c)+'</span>':'')+'</td>'+
+      '<td class="mx-dec"><b>'+esc(r.d||'—')+'</b>'+
+        (r.cap?'<span class="sla">Капітан: '+esc(r.cap)+'</span>':'')+
+        (r.sla?'<span class="sla">SLA: '+esc(r.sla)+'</span>':'')+'</td>'+
+      '<td>'+chipHtml(r)+'</td></tr>').join('')
+      || '<tr><td colspan="4" class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><br>Нічого не знайдено за фільтрами</td></tr>';
+    $('mxMore').style.display = data.length>end ? 'block':'none';
+    $('mxStats').innerHTML =
+      '<span><b>'+[...new Set(rows().map(r=>r.s).filter(Boolean))].length+'</b> матриць</span>'+
+      '<span><b>'+data.length+'</b> '+(mxSet==='pov'?'рішень':'дій')+'</span>'+
+      '<span><b>'+depList().length+'</b> департаментів</span>';
+  }
+
+  function reloadSet(){buildFilters();buildLegend();render(true)}
+
+  /* ===== Матриці: Supabase ===== */
+  async function mxLoad(){
+    const [{data:configs},{data:rowsData}] = await Promise.all([
+      db.from('matrix_configs').select('*'),
+      db.from('matrix_rows').select('*').order('row_order')
+    ]);
+    const cfgMap=Object.fromEntries((configs||[]).map(c=>[c.id,c.deps]));
+    MX.depsP=cfgMap.pov||[];
+    MX.depsR=cfgMap.resp||[];
+    MX.pov=(rowsData||[]).filter(r=>r.type==='pov').map(r=>({
+      c:r.category||'',s:r.source||'',d:r.description||'',sla:r.sla||'',a:r.cells||{}
+    }));
+    MX.resp=(rowsData||[]).filter(r=>r.type==='resp').map(r=>({
+      c:r.category||'',s:r.source||'',d:r.description||'',cap:r.captain||'',ext:r.external_internal||'',a:r.cells||{}
+    }));
+    reloadSet();
+  }
+
+  async function mxImport(event){
+    const file=event.target.files[0]; event.target.value='';
+    if(!file)return;
+    const btn=document.querySelector('[onclick="document.getElementById(\'mxImportFile\').click()"]');
+    const origText=btn?btn.innerHTML:'';
+    if(btn)btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="3"/></svg>Імпортую…';
+
+    try{
+      const buf=await file.arrayBuffer();
+      const wb=XLSX.read(buf,{type:'array'});
+
+      /* --- Матриця повноважень --- */
+      const ws1=wb.Sheets['Матриця повноважень']||wb.Sheets[wb.SheetNames[1]];
+      const raw1=XLSX.utils.sheet_to_json(ws1,{header:1,defval:''});
+      const hdr1=raw1[0]||[];
+      // Знаходимо стовпець SLA (ЯК?)
+      let slaIdx1=hdr1.findIndex((h,i)=>i>5&&String(h).startsWith('ЯК'));
+      if(slaIdx1<0)slaIdx1=hdr1.length;
+      const DEPT_START_P=6;
+      const depsP=hdr1.slice(DEPT_START_P,slaIdx1).map(String).filter(Boolean);
+      const pov=[];
+      for(let i=2;i<raw1.length;i++){
+        const row=raw1[i]; if(!row||!String(row[5]||'').trim())continue;
+        const cells={};
+        for(let j=DEPT_START_P;j<slaIdx1;j++){
+          const v=String(row[j]||'').trim(); if(v)cells[String(j-DEPT_START_P)]=v;
+        }
+        pov.push({type:'pov',category:String(row[2]||'').trim(),source:String(row[3]||'').trim(),
+          description:String(row[5]||'').trim(),sla:String(row[slaIdx1]||'').trim(),cells,row_order:pov.length});
+      }
+
+      /* --- Матриця відповідальності --- */
+      const ws2=wb.Sheets['Матриця відповідальності']||wb.Sheets[wb.SheetNames[2]];
+      const raw2=XLSX.utils.sheet_to_json(ws2,{header:1,defval:''});
+      const hdr2=raw2[0]||[];
+      const DEPT_START_R=7;
+      const depsR=hdr2.slice(DEPT_START_R).map(String).filter(Boolean);
+      const resp=[];
+      for(let i=1;i<raw2.length;i++){
+        const row=raw2[i]; if(!row||!String(row[6]||'').trim())continue;
+        const cells={};
+        for(let j=DEPT_START_R;j<DEPT_START_R+depsR.length;j++){
+          const v=String(row[j]||'').trim(); if(v)cells[String(j-DEPT_START_R)]=v;
+        }
+        resp.push({type:'resp',external_internal:String(row[0]||'').trim(),category:String(row[2]||'').trim(),
+          source:String(row[3]||'').trim(),captain:String(row[5]||'').trim(),
+          description:String(row[6]||'').trim(),cells,row_order:resp.length});
+      }
+
+      /* --- Завантаження в Supabase --- */
+      const [d1,d2]=await Promise.all([
+        db.from('matrix_rows').delete().eq('type','pov'),
+        db.from('matrix_rows').delete().eq('type','resp')
+      ]);
+      await db.from('matrix_configs').upsert([{id:'pov',deps:depsP},{id:'resp',deps:depsR}]);
+
+      const BATCH=400;
+      const all=[...pov,...resp];
+      for(let i=0;i<all.length;i+=BATCH){
+        const {error}=await db.from('matrix_rows').insert(all.slice(i,i+BATCH));
+        if(error){alert('Помилка імпорту: '+error.message);if(btn)btn.innerHTML=origText;return;}
+      }
+      alert(`✓ Імпортовано: ${pov.length} повноважень, ${resp.length} відповідальностей`);
+      await mxLoad();
+    }catch(err){alert('Помилка читання файлу: '+err.message);}
+    if(btn)btn.innerHTML=origText;
+  }
+
+  function mxExport(){
+    const wbOut=XLSX.utils.book_new();
+    // Матриця повноважень
+    const hP=['','ДЗ','Категорія','Джерело','','Рішення / Дія',...MX.depsP,'ЯК? (SLA)'];
+    const rowsP=[hP,[],...MX.pov.map(r=>{
+      const row=['','',r.c,r.s,'',r.d];
+      MX.depsP.forEach((_,i)=>row.push(r.a[String(i)]||''));
+      row.push(r.sla||''); return row;
+    })];
+    XLSX.utils.book_append_sheet(wbOut,XLSX.utils.aoa_to_sheet(rowsP),'Матриця повноважень');
+    // Матриця відповідальності
+    const hR=['зовн/внутр','ДЗ','Категорія','Джерело','Підкатегорія','Капітан','Відповідальність. Дія',...MX.depsR];
+    const rowsR=[hR,...MX.resp.map(r=>{
+      const row=[r.ext||'','',r.c,r.s,'',r.cap||'',r.d];
+      MX.depsR.forEach((_,i)=>row.push(r.a[String(i)]||'')); return row;
+    })];
+    XLSX.utils.book_append_sheet(wbOut,XLSX.utils.aoa_to_sheet(rowsR),'Матриця відповідальності');
+    XLSX.writeFile(wbOut,'Матриці_'+new Date().toISOString().slice(0,10)+'.xlsx');
+  }
+
+  $('mxSeg').addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b)return;
+    [...$('mxSeg').children].forEach(x=>x.classList.toggle('on',x===b));
+    mxSet=b.dataset.set; reloadSet();
+  });
+  ['mxSource','mxCat'].forEach(id=>$(id).addEventListener('change',()=>render(true)));
+  $('mxSearch').addEventListener('input',()=>render(true));
+  $('mxMore').addEventListener('click',()=>{mxPage++;render(false)});
+  reloadSet();
+
+  /* ===== Компанія: оргструктура ===== */
+  const ORG_SEED = [];
+  let orgData=[], orgUid=1, orgEdit=null, orgParent=null;
+
+  function orgInit(){
+    orgUid=1;
+    const stamp=n=>{n.id=orgUid++; if(n.collapsed===undefined)n.collapsed=false; (n.children||(n.children=[])).forEach(stamp);};
+    orgData=JSON.parse(JSON.stringify(ORG_SEED)); orgData.forEach(stamp);
+    orgRender();
+  }
+  function orgFind(list,id){for(const n of list){if(n.id===id)return n;const f=orgFind(n.children||[],id);if(f)return f;}return null;}
+  function orgRemove(list,id){for(let i=0;i<list.length;i++){if(list[i].id===id){list.splice(i,1);return true;}if(orgRemove(list[i].children||[],id))return true;}return false;}
+  function orgEsc(s){return (s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
+  function orgFlatList(list,pfx=''){const res=[];list.forEach(n=>{const lbl=pfx?pfx+' / '+n.name:n.name;res.push({id:n.id,lbl});res.push(...orgFlatList(n.children||[],lbl));});return res;}
+  function orgDescIds(n){const ids=[n.id];(n.children||[]).forEach(c=>ids.push(...orgDescIds(c)));return ids;}
+  function orgParentOf(list,id){for(const n of list){if((n.children||[]).some(c=>c.id===id))return n;const p=orgParentOf(n.children||[],id);if(p)return p;}return null;}
+  function orgFillParentSel(excludeIds=[]){
+    const sel=document.getElementById('orgParentSel');
+    sel.innerHTML='<option value="">— Корінь (верхній рівень) —</option>'+
+      orgFlatList(orgData).filter(x=>!excludeIds.includes(x.id)).map(x=>'<option value="'+x.id+'">'+ orgEsc(x.lbl)+'</option>').join('');
+  }
+
+  const ORG_ICONS=[
+    '<path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3"/>',
+    '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+    '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>',
+    '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+    '<circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>',
+    '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>',
+  ];
+  const LEVEL_LABELS=['Департамент','Відділ','Підрозділ','Сектор','Група','Ланка'];
+  function orgNodeHtml(n,lvl){
+    const kids=n.children||[]; const has=kids.length>0;
+    const icon=ORG_ICONS[Math.min(lvl,ORG_ICONS.length-1)];
+    const tog=has
+      ?('<button class="org-toggle '+(n.collapsed?'collapsed':'')+'" onclick="orgToggle('+n.id+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6"/></svg></button>')
+      :'<button class="org-toggle leaf"></button>';
+    const lvlLabel=LEVEL_LABELS[Math.min(lvl,LEVEL_LABELS.length-1)];
+    const cnt=has?('<span class="org-count">'+kids.length+'</span>'):'';
+    const row='<div class="org-row" data-lvl="'+Math.min(lvl,5)+'" id="orgrow-'+n.id+'">'+tog+
+      '<span class="org-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor">'+icon+'</svg></span>'+
+      '<span class="org-info"><b>'+orgEsc(n.name)+'</b>'+(n.head?'<span>'+orgEsc(n.head)+'</span>':'<span>Керівника не призначено</span>')+'</span>'+
+      '<span class="org-depth-badge">'+lvlLabel+'</span>'+
+      cnt+
+      '<span class="org-acts">'+
+        '<button class="ico-btn" title="Додати підрозділ" onclick="orgOpen('+n.id+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg></button>'+
+        '<button class="ico-btn" title="Редагувати" onclick="orgEditNode('+n.id+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>'+
+        '<button class="ico-btn del" title="Видалити" onclick="orgAskDel('+n.id+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>'+
+      '</span></div>';
+    let html='<li class="org-node">'+row;
+    if(has && !n.collapsed){html+='<ul>'+kids.map(c=>orgNodeHtml(c,lvl+1)).join('')+'</ul>';}
+    return html+'</li>';
+  }
+  function orgRender(){
+    document.getElementById('orgTree').innerHTML=orgData.map(n=>orgNodeHtml(n,0)).join('');
+    let all=0,head=0;
+    const walk=l=>l.forEach(n=>{all++;if(n.head)head++;walk(n.children||[]);});
+    walk(orgData);
+    document.getElementById('orgKpiDep').textContent=orgData.length;
+    document.getElementById('orgKpiAll').textContent=all;
+    document.getElementById('orgKpiHead').textContent=head;
+  }
+  window.orgToggle=id=>{const n=orgFind(orgData,id);if(n){n.collapsed=!n.collapsed;orgRender();}};
+  window.orgExpandAll=open=>{const w=l=>l.forEach(n=>{n.collapsed=!open;w(n.children||[]);});w(orgData);orgRender();};
+
+  window.orgOpen=parentId=>{orgEdit=null;orgParent=parentId;
+    document.getElementById('orgModalTitle').textContent = parentId===null?'Новий департамент':'Новий підрозділ';
+    document.getElementById('orgName').value='';document.getElementById('orgHead').value='';
+    orgFillParentSel();
+    document.getElementById('orgParentSel').value=parentId===null?'':parentId;
+    document.getElementById('orgModal').classList.add('open');document.getElementById('orgName').focus();};
+  window.orgEditNode=id=>{const n=orgFind(orgData,id);if(!n)return;orgEdit=id;orgParent=null;
+    document.getElementById('orgModalTitle').textContent='Редагувати підрозділ';
+    document.getElementById('orgName').value=n.name;document.getElementById('orgHead').value=n.head||'';
+    orgFillParentSel(orgDescIds(n));
+    const par=orgParentOf(orgData,id);
+    document.getElementById('orgParentSel').value=par?par.id:'';
+    document.getElementById('orgModal').classList.add('open');document.getElementById('orgName').focus();};
+  window.orgCloseModal=()=>document.getElementById('orgModal').classList.remove('open');
+  window.orgSave=()=>{
+    const name=document.getElementById('orgName').value.trim();
+    const head=document.getElementById('orgHead').value.trim();
+    const pidVal=document.getElementById('orgParentSel').value;
+    const newParId=pidVal===''?null:parseInt(pidVal);
+    if(!name){document.getElementById('orgName').focus();return;}
+    if(orgEdit!==null){
+      const n=orgFind(orgData,orgEdit); n.name=name; n.head=head;
+      const oldPar=orgParentOf(orgData,orgEdit);
+      const oldParId=oldPar?oldPar.id:null;
+      if(newParId!==oldParId){
+        const oldList=oldPar?(oldPar.children||[]):orgData;
+        const idx=oldList.findIndex(x=>x.id===orgEdit); if(idx!==-1)oldList.splice(idx,1);
+        if(newParId===null){orgData.push(n);}
+        else{const np=orgFind(orgData,newParId);np.children=np.children||[];np.children.push(n);np.collapsed=false;}
+      }
+    } else {
+      const node={id:orgUid++,name,head,children:[],collapsed:false};
+      if(newParId===null)orgData.push(node);
+      else{const p=orgFind(orgData,newParId);p.children=p.children||[];p.children.push(node);p.collapsed=false;}
+    }
+    orgCloseModal();orgRender();
+  };
+  window.orgAskDel=id=>{
+    const row=document.getElementById('orgrow-'+id);const n=orgFind(orgData,id);
+    const cnt=(n.children||[]).length;
+    const acts=row.querySelector('.org-acts');
+    acts.outerHTML='<span class="org-confirm">Видалити'+(cnt?' з '+cnt+' підрозділами':'')+'? '+
+      '<button class="yes" onclick="orgDel('+id+')">Так</button><button onclick="orgRender()">Ні</button></span>';
+  };
+  window.orgDel=id=>{orgRemove(orgData,id);orgRender();};
+
+  window.orgExport=()=>{
+    const clean=l=>l.map(n=>({name:n.name,head:n.head||'',children:clean(n.children||[])}));
+    const blob=new Blob([JSON.stringify(clean(orgData),null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download='struktura-kompanii.json';a.click();URL.revokeObjectURL(a.href);
+  };
+  window.orgImport=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
+    r.onload=()=>{try{const data=JSON.parse(r.result);orgUid=1;
+      const stamp=n=>{n.id=orgUid++;n.collapsed=false;(n.children||(n.children=[])).forEach(stamp);};
+      orgData=data;orgData.forEach(stamp);orgRender();}catch(err){alert('Не вдалося прочитати файл структури.');}};
+    r.readAsText(f);e.target.value='';};
+
+  document.getElementById('orgModal').addEventListener('click',e=>{if(e.target.id==='orgModal')orgCloseModal();});
+  document.getElementById('orgName').addEventListener('keydown',e=>{if(e.key==='Enter')orgSave();});
+  /* ====== Supabase + вхід (Варіант Б) ====== */
+  const SUPABASE_URL = 'https://jomergnpqsjufqpehvyk.supabase.co';   // ← встав свій Project URL
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvbWVyZ25wcXNqdWZxcGVodnlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MTA3NjEsImV4cCI6MjA5NzI4Njc2MX0.uFCvBwl3osBS9AIbMDqefRH87PQH1Xqqff07-d2lsTM';              // ← встав свій anon/public key
+  const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // Завантаження структури з бази та побудова дерева
+  async function orgLoad(){
+    const { data, error } = await db.from('company_units').select('*').order('sort').order('id');
+    if(error){ console.error(error); alert('Помилка завантаження: '+error.message); return; }
+    const map={}, roots=[];
+    data.forEach(r=>{ map[r.id]={id:r.id,name:r.name,head:r.head||'',children:[],collapsed:false}; });
+    data.forEach(r=>{ const n=map[r.id]; if(r.parent_id&&map[r.parent_id]) map[r.parent_id].children.push(n); else roots.push(n); });
+    orgData=roots; orgRender();
+  }
+  // Додати / редагувати -> Supabase
+  window.orgSave = async ()=>{
+    const name=document.getElementById('orgName').value.trim();
+    const head=document.getElementById('orgHead').value.trim();
+    const pidVal=document.getElementById('orgParentSel').value;
+    const newParId=pidVal===''?null:parseInt(pidVal);
+    if(!name){ document.getElementById('orgName').focus(); return; }
+    const res = orgEdit!==null
+      ? await db.from('company_units').update({name,head,parent_id:newParId}).eq('id',orgEdit)
+      : await db.from('company_units').insert({name,head,parent_id:newParId});
+    if(res.error){ alert('Помилка збереження: '+res.error.message); return; }
+    orgCloseModal(); await orgLoad();
+  };
+  // Видалити (разом з вкладеними)
+  window.orgDel = async id=>{
+    const { error } = await db.from('company_units').delete().eq('id',id);
+    if(error){ alert('Помилка видалення: '+error.message); return; }
+    await orgLoad();
+  };
+  // Імпорт у DB-режимі вимкнено (структура зберігається в базі)
+  window.orgImport = ()=> alert('У режимі з базою структура зберігається в Supabase. Імпорт із файлу тут не застосовується.');
+  // Одноразове заповнення бази стартовою структурою (запустити ОДИН раз після першого входу)
+  window.orgSeedToDb = async ()=>{
+    async function ins(node,parent){
+      const { data, error } = await db.from('company_units').insert({name:node.name,head:node.head||'',parent_id:parent}).select('id').single();
+      if(error){ console.error(error); return; }
+      for(const c of (node.children||[])) await ins(c, data.id);
+    }
+    for(const r of ORG_SEED) await ins(r, null);
+    alert('Стартову структуру перенесено в Supabase'); orgLoad();
+  };
+
+  /* ---- авторизація ---- */
+  const authScrim=document.getElementById('authScrim');
+  const authErr=document.getElementById('authErr');
+  function setAuth(session){
+    if(session){
+      authScrim.classList.remove('open');
+      document.querySelectorAll('.js-user').forEach(el=>el.textContent=session.user.email);
+      orgLoad();
+      mxLoad();
+    } else {
+      authScrim.classList.add('open');
+    }
+  }
+  window.authSignIn = async ()=>{
+    authErr.textContent='';
+    const email=document.getElementById('authEmail').value.trim();
+    const password=document.getElementById('authPass').value;
+    if(!email||!password){ authErr.textContent='Введіть email і пароль.'; return; }
+    const btn=document.getElementById('authBtn'); btn.disabled=true; btn.textContent='Вхід…';
+    const { error } = await db.auth.signInWithPassword({email,password});
+    btn.disabled=false; btn.textContent='Увійти';
+    if(error){ authErr.textContent='Невірний email або пароль.'; }
+  };
+  window.authSignOut = async ()=>{ await db.auth.signOut(); };
+  db.auth.onAuthStateChange((_e,session)=>setAuth(session));
+  document.getElementById('authPass').addEventListener('keydown',e=>{ if(e.key==='Enter') authSignIn(); });
+  (async()=>{ const { data:{ session } } = await db.auth.getSession(); setAuth(session); })();
+
+
+</script>
+</body>
+</html>
