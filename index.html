@@ -557,11 +557,11 @@
     cursor:pointer;transition:border-color .12s,background .12s;
     position:relative;align-self:center;
   }
-  .mx-urow input[type=checkbox]:checked{background:var(--brand);border-color:var(--brand)}
+  .mx-urow input[type=checkbox]:checked{background:var(--brand-tint);border-color:var(--brand)}
   .mx-urow input[type=checkbox]:checked::after{
     content:'';position:absolute;left:3px;top:5px;
     width:8px;height:4px;
-    border-left:2px solid #fff;border-bottom:2px solid #fff;
+    border-left:2px solid var(--brand);border-bottom:2px solid var(--brand);
     transform:rotate(-45deg);display:block;
   }
   .mx-urow:hover input[type=checkbox]{border-color:var(--brand)}
