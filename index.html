@@ -362,12 +362,7 @@
     border-color:var(--brand-tint-2);
   }
   /* кольорова смуга за рівнем */
-  .org-row[data-lvl="0"]{border-left:4px solid var(--brand)}
-  .org-row[data-lvl="1"]{border-left:3px solid #2563A8}
-  .org-row[data-lvl="2"]{border-left:3px solid #2E7D52}
-  .org-row[data-lvl="3"]{border-left:3px solid #B8791A}
-  .org-row[data-lvl="4"]{border-left:3px solid #6D4AA8}
-  .org-row[data-lvl="5"]{border-left:2px solid #0E7C86}
+  .org-row{border-left:3px solid transparent;transition:border-color .15s}
   .org-row[data-lvl="0"] .org-ic{background:var(--brand-tint);color:var(--brand)}
   .org-row[data-lvl="1"] .org-ic{background:#E6EEF7;color:#2563A8}
   .org-row[data-lvl="2"] .org-ic{background:#E7F2EC;color:#2E7D52}
