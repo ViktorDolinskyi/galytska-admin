@@ -1278,7 +1278,7 @@
   }
   window.orgToggle=id=>{const n=orgFind(orgData,id);if(n){n.collapsed=!n.collapsed;orgRender();}};
   window.orgExpandAll=open=>{const w=l=>l.forEach(n=>{n.collapsed=!open;w(n.children||[]);});w(orgData);orgRender();};
-  window.orgRowClick=(e,id)=>{if(e.target.closest('.org-acts,.org-toggle'))return;orgEditNode(id);};
+  window.orgRowClick=(e,id)=>{if(e.target.closest('.org-acts,.org-toggle,.org-confirm'))return;orgEditNode(id);};
 
   function fillOrgModalSelects(){
     const es=document.getElementById('orgEmployee');const c1=es.value;
