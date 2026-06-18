@@ -574,59 +574,47 @@
   .mx-urow-child{color:var(--slate)}
 
 
-  /* ===== Цілі ===== */
-  .goal-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;display:flex;flex-direction:column;gap:10px;transition:box-shadow .15s,border-color .15s;cursor:pointer}
-  .goal-card:hover{box-shadow:0 4px 20px rgba(27,23,20,.09);border-color:var(--brand-tint-2)}
-  .goal-card-head{display:flex;align-items:flex-start;gap:12px}
-  .goal-priority{width:4px;border-radius:3px;flex:none;align-self:stretch;min-height:40px}
-  .goal-title{font-size:14px;font-weight:700;color:var(--ink);line-height:1.35;flex:1}
-  .goal-desc{font-size:12.5px;color:var(--slate);line-height:1.5;margin-top:2px}
-  .goal-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:11.5px;color:var(--muted)}
-  .goal-meta-sep{color:var(--line)}
-  .goal-progress-wrap{display:flex;align-items:center;gap:10px}
-  .goal-progress-bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
-  .goal-progress-fill{height:100%;border-radius:3px;transition:width .3s}
-  .goal-progress-pct{font-size:12px;font-weight:700;color:var(--slate);flex:none;min-width:32px;text-align:right}
-  .goal-actions{display:flex;gap:6px;margin-left:auto;opacity:0;transition:opacity .12s}
-  .goal-card:hover .goal-actions{opacity:1}
-  .goal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;margin-top:4px}
-  .goal-list{display:flex;flex-direction:column;gap:8px;margin-top:4px}
-  .goal-list .goal-card{flex-direction:row;align-items:center;gap:14px;padding:14px 18px}
-  .goal-list .goal-card-head{flex:1;min-width:0}
-  .goal-list .goal-progress-wrap{width:160px;flex:none}
-  .goal-list .goal-desc{display:none}
-  /* Status colors */
-  .gs-active{background:#16A34A22;color:#15803D}
-  .gs-completed{background:#1D4ED822;color:#1D4ED8}
-  .gs-paused{background:#D9770622;color:#B45309}
-  .gs-overdue{background:#DC262622;color:#B91C1C}
-  .gs-draft{background:#64748B22;color:#475569}
-  /* Priority colors */
-  .gp-critical{background:#DC2626}
-  .gp-high{background:#EA580C}
-  .gp-medium{background:#CA8A04}
-  .gp-low{background:#16A34A}
-  /* Filter */
-  .goal-filters{display:flex;gap:10px;flex-wrap:nowrap;align-items:center;margin:14px 0;justify-content:flex-start}
-  .goal-filters .csel{flex:none;width:170px}
-
-  /* ===== Цілі ===== */
-  .goal-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;transition:box-shadow .15s,transform .1s}
-  .goal-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);transform:translateY(-1px)}
-  .goal-priority{width:4px;border-radius:3px;flex:none;align-self:stretch;min-height:40px}
-  .goal-progress-bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
-  .goal-progress-fill{height:100%;border-radius:3px;transition:width .3s}
-  .goal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;}
-  .goal-list{display:flex;flex-direction:column;gap:8px;}
-  .gs-active{background:#16A34A22;color:#15803D;border-radius:20px;padding:2px 8px}
-  .gs-completed{background:#1D4ED822;color:#1D4ED8;border-radius:20px;padding:2px 8px}
-  .gs-paused{background:#D9770622;color:#B45309;border-radius:20px;padding:2px 8px}
-  .gs-overdue{background:#DC262622;color:#B91C1C;border-radius:20px;padding:2px 8px}
-  .gs-draft{background:#64748B22;color:#475569;border-radius:20px;padding:2px 8px}
-  .gp-critical{background:#DC2626}.gp-high{background:#EA580C}
-  .gp-medium{background:#CA8A04}.gp-low{background:#16A34A}
+  /* ===== Цілі — двохрівнева структура ===== */
+  .g-group{margin-bottom:24px}
+  .g-group-head{display:flex;align-items:center;gap:10px;padding:8px 0;margin-bottom:8px;border-bottom:2px solid var(--line)}
+  .g-group-title{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+  .g-group-badge{font-size:11px;color:var(--muted);background:var(--page);border:1px solid var(--line);border-radius:10px;padding:1px 8px;font-weight:600}
+  .g-goal-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden;transition:box-shadow .15s}
+  .g-goal-card:hover{box-shadow:0 4px 16px rgba(27,23,20,.08)}
+  .g-goal-head{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none}
+  .g-type-marker{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-size:14px;font-weight:800;flex:none;color:#fff}
+  .g-goal-title-wrap{flex:1;min-width:0}
+  .g-goal-title{font-size:14px;font-weight:700;color:var(--ink);line-height:1.35}
+  .g-goal-pattern{font-size:12px;color:var(--muted);margin-top:2px}
+  .g-goal-stats{display:flex;align-items:center;gap:14px;flex:none}
+  .g-ind-count{font-size:12px;color:var(--muted);white-space:nowrap}
+  .g-mini-bar-wrap{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);white-space:nowrap}
+  .g-mini-bar{width:64px;height:5px;background:var(--line);border-radius:3px;overflow:hidden;flex:none}
+  .g-mini-bar-fill{height:100%;border-radius:3px;background:var(--brand);transition:width .3s}
+  .g-goal-chevron{color:var(--muted);transition:transform .2s;flex:none}
+  .g-goal-card.expanded .g-goal-chevron{transform:rotate(90deg)}
+  .g-goal-actions{display:flex;gap:4px;opacity:0;transition:opacity .15s;flex:none}
+  .g-goal-card:hover .g-goal-actions{opacity:1}
+  .g-indicators{display:none;border-top:1px solid var(--line)}
+  .g-goal-card.expanded .g-indicators{display:block}
+  .g-ind-head{display:grid;grid-template-columns:1fr 140px 140px 110px 36px;gap:8px;padding:8px 16px;background:var(--page);font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--line)}
+  .g-ind-row{display:grid;grid-template-columns:1fr 140px 140px 110px 36px;gap:8px;padding:10px 16px;border-bottom:.5px solid var(--line);align-items:center;font-size:13px;transition:background .1s;cursor:pointer}
+  .g-ind-row:last-of-type{border-bottom:none}
+  .g-ind-row:hover{background:var(--hover-bg)}
+  .g-ind-name{font-size:13px;font-weight:500;color:var(--ink);line-height:1.4}
+  .g-ind-comment{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.3}
+  .g-ind-val{font-size:12.5px;color:var(--slate)}
+  .g-ind-prog-wrap{display:flex;align-items:center;gap:6px}
+  .g-ind-prog-bar{height:5px;flex:1;min-width:36px;background:var(--line);border-radius:3px;overflow:hidden}
+  .g-ind-prog-fill{height:100%;border-radius:3px;transition:width .3s}
+  .g-ind-prog-pct{font-size:11px;color:var(--muted);white-space:nowrap;min-width:30px}
+  .g-add-ind{display:flex;align-items:center;gap:6px;padding:8px 16px;font-size:12.5px;font-weight:600;color:var(--brand);cursor:pointer;background:none;border:none;font-family:inherit;border-top:1px solid var(--line);width:100%;text-align:left;transition:background .1s}
+  .g-add-ind:hover{background:var(--hover-bg)}
   .goal-filters{display:flex;gap:10px;flex-wrap:nowrap;align-items:center;margin:14px 0}
-  .goal-filters .csel{flex:none;width:160px}
+  .goal-filters .csel{flex:none;width:180px}
+  /* type color buttons in modal */
+  .g-type-btn{border:none;border-radius:8px;width:36px;height:36px;font-size:14px;font-weight:800;cursor:pointer;opacity:.55;transition:opacity .15s}
+  .g-type-btn.active{opacity:1;box-shadow:0 0 0 3px rgba(0,0,0,.18)}
   .seg-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
 
   /* ===== Компанія / Оргструктура ===== */
@@ -1130,31 +1118,53 @@
         </div>
       </section>
 
-      <!-- Goals modal -->
+      <!-- Goal modal -->
       <div class="modal-scrim" id="goalModal" style="display:none">
-        <div class="modal" style="max-width:560px;max-height:90vh;overflow-y:auto">
+        <div class="modal" style="max-width:500px">
           <h3 id="goalModalTitle">Нова ціль</h3>
           <div class="body" style="flex-direction:column;gap:14px;padding:20px">
-            <div><label>Назва цілі</label><input id="gTitleIn" type="text" placeholder="Введіть назву…"></div>
-            <div><label>Опис</label><textarea id="gDescIn" rows="3" style="width:100%;resize:vertical;border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:13.5px;font-family:inherit;background:var(--surface);color:var(--text)"></textarea></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-              <div><label>Категорія</label><input id="gCatIn" type="text" placeholder="Наприклад: Продажі"></div>
-              <div><label>Власник</label><div class="csel" id="gOwnerSel" style="width:100%"></div></div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
-              <div><label>Статус</label><div class="csel" id="gStatusSel" style="width:100%"></div></div>
-              <div><label>Пріоритет</label><div class="csel" id="gPriorSel" style="width:100%"></div></div>
-              <div><label>Дедлайн</label><input id="gDueIn" type="text" class="flatpickr" placeholder="Оберіть…"></div>
-            </div>
             <div>
-              <label>Прогрес: <span id="gProgVal">0</span>%</label>
-              <input id="gProgIn" type="range" min="0" max="100" value="0" oninput="$('gProgVal').textContent=this.value" style="width:100%;margin-top:6px;accent-color:var(--brand)">
+              <label>Тип</label>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px" id="gTypeSwitch"></div>
             </div>
+            <div><label>Патерн (категорія)</label><input id="gPatternIn" placeholder="задоволеність клієнтів, кадровий облік…"></div>
+            <div><label>Назва цілі</label><input id="gTitleIn" placeholder="Ми підвищимо / досягнемо…"></div>
           </div>
           <div class="foot">
             <button class="btn ghost" id="goalDelBtn" onclick="goalDelete()" style="margin-right:auto;display:none">Видалити</button>
             <button class="btn ghost" onclick="goalCloseModal()">Скасувати</button>
             <button class="btn primary" onclick="goalSave()">Зберегти</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Indicator modal -->
+      <div class="modal-scrim" id="indModal" style="display:none">
+        <div class="modal" style="max-width:580px">
+          <h3 id="indModalTitle">Новий індикатор</h3>
+          <div class="body" style="flex-direction:column;gap:14px;padding:20px">
+            <div><label>Назва індикатора</label><input id="iNameIn" placeholder="% виробничих посад, кількість клієнтів…"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div><label>Базовий рівень</label><input id="iBaseIn" placeholder="70%, 534, 0…"></div>
+              <div><label>Дата базового рівня</label><input id="iBaseDateIn" class="flatpickr-ind" placeholder="31.12.2025"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div><label>Цільовий рівень</label><input id="iTargetIn" placeholder="80%, 100, 30%…"></div>
+              <div><label>Дата цілі</label><input id="iTargetDateIn" class="flatpickr-ind" placeholder="31.12.2028"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div><label>Поточне значення</label><input id="iCurIn" placeholder="Актуальне значення"></div>
+              <div>
+                <label>Прогрес: <span id="iProgVal">0</span>%</label>
+                <input id="iProgIn" type="range" min="0" max="100" value="0" oninput="$('iProgVal').textContent=this.value" style="width:100%;margin-top:6px;accent-color:var(--brand)">
+              </div>
+            </div>
+            <div><label>Коментар / деталі розрахунку</label><textarea id="iCommentIn" rows="2" style="width:100%;resize:vertical;border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:13.5px;font-family:inherit;background:var(--surface);color:var(--ink)"></textarea></div>
+          </div>
+          <div class="foot">
+            <button class="btn ghost" id="indDelBtn" onclick="indDelete()" style="margin-right:auto;display:none">Видалити</button>
+            <button class="btn ghost" onclick="indCloseModal()">Скасувати</button>
+            <button class="btn primary" onclick="indSave()">Зберегти</button>
           </div>
         </div>
       </div>
@@ -1165,24 +1175,19 @@
           <div>
             <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span>Цілі</h2>
           </div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <button class="btn ghost seg-btn" onclick="goalsSetView('grid')" id="gViewGrid" title="Сітка"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></button>
-            <button class="btn ghost seg-btn" onclick="goalsSetView('list')" id="gViewList" title="Список"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></button>
-            <button class="btn primary" onclick="goalOpen(null)">+ Ціль</button>
-          </div>
+          <button class="btn primary" onclick="goalOpen(null)">+ Ціль</button>
         </div>
 
         <!-- KPI -->
         <div class="kpi-row" id="gKpi"></div>
 
         <!-- Filters -->
-        <div class="goal-filters" id="gFilters">
-          <div class="csel" id="gSelStatus" style="width:160px"></div>
-          <div class="csel" id="gSelPriority" style="width:160px"></div>
-          <div class="csel" id="gSelOwner" style="width:200px"></div>
+        <div class="goal-filters">
+          <div class="csel" id="gSelPattern"></div>
+          <div class="csel" id="gSelType"></div>
           <div class="search" style="flex:1;min-width:180px;margin-left:0">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input id="gSearch" type="text" placeholder="Пошук цілей…" oninput="goalsRender()">
+            <input id="gSearch" type="text" placeholder="Пошук цілей та індикаторів…" oninput="goalsRender()">
             <button class="search-clear" onclick="$('gSearch').value='';goalsRender()" title="Очистити">×</button>
           </div>
         </div>
@@ -2233,26 +2238,19 @@
   reloadSet();
 
   /* ===== ЦІЛІ ===== */
-  let goalsData=[], goalsEdit=null, _goalsView='grid';
-  let _gCselVals={status:'',priority:'',owner:''};
-  let _gOwnerCselInst=null, _gStatusCselInst=null, _gPriorCselInst=null;
-  let _gModalOwnerSel=null, _gModalStatusSel=null, _gModalPriorSel=null;
+  /* ===== Goals two-level ===== */
+  let goalsData=[], goalsInds={}, goalsEdit=null, indEdit=null, _indGoalId=null;
+  let _gPatternSel=null, _gTypeSel=null;
 
-  const GOAL_STATUSES=[
-    {v:'active',l:'Активна'},
-    {v:'completed',l:'Виконана'},
-    {v:'paused',l:'Призупинена'},
-    {v:'overdue',l:'Прострочена'},
-    {v:'draft',l:'Чорновик'},
-  ];
-  const GOAL_PRIORITIES=[
-    {v:'critical',l:'Критичний'},
-    {v:'high',l:'Високий'},
-    {v:'medium',l:'Середній'},
-    {v:'low',l:'Низький'},
+  const GOAL_TYPES=[
+    {v:'П',l:'П — Перемога',color:'#F59E0B'},
+    {v:'Р',l:'Р — Результат',color:'#16A34A'},
+    {v:'С',l:'С — Стратегія',color:'#2563EB'},
+    {v:'О',l:'О — Операційна',color:'#7C3AED'},
+    {v:'К',l:'К — Культура',color:'#DB2777'},
   ];
 
-  function _makeCsel(wrapEl, placeholder, opts, onChange){
+  function _makeCsel(wrapEl,placeholder,opts,onChange){
     const val={v:''};
     wrapEl.innerHTML=`<div class="csel-trigger"><span class="csel-label">${placeholder}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
       <div class="csel-drop">
@@ -2283,23 +2281,39 @@
     };
   }
 
+  function _progColor(p){return p>=100?'#16A34A':p>=60?'#2563EB':p>=30?'#CA8A04':'#DC2626';}
+
   function goalsInit(){
-    const ownerOpts=[{v:'',l:'— Всі —'},...dictEmps.map(e=>({v:String(e.id),l:(e.last_name+' '+(e.first_name||'')).trim()}))];
-    _gStatusCselInst=_makeCsel($('gSelStatus'),'Статус',GOAL_STATUSES,()=>goalsRender());
-    _gPriorCselInst=_makeCsel($('gSelPriority'),'Пріоритет',GOAL_PRIORITIES,()=>goalsRender());
-    _gOwnerCselInst=_makeCsel($('gSelOwner'),'Власник',[...dictEmps.map(e=>({v:String(e.id),l:(e.last_name+' '+(e.first_name||'')).trim()}))],()=>goalsRender());
+    const patterns=[...new Set(goalsData.map(g=>g.pattern).filter(Boolean))].sort();
+    const types=[...new Set(goalsData.map(g=>g.type).filter(Boolean))].sort();
+    _gPatternSel=_makeCsel($('gSelPattern'),'Патерн',patterns.map(p=>({v:p,l:p})),()=>goalsRender());
+    _gTypeSel=_makeCsel($('gSelType'),'Тип',GOAL_TYPES.filter(t=>types.includes(t.v)),()=>goalsRender());
 
-    _gModalStatusSel=_makeCsel($('gStatusSel'),'Статус',GOAL_STATUSES,()=>{});
-    _gModalPriorSel=_makeCsel($('gPriorSel'),'Пріоритет',GOAL_PRIORITIES,()=>{});
-    _gModalOwnerSel=_makeCsel($('gOwnerSel'),'Власник',[...dictEmps.map(e=>({v:String(e.id),l:(e.last_name+' '+(e.first_name||'')).trim()}))],()=>{});
+    // Type buttons in modal
+    const sw=$('gTypeSwitch');
+    sw.innerHTML=GOAL_TYPES.map(t=>`<button class="g-type-btn" data-type="${t.v}" data-color="${t.color}" style="background:${t.color};color:#fff" title="${t.l}" onclick="gTypeBtnClick(this)">${t.v}</button>`).join('');
 
-    flatpickr('#goalModal .flatpickr',{locale:'uk',dateFormat:'Y-m-d',allowInput:true});
+    flatpickr('#indModal .flatpickr-ind',{locale:'uk',dateFormat:'Y-m-d',allowInput:true});
   }
 
+  window.gTypeBtnClick=function(btn){
+    $('gTypeSwitch').querySelectorAll('.g-type-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  };
+
   async function goalsLoad(){
-    const {data,error}=await db.from('goals').select('*').order('created_at',{ascending:false});
-    if(error){console.error('goalsLoad:',error);return;}
-    goalsData=data||[];
+    const [{data:gd,error:ge},{data:id_,error:ie}]=await Promise.all([
+      db.from('goals').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:true}),
+      db.from('goal_indicators').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:true}),
+    ]);
+    if(ge){console.error('goalsLoad goals:',ge);}
+    if(ie){console.error('goalsLoad indicators:',ie);}
+    goalsData=gd||[];
+    goalsInds={};
+    (id_||[]).forEach(ind=>{
+      if(!goalsInds[ind.goal_id])goalsInds[ind.goal_id]=[];
+      goalsInds[ind.goal_id].push(ind);
+    });
     goalsInit();
     goalsRender();
     goalsKpi();
@@ -2307,92 +2321,109 @@
 
   function goalsRender(){
     const q=($('gSearch')?.value||'').toLowerCase();
-    const st=_gStatusCselInst?.get()||'';
-    const pr=_gPriorCselInst?.get()||'';
-    const ow=_gOwnerCselInst?.get()||'';
+    const fp=_gPatternSel?.get()||'';
+    const ft=_gTypeSel?.get()||'';
     let list=goalsData.filter(g=>{
-      if(st&&g.status!==st)return false;
-      if(pr&&g.priority!==pr)return false;
-      if(ow&&String(g.employee_id)!==ow)return false;
-      if(q&&!(g.title||'').toLowerCase().includes(q)&&!(g.description||'').toLowerCase().includes(q)&&!(g.category||'').toLowerCase().includes(q))return false;
+      if(fp&&g.pattern!==fp)return false;
+      if(ft&&g.type!==ft)return false;
+      if(q){
+        const inTitle=(g.title||'').toLowerCase().includes(q)||(g.pattern||'').toLowerCase().includes(q);
+        const inInds=(goalsInds[g.id]||[]).some(i=>(i.name||'').toLowerCase().includes(q)||(i.comment||'').toLowerCase().includes(q));
+        if(!inTitle&&!inInds)return false;
+      }
       return true;
     });
     const wrap=$('gContainer');
     if(!list.length){wrap.innerHTML='<div style="color:var(--muted);padding:32px 0;text-align:center">Цілей не знайдено</div>';return;}
-    const isList=_goalsView==='list';
-    wrap.className=isList?'goal-list':'goal-grid';
-    wrap.innerHTML=list.map(g=>goalCardHtml(g,isList)).join('');
-    goalsKpi();
+    // Group by pattern
+    const groups={};
+    list.forEach(g=>{const p=g.pattern||'Без патерну';if(!groups[p])groups[p]=[];groups[p].push(g);});
+    wrap.innerHTML=Object.entries(groups).map(([pattern,goals])=>{
+      const total=goals.length;
+      return `<div class="g-group">
+        <div class="g-group-head">
+          <span class="g-group-title">${pattern}</span>
+          <span class="g-group-badge">${total} ${total===1?'ціль':total<5?'цілі':'цілей'}</span>
+        </div>
+        ${goals.map(g=>goalCardHtml(g)).join('')}
+      </div>`;
+    }).join('');
   }
 
-  function goalCardHtml(g,isList){
-    const sLabel=GOAL_STATUSES.find(s=>s.v===g.status)?.l||g.status||'—';
-    const pLabel=GOAL_PRIORITIES.find(p=>p.v===g.priority)?.l||g.priority||'—';
-    const prio=g.priority||'low';
-    const prog=Math.min(100,Math.max(0,g.progress||0));
-    const emp=dictEmps.find(e=>e.id===g.employee_id);
-    const empName=emp?(emp.last_name+' '+(emp.first_name||'')).trim():'—';
-    const due=g.due_date?new Date(g.due_date).toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'}):'—';
-    const isOverdue=g.due_date&&new Date(g.due_date)<new Date()&&g.status!=='completed';
-    return `<div class="goal-card" onclick="goalOpen('${g.id}')" style="cursor:pointer;display:flex;gap:12px;padding:16px;border-radius:12px;align-items:flex-start">
-      <div class="goal-priority gp-${prio}"></div>
-      <div style="flex:1;min-width:0">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
-          <span class="badge gs-${g.status||'draft'}">${sLabel}</span>
-          ${g.category?`<span style="font-size:11.5px;color:var(--muted)">${g.category}</span>`:''}
-          ${isOverdue?'<span style="font-size:11px;color:#B91C1C;font-weight:600">Прострочена</span>':''}
+  function goalCardHtml(g){
+    const typeInfo=GOAL_TYPES.find(t=>t.v===g.type)||{v:g.type||'?',color:'#9B948E'};
+    const inds=goalsInds[g.id]||[];
+    const avgProg=inds.length?Math.round(inds.reduce((a,i)=>a+(i.progress||0),0)/inds.length):0;
+    return `<div class="g-goal-card" id="gc-${g.id}">
+      <div class="g-goal-head" onclick="goalToggle('${g.id}')">
+        <div class="g-type-marker" style="background:${typeInfo.color}">${typeInfo.v}</div>
+        <div class="g-goal-title-wrap">
+          <div class="g-goal-title">${g.title||'—'}</div>
         </div>
-        <div style="font-weight:600;font-size:14px;margin-bottom:4px;color:var(--ink)">${g.title||'—'}</div>
-        ${g.description?`<div style="font-size:12.5px;color:var(--muted);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${g.description}</div>`:''}
-        <div style="display:flex;gap:16px;font-size:12px;color:var(--muted);margin-bottom:10px;flex-wrap:wrap">
-          <span>👤 ${empName}</span>
-          <span>📅 ${due}</span>
-          <span>⚡ ${pLabel}</span>
+        <div class="g-goal-stats">
+          <span class="g-ind-count">${inds.length} інд.</span>
+          <div class="g-mini-bar-wrap">
+            <div class="g-mini-bar"><div class="g-mini-bar-fill" style="width:${avgProg}%;background:${_progColor(avgProg)}"></div></div>
+            <span>${avgProg}%</span>
+          </div>
         </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <div class="goal-progress-bar"><div class="goal-progress-fill" style="width:${prog}%;background:${prog>=100?'#16A34A':prog>=60?'#2563EB':prog>=30?'#CA8A04':'#DC2626'}"></div></div>
-          <span style="font-size:12px;color:var(--muted);flex:none">${prog}%</span>
+        <div class="g-goal-actions" onclick="event.stopPropagation()">
+          <button class="btn ghost" style="padding:4px 8px;font-size:11px" onclick="goalOpen('${g.id}')">Ред.</button>
         </div>
+        <svg class="g-goal-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
       </div>
+      <div class="g-indicators">
+        <div class="g-ind-head"><span>Індикатор</span><span>Базовий рівень</span><span>Ціль</span><span>Прогрес</span><span></span></div>
+        ${inds.map(i=>indRowHtml(i)).join('')}
+        <button class="g-add-ind" onclick="indOpen(null,'${g.id}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          Додати індикатор
+        </button>
+      </div>
+    </div>`;
+  }
+
+  function indRowHtml(i){
+    const prog=Math.min(100,Math.max(0,i.progress||0));
+    const baseStr=i.baseline?(i.baseline+(i.baseline_date?' ('+i.baseline_date.slice(0,10)+')':'')):'—';
+    const targetStr=i.target?(i.target+(i.target_date?' ('+i.target_date.slice(0,10)+')':'')):'—';
+    return `<div class="g-ind-row" onclick="indOpen('${i.id}','${i.goal_id}')">
+      <div><div class="g-ind-name">${i.name||'—'}</div>${i.current_value?`<div class="g-ind-comment">Зараз: ${i.current_value}</div>`:''}${i.comment?`<div class="g-ind-comment">${i.comment}</div>`:''}</div>
+      <div class="g-ind-val">${baseStr}</div>
+      <div class="g-ind-val" style="color:var(--brand);font-weight:600">${targetStr}</div>
+      <div class="g-ind-prog-wrap"><div class="g-ind-prog-bar"><div class="g-ind-prog-fill" style="width:${prog}%;background:${_progColor(prog)}"></div></div><span class="g-ind-prog-pct">${prog}%</span></div>
+      <div style="display:flex;gap:4px;justify-content:flex-end"></div>
     </div>`;
   }
 
   function goalsKpi(){
     const total=goalsData.length;
-    const active=goalsData.filter(g=>g.status==='active').length;
-    const completed=goalsData.filter(g=>g.status==='completed').length;
-    const overdue=goalsData.filter(g=>g.status==='overdue'||(g.due_date&&new Date(g.due_date)<new Date()&&g.status!=='completed')).length;
-    const avgProg=total?Math.round(goalsData.reduce((a,g)=>a+(g.progress||0),0)/total):0;
+    const totalInds=Object.values(goalsInds).reduce((a,v)=>a+v.length,0);
+    const allInds=Object.values(goalsInds).flat();
+    const avgProg=allInds.length?Math.round(allInds.reduce((a,i)=>a+(i.progress||0),0)/allInds.length):0;
+    const patterns=new Set(goalsData.map(g=>g.pattern).filter(Boolean)).size;
     $('gKpi').innerHTML=`
       <div class="kpi-card"><div class="kpi-label">Всього цілей</div><div class="kpi-val">${total}</div></div>
-      <div class="kpi-card"><div class="kpi-label">Активних</div><div class="kpi-val" style="color:#16A34A">${active}</div></div>
-      <div class="kpi-card"><div class="kpi-label">Виконано</div><div class="kpi-val" style="color:#2563EB">${completed}</div></div>
-      <div class="kpi-card"><div class="kpi-label">Прострочено</div><div class="kpi-val" style="color:#DC2626">${overdue}</div></div>
-      <div class="kpi-card"><div class="kpi-label">Сер. прогрес</div><div class="kpi-val">${avgProg}%</div></div>
+      <div class="kpi-card"><div class="kpi-label">Патернів</div><div class="kpi-val">${patterns}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Індикаторів</div><div class="kpi-val">${totalInds}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Сер. прогрес</div><div class="kpi-val" style="color:${_progColor(avgProg)}">${avgProg}%</div></div>
     `;
   }
 
-  window.goalsSetView=function(v){
-    _goalsView=v;
-    $('gViewGrid').classList.toggle('active',v==='grid');
-    $('gViewList').classList.toggle('active',v==='list');
-    goalsRender();
+  window.goalToggle=function(id){
+    document.getElementById('gc-'+id)?.classList.toggle('expanded');
   };
 
   window.goalOpen=function(id){
     goalsEdit=id||null;
     $('goalModalTitle').textContent=id?'Редагувати ціль':'Нова ціль';
     $('goalDelBtn').style.display=id?'':'none';
-    const g=id?goalsData.find(x=>x.id===id):null;
+    const g=id?goalsData.find(x=>String(x.id)===String(id)):null;
     $('gTitleIn').value=g?.title||'';
-    $('gDescIn').value=g?.description||'';
-    $('gCatIn').value=g?.category||'';
-    $('gProgIn').value=g?.progress||0;
-    $('gProgVal').textContent=g?.progress||0;
-    $('gDueIn').value=g?.due_date||'';
-    if(_gModalStatusSel)_gModalStatusSel.set(g?.status||'draft');
-    if(_gModalPriorSel)_gModalPriorSel.set(g?.priority||'medium');
-    if(_gModalOwnerSel)_gModalOwnerSel.set(g?.employee_id?String(g.employee_id):'');
+    $('gPatternIn').value=g?.pattern||'';
+    // set type btn
+    const btns=$('gTypeSwitch').querySelectorAll('.g-type-btn');
+    btns.forEach(b=>{b.classList.toggle('active',b.dataset.type===(g?.type||'П'));});
     $('goalModal').style.display='flex';
     setTimeout(()=>$('gTitleIn').focus(),50);
   };
@@ -2403,15 +2434,12 @@
   window.goalSave=async function(){
     const title=$('gTitleIn').value.trim();
     if(!title){$('gTitleIn').focus();return;}
+    const activeBtn=$('gTypeSwitch').querySelector('.g-type-btn.active');
     const payload={
       title,
-      description:$('gDescIn').value.trim()||null,
-      category:$('gCatIn').value.trim()||null,
-      progress:parseInt($('gProgIn').value)||0,
-      due_date:$('gDueIn').value||null,
-      status:_gModalStatusSel?.get()||'draft',
-      priority:_gModalPriorSel?.get()||'medium',
-      employee_id:_gModalOwnerSel?.get()||null,
+      pattern:$('gPatternIn').value.trim()||null,
+      type:activeBtn?.dataset.type||'П',
+      type_color:activeBtn?.dataset.color||'#F59E0B',
     };
     const res=goalsEdit
       ?await db.from('goals').update(payload).eq('id',goalsEdit)
@@ -2423,10 +2451,67 @@
 
   window.goalDelete=async function(){
     if(!goalsEdit)return;
-    if(!confirm('Видалити ціль?'))return;
+    if(!confirm('Видалити ціль та всі її індикатори?'))return;
+    await db.from('goal_indicators').delete().eq('goal_id',goalsEdit);
     await db.from('goals').delete().eq('id',goalsEdit);
     goalCloseModal();
     await goalsLoad();
+  };
+
+  /* ===== Indicators ===== */
+  window.indOpen=function(id,goalId){
+    indEdit=id||null;
+    _indGoalId=goalId;
+    $('indModalTitle').textContent=id?'Редагувати індикатор':'Новий індикатор';
+    $('indDelBtn').style.display=id?'':'none';
+    const inds=goalsInds[goalId]||[];
+    const i=id?inds.find(x=>String(x.id)===String(id)):null;
+    $('iNameIn').value=i?.name||'';
+    $('iBaseIn').value=i?.baseline||'';
+    $('iBaseDateIn').value=i?.baseline_date||'';
+    $('iTargetIn').value=i?.target||'';
+    $('iTargetDateIn').value=i?.target_date||'';
+    $('iCurIn').value=i?.current_value||'';
+    $('iProgIn').value=i?.progress||0;
+    $('iProgVal').textContent=i?.progress||0;
+    $('iCommentIn').value=i?.comment||'';
+    $('indModal').style.display='flex';
+    setTimeout(()=>$('iNameIn').focus(),50);
+  };
+
+  window.indCloseModal=function(){$('indModal').style.display='none';};
+  $('indModal').addEventListener('click',function(e){if(e.target===this)indCloseModal();});
+
+  window.indSave=async function(){
+    const name=$('iNameIn').value.trim();
+    if(!name){$('iNameIn').focus();return;}
+    const payload={
+      goal_id:_indGoalId,
+      name,
+      baseline:$('iBaseIn').value.trim()||null,
+      baseline_date:$('iBaseDateIn').value||null,
+      target:$('iTargetIn').value.trim()||null,
+      target_date:$('iTargetDateIn').value||null,
+      current_value:$('iCurIn').value.trim()||null,
+      progress:parseInt($('iProgIn').value)||0,
+      comment:$('iCommentIn').value.trim()||null,
+    };
+    const res=indEdit
+      ?await db.from('goal_indicators').update(payload).eq('id',indEdit)
+      :await db.from('goal_indicators').insert(payload);
+    if(res.error){alert('Помилка: '+res.error.message);return;}
+    indCloseModal();
+    await goalsLoad();
+    document.getElementById('gc-'+_indGoalId)?.classList.add('expanded');
+  };
+
+  window.indDelete=async function(){
+    if(!indEdit)return;
+    if(!confirm('Видалити індикатор?'))return;
+    await db.from('goal_indicators').delete().eq('id',indEdit);
+    indCloseModal();
+    await goalsLoad();
+    document.getElementById('gc-'+_indGoalId)?.classList.add('expanded');
   };
 
   /* ===== Компанія: tabs ===== */
