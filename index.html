@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
   /* ============================================================
      БРЕНД — змініть тут, щоб підставити точні фірмові значення
@@ -424,7 +425,27 @@
   .modal input{width:100%;font:inherit;font-size:14px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--ink);outline:none;background:var(--card)}
   .modal input:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-tint)}
   .modal input[type="date"]{color-scheme:light;cursor:pointer}
-  .modal input[type="date"]::-webkit-calendar-picker-indicator{opacity:.5;cursor:pointer;filter:var(--date-icon-filter,none)}
+  .modal input[type="date"]::-webkit-calendar-picker-indicator{display:none}
+  /* ── Flatpickr override ── */
+  .flatpickr-calendar{font-family:'Manrope',sans-serif;border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 32px rgba(27,23,20,.12);padding:10px;background:var(--card)}
+  .flatpickr-months{padding:0 4px 6px;align-items:center}
+  .flatpickr-month{color:var(--ink);fill:var(--ink)}
+  .flatpickr-current-month{font-size:14px;font-weight:700;color:var(--ink)}
+  .flatpickr-current-month select,.flatpickr-current-month input{color:var(--ink);font-weight:700}
+  .flatpickr-prev-month svg,.flatpickr-next-month svg{fill:var(--muted)}
+  .flatpickr-prev-month:hover svg,.flatpickr-next-month:hover svg{fill:var(--brand)}
+  .flatpickr-weekdays{background:none}
+  .flatpickr-weekday{color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase}
+  .flatpickr-day{border-radius:8px;color:var(--ink);font-size:13px;height:34px;line-height:34px;width:34px;max-width:34px}
+  .flatpickr-day:hover{background:var(--brand-tint);border-color:transparent;color:var(--brand)}
+  .flatpickr-day.today{border-color:var(--brand);color:var(--brand);font-weight:700}
+  .flatpickr-day.today:hover{background:var(--brand-tint)}
+  .flatpickr-day.selected,.flatpickr-day.selected:hover{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:700}
+  .flatpickr-day.prevMonthDay,.flatpickr-day.nextMonthDay{color:var(--muted);opacity:.5}
+  .flatpickr-innerContainer{border:none}
+  .flatpickr-rContainer{width:100%}
+  .dayContainer{width:100%;min-width:unset;max-width:unset}
+  .flatpickr-days{width:100%}
   .modal-sel:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-tint)}
   .modal input:focus{border-color:var(--brand)}
   .modal select{width:100%;font:inherit;font-size:14px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--ink);outline:none;background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%236B6560' stroke-width='2.2' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;-webkit-appearance:none;appearance:none;padding-right:32px}
@@ -453,6 +474,8 @@
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/uk.js"></script>
 </head>
 <body>
 <div class="auth-scrim open" id="authScrim">
@@ -1334,6 +1357,7 @@
   document.getElementById('kindModal').addEventListener('click',e=>{if(e.target.id==='kindModal')kindCloseModal();});
   document.getElementById('orgName').addEventListener('keydown',e=>{if(e.key==='Enter')orgSave();});
   [$('empLastName'),$('empFirstName'),$('empPatronymic')].forEach(el=>el.addEventListener('keydown',e=>{if(e.key==='Enter')empSave();}));
+  const _fpBirth = flatpickr($('empBirthdate'),{locale:'uk',dateFormat:'Y-m-d',altInput:true,altFormat:'d.m.Y',allowInput:true,disableMobile:true});
   document.getElementById('typeName').addEventListener('keydown',e=>{if(e.key==='Enter')typeSave();});
   document.getElementById('kindName').addEventListener('keydown',e=>{if(e.key==='Enter')kindSave();});
 
