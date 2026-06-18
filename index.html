@@ -525,9 +525,12 @@
   .mx-tags-add{display:inline-flex;align-items:center;gap:4px;background:transparent;border:1.5px dashed var(--line);border-radius:6px;padding:3px 10px;font-size:12px;font-weight:600;color:var(--slate);cursor:pointer;transition:border-color .12s,color .12s}
   .mx-tags-add:hover{border-color:var(--brand);color:var(--brand)}
   .mx-tags-drop{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(27,23,20,.12);z-index:100;max-height:260px;display:flex;flex-direction:column}
-  .mx-tags-search{padding:8px 10px;border-bottom:1px solid var(--line);flex:none}
-  .mx-tags-search input{width:100%;border:1px solid var(--line);border-radius:7px;padding:6px 10px;font-size:12.5px;font-family:inherit;outline:none;background:var(--page)}
+  .mx-tags-search{padding:8px 10px;border-bottom:1px solid var(--line);flex:none;position:relative;display:flex;align-items:center;gap:6px}
+  .mx-tags-search input{flex:1;border:1px solid var(--line);border-radius:7px;padding:6px 10px;font-size:12.5px;font-family:inherit;outline:none;background:var(--page);color:var(--ink)}
   .mx-tags-search input:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-tint)}
+  .mx-tags-search-clear{width:22px;height:22px;border-radius:50%;border:none;background:var(--line);color:var(--slate);font-size:14px;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;flex:none;padding:0;transition:background .12s,color .12s}
+  .mx-tags-search-clear:hover{background:var(--brand);color:#fff}
+  .mx-tags-search-clear.visible{display:flex}
   .mx-tags-list{overflow-y:auto;flex:1;scrollbar-width:thin;scrollbar-color:var(--brand-tint-2) transparent}
   .mx-tags-drop::-webkit-scrollbar{width:5px}.mx-tags-drop::-webkit-scrollbar-thumb{background:var(--brand-tint-2);border-radius:10px}
   .mx-code-row-tags{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:.5px solid var(--line);position:relative}
@@ -552,7 +555,7 @@
     flex:0 0 16px;width:16px;height:16px;margin:0;padding:0;
     border-radius:5px;border:1.5px solid var(--line);background:var(--surface);
     cursor:pointer;transition:border-color .12s,background .12s;
-    position:relative;
+    position:relative;align-self:center;
   }
   .mx-urow input[type=checkbox]:checked{background:var(--brand);border-color:var(--brand)}
   .mx-urow input[type=checkbox]:checked::after{
@@ -562,7 +565,9 @@
     transform:rotate(-45deg);display:block;
   }
   .mx-urow:hover input[type=checkbox]{border-color:var(--brand)}
-  .mx-urow-name{flex:1;min-width:0;line-height:1.3}
+  [data-theme="dark"] .mx-urow input[type=checkbox]{background:var(--page);border-color:var(--muted)}
+  [data-theme="dark"] .mx-urow input[type=checkbox]:checked{background:var(--brand);border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-tint)}
+  .mx-urow-name{flex:1;min-width:0;line-height:1.3;align-self:center}
   .mx-urow-parent{font-weight:700;color:var(--ink)}
   .mx-urow-child{color:var(--slate)}
 
@@ -1898,7 +1903,7 @@
           '<span class="mx-cb '+codeClass(code)+'" style="flex:none">'+esc(code)+'</span>'+
           '<div class="mx-tags-row" id="mxTagsArea_'+code+'"></div>'+
           '<div class="mx-tags-drop" id="mxTagsDrop_'+code+'" style="display:none">'+
-            '<div class="mx-tags-search"><input placeholder="Пошук підрозділу…" oninput="mxTagsFilter(\''+code+'\',this.value)" id="mxTagsSearch_'+code+'"></div>'+
+            '<div class="mx-tags-search"><input placeholder="Пошук підрозділу…" oninput="mxTagsSearchInput(\''+code+'\',this)" id="mxTagsSearch_'+code+'"><button class="mx-tags-search-clear" id="mxTagsClear_'+code+'" onclick="mxTagsSearchClear(\''+code+'\')" tabindex="-1">×</button></div>'+
             '<div class="mx-tags-list" id="mxTagsList_'+code+'">'+units.map(u=>mxUnitRow(u,code)).join('')+'</div>'+
           '</div>'+
         '</div>'
@@ -1971,6 +1976,18 @@
       const name=row.querySelector('.mx-urow-name');
       row.style.display=(!lq||(name&&name.textContent.toLowerCase().includes(lq)))?'':'none';
     });
+  };
+  window.mxTagsSearchInput=function(code,inp){
+    mxTagsFilter(code,inp.value);
+    const btn=$('mxTagsClear_'+code);
+    if(btn)btn.classList.toggle('visible',inp.value.length>0);
+  };
+  window.mxTagsSearchClear=function(code){
+    const inp=$('mxTagsSearch_'+code);
+    if(inp){inp.value='';inp.focus();}
+    mxTagsFilter(code,'');
+    const btn=$('mxTagsClear_'+code);
+    if(btn)btn.classList.remove('visible');
   };
   window.mxTagRemove=function(code,uid){
     const cb=document.querySelector('[data-code="'+code+'"][data-uid="'+uid+'"]');
