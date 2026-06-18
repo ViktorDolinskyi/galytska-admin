@@ -34,6 +34,76 @@
     --shadow: 0 1px 2px rgba(27,23,20,.04), 0 8px 24px rgba(27,23,20,.05);
   }
 
+  /* ===== ТЕМНА ТЕМА ===== */
+  [data-theme="dark"]{
+    --brand:        #E03427;
+    --brand-dark:   #C02820;
+    --brand-tint:   #3A1410;
+    --brand-tint-2: #4F1A15;
+
+    --ink:    #F0EDE9;
+    --slate:  #B8B2AC;
+    --muted:  #7A746E;
+    --line:   #2E2B28;
+    --surface:#252220;
+    --page:   #19171A;
+
+    --ok:    #34A868;  --ok-bg:#0F2E1C;
+    --warn:  #D4883B;  --warn-bg:#2C1E0A;
+    --info:  #4A8FD4;  --info-bg:#0E1E32;
+
+    --shadow: 0 1px 3px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.4);
+  }
+  [data-theme="dark"] .auth-scrim{background:#19171A}
+  [data-theme="dark"] .auth-card{background:#252220;border-color:#2E2B28}
+  [data-theme="dark"] input,[data-theme="dark"] textarea,[data-theme="dark"] select{background:#1E1C1A!important;color:var(--ink)!important;border-color:var(--line)!important}
+  [data-theme="dark"] .flatpickr-calendar{background:#252220;border-color:#2E2B28;color:#F0EDE9}
+  [data-theme="dark"] .flatpickr-day:hover,[data-theme="dark"] .flatpickr-day.today{background:#2E2B28;color:#F0EDE9}
+  [data-theme="dark"] .flatpickr-day.selected{background:var(--brand);border-color:var(--brand)}
+  [data-theme="dark"] .flatpickr-months,.flatpickr-weekdays{background:#252220!important;color:#B8B2AC!important}
+  [data-theme="dark"] .numInputWrapper input,[data-theme="dark"] .flatpickr-time input{background:#1E1C1A!important}
+  [data-theme="dark"] .modal-scrim{background:rgba(0,0,0,.65)}
+  [data-theme="dark"] .modal{background:#252220;border:1px solid #2E2B28}
+
+  /* Системна тема */
+  @media (prefers-color-scheme: dark){
+    [data-theme="system"]{
+      --brand:        #E03427;
+      --brand-dark:   #C02820;
+      --brand-tint:   #3A1410;
+      --brand-tint-2: #4F1A15;
+      --ink:    #F0EDE9;
+      --slate:  #B8B2AC;
+      --muted:  #7A746E;
+      --line:   #2E2B28;
+      --surface:#252220;
+      --page:   #19171A;
+      --ok:    #34A868;  --ok-bg:#0F2E1C;
+      --warn:  #D4883B;  --warn-bg:#2C1E0A;
+      --info:  #4A8FD4;  --info-bg:#0E1E32;
+      --shadow: 0 1px 3px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.4);
+    }
+    [data-theme="system"] .auth-scrim{background:#19171A}
+    [data-theme="system"] .auth-card{background:#252220;border-color:#2E2B28}
+    [data-theme="system"] input,[data-theme="system"] textarea{background:#1E1C1A!important;color:var(--ink)!important;border-color:var(--line)!important}
+    [data-theme="system"] .modal-scrim{background:rgba(0,0,0,.65)}
+    [data-theme="system"] .modal{background:#252220;border:1px solid #2E2B28}
+  }
+
+  /* Стилі перемикача теми */
+  .theme-options{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+  .theme-opt{
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    padding:12px 20px;border-radius:12px;border:2px solid var(--line);
+    cursor:pointer;transition:border-color .15s,background .15s;
+    background:var(--page);min-width:100px;
+  }
+  .theme-opt:hover{border-color:var(--brand-tint-2)}
+  .theme-opt.active{border-color:var(--brand);background:var(--brand-tint)}
+  .theme-opt svg{width:36px;height:36px}
+  .theme-opt span{font-size:12.5px;font-weight:600;color:var(--slate)}
+  .theme-opt.active span{color:var(--brand)}
+
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
   body{
@@ -1447,6 +1517,45 @@
           </div>
         </div>
         <div class="two-col">
+          <div class="card">
+            <div class="card-head"><h3>Зовнішній вигляд</h3></div>
+            <div style="padding:0 0 4px">
+              <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Тема інтерфейсу</div>
+              <div class="theme-options">
+                <div class="theme-opt" id="themeOptLight" onclick="setTheme('light')" title="Світла тема">
+                  <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="36" height="36" rx="8" fill="#F7F5F2" stroke="#ECE7E2" stroke-width="1.5"/>
+                    <rect x="6" y="6" width="24" height="16" rx="4" fill="#FFFFFF" stroke="#ECE7E2" stroke-width="1"/>
+                    <rect x="8" y="8" width="8" height="5" rx="2" fill="#D52B1E" opacity=".7"/>
+                    <rect x="8" y="15" width="20" height="2" rx="1" fill="#ECE7E2"/>
+                    <rect x="8" y="27" width="10" height="3" rx="1.5" fill="#D52B1E"/>
+                  </svg>
+                  <span>Світла</span>
+                </div>
+                <div class="theme-opt" id="themeOptDark" onclick="setTheme('dark')" title="Темна тема">
+                  <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="36" height="36" rx="8" fill="#19171A" stroke="#2E2B28" stroke-width="1.5"/>
+                    <rect x="6" y="6" width="24" height="16" rx="4" fill="#252220" stroke="#2E2B28" stroke-width="1"/>
+                    <rect x="8" y="8" width="8" height="5" rx="2" fill="#E03427" opacity=".8"/>
+                    <rect x="8" y="15" width="20" height="2" rx="1" fill="#2E2B28"/>
+                    <rect x="8" y="27" width="10" height="3" rx="1.5" fill="#E03427"/>
+                  </svg>
+                  <span>Темна</span>
+                </div>
+                <div class="theme-opt" id="themeOptSystem" onclick="setTheme('system')" title="Як у системі">
+                  <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="18" height="36" rx="0" fill="#F7F5F2"/><rect x="18" width="18" height="36" fill="#19171A"/>
+                    <rect width="36" height="36" rx="8" fill="none" stroke="#9B948E" stroke-width="1.5"/>
+                    <rect x="6" y="6" width="11" height="16" rx="3" fill="#FFFFFF" stroke="#ECE7E2" stroke-width="1"/>
+                    <rect x="19" y="6" width="11" height="16" rx="3" fill="#252220" stroke="#2E2B28" stroke-width="1"/>
+                    <rect x="8" y="27" width="8" height="3" rx="1.5" fill="#D52B1E"/>
+                    <rect x="20" y="27" width="8" height="3" rx="1.5" fill="#E03427"/>
+                  </svg>
+                  <span>Системна</span>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="card">
             <div class="card-head"><h3>Розділи налаштувань</h3></div>
             <div class="list-line" style="cursor:pointer" onclick="document.querySelector('[data-view=dicts]').click()">
@@ -3039,6 +3148,20 @@
   db.auth.onAuthStateChange((_e,session)=>setAuth(session));
   document.getElementById('authPass').addEventListener('keydown',e=>{ if(e.key==='Enter') authSignIn(); });
   (async()=>{ const { data:{ session } } = await db.auth.getSession(); setAuth(session); })();
+
+  /* ===== ТЕМА ===== */
+  window.setTheme=function(t){
+    document.documentElement.dataset.theme=t;
+    localStorage.setItem('gs_theme',t);
+    ['light','dark','system'].forEach(k=>{
+      const el=document.getElementById('themeOpt'+k.charAt(0).toUpperCase()+k.slice(1));
+      if(el)el.classList.toggle('active',k===t);
+    });
+  };
+  (function(){
+    const saved=localStorage.getItem('gs_theme')||'light';
+    setTheme(saved);
+  })();
 
 
 </script>
