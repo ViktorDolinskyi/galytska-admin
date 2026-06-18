@@ -709,7 +709,7 @@
           <summary><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18l6-6-6-6"/></svg>Легенда кодів</summary>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:12px">
 
-            <div>
+            <div id="legendPov">
               <div style="font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:10px">Матриця повноважень</div>
               <table class="legend-table">
                 <tbody>
@@ -722,7 +722,7 @@
               </table>
             </div>
 
-            <div>
+            <div id="legendResp" style="display:none">
               <div style="font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:10px">Матриця відповідальності</div>
               <table class="legend-table">
                 <tbody>
@@ -1229,7 +1229,10 @@
   $('mxSeg').addEventListener('click',e=>{
     const b=e.target.closest('button'); if(!b)return;
     [...$('mxSeg').children].forEach(x=>x.classList.toggle('on',x===b));
-    mxSet=b.dataset.set; reloadSet();
+    mxSet=b.dataset.set;
+    $('legendPov').style.display=mxSet==='pov'?'':'none';
+    $('legendResp').style.display=mxSet==='resp'?'':'none';
+    reloadSet();
   });
   ['mxSource','mxCat'].forEach(id=>$(id).addEventListener('change',()=>render(true)));
   $('mxSearch').addEventListener('input',()=>render(true));
