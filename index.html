@@ -116,6 +116,9 @@
   }
   .app.sb-collapsed .nav-item.active::before{left:-8px}
   .nav-item:focus-visible{outline:2px solid var(--brand); outline-offset:2px;}
+  .nav-sub{padding-left:28px; font-size:13px;}
+  .nav-sub svg{width:15px; height:15px;}
+  .app.sb-collapsed .nav-sub{padding-left:9px;}
   /* Tooltip при collapsed */
   .app.sb-collapsed .nav-item{position:relative}
   .app.sb-collapsed .nav-item:hover::after{
@@ -412,6 +415,9 @@
   .modal label{font-size:12px;font-weight:700;color:var(--slate);display:block;margin-bottom:6px}
   .modal input{width:100%;font:inherit;font-size:14px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--ink);outline:none}
   .modal input:focus{border-color:var(--brand)}
+  .modal select{width:100%;font:inherit;font-size:14px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--ink);outline:none;background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%236B6560' stroke-width='2.2' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;-webkit-appearance:none;appearance:none;padding-right:32px}
+  .modal select:focus{border-color:var(--brand)}
+  .org-row{cursor:pointer}
   .modal .foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px}
 
 
@@ -494,6 +500,16 @@
       <button class="nav-item" data-view="analytics" data-label="Аналітика">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M7 15l3-4 3 3 4-6"/></svg>
         <span class="nav-label-txt">Аналітика</span>
+      </button>
+
+      <div class="nav-label">Система</div>
+      <button class="nav-item" data-view="settings" data-label="Налаштування">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span class="nav-label-txt">Налаштування</span>
+      </button>
+      <button class="nav-item nav-sub" data-view="dicts" data-label="Довідники">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span class="nav-label-txt">Довідники</span>
       </button>
     </nav>
 
@@ -715,6 +731,19 @@
           <div class="body">
             <div><label>Назва підрозділу</label><input id="orgName" placeholder="Напр., Відділ маркетингу" /></div>
             <div><label>Керівник (необов'язково)</label><input id="orgHead" placeholder="Напр., Іваненко І. І." /></div>
+            <div><label>Тип структурної одиниці</label><select id="orgType" style="width:100%;font:inherit;font-size:14px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--ink);outline:none">
+              <option value="">— Не вказано —</option>
+              <option value="Департамент">Департамент</option>
+              <option value="Відділ">Відділ</option>
+              <option value="Підрозділ">Підрозділ</option>
+              <option value="Сектор">Сектор</option>
+              <option value="Група">Група</option>
+              <option value="Ланка">Ланка</option>
+              <option value="Блок">Блок</option>
+              <option value="Служба">Служба</option>
+              <option value="Комітет">Комітет</option>
+              <option value="Офіс">Офіс</option>
+            </select></div>
             <div><label>Підпорядковується</label><select id="orgParentSel" style="width:100%;font:inherit;font-size:14px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--ink);outline:none"></select></div>
           </div>
           <div class="foot">
@@ -789,6 +818,65 @@
           <div class="kpi"><div class="k-top">Завершені звіти</div><div class="k-val">182</div><div class="k-sub">за тиждень</div></div>
         </div>
       </section>
+
+      <!-- ===== НАЛАШТУВАННЯ ===== -->
+      <section class="view" id="view-settings">
+        <div class="page-head">
+          <div>
+            <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>Налаштування</h2>
+            <p>Конфігурація системи, довідники та параметри обліку.</p>
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-head"><h3>Розділи налаштувань</h3></div>
+            <div class="list-line" style="cursor:pointer" onclick="document.querySelector('[data-view=dicts]').click()">
+              <span class="org-ic" style="width:32px;height:32px;border-radius:8px;background:var(--brand-tint);color:var(--brand);display:grid;place-items:center;flex:none">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px;stroke-width:2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              </span>
+              <div style="flex:1;min-width:0"><b style="font-size:13.5px;font-weight:700">Довідники</b><div style="font-size:12px;color:var(--muted);margin-top:2px">Типи підрозділів, категорії, статуси</div></div>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px;stroke-width:2;color:var(--muted)"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== ДОВІДНИКИ ===== -->
+      <section class="view" id="view-dicts">
+        <div class="page-head">
+          <div>
+            <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>Довідники</h2>
+            <p>Класифікатори та довідкові дані системи.</p>
+          </div>
+          <button class="btn primary" onclick="dictAddItem()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Додати значення</button>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h3>Типи структурних одиниць</h3>
+            <span class="badge info" id="dictCount">0 значень</span>
+          </div>
+          <table>
+            <thead><tr><th>Назва</th><th>Опис</th><th></th></tr></thead>
+            <tbody id="dictBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- модалка довідника -->
+      <div class="modal-scrim" id="dictModal">
+        <div class="modal">
+          <h3 id="dictModalTitle">Нове значення</h3>
+          <div class="body">
+            <div><label>Назва</label><input id="dictName" placeholder="Напр., Департамент" /></div>
+            <div><label>Опис (необов'язково)</label><input id="dictDesc" placeholder="Коротке пояснення" /></div>
+          </div>
+          <div class="foot">
+            <button class="btn" onclick="dictCloseModal()">Скасувати</button>
+            <button class="btn primary" onclick="dictSave()">Зберегти</button>
+          </div>
+        </div>
+      </div>
 
     </div>
   </div>
@@ -1070,10 +1158,11 @@
       :'<button class="org-toggle leaf"></button>';
     const lvlLabel=LEVEL_LABELS[Math.min(lvl,LEVEL_LABELS.length-1)];
     const cnt=has?('<span class="org-count">'+kids.length+'</span>'):'';
-    const row='<div class="org-row" data-lvl="'+Math.min(lvl,5)+'" id="orgrow-'+n.id+'">'+tog+
+    const typeBadge=n.type?'<span class="org-depth-badge" style="background:var(--brand-tint);color:var(--brand);border-color:var(--brand-tint-2)">'+orgEsc(n.type)+'</span>':'<span class="org-depth-badge">'+lvlLabel+'</span>';
+    const row='<div class="org-row" data-lvl="'+Math.min(lvl,5)+'" id="orgrow-'+n.id+'" onclick="orgRowClick(event,'+n.id+')">'+tog+
       '<span class="org-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor">'+icon+'</svg></span>'+
       '<span class="org-info"><b>'+orgEsc(n.name)+'</b>'+(n.head?'<span>'+orgEsc(n.head)+'</span>':'<span>Керівника не призначено</span>')+'</span>'+
-      '<span class="org-depth-badge">'+lvlLabel+'</span>'+
+      typeBadge+
       cnt+
       '<span class="org-acts">'+
         '<button class="ico-btn" title="Додати підрозділ" onclick="orgOpen('+n.id+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg></button>'+
@@ -1156,6 +1245,74 @@
 
   document.getElementById('orgModal').addEventListener('click',e=>{if(e.target.id==='orgModal')orgCloseModal();});
   document.getElementById('orgName').addEventListener('keydown',e=>{if(e.key==='Enter')orgSave();});
+  document.getElementById('dictModal').addEventListener('click',e=>{if(e.target.id==='dictModal')dictCloseModal();});
+
+  /* ===== Довідники ===== */
+  let dictEdit=null;
+  async function dictLoad(){
+    const {data,error}=await db.from('dict_unit_types').select('*').order('name');
+    if(error){console.error(error);return;}
+    const tbody=document.getElementById('dictBody');
+    document.getElementById('dictCount').textContent=(data||[]).length+' значень';
+    tbody.innerHTML=(data||[]).map(r=>
+      `<tr>
+        <td class="t-name">${orgEsc(r.name)}</td>
+        <td style="color:var(--slate);font-size:13px">${orgEsc(r.description||'—')}</td>
+        <td><div class="row-act">
+          <button class="ico-btn" onclick="dictEdit_open(${r.id},'${orgEsc(r.name)}','${orgEsc(r.description||'')}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+          </button>
+          <button class="ico-btn del" onclick="dictDel(${r.id})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+          </button>
+        </div></td>
+      </tr>`
+    ).join('')||'<tr><td colspan="3" class="empty">Довідник порожній</td></tr>';
+  }
+  window.dictAddItem=()=>{
+    dictEdit=null;
+    document.getElementById('dictModalTitle').textContent='Нове значення';
+    document.getElementById('dictName').value='';
+    document.getElementById('dictDesc').value='';
+    document.getElementById('dictModal').classList.add('open');
+    document.getElementById('dictName').focus();
+  };
+  window.dictEdit_open=(id,name,desc)=>{
+    dictEdit=id;
+    document.getElementById('dictModalTitle').textContent='Редагувати значення';
+    document.getElementById('dictName').value=name;
+    document.getElementById('dictDesc').value=desc;
+    document.getElementById('dictModal').classList.add('open');
+    document.getElementById('dictName').focus();
+  };
+  window.dictCloseModal=()=>document.getElementById('dictModal').classList.remove('open');
+  window.dictSave=async()=>{
+    const name=document.getElementById('dictName').value.trim();
+    const description=document.getElementById('dictDesc').value.trim();
+    if(!name){document.getElementById('dictName').focus();return;}
+    const res=dictEdit!==null
+      ?await db.from('dict_unit_types').update({name,description}).eq('id',dictEdit)
+      :await db.from('dict_unit_types').insert({name,description});
+    if(res.error){alert('Помилка: '+res.error.message);return;}
+    dictCloseModal();
+    await dictLoad();
+    await syncDictToOrgType();
+  };
+  window.dictDel=async(id)=>{
+    if(!confirm('Видалити це значення?'))return;
+    const {error}=await db.from('dict_unit_types').delete().eq('id',id);
+    if(error){alert('Помилка: '+error.message);return;}
+    await dictLoad();
+    await syncDictToOrgType();
+  };
+  async function syncDictToOrgType(){
+    const {data}=await db.from('dict_unit_types').select('name').order('name');
+    const sel=document.getElementById('orgType');
+    const cur=sel.value;
+    sel.innerHTML='<option value="">— Не вказано —</option>'+
+      (data||[]).map(r=>`<option value="${orgEsc(r.name)}">${orgEsc(r.name)}</option>`).join('');
+    sel.value=cur;
+  }
   /* ====== Supabase + вхід (Варіант Б) ====== */
   const SUPABASE_URL = 'https://jomergnpqsjufqpehvyk.supabase.co';   // ← встав свій Project URL
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvbWVyZ25wcXNqdWZxcGVodnlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MTA3NjEsImV4cCI6MjA5NzI4Njc2MX0.uFCvBwl3osBS9AIbMDqefRH87PQH1Xqqff07-d2lsTM';              // ← встав свій anon/public key
@@ -1166,7 +1323,7 @@
     const { data, error } = await db.from('company_units').select('*').order('sort').order('id');
     if(error){ console.error(error); alert('Помилка завантаження: '+error.message); return; }
     const map={}, roots=[];
-    data.forEach(r=>{ map[r.id]={id:r.id,name:r.name,head:r.head||'',children:[],collapsed:false}; });
+    data.forEach(r=>{ map[r.id]={id:r.id,name:r.name,head:r.head||'',type:r.type||'',children:[],collapsed:false}; });
     data.forEach(r=>{ const n=map[r.id]; if(r.parent_id&&map[r.parent_id]) map[r.parent_id].children.push(n); else roots.push(n); });
     orgData=roots; orgRender();
   }
@@ -1174,12 +1331,13 @@
   window.orgSave = async ()=>{
     const name=document.getElementById('orgName').value.trim();
     const head=document.getElementById('orgHead').value.trim();
+    const type=document.getElementById('orgType').value.trim();
     const pidVal=document.getElementById('orgParentSel').value;
     const newParId=pidVal===''?null:parseInt(pidVal);
     if(!name){ document.getElementById('orgName').focus(); return; }
     const res = orgEdit!==null
-      ? await db.from('company_units').update({name,head,parent_id:newParId}).eq('id',orgEdit)
-      : await db.from('company_units').insert({name,head,parent_id:newParId});
+      ? await db.from('company_units').update({name,head,type,parent_id:newParId}).eq('id',orgEdit)
+      : await db.from('company_units').insert({name,head,type,parent_id:newParId});
     if(res.error){ alert('Помилка збереження: '+res.error.message); return; }
     orgCloseModal(); await orgLoad();
   };
@@ -1211,6 +1369,8 @@
       document.querySelectorAll('.js-user').forEach(el=>el.textContent=session.user.email);
       orgLoad();
       mxLoad();
+      dictLoad();
+      syncDictToOrgType();
     } else {
       authScrim.classList.add('open');
     }
