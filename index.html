@@ -852,6 +852,24 @@
             <span style="flex:1"></span>
             <button class="btn" onclick="orgExport()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>Зберегти у файл</button>
           </div>
+          <div class="org-toolbar" style="margin-top:-8px">
+            <div class="search" style="width:280px">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input id="orgSearch" placeholder="Пошук підрозділу…" oninput="orgRender()"/>
+            </div>
+            <select id="orgFilterStatus" class="modal-sel" style="height:36px;font-size:13px;min-width:140px" onchange="orgRender()">
+              <option value="">Будь-який статус</option>
+              <option value="active">Активний</option>
+              <option value="inactive">Неактивний</option>
+              <option value="acting">В.О.</option>
+            </select>
+            <select id="orgFilterType" class="modal-sel" style="height:36px;font-size:13px;min-width:160px" onchange="orgRender()">
+              <option value="">Будь-який тип</option>
+            </select>
+            <select id="orgFilterKind" class="modal-sel" style="height:36px;font-size:13px;min-width:160px" onchange="orgRender()">
+              <option value="">Будь-який вид</option>
+            </select>
+          </div>
           <ul class="org-tree" id="orgTree"></ul>
         </div>
 
@@ -1528,8 +1546,38 @@
     if(has&&!n.collapsed){html+='<ul>'+kids.map(c=>orgNodeHtml(c,lvl+1)).join('')+'</ul>';}
     return html+'</li>';
   }
+  function orgFlatAll(list,lvl,out){list=list||orgData;lvl=lvl||0;out=out||[];list.forEach(n=>{out.push({n,lvl});orgFlatAll(n.children||[],lvl+1,out);});return out;}
+  function orgGetFilters(){
+    const q=(document.getElementById('orgSearch')||{value:''}).value.trim().toLowerCase();
+    const st=(document.getElementById('orgFilterStatus')||{value:''}).value;
+    const tp=(document.getElementById('orgFilterType')||{value:''}).value;
+    const kd=(document.getElementById('orgFilterKind')||{value:''}).value;
+    return{q,st,tp:tp?+tp:null,kd:kd?+kd:null};
+  }
+  function orgMatchFilter(n,f){
+    if(f.q&&!n.name.toLowerCase().includes(f.q))return false;
+    if(f.st&&(n.status||'active')!==f.st)return false;
+    if(f.tp&&n.unit_type_id!==f.tp)return false;
+    if(f.kd&&n.unit_kind_id!==f.kd)return false;
+    return true;
+  }
+  function orgFillFilterSelects(){
+    const ts=document.getElementById('orgFilterType');
+    if(ts)ts.innerHTML='<option value="">Будь-який тип</option>'+dictTypes.map(r=>'<option value="'+r.id+'">'+orgEsc(r.name)+'</option>').join('');
+    const ks=document.getElementById('orgFilterKind');
+    if(ks)ks.innerHTML='<option value="">Будь-який вид</option>'+dictKinds.map(r=>'<option value="'+r.id+'">'+orgEsc(r.name)+'</option>').join('');
+  }
   function orgRender(){
-    document.getElementById('orgTree').innerHTML=orgData.map(n=>orgNodeHtml(n,0)).join('');
+    const f=orgGetFilters();
+    const hasFilter=f.q||f.st||f.tp||f.kd;
+    if(hasFilter){
+      const flat=orgFlatAll();
+      const match=flat.filter(({n})=>orgMatchFilter(n,f));
+      const html=match.map(({n,lvl})=>{const saved=n.children;n.children=[];const h=orgNodeHtml(n,lvl);n.children=saved;return h;}).join('');
+      document.getElementById('orgTree').innerHTML=html||'<li style="padding:24px 16px;color:var(--muted);font-size:13px">Нічого не знайдено</li>';
+    }else{
+      document.getElementById('orgTree').innerHTML=orgData.map(n=>orgNodeHtml(n,0)).join('');
+    }
     let all=0,head=0;
     const walk=l=>l.forEach(n=>{all++;if(n.head||n.employee_id)head++;walk(n.children||[]);});
     walk(orgData);
@@ -1619,7 +1667,7 @@
     ]);
     dictEmps=e.data||[];dictTypes=t.data||[];dictKinds=k.data||[];
     renderEmps();renderTypes();renderKinds();
-    fillOrgModalSelects();
+    fillOrgModalSelects();orgFillFilterSelects();
     orgRender();
   }
 
