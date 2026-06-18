@@ -744,7 +744,7 @@
               <button class="btn primary" onclick="empAdd()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Додати</button>
             </div>
             <table>
-              <thead><tr><th>ПІБ</th><th style="width:80px"></th></tr></thead>
+              <thead><tr><th>ПІБ</th><th style="width:120px">Дата народження</th><th style="width:80px"></th></tr></thead>
               <tbody id="empBody"><tr><td colspan="2" class="empty">Немає записів</td></tr></tbody>
             </table>
           </div>
@@ -801,6 +801,7 @@
             <div><label>Прізвище</label><input id="empLastName" placeholder="Напр., Іваненко" /></div>
             <div><label>Ім'я</label><input id="empFirstName" placeholder="Напр., Іван" /></div>
             <div><label>По батькові</label><input id="empPatronymic" placeholder="Напр., Іванович" /></div>
+            <div><label>Дата народження</label><input id="empBirthdate" type="date" class="modal-sel" /></div>
           </div>
           <div class="foot">
             <button class="btn" onclick="empCloseModal()">Скасувати</button>
@@ -836,11 +837,6 @@
             <div style="display:flex;align-items:center;gap:12px;margin-top:4px">
               <label style="margin:0;white-space:nowrap">Колір</label>
               <input type="color" id="kindColor" value="#2E7D52" style="width:48px;height:36px;border:1px solid var(--line);border-radius:8px;cursor:pointer;padding:2px" />
-              <div style="display:flex;gap:8px;flex-wrap:wrap">
-                <button class="btn" style="padding:4px 10px;font-size:12px" onclick="document.getElementById('kindColor').value='#2E7D52'">Центр прибутку</button>
-                <button class="btn" style="padding:4px 10px;font-size:12px" onclick="document.getElementById('kindColor').value='#B45309'">Сервісний</button>
-                <button class="btn" style="padding:4px 10px;font-size:12px" onclick="document.getElementById('kindColor').value='#B91C1C'">Центр витрат</button>
-              </div>
             </div>
           </div>
           <div class="foot">
@@ -1361,26 +1357,33 @@
     document.getElementById('empCount').textContent=dictEmps.length;
     tbody.innerHTML=dictEmps.map(r=>`<tr>
       <td class="t-name">${orgEsc(empFull(r))}</td>
+      <td style="color:var(--slate);font-size:13px">${r.birthdate?new Date(r.birthdate).toLocaleDateString('uk-UA'):'—'}</td>
       <td><div class="row-act" id="empAct-${r.id}">
         <button class="ico-btn" onclick="empEditOpen(${r.id},${qs(r.last_name||'')},${qs(r.first_name||'')},${qs(r.patronymic||'')})">${_eIco}</button>
         <button class="ico-btn del" onclick="empAskDel(${r.id})">${_dIco}</button>
-      </div></td></tr>`).join('')||'<tr><td colspan="2" class="empty">Немає записів</td></tr>';
+      </div></td></tr>`).join('')||'<tr><td colspan="3" class="empty">Немає записів</td></tr>';
   }
   window.empAskDel=id=>{
     const el=document.getElementById('empAct-'+id);
     el.outerHTML=`<span class="org-confirm" id="empAct-${id}">Видалити? <button class="yes" onclick="empDel(${id})">Так</button><button onclick="renderEmps()">Ні</button></span>`;
   };
-  window.empAdd=()=>{empEdit=null;$('empModalTitle').textContent='Новий співробітник';$('empLastName').value='';$('empFirstName').value='';$('empPatronymic').value='';$('empModal').classList.add('open');$('empLastName').focus();};
-  window.empEditOpen=(id,ln,fn,pat)=>{empEdit=id;$('empModalTitle').textContent='Редагувати';$('empLastName').value=ln;$('empFirstName').value=fn;$('empPatronymic').value=pat;$('empModal').classList.add('open');$('empLastName').focus();};
+  window.empAdd=()=>{empEdit=null;$('empModalTitle').textContent='Новий співробітник';$('empLastName').value='';$('empFirstName').value='';$('empPatronymic').value='';$('empBirthdate').value='';$('empModal').classList.add('open');$('empLastName').focus();};
+  window.empEditOpen=(id,ln,fn,pat)=>{
+    empEdit=id;$('empModalTitle').textContent='Редагувати';
+    $('empLastName').value=ln;$('empFirstName').value=fn;$('empPatronymic').value=pat;
+    const r=dictEmps.find(e=>e.id===id);$('empBirthdate').value=r&&r.birthdate?r.birthdate:'';
+    $('empModal').classList.add('open');$('empLastName').focus();
+  };
   window.empCloseModal=()=>$('empModal').classList.remove('open');
   window.empSave=async()=>{
     const last_name=$('empLastName').value.trim();
     const first_name=$('empFirstName').value.trim();
     const patronymic=$('empPatronymic').value.trim();
+    const birthdate=$('empBirthdate').value||null;
     if(!last_name){$('empLastName').focus();return;}
     const res=empEdit!==null
-      ?await db.from('dict_employees').update({last_name,first_name,patronymic}).eq('id',empEdit)
-      :await db.from('dict_employees').insert({last_name,first_name,patronymic});
+      ?await db.from('dict_employees').update({last_name,first_name,patronymic,birthdate}).eq('id',empEdit)
+      :await db.from('dict_employees').insert({last_name,first_name,patronymic,birthdate});
     if(res.error){alert('Помилка: '+res.error.message);return;}
     empCloseModal();await loadAllDicts();
   };
