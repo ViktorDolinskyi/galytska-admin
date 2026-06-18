@@ -130,7 +130,7 @@
   .app.sb-collapsed .sidebar{width:60px}
   /* Кнопка згортання — position:fixed щоб не обрізалась */
   .sb-collapse-btn{
-    position:fixed;left:calc(var(--sb) - 16px);top:20px;z-index:40;
+    position:fixed;left:calc(var(--sb) - 16px);top:20px;z-index:200;
     width:32px;height:32px;border-radius:50%;
     background:var(--surface);border:1.5px solid var(--line);
     display:grid;place-items:center;cursor:pointer;
@@ -161,7 +161,7 @@
     display:block; font-family:'Unbounded'; font-weight:700;
     font-size:13px; letter-spacing:.04em; color:var(--brand); text-transform:uppercase;
   }
-  .wordmark span{font-size:11px; color:var(--muted); letter-spacing:.06em; text-transform:uppercase;}
+  .wordmark span{font-size:10.5px; color:var(--ink); font-weight:600; letter-spacing:.04em; text-transform:uppercase; white-space:normal; line-height:1.35;}
 
   .nav{padding:14px 12px; display:flex; flex-direction:column; gap:2px; flex:1; overflow:hidden;}
   .app.sb-collapsed .nav{padding:10px 8px}
