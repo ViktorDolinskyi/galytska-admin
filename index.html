@@ -853,23 +853,24 @@
             <span style="flex:1"></span>
             <button class="btn" onclick="orgExport()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>Зберегти у файл</button>
           </div>
-          <div class="org-toolbar" style="margin-top:-8px">
-            <div class="search" style="width:280px">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-              <input id="orgSearch" placeholder="Пошук підрозділу…" oninput="orgRender()"/>
-            </div>
-            <select id="orgFilterStatus" class="modal-sel" style="height:36px;font-size:13px;min-width:140px" onchange="orgRender()">
+          <div class="mx-controls">
+            <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 3H2l8 9.5V19l4 2v-8.5z"/></svg>Фільтр</span>
+            <select id="orgFilterStatus" onchange="orgRender()">
               <option value="">Будь-який статус</option>
               <option value="active">Активний</option>
               <option value="inactive">Неактивний</option>
               <option value="acting">В.О.</option>
             </select>
-            <select id="orgFilterType" class="modal-sel" style="height:36px;font-size:13px;min-width:160px" onchange="orgRender()">
+            <select id="orgFilterType" onchange="orgRender()">
               <option value="">Будь-який тип</option>
             </select>
-            <select id="orgFilterKind" class="modal-sel" style="height:36px;font-size:13px;min-width:160px" onchange="orgRender()">
+            <select id="orgFilterKind" onchange="orgRender()">
               <option value="">Будь-який вид</option>
             </select>
+            <div class="search" style="margin-left:0;width:260px">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input id="orgSearch" placeholder="Пошук підрозділу…" oninput="orgRender()"/>
+            </div>
           </div>
           <ul class="org-tree" id="orgTree"></ul>
         </div>
