@@ -1499,9 +1499,28 @@
       $('mxCatIn').value='';$('mxDescIn').value='';$('mxSlaIn').value='';
     }
     $('mxModal').style.display='flex';
+    setTimeout(()=>{_mxSnapshot=mxGetState();},0);
   };
 
-  window.mxCloseModal=function(){$('mxModal').style.display='none';};
+  let _mxSnapshot=null;
+  function mxGetState(){
+    return JSON.stringify({
+      cat:$('mxCatIn').value,
+      desc:$('mxDescIn').value,
+      sla:$('mxSlaIn').value,
+      checks:[...document.querySelectorAll('#mxCodesWrap input[type=checkbox]')].map(c=>c.checked)
+    });
+  }
+  window.mxCloseModal=function(force){
+    if(!force&&_mxSnapshot!==null&&mxGetState()!==_mxSnapshot){
+      if(!confirm('Є незбережені зміни. Закрити без збереження?'))return;
+    }
+    $('mxModal').style.display='none';
+    _mxSnapshot=null;
+  };
+  $('mxModal').addEventListener('click',function(e){
+    if(e.target===this)mxCloseModal();
+  });
 
   window.mxRowSave=async function(){
     const codes=mxSet==='pov'?['DI','A','P','V','I']:['m','a','o','d','h'];
