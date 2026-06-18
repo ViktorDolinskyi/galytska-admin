@@ -43,25 +43,26 @@
   }
   ::selection{background:var(--brand-tint);}
 
-  .app{display:grid; grid-template-columns:var(--sb) 1fr; min-height:100vh; transition:grid-template-columns .22s ease;}
+  .app{display:grid; grid-template-columns:var(--sb) 1fr; min-height:100vh;}
   .app.sb-collapsed{grid-template-columns:60px 1fr}
 
   /* ---------- Сайдбар ---------- */
   .sidebar{
     background:var(--surface); border-right:1px solid var(--line);
     display:flex; flex-direction:column; position:sticky; top:0; height:100vh;
-    overflow:hidden; transition:width .22s ease; width:var(--sb);
+    transition:width .22s ease; width:var(--sb); min-width:0; overflow:hidden;
   }
   .app.sb-collapsed .sidebar{width:60px}
-  /* Кнопка згортання */
+  /* Кнопка згортання — position:fixed щоб не обрізалась */
   .sb-collapse-btn{
-    position:absolute;top:20px;right:-13px;z-index:10;
+    position:fixed;left:calc(var(--sb) - 13px);top:24px;z-index:40;
     width:26px;height:26px;border-radius:50%;
     background:var(--surface);border:1.5px solid var(--line);
     display:grid;place-items:center;cursor:pointer;
-    color:var(--slate);transition:background .12s,color .12s,transform .22s;
-    box-shadow:0 1px 4px rgba(27,23,20,.1);
+    color:var(--slate);box-shadow:0 1px 4px rgba(27,23,20,.12);
+    transition:left .22s ease,background .12s,color .12s;
   }
+  .app.sb-collapsed .sb-collapse-btn{left:47px}
   .sb-collapse-btn svg{width:13px;height:13px;stroke-width:2.5;transition:transform .22s}
   .sb-collapse-btn:hover{background:var(--brand-tint);color:var(--brand);border-color:var(--brand-tint-2)}
   .app.sb-collapsed .sb-collapse-btn svg{transform:rotate(180deg)}
@@ -101,8 +102,8 @@
   }
   .app.sb-collapsed .nav-item{padding:9px;justify-content:center;gap:0}
   .nav-item svg{width:18px; height:18px; flex:none; stroke-width:1.9;}
-  .nav-item .nav-label-txt{transition:opacity .15s}
-  .app.sb-collapsed .nav-item .nav-label-txt{display:none}
+  .nav-item .nav-label-txt{transition:opacity .18s,max-width .22s;max-width:200px;overflow:hidden;white-space:nowrap;}
+  .app.sb-collapsed .nav-item .nav-label-txt{max-width:0;opacity:0;pointer-events:none}
   .nav-item:hover{background:#FAF7F5; color:var(--ink);}
   .nav-item.active{background:var(--brand-tint); color:var(--brand);}
   .nav-item.active::before{
@@ -243,9 +244,26 @@
   /* мобільне */
   .burger{display:none}
   @media(max-width:880px){
-    .app{grid-template-columns:1fr}
-    .sidebar{position:fixed;z-index:30;width:var(--sb);transform:translateX(-100%);transition:.2s;box-shadow:var(--shadow)}
-    .sidebar.open{transform:none}
+    /* Повністю відновлюємо оригінальний адаптив */
+    .app{grid-template-columns:1fr !important}
+    .sidebar{
+      position:fixed !important;z-index:30;
+      width:var(--sb) !important;
+      transform:translateX(-100%);
+      transition:.2s !important;
+      box-shadow:var(--shadow);
+    }
+    .sidebar.open{transform:none !important}
+    /* Скидаємо collapsed-стан на мобільному */
+    .app.sb-collapsed .sidebar{width:var(--sb) !important}
+    .app.sb-collapsed .wordmark{display:flex !important;opacity:1 !important}
+    .app.sb-collapsed .nav-label{display:block !important}
+    .app.sb-collapsed .nav-item{padding:9px 12px !important;justify-content:flex-start !important;gap:11px !important}
+    .app.sb-collapsed .nav-item .nav-label-txt{max-width:200px !important;opacity:1 !important}
+    .app.sb-collapsed .sb-foot .who{display:block !important;opacity:1 !important}
+    .app.sb-collapsed .sb-foot{flex-direction:row !important;justify-content:flex-start !important}
+    /* Ховаємо кнопку згортання на мобільному */
+    .sb-collapse-btn{display:none !important}
     .burger{display:grid;place-items:center;width:38px;height:38px;border:1px solid var(--line);border-radius:9px;background:var(--surface);cursor:pointer}
     .burger svg{width:18px;height:18px;stroke-width:2}
     .search{display:none}
