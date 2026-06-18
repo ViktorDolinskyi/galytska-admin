@@ -947,13 +947,6 @@
           </div>
           <div class="org-filters" id="orgFiltersRow">
             <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 3H2l8 9.5V19l4 2v-8.5z"/></svg>Фільтр</span>
-            <div class="search org-search-wrap" style="width:220px;flex:none">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-              <input id="orgSearch" placeholder="Пошук підрозділу…" oninput="orgRender();orgSearchToggleClear()"/>
-              <button id="orgSearchClear" class="org-search-clear" onclick="orgSearchClear()" style="display:none" title="Очистити пошук">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </button>
-            </div>
             <div class="csel" id="cselStatus">
               <button class="csel-trigger" type="button">
                 <span class="csel-label">Будь-який статус</span>
@@ -983,6 +976,13 @@
               <div class="csel-drop" id="cselKindDrop">
                 <div class="csel-opt selected" data-val="">Будь-який вид</div>
               </div>
+            </div>
+            <div class="search org-search-wrap" style="width:220px;flex:none">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input id="orgSearch" placeholder="Пошук підрозділу…" oninput="orgRender();orgSearchToggleClear()"/>
+              <button id="orgSearchClear" class="org-search-clear" onclick="orgSearchClear()" style="display:none" title="Очистити пошук">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
             </div>
           </div>
           <ul class="org-tree" id="orgTree"></ul>
