@@ -1861,7 +1861,7 @@
     const node=g.append('g').selectAll('g').data(root.descendants()).enter().append('g')
       .attr('class','oc-node')
       .attr('transform',d=>`translate(${d.x-NW/2},${d.y-NH/2})`)
-      .on('click',(_,d)=>{if(!d.data._virtual&&d.data.id){orgSetView('list');setTimeout(()=>orgEditNode(d.data.id),80);}});
+      .on('click',(_,d)=>{if(!d.data._virtual&&d.data.id)orgEditNode(d.data.id);});
 
     node.each(function(d){
       if(d.data._virtual)return;
