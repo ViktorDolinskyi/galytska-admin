@@ -1664,7 +1664,7 @@
       ?await db.from('matrix_rows').update(payload).eq('id',mxEditId)
       :await db.from('matrix_rows').insert({...payload,row_order:rows().length});
     if(res.error){alert('Помилка: '+res.error.message);return;}
-    mxCloseModal();await mxLoad();
+    mxCloseModal(true);await mxLoad();
   };
 
   window.mxAskDel=function(id){
