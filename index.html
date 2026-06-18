@@ -885,20 +885,24 @@
 
         <!-- Matrix process modal -->
         <div class="modal-scrim" id="mxModal" style="display:none">
-          <div class="modal" style="max-width:600px;max-height:90vh;overflow-y:auto">
+          <div class="modal" style="max-width:860px;max-height:90vh;overflow-y:auto;overflow-x:hidden">
             <h3 id="mxModalTitle">Новий процес</h3>
-            <div class="body" style="gap:14px">
-              <div><label>Категорія</label><input id="mxCatIn" placeholder="напр. Кадрові рішення"></div>
-              <div><label>Назва / рішення / дія</label><input id="mxDescIn" placeholder="напр. Затвердження графіків відпусток"></div>
-              <div id="mxSlaWrap"><label id="mxSlaLabel">SLA</label><input id="mxSlaIn" placeholder="необов'язково"></div>
-              <div style="border-top:1px solid var(--line);padding-top:12px">
-                <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:12px">Призначення підрозділів до кодів</div>
+            <div class="body" style="flex-direction:row;align-items:flex-start;gap:0;padding:0">
+              <!-- Ліва колонка: поля -->
+              <div style="flex:0 0 300px;display:flex;flex-direction:column;gap:14px;padding:20px 20px 20px 20px;border-right:1px solid var(--line)">
+                <div><label>Категорія</label><input id="mxCatIn" placeholder="напр. Кадрові рішення"></div>
+                <div><label>Назва / рішення / дія</label><input id="mxDescIn" placeholder="напр. Затвердження графіків відпусток"></div>
+                <div id="mxSlaWrap"><label id="mxSlaLabel">SLA</label><input id="mxSlaIn" placeholder="необов'язково"></div>
+              </div>
+              <!-- Права колонка: призначення -->
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:0;padding:20px">
+                <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:12px">Призначення підрозділів до кодів</div>
                 <div id="mxCodesWrap"></div>
               </div>
             </div>
             <div class="foot">
               <button class="btn ghost" onclick="mxCloseModal()">Скасувати</button>
-              <button class="btn" onclick="mxRowSave()">Зберегти</button>
+              <button class="btn primary" onclick="mxRowSave()">Зберегти</button>
             </div>
           </div>
         </div>
