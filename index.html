@@ -491,6 +491,61 @@
   .mx-urow-child{color:var(--slate)}
 
 
+  /* ===== Цілі ===== */
+  .goal-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;display:flex;flex-direction:column;gap:10px;transition:box-shadow .15s,border-color .15s;cursor:pointer}
+  .goal-card:hover{box-shadow:0 4px 20px rgba(27,23,20,.09);border-color:var(--brand-tint-2)}
+  .goal-card-head{display:flex;align-items:flex-start;gap:12px}
+  .goal-priority{width:4px;border-radius:3px;flex:none;align-self:stretch;min-height:40px}
+  .goal-title{font-size:14px;font-weight:700;color:var(--ink);line-height:1.35;flex:1}
+  .goal-desc{font-size:12.5px;color:var(--slate);line-height:1.5;margin-top:2px}
+  .goal-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:11.5px;color:var(--muted)}
+  .goal-meta-sep{color:var(--line)}
+  .goal-progress-wrap{display:flex;align-items:center;gap:10px}
+  .goal-progress-bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+  .goal-progress-fill{height:100%;border-radius:3px;transition:width .3s}
+  .goal-progress-pct{font-size:12px;font-weight:700;color:var(--slate);flex:none;min-width:32px;text-align:right}
+  .goal-actions{display:flex;gap:6px;margin-left:auto;opacity:0;transition:opacity .12s}
+  .goal-card:hover .goal-actions{opacity:1}
+  .goal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;margin-top:4px}
+  .goal-list{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+  .goal-list .goal-card{flex-direction:row;align-items:center;gap:14px;padding:14px 18px}
+  .goal-list .goal-card-head{flex:1;min-width:0}
+  .goal-list .goal-progress-wrap{width:160px;flex:none}
+  .goal-list .goal-desc{display:none}
+  /* Status colors */
+  .gs-active{background:#16A34A22;color:#15803D}
+  .gs-completed{background:#1D4ED822;color:#1D4ED8}
+  .gs-paused{background:#D9770622;color:#B45309}
+  .gs-overdue{background:#DC262622;color:#B91C1C}
+  .gs-draft{background:#64748B22;color:#475569}
+  /* Priority colors */
+  .gp-critical{background:#DC2626}
+  .gp-high{background:#EA580C}
+  .gp-medium{background:#CA8A04}
+  .gp-low{background:#16A34A}
+  /* Filter */
+  .goal-filters{display:flex;gap:10px;flex-wrap:nowrap;align-items:center;margin:14px 0;justify-content:flex-start}
+  .goal-filters .csel{flex:none;width:170px}
+
+  /* ===== Цілі ===== */
+  .goal-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;transition:box-shadow .15s,transform .1s}
+  .goal-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);transform:translateY(-1px)}
+  .goal-priority{width:4px;border-radius:3px;flex:none;align-self:stretch;min-height:40px}
+  .goal-progress-bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+  .goal-progress-fill{height:100%;border-radius:3px;transition:width .3s}
+  .goal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;}
+  .goal-list{display:flex;flex-direction:column;gap:8px;}
+  .gs-active{background:#16A34A22;color:#15803D;border-radius:20px;padding:2px 8px}
+  .gs-completed{background:#1D4ED822;color:#1D4ED8;border-radius:20px;padding:2px 8px}
+  .gs-paused{background:#D9770622;color:#B45309;border-radius:20px;padding:2px 8px}
+  .gs-overdue{background:#DC262622;color:#B91C1C;border-radius:20px;padding:2px 8px}
+  .gs-draft{background:#64748B22;color:#475569;border-radius:20px;padding:2px 8px}
+  .gp-critical{background:#DC2626}.gp-high{background:#EA580C}
+  .gp-medium{background:#CA8A04}.gp-low{background:#16A34A}
+  .goal-filters{display:flex;gap:10px;flex-wrap:nowrap;align-items:center;margin:14px 0}
+  .goal-filters .csel{flex:none;width:160px}
+  .seg-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+
   /* ===== Компанія / Оргструктура ===== */
   .org-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:20px}
 
@@ -688,6 +743,10 @@
       <button class="nav-item" data-view="matrix" data-label="Матриці">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
         <span class="nav-label-txt">Матриці</span>
+      </button>
+      <button class="nav-item" data-view="goals" data-label="Цілі">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        <span class="nav-label-txt">Цілі</span>
       </button>
       <button class="nav-item" data-view="company" data-label="Компанія">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>
@@ -980,6 +1039,67 @@
             </div>
           </div>
         </div>
+      </section>
+
+      <!-- Goals modal -->
+      <div class="modal-scrim" id="goalModal" style="display:none">
+        <div class="modal" style="max-width:560px;max-height:90vh;overflow-y:auto">
+          <h3 id="goalModalTitle">Нова ціль</h3>
+          <div class="body" style="flex-direction:column;gap:14px;padding:20px">
+            <div><label>Назва цілі</label><input id="gTitleIn" type="text" placeholder="Введіть назву…"></div>
+            <div><label>Опис</label><textarea id="gDescIn" rows="3" style="width:100%;resize:vertical;border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:13.5px;font-family:inherit;background:var(--surface);color:var(--text)"></textarea></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div><label>Категорія</label><input id="gCatIn" type="text" placeholder="Наприклад: Продажі"></div>
+              <div><label>Власник</label><div class="csel" id="gOwnerSel" style="width:100%"></div></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+              <div><label>Статус</label><div class="csel" id="gStatusSel" style="width:100%"></div></div>
+              <div><label>Пріоритет</label><div class="csel" id="gPriorSel" style="width:100%"></div></div>
+              <div><label>Дедлайн</label><input id="gDueIn" type="text" class="flatpickr" placeholder="Оберіть…"></div>
+            </div>
+            <div>
+              <label>Прогрес: <span id="gProgVal">0</span>%</label>
+              <input id="gProgIn" type="range" min="0" max="100" value="0" oninput="$('gProgVal').textContent=this.value" style="width:100%;margin-top:6px;accent-color:var(--brand)">
+            </div>
+          </div>
+          <div class="foot">
+            <button class="btn ghost" id="goalDelBtn" onclick="goalDelete()" style="margin-right:auto;display:none">Видалити</button>
+            <button class="btn ghost" onclick="goalCloseModal()">Скасувати</button>
+            <button class="btn primary" onclick="goalSave()">Зберегти</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== ЦІЛІ ===== -->
+      <section class="view" id="view-goals">
+        <div class="page-head">
+          <div>
+            <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span>Цілі</h2>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn ghost seg-btn" onclick="goalsSetView('grid')" id="gViewGrid" title="Сітка"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></button>
+            <button class="btn ghost seg-btn" onclick="goalsSetView('list')" id="gViewList" title="Список"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></button>
+            <button class="btn primary" onclick="goalOpen(null)">+ Ціль</button>
+          </div>
+        </div>
+
+        <!-- KPI -->
+        <div class="kpi-row" id="gKpi"></div>
+
+        <!-- Filters -->
+        <div class="goal-filters" id="gFilters">
+          <div class="csel" id="gSelStatus" style="width:160px"></div>
+          <div class="csel" id="gSelPriority" style="width:160px"></div>
+          <div class="csel" id="gSelOwner" style="width:200px"></div>
+          <div class="search" style="flex:1;min-width:180px;margin-left:0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input id="gSearch" type="text" placeholder="Пошук цілей…" oninput="goalsRender()">
+            <button class="search-clear" onclick="$('gSearch').value='';goalsRender()" title="Очистити">×</button>
+          </div>
+        </div>
+
+        <!-- Goals container -->
+        <div id="gContainer"></div>
       </section>
 
       <!-- ===== КОМПАНІЯ ===== -->
@@ -1971,6 +2091,203 @@
   $('mxMore').addEventListener('click',()=>{mxPage++;render(false)});
   reloadSet();
 
+  /* ===== ЦІЛІ ===== */
+  let goalsData=[], goalsEdit=null, _goalsView='grid';
+  let _gCselVals={status:'',priority:'',owner:''};
+  let _gOwnerCselInst=null, _gStatusCselInst=null, _gPriorCselInst=null;
+  let _gModalOwnerSel=null, _gModalStatusSel=null, _gModalPriorSel=null;
+
+  const GOAL_STATUSES=[
+    {v:'active',l:'Активна'},
+    {v:'completed',l:'Виконана'},
+    {v:'paused',l:'Призупинена'},
+    {v:'overdue',l:'Прострочена'},
+    {v:'draft',l:'Чорновик'},
+  ];
+  const GOAL_PRIORITIES=[
+    {v:'critical',l:'Критичний'},
+    {v:'high',l:'Високий'},
+    {v:'medium',l:'Середній'},
+    {v:'low',l:'Низький'},
+  ];
+
+  function _makeCsel(wrapEl, placeholder, opts, onChange){
+    const val={v:''};
+    wrapEl.innerHTML=`<div class="csel-trigger"><span class="csel-label">${placeholder}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+      <div class="csel-drop">
+        <div class="csel-opt" data-val="">— Всі —</div>
+        ${opts.map(o=>`<div class="csel-opt" data-val="${o.v}">${o.l}</div>`).join('')}
+      </div>`;
+    wrapEl.querySelector('.csel-trigger').addEventListener('click',e=>{
+      e.stopPropagation();const isOpen=wrapEl.classList.contains('open');
+      document.querySelectorAll('.csel.open').forEach(el=>el.classList.remove('open'));
+      if(!isOpen)wrapEl.classList.add('open');
+    });
+    wrapEl.querySelector('.csel-drop').addEventListener('click',e=>{
+      const opt=e.target.closest('.csel-opt');if(!opt)return;
+      val.v=opt.dataset.val;
+      wrapEl.querySelectorAll('.csel-opt').forEach(o=>o.classList.toggle('selected',o===opt));
+      wrapEl.querySelector('.csel-label').textContent=opt.textContent.trim();
+      wrapEl.classList.remove('open');
+      onChange(val.v);
+    });
+    return {
+      get:()=>val.v,
+      set:(v)=>{
+        val.v=v;
+        const opt=wrapEl.querySelector(`.csel-opt[data-val="${v}"]`)||wrapEl.querySelector('.csel-opt');
+        if(opt){wrapEl.querySelectorAll('.csel-opt').forEach(o=>o.classList.toggle('selected',o.dataset.val===v));
+          wrapEl.querySelector('.csel-label').textContent=v?opt.textContent.trim():placeholder;}
+      }
+    };
+  }
+
+  function goalsInit(){
+    const ownerOpts=[{v:'',l:'— Всі —'},...dictEmps.map(e=>({v:String(e.id),l:(e.last_name+' '+(e.first_name||'')).trim()}))];
+    _gStatusCselInst=_makeCsel($('gSelStatus'),'Статус',GOAL_STATUSES,()=>goalsRender());
+    _gPriorCselInst=_makeCsel($('gSelPriority'),'Пріоритет',GOAL_PRIORITIES,()=>goalsRender());
+    _gOwnerCselInst=_makeCsel($('gSelOwner'),'Власник',[...dictEmps.map(e=>({v:String(e.id),l:(e.last_name+' '+(e.first_name||'')).trim()}))],()=>goalsRender());
+
+    _gModalStatusSel=_makeCsel($('gStatusSel'),'Статус',GOAL_STATUSES,()=>{});
+    _gModalPriorSel=_makeCsel($('gPriorSel'),'Пріоритет',GOAL_PRIORITIES,()=>{});
+    _gModalOwnerSel=_makeCsel($('gOwnerSel'),'Власник',[...dictEmps.map(e=>({v:String(e.id),l:(e.last_name+' '+(e.first_name||'')).trim()}))],()=>{});
+
+    flatpickr('#goalModal .flatpickr',{locale:'uk',dateFormat:'Y-m-d',allowInput:true});
+  }
+
+  async function goalsLoad(){
+    const {data,error}=await db.from('goals').select('*').order('created_at',{ascending:false});
+    if(error){console.error('goalsLoad:',error);return;}
+    goalsData=data||[];
+    goalsInit();
+    goalsRender();
+    goalsKpi();
+  }
+
+  function goalsRender(){
+    const q=($('gSearch')?.value||'').toLowerCase();
+    const st=_gStatusCselInst?.get()||'';
+    const pr=_gPriorCselInst?.get()||'';
+    const ow=_gOwnerCselInst?.get()||'';
+    let list=goalsData.filter(g=>{
+      if(st&&g.status!==st)return false;
+      if(pr&&g.priority!==pr)return false;
+      if(ow&&String(g.employee_id)!==ow)return false;
+      if(q&&!(g.title||'').toLowerCase().includes(q)&&!(g.description||'').toLowerCase().includes(q)&&!(g.category||'').toLowerCase().includes(q))return false;
+      return true;
+    });
+    const wrap=$('gContainer');
+    if(!list.length){wrap.innerHTML='<div style="color:var(--muted);padding:32px 0;text-align:center">Цілей не знайдено</div>';return;}
+    const isList=_goalsView==='list';
+    wrap.className=isList?'goal-list':'goal-grid';
+    wrap.innerHTML=list.map(g=>goalCardHtml(g,isList)).join('');
+    goalsKpi();
+  }
+
+  function goalCardHtml(g,isList){
+    const sLabel=GOAL_STATUSES.find(s=>s.v===g.status)?.l||g.status||'—';
+    const pLabel=GOAL_PRIORITIES.find(p=>p.v===g.priority)?.l||g.priority||'—';
+    const prio=g.priority||'low';
+    const prog=Math.min(100,Math.max(0,g.progress||0));
+    const emp=dictEmps.find(e=>e.id===g.employee_id);
+    const empName=emp?(emp.last_name+' '+(emp.first_name||'')).trim():'—';
+    const due=g.due_date?new Date(g.due_date).toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'}):'—';
+    const isOverdue=g.due_date&&new Date(g.due_date)<new Date()&&g.status!=='completed';
+    return `<div class="goal-card" onclick="goalOpen('${g.id}')" style="cursor:pointer;display:flex;gap:12px;padding:16px;border-radius:12px;align-items:flex-start">
+      <div class="goal-priority gp-${prio}"></div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+          <span class="badge gs-${g.status||'draft'}">${sLabel}</span>
+          ${g.category?`<span style="font-size:11.5px;color:var(--muted)">${g.category}</span>`:''}
+          ${isOverdue?'<span style="font-size:11px;color:#B91C1C;font-weight:600">Прострочена</span>':''}
+        </div>
+        <div style="font-weight:600;font-size:14px;margin-bottom:4px;color:var(--ink)">${g.title||'—'}</div>
+        ${g.description?`<div style="font-size:12.5px;color:var(--muted);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${g.description}</div>`:''}
+        <div style="display:flex;gap:16px;font-size:12px;color:var(--muted);margin-bottom:10px;flex-wrap:wrap">
+          <span>👤 ${empName}</span>
+          <span>📅 ${due}</span>
+          <span>⚡ ${pLabel}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="goal-progress-bar"><div class="goal-progress-fill" style="width:${prog}%;background:${prog>=100?'#16A34A':prog>=60?'#2563EB':prog>=30?'#CA8A04':'#DC2626'}"></div></div>
+          <span style="font-size:12px;color:var(--muted);flex:none">${prog}%</span>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function goalsKpi(){
+    const total=goalsData.length;
+    const active=goalsData.filter(g=>g.status==='active').length;
+    const completed=goalsData.filter(g=>g.status==='completed').length;
+    const overdue=goalsData.filter(g=>g.status==='overdue'||(g.due_date&&new Date(g.due_date)<new Date()&&g.status!=='completed')).length;
+    const avgProg=total?Math.round(goalsData.reduce((a,g)=>a+(g.progress||0),0)/total):0;
+    $('gKpi').innerHTML=`
+      <div class="kpi-card"><div class="kpi-label">Всього цілей</div><div class="kpi-val">${total}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Активних</div><div class="kpi-val" style="color:#16A34A">${active}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Виконано</div><div class="kpi-val" style="color:#2563EB">${completed}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Прострочено</div><div class="kpi-val" style="color:#DC2626">${overdue}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Сер. прогрес</div><div class="kpi-val">${avgProg}%</div></div>
+    `;
+  }
+
+  window.goalsSetView=function(v){
+    _goalsView=v;
+    $('gViewGrid').classList.toggle('active',v==='grid');
+    $('gViewList').classList.toggle('active',v==='list');
+    goalsRender();
+  };
+
+  window.goalOpen=function(id){
+    goalsEdit=id||null;
+    $('goalModalTitle').textContent=id?'Редагувати ціль':'Нова ціль';
+    $('goalDelBtn').style.display=id?'':'none';
+    const g=id?goalsData.find(x=>x.id===id):null;
+    $('gTitleIn').value=g?.title||'';
+    $('gDescIn').value=g?.description||'';
+    $('gCatIn').value=g?.category||'';
+    $('gProgIn').value=g?.progress||0;
+    $('gProgVal').textContent=g?.progress||0;
+    $('gDueIn').value=g?.due_date||'';
+    if(_gModalStatusSel)_gModalStatusSel.set(g?.status||'draft');
+    if(_gModalPriorSel)_gModalPriorSel.set(g?.priority||'medium');
+    if(_gModalOwnerSel)_gModalOwnerSel.set(g?.employee_id?String(g.employee_id):'');
+    $('goalModal').style.display='flex';
+    setTimeout(()=>$('gTitleIn').focus(),50);
+  };
+
+  window.goalCloseModal=function(){$('goalModal').style.display='none';};
+  $('goalModal').addEventListener('click',function(e){if(e.target===this)goalCloseModal();});
+
+  window.goalSave=async function(){
+    const title=$('gTitleIn').value.trim();
+    if(!title){$('gTitleIn').focus();return;}
+    const payload={
+      title,
+      description:$('gDescIn').value.trim()||null,
+      category:$('gCatIn').value.trim()||null,
+      progress:parseInt($('gProgIn').value)||0,
+      due_date:$('gDueIn').value||null,
+      status:_gModalStatusSel?.get()||'draft',
+      priority:_gModalPriorSel?.get()||'medium',
+      employee_id:_gModalOwnerSel?.get()||null,
+    };
+    const res=goalsEdit
+      ?await db.from('goals').update(payload).eq('id',goalsEdit)
+      :await db.from('goals').insert(payload);
+    if(res.error){alert('Помилка: '+res.error.message);return;}
+    goalCloseModal();
+    await goalsLoad();
+  };
+
+  window.goalDelete=async function(){
+    if(!goalsEdit)return;
+    if(!confirm('Видалити ціль?'))return;
+    await db.from('goals').delete().eq('id',goalsEdit);
+    goalCloseModal();
+    await goalsLoad();
+  };
+
   /* ===== Компанія: tabs ===== */
   window.companyTab=tab=>{
     document.getElementById('companyTab-structure').style.display=tab==='structure'?'':'none';
@@ -2703,7 +3020,7 @@
       document.querySelectorAll('.js-user').forEach(el=>el.textContent=session.user.email);
       orgLoad();
       mxLoad();
-      loadAllDicts();
+      loadAllDicts().then(()=>goalsLoad());
     } else {
       authScrim.classList.add('open');
     }
