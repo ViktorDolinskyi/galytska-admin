@@ -1792,7 +1792,7 @@
     document.getElementById('orgKpiActive').textContent=active;
     document.getElementById('orgKpiActiveSub').textContent=pct(active)+' від загального';
     document.getElementById('orgKpiActing').textContent=acting;
-    document.getElementById('orgKpiActingSub').textContent=acting?'Потребують підтвердження':'Всі посади постійні';
+    document.getElementById('orgKpiActingSub').textContent=acting?pct(acting)+' від загального':'Всі посади постійні';
     document.getElementById('orgKpiNoHead').textContent=noHead;
     document.getElementById('orgKpiNoHeadSub').textContent=noHead?pct(noHead)+' вакансій':'Всі позиції закриті';
     document.getElementById('orgKpiInactive').textContent=inactive;
