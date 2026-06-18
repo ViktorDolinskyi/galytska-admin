@@ -352,6 +352,24 @@
   .mx-cell.rc4{background:#E0F4F5;color:#0E7C86}.mx-cell.rc5{background:#FDE8DC;color:#B0561E}
   .mx-cell.rc6{background:#F1EFE8;color:#5F5E5A}.mx-cell.rc7{background:#FAECE7;color:#993C1D}
   .mx-cell.rc8{background:var(--page);color:var(--slate)}
+  /* Matrix list view */
+  .mx-code-th{text-align:center;font-family:ui-monospace,monospace;font-weight:800;font-size:12px;min-width:110px;padding:8px 6px}
+  .mx-code-cell{padding:4px 8px;vertical-align:top}
+  .mx-unit-pill{display:inline-block;background:var(--page);border:1px solid var(--line);border-radius:6px;padding:2px 7px;font-size:11px;font-weight:600;color:var(--slate);margin:2px 2px 0 0;white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis;vertical-align:middle}
+  /* Matrix edit modal */
+  .mx-code-row{display:grid;grid-template-columns:52px 1fr;gap:10px;align-items:start;margin-bottom:14px}
+  .mx-cb{display:inline-flex;align-items:center;justify-content:center;font-family:ui-monospace,monospace;font-weight:800;font-size:13px;width:46px;height:36px;border-radius:8px;flex-shrink:0;margin-top:1px}
+  .mx-cb.cc-DI{background:#E1F5EE;color:#0F6E56}.mx-cb.cc-A{background:#E6F1FB;color:#185FA5}
+  .mx-cb.cc-P{background:#FFF3DC;color:#854F0B}.mx-cb.cc-V{background:#FAECE7;color:#993C1D}
+  .mx-cb.cc-I{background:#F1EFE8;color:#5F5E5A}.mx-cb.cc-R{background:#E1F5EE;color:#0F6E56}
+  .mx-cb.rc1{background:#E1F5EE;color:#0F6E56}.mx-cb.rc0{background:#E6F1FB;color:#185FA5}
+  .mx-cb.rc4{background:#E0F4F5;color:#0E7C86}.mx-cb.rc2{background:#FFF3DC;color:#854F0B}
+  .mx-cb.rc6{background:#F1EFE8;color:#5F5E5A}
+  .mx-units-list{border:1px solid var(--line);border-radius:10px;max-height:150px;overflow-y:auto;background:var(--card)}
+  .mx-urow{display:flex;align-items:center;gap:8px;padding:6px 10px;font-size:13px;cursor:pointer;border-bottom:0.5px solid var(--line);user-select:none}
+  .mx-urow:last-child{border-bottom:none}
+  .mx-urow:hover{background:var(--brand-tint)}
+  .mx-urow input[type=checkbox]{flex-shrink:0;accent-color:var(--brand);width:15px;height:15px;cursor:pointer}
 
 
   /* ===== Компанія / Оргструктура ===== */
@@ -716,6 +734,9 @@
               <button class="on" data-set="pov">Повноваження</button>
               <button data-set="resp">Відповідальність</button>
             </div>
+            <button class="btn" onclick="mxOpenModal(null)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Додати процес
+            </button>
             <button class="btn" onclick="document.getElementById('mxImportFile').click()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg>Імпорт з Excel
             </button>
@@ -781,6 +802,26 @@
           </div>
         </div>
         <button class="btn load-more" id="mxMore" style="display:none">Показати ще</button>
+
+        <!-- Matrix process modal -->
+        <div class="modal-scrim" id="mxModal" style="display:none">
+          <div class="modal" style="max-width:600px;max-height:90vh;overflow-y:auto">
+            <h3 id="mxModalTitle">Новий процес</h3>
+            <div class="body" style="gap:14px">
+              <div><label>Категорія</label><input id="mxCatIn" placeholder="напр. Кадрові рішення"></div>
+              <div><label>Назва / рішення / дія</label><input id="mxDescIn" placeholder="напр. Затвердження графіків відпусток"></div>
+              <div id="mxSlaWrap"><label id="mxSlaLabel">SLA</label><input id="mxSlaIn" placeholder="необов'язково"></div>
+              <div style="border-top:1px solid var(--line);padding-top:12px">
+                <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:12px">Призначення підрозділів до кодів</div>
+                <div id="mxCodesWrap"></div>
+              </div>
+            </div>
+            <div class="foot">
+              <button class="btn ghost" onclick="mxCloseModal()">Скасувати</button>
+              <button class="btn" onclick="mxRowSave()">Зберегти</button>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- ===== КОМПАНІЯ ===== -->
@@ -1068,20 +1109,37 @@
 
   function codeClass(code){
     if(mxSet==='pov'){
-      const u=code.toUpperCase().replace('І','I');
-      if(u.startsWith('ADI'))return'cc-A';
-      if(u==='A'||u==='A1'||u==='A2')return'cc-A';
-      if(u==='R'||u==='Р')return'cc-R';
+      const u=(code||'').toUpperCase().replace('І','I');
+      if(u.includes('DI'))return'cc-DI';
+      if(u==='A'||u.startsWith('A'))return'cc-A';
       if(u==='P')return'cc-P';
       if(u==='I')return'cc-I';
-      if(u==='V')return'cc-V';
-      if(u.includes('DI'))return'cc-DI';
-      if(u.includes('V'))return'cc-V';
+      if(u==='V'||u.includes('V'))return'cc-V';
+      if(u==='R'||u==='Р')return'cc-R';
       return'cc-X';
     } else {
-      let h=0; for(const ch of code)h=(h*31+ch.charCodeAt(0))%9;
-      return'rc'+h;
+      const map={m:'rc1',a:'rc0',o:'rc4',d:'rc2',h:'rc6'};
+      return map[(code||'').toLowerCase()]||'rc8';
     }
+  }
+
+  function flatOrgUnits(nodes,depth,out){
+    nodes=nodes||orgData; depth=depth||0; out=out||[];
+    nodes.forEach(n=>{out.push({id:n.id,name:n.name,level:depth});
+      if(n.children&&n.children.length)flatOrgUnits(n.children,depth+1,out);});
+    return out;
+  }
+  function findUnit(id,nodes){
+    for(const n of(nodes||orgData)){
+      if(n.id===id||n.id===+id)return n;
+      if(n.children&&n.children.length){const f=findUnit(id,n.children);if(f)return f;}
+    }return null;
+  }
+  function getCellUnits(row,code){
+    const a=row.a||{};
+    if(Array.isArray(a[code]))return a[code].map(uid=>{const u=findUnit(uid);return u?u.name:String(uid);});
+    const deps=depList();
+    return Object.entries(a).filter(([,v])=>typeof v==='string'&&v.trim().replace('І','I').toUpperCase()===code.toUpperCase()).map(([k])=>deps[+k]||k);
   }
 
   function buildFilters(){
@@ -1124,40 +1182,124 @@
 
   function render(reset){
     if(reset){mxPage=0}
-    const deps=depList();
+    const codes=mxSet==='pov'?['DI','A','P','V','I']:['m','a','o','d','h'];
     const data=filtered();
     const end=(mxPage+1)*MX_PAGE;
     const slice=data.slice(0,end);
-    const cols=deps.length+1;
+    const cols=codes.length+3;
 
-    $('mxHead').innerHTML='<tr><th class="mx-th-proc">Рішення / дія</th>'+
-      deps.map(d=>'<th class="mx-th-dept" title="'+esc(d)+'"><span>'+esc(d)+'</span></th>').join('')+'</tr>';
+    $('mxHead').innerHTML='<tr>'+
+      '<th style="width:36px;text-align:center;color:var(--muted);font-size:11px">#</th>'+
+      '<th style="width:150px">Категорія</th>'+
+      '<th>Бізнес-процес / рішення</th>'+
+      codes.map(c=>'<th class="mx-code-th '+codeClass(c)+'">'+esc(c)+'</th>').join('')+
+      '<th style="width:56px"></th></tr>';
 
-    let lastCat='__NONE__', html='';
-    slice.forEach(r=>{
-      if(r.c!==lastCat){
-        lastCat=r.c;
-        html+='<tr class="mx-cat-row"><td colspan="'+cols+'">'+esc(r.c||'—')+'</td></tr>';
-      }
-      html+='<tr><td class="mx-proc-cell">'+esc(r.d||'—')+
+    let lastCat='__NONE__',html='';
+    slice.forEach((r,i)=>{
+      html+='<tr>';
+      html+='<td style="text-align:center;color:var(--muted);font-size:12px">'+(i+1)+'</td>';
+      html+='<td>'+(r.c?'<span class="cat-tag">'+esc(r.c)+'</span>':'')+'</td>';
+      html+='<td class="mx-proc-cell">'+esc(r.d||'—')+
         (r.sla?'<span class="mx-sub">SLA: '+esc(r.sla)+'</span>':'')+
-        (r.cap?'<span class="mx-sub">'+esc(r.cap)+'</span>':'')+
-        '</td>'+
-        deps.map((_,j)=>{const c=(r.a[String(j)]||'').trim();
-          return c?'<td class="mx-cell '+codeClass(c)+'">'+esc(c)+'</td>':'<td class="mx-cell"></td>';
-        }).join('')+'</tr>';
+        (r.cap?'<span class="mx-sub">'+esc(r.cap)+'</span>':'')+'</td>';
+      codes.forEach(code=>{
+        const names=getCellUnits(r,code);
+        html+='<td class="mx-code-cell">'+(names.length
+          ?names.map(n=>'<span class="mx-unit-pill" title="'+esc(n)+'">'+esc(n)+'</span>').join('')
+          :'')+'</td>';
+      });
+      html+='<td style="white-space:nowrap;text-align:center">'+
+        '<button class="icon-btn" title="Редагувати" onclick="mxOpenModal('+r.id+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:15px;height:15px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>'+
+        '<button class="icon-btn" title="Видалити" onclick="mxAskDel('+r.id+',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:15px;height:15px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>'+
+        '</td>';
+      html+='</tr>';
     });
 
-    $('mxBody').innerHTML=html||
-      '<tr><td colspan="'+cols+'" class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><br>Нічого не знайдено за фільтрами</td></tr>';
+    $('mxBody').innerHTML=html||'<tr><td colspan="'+cols+'" class="empty">'+
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><br>Нічого не знайдено</td></tr>';
     $('mxMore').style.display=data.length>end?'block':'none';
     $('mxStats').innerHTML=
       '<span><b>'+[...new Set(rows().map(r=>r.s).filter(Boolean))].length+'</b> матриць</span>'+
       '<span><b>'+data.length+'</b> '+(mxSet==='pov'?'рішень':'дій')+'</span>'+
-      '<span><b>'+deps.length+'</b> департаментів</span>';
+      '<span><b>'+rows().length+'</b> процесів</span>';
   }
 
   function reloadSet(){buildFilters();buildLegend();render(true)}
+
+  let mxEditId=null;
+
+  window.mxOpenModal=function(rowId){
+    mxEditId=rowId||null;
+    const codes=mxSet==='pov'?['DI','A','P','V','I']:['m','a','o','d','h'];
+    $('mxModalTitle').textContent=mxEditId?'Редагувати процес':'Новий процес';
+    $('mxSlaLabel').textContent=mxSet==='pov'?'SLA':'Капітан';
+    const units=flatOrgUnits();
+    $('mxCodesWrap').innerHTML=codes.map(code=>
+      '<div class="mx-code-row">'+
+        '<span class="mx-cb '+codeClass(code)+'">'+esc(code)+'</span>'+
+        '<div class="mx-units-list">'+
+          units.map(u=>
+            '<label class="mx-urow" style="padding-left:'+(8+u.level*14)+'px">'+
+              '<input type="checkbox" data-code="'+code+'" data-uid="'+u.id+'">'+
+              '<span>'+esc(u.name)+'</span>'+
+            '</label>'
+          ).join('')+
+        '</div>'+
+      '</div>'
+    ).join('');
+    if(mxEditId!==null){
+      const r=rows().find(x=>x.id===mxEditId);
+      if(r){
+        $('mxCatIn').value=r.c||'';
+        $('mxDescIn').value=r.d||'';
+        $('mxSlaIn').value=r.sla||r.cap||'';
+        codes.forEach(code=>{
+          const ids=(Array.isArray(r.a[code])?r.a[code]:[]).map(String);
+          document.querySelectorAll('[data-code="'+code+'"]').forEach(cb=>{
+            cb.checked=ids.includes(cb.dataset.uid);
+          });
+        });
+      }
+    } else {
+      $('mxCatIn').value='';$('mxDescIn').value='';$('mxSlaIn').value='';
+    }
+    $('mxModal').style.display='flex';
+  };
+
+  window.mxCloseModal=function(){$('mxModal').style.display='none';};
+
+  window.mxRowSave=async function(){
+    const codes=mxSet==='pov'?['DI','A','P','V','I']:['m','a','o','d','h'];
+    const cells={};
+    codes.forEach(code=>{
+      const ids=[...document.querySelectorAll('[data-code="'+code+'"]:checked')].map(cb=>+cb.dataset.uid);
+      if(ids.length)cells[code]=ids;
+    });
+    const desc=$('mxDescIn').value.trim();
+    if(!desc){$('mxDescIn').focus();return;}
+    const slaVal=$('mxSlaIn').value.trim();
+    const payload={type:mxSet,category:$('mxCatIn').value.trim(),description:desc,
+      ...(mxSet==='pov'?{sla:slaVal}:{captain:slaVal}),cells};
+    const res=mxEditId!==null
+      ?await db.from('matrix_rows').update(payload).eq('id',mxEditId)
+      :await db.from('matrix_rows').insert({...payload,row_order:rows().length});
+    if(res.error){alert('Помилка: '+res.error.message);return;}
+    mxCloseModal();await mxLoad();
+  };
+
+  window.mxAskDel=function(id,btn){
+    const td=btn.closest('td');
+    td.innerHTML='<span class="org-confirm">Видалити? '+
+      '<button class="yes" onclick="mxDelRow('+id+')">Так</button>'+
+      '<button onclick="render(false)">Ні</button></span>';
+  };
+
+  window.mxDelRow=async function(id){
+    const res=await db.from('matrix_rows').delete().eq('id',id);
+    if(res.error){alert('Помилка: '+res.error.message);return;}
+    await mxLoad();
+  };
 
   /* ===== Матриці: Supabase ===== */
   async function mxLoad(){
@@ -1169,10 +1311,10 @@
     MX.depsP=cfgMap.pov||[];
     MX.depsR=cfgMap.resp||[];
     MX.pov=(rowsData||[]).filter(r=>r.type==='pov').map(r=>({
-      c:r.category||'',s:r.source||'',d:r.description||'',sla:r.sla||'',a:r.cells||{}
+      id:r.id,c:r.category||'',s:r.source||'',d:r.description||'',sla:r.sla||'',a:r.cells||{}
     }));
     MX.resp=(rowsData||[]).filter(r=>r.type==='resp').map(r=>({
-      c:r.category||'',s:r.source||'',d:r.description||'',cap:r.captain||'',ext:r.external_internal||'',a:r.cells||{}
+      id:r.id,c:r.category||'',s:r.source||'',d:r.description||'',cap:r.captain||'',ext:r.external_internal||'',a:r.cells||{}
     }));
     reloadSet();
   }
