@@ -297,6 +297,29 @@
   .mx-controls select{min-width:190px}
   .org-filters{display:flex;gap:10px;flex-wrap:nowrap;align-items:center;margin:14px 0}
   .org-filters select{min-width:0;flex:1;max-width:200px}
+  /* Custom select */
+  .csel{position:relative;flex:1;min-width:0;max-width:200px}
+  .csel-trigger{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;
+    font:inherit;font-weight:600;font-size:13px;color:var(--ink);
+    border:1px solid var(--line);border-radius:9px;padding:8px 10px 8px 12px;
+    background:var(--surface);cursor:pointer;text-align:left;transition:border-color .12s,box-shadow .12s}
+  .csel-trigger:hover{border-color:var(--brand-tint-2)}
+  .csel.open .csel-trigger{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-tint)}
+  .csel-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+  .csel-arrow{width:14px;height:14px;flex:none;stroke-width:2.2;color:var(--slate);transition:transform .18s}
+  .csel.open .csel-arrow{transform:rotate(180deg)}
+  .csel-drop{position:absolute;top:calc(100% + 5px);left:0;min-width:100%;width:max-content;max-width:260px;
+    background:var(--surface);border:1px solid var(--line);border-radius:11px;
+    box-shadow:0 8px 28px rgba(27,23,20,.14);z-index:200;
+    opacity:0;transform:translateY(-6px);pointer-events:none;
+    transition:opacity .15s,transform .15s;overflow:hidden}
+  .csel.open .csel-drop{opacity:1;transform:none;pointer-events:auto}
+  .csel-opt{padding:9px 14px;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;
+    display:flex;align-items:center;gap:8px;transition:background .1s}
+  .csel-opt:hover{background:var(--brand-tint)}
+  .csel-opt.selected{color:var(--brand)}
+  .csel-opt.selected::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--brand);flex:none}
+  .csel-opt:not(.selected)::before{content:'';width:6px;height:6px;flex:none}
   /* Org chart */
   .oc-node{cursor:pointer}
   .oc-node rect{rx:8;transition:filter .15s}
@@ -907,18 +930,36 @@
           </div>
           <div class="org-filters" id="orgFiltersRow">
             <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 3H2l8 9.5V19l4 2v-8.5z"/></svg>Фільтр</span>
-            <select id="orgFilterStatus" onchange="orgRender()">
-              <option value="">Будь-який статус</option>
-              <option value="active">Активний</option>
-              <option value="inactive">Неактивний</option>
-              <option value="acting">В.О.</option>
-            </select>
-            <select id="orgFilterType" onchange="orgRender()">
-              <option value="">Будь-який тип</option>
-            </select>
-            <select id="orgFilterKind" onchange="orgRender()">
-              <option value="">Будь-який вид</option>
-            </select>
+            <div class="csel" id="cselStatus">
+              <button class="csel-trigger" type="button">
+                <span class="csel-label">Будь-який статус</span>
+                <svg class="csel-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+              <div class="csel-drop">
+                <div class="csel-opt selected" data-val="">Будь-який статус</div>
+                <div class="csel-opt" data-val="active">Активний</div>
+                <div class="csel-opt" data-val="inactive">Неактивний</div>
+                <div class="csel-opt" data-val="acting">В.О.</div>
+              </div>
+            </div>
+            <div class="csel" id="cselType">
+              <button class="csel-trigger" type="button">
+                <span class="csel-label">Будь-який тип</span>
+                <svg class="csel-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+              <div class="csel-drop" id="cselTypeDrop">
+                <div class="csel-opt selected" data-val="">Будь-який тип</div>
+              </div>
+            </div>
+            <div class="csel" id="cselKind">
+              <button class="csel-trigger" type="button">
+                <span class="csel-label">Будь-який вид</span>
+                <svg class="csel-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+              <div class="csel-drop" id="cselKindDrop">
+                <div class="csel-opt selected" data-val="">Будь-який вид</div>
+              </div>
+            </div>
             <div class="search org-search-wrap" style="min-width:160px;max-width:280px;flex:1">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
               <input id="orgSearch" placeholder="Пошук підрозділу…" oninput="orgRender();orgSearchToggleClear()"/>
@@ -1619,10 +1660,10 @@
   }
   function orgFlatAll(list,lvl,out){list=list||orgData;lvl=lvl||0;out=out||[];list.forEach(n=>{out.push({n,lvl});orgFlatAll(n.children||[],lvl+1,out);});return out;}
   function orgGetFilters(){
-    const q=(document.getElementById('orgSearch')||{value:''}).value.trim().toLowerCase();
-    const st=(document.getElementById('orgFilterStatus')||{value:''}).value;
-    const tp=(document.getElementById('orgFilterType')||{value:''}).value;
-    const kd=(document.getElementById('orgFilterKind')||{value:''}).value;
+    const q=($('orgSearch')||{value:''}).value.trim().toLowerCase();
+    const st=_cselVals.status||'';
+    const tp=_cselVals.type||'';
+    const kd=_cselVals.kind||'';
     return{q,st,tp:tp?+tp:null,kd:kd?+kd:null};
   }
   function orgMatchFilter(n,f){
@@ -1633,10 +1674,8 @@
     return true;
   }
   function orgFillFilterSelects(){
-    const ts=document.getElementById('orgFilterType');
-    if(ts)ts.innerHTML='<option value="">Будь-який тип</option>'+dictTypes.map(r=>'<option value="'+r.id+'">'+orgEsc(r.name)+'</option>').join('');
-    const ks=document.getElementById('orgFilterKind');
-    if(ks)ks.innerHTML='<option value="">Будь-який вид</option>'+dictKinds.map(r=>'<option value="'+r.id+'">'+orgEsc(r.name)+'</option>').join('');
+    cselSetOptions('cselTypeDrop',dictTypes,'type');
+    cselSetOptions('cselKindDrop',dictKinds,'kind');
   }
   function orgRender(){
     const f=orgGetFilters();
@@ -1675,6 +1714,54 @@
   }
   window.orgSearchToggleClear=()=>{const btn=$('orgSearchClear');if(btn)btn.style.display=$('orgSearch').value?'grid':'none';};
   window.orgSearchClear=()=>{$('orgSearch').value='';$('orgSearchClear').style.display='none';orgRender();$('orgSearch').focus();};
+
+  /* ===== Custom selects для фільтрів ===== */
+  let _cselVals={status:'',type:'',kind:''};
+
+  function cselInit(wrapId,key,onChange){
+    const wrap=$( wrapId);
+    if(!wrap)return;
+    const trigger=wrap.querySelector('.csel-trigger');
+    const drop=wrap.querySelector('.csel-drop');
+    trigger.addEventListener('click',e=>{
+      e.stopPropagation();
+      const isOpen=wrap.classList.contains('open');
+      document.querySelectorAll('.csel.open').forEach(el=>el.classList.remove('open'));
+      if(!isOpen)wrap.classList.add('open');
+    });
+    drop.addEventListener('click',e=>{
+      const opt=e.target.closest('.csel-opt');
+      if(!opt)return;
+      const val=opt.dataset.val;
+      _cselVals[key]=val;
+      drop.querySelectorAll('.csel-opt').forEach(o=>o.classList.toggle('selected',o===opt));
+      wrap.querySelector('.csel-label').textContent=opt.textContent.trim();
+      wrap.classList.remove('open');
+      onChange();
+    });
+  }
+
+  function cselSetOptions(dropId,opts,key){
+    const drop=$(dropId);if(!drop)return;
+    const cur=_cselVals[key]||'';
+    const first=drop.querySelector('.csel-opt');
+    const placeholder=first?first.textContent.trim():'Будь-який';
+    drop.innerHTML='<div class="csel-opt'+(cur===''?' selected':'')+'" data-val="">'+placeholder+'</div>'+
+      opts.map(o=>'<div class="csel-opt'+(String(o.id)===String(cur)?' selected':'')+'" data-val="'+o.id+'">'+orgEsc(o.name)+'</div>').join('');
+    // update label if something selected
+    const wrapId=dropId.replace('Drop','');
+    const wrap=document.getElementById(wrapId);
+    if(wrap){
+      const sel=drop.querySelector('.csel-opt.selected');
+      if(sel)wrap.querySelector('.csel-label').textContent=sel.textContent.trim();
+    }
+  }
+
+  document.addEventListener('click',()=>document.querySelectorAll('.csel.open').forEach(el=>el.classList.remove('open')));
+
+  cselInit('cselStatus','status',()=>orgRender());
+  cselInit('cselType','type',()=>orgRender());
+  cselInit('cselKind','kind',()=>orgRender());
   window.orgToggle=id=>{const n=orgFind(orgData,id);if(n){n.collapsed=!n.collapsed;orgRender();}};
   window.orgExpandAll=open=>{const w=l=>l.forEach(n=>{n.collapsed=!open;w(n.children||[]);});w(orgData);orgRender();};
   window.orgRowClick=(e,id)=>{if(e.target.closest('.org-acts,.org-toggle,.org-confirm'))return;orgEditNode(id);};
