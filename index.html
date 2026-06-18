@@ -144,10 +144,12 @@
     color:var(--slate);box-shadow:0 2px 8px rgba(27,23,20,.14);
     transition:left .22s ease,background .12s,color .12s,box-shadow .12s;
   }
-  .app.sb-collapsed .sb-collapse-btn{left:44px}
+  .app.sb-collapsed .sb-collapse-btn,.sb-collapsed-btn{left:44px}
   .sb-collapse-btn svg{width:16px;height:16px;stroke-width:2.2;transition:transform .22s}
   .sb-collapse-btn:hover{background:var(--brand-tint);color:var(--brand);border-color:var(--brand-tint-2);box-shadow:0 3px 12px rgba(27,23,20,.18)}
-  .app.sb-collapsed .sb-collapse-btn svg{transform:rotate(180deg)}
+  .app.sb-collapsed .sb-collapse-btn svg,.sb-collapsed .sb-collapse-btn svg{transform:rotate(180deg)}
+  body.sb-collapsed .sb-collapse-btn{left:44px}
+  body.sb-collapsed .sb-collapse-btn svg{transform:rotate(180deg)}
 
   .brand{
     display:flex; align-items:center; gap:12px;
@@ -1621,9 +1623,10 @@
   // Згортання сайдбару
   const app = document.querySelector('.app');
   const SB_KEY = 'sb_collapsed';
-  if(localStorage.getItem(SB_KEY)=='1') app.classList.add('sb-collapsed');
+  if(localStorage.getItem(SB_KEY)=='1'){app.classList.add('sb-collapsed');document.body.classList.add('sb-collapsed');}
   function toggleSidebar(){
     const collapsed = app.classList.toggle('sb-collapsed');
+    document.body.classList.toggle('sb-collapsed', collapsed);
     localStorage.setItem(SB_KEY, collapsed?'1':'0');
   }
   document.getElementById('burger').addEventListener('click',()=>{
