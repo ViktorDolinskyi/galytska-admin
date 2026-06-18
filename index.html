@@ -839,8 +839,24 @@
 
         <div class="mx-controls">
           <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 3H2l8 9.5V19l4 2v-8.5z"/></svg>Фільтр</span>
-          <select id="mxSource"></select>
-          <select id="mxCat"></select>
+          <div class="csel" id="cselMxSource" style="max-width:220px">
+            <button class="csel-trigger" type="button">
+              <span class="csel-label">Усі матриці</span>
+              <svg class="csel-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="csel-drop" id="cselMxSourceDrop">
+              <div class="csel-opt selected" data-val="">Усі матриці</div>
+            </div>
+          </div>
+          <div class="csel" id="cselMxCat" style="max-width:220px">
+            <button class="csel-trigger" type="button">
+              <span class="csel-label">Усі категорії</span>
+              <svg class="csel-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="csel-drop" id="cselMxCatDrop">
+              <div class="csel-opt selected" data-val="">Усі категорії</div>
+            </div>
+          </div>
           <div class="search" style="margin-left:0;width:260px">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
             <input id="mxSearch" placeholder="Пошук рішення…" />
@@ -1282,8 +1298,21 @@
     const rs=rows();
     const srcs=[...new Set(rs.map(r=>r.s).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'uk'));
     const cats=[...new Set(rs.map(r=>r.c).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'uk'));
-    $('mxSource').innerHTML='<option value="">Усі матриці ('+srcs.length+')</option>'+srcs.map(s=>'<option>'+esc(s)+'</option>').join('');
-    $('mxCat').innerHTML='<option value="">Усі категорії</option>'+cats.map(c=>'<option>'+esc(c)+'</option>').join('');
+    const srcDrop=$('cselMxSourceDrop'), catDrop=$('cselMxCatDrop');
+    if(srcDrop){
+      const curSrc=_mxCselVals.source||'';
+      srcDrop.innerHTML='<div class="csel-opt'+(curSrc===''?' selected':'')+'" data-val="">Усі матриці ('+srcs.length+')</div>'+
+        srcs.map(s=>'<div class="csel-opt'+(s===curSrc?' selected':'')+'" data-val="'+esc(s)+'">'+esc(s)+'</div>').join('');
+      const sl=srcDrop.querySelector('.csel-opt.selected');
+      if(sl)$('cselMxSource').querySelector('.csel-label').textContent=sl.textContent.trim();
+    }
+    if(catDrop){
+      const curCat=_mxCselVals.cat||'';
+      catDrop.innerHTML='<div class="csel-opt'+(curCat===''?' selected':'')+'" data-val="">Усі категорії</div>'+
+        cats.map(c=>'<div class="csel-opt'+(c===curCat?' selected':'')+'" data-val="'+esc(c)+'">'+esc(c)+'</div>').join('');
+      const sl=catDrop.querySelector('.csel-opt.selected');
+      if(sl)$('cselMxCat').querySelector('.csel-label').textContent=sl.textContent.trim();
+    }
   }
 
   function buildLegend(){
@@ -1297,7 +1326,7 @@
   function esc(s){return (s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
 
   function filtered(){
-    const src=$('mxSource').value, cat=$('mxCat').value, q=$('mxSearch').value.trim().toLowerCase();
+    const src=_mxCselVals.source||'', cat=_mxCselVals.cat||'', q=$('mxSearch').value.trim().toLowerCase();
     return rows().filter(r=>
       (!src||r.s===src)&&(!cat||r.c===cat)&&
       (!q||(r.d&&r.d.toLowerCase().includes(q))||(r.s&&r.s.toLowerCase().includes(q))));
@@ -1560,7 +1589,25 @@
     $('legendResp').style.display=mxSet==='resp'?'':'none';
     reloadSet();
   });
-  ['mxSource','mxCat'].forEach(id=>$(id).addEventListener('change',()=>render(true)));
+  const _mxCselVals={source:'',cat:''};
+  function _mxCselInit(wrapId,key){
+    const wrap=$(wrapId);if(!wrap)return;
+    wrap.querySelector('.csel-trigger').addEventListener('click',e=>{
+      e.stopPropagation();const isOpen=wrap.classList.contains('open');
+      document.querySelectorAll('.csel.open').forEach(el=>el.classList.remove('open'));
+      if(!isOpen)wrap.classList.add('open');
+    });
+    wrap.querySelector('.csel-drop').addEventListener('click',e=>{
+      const opt=e.target.closest('.csel-opt');if(!opt)return;
+      _mxCselVals[key]=opt.dataset.val;
+      wrap.querySelector('.csel-drop').querySelectorAll('.csel-opt').forEach(o=>o.classList.toggle('selected',o===opt));
+      wrap.querySelector('.csel-label').textContent=opt.textContent.trim();
+      wrap.classList.remove('open');
+      render(true);
+    });
+  }
+  _mxCselInit('cselMxSource','source');
+  _mxCselInit('cselMxCat','cat');
   $('mxSearch').addEventListener('input',()=>render(true));
   $('mxMore').addEventListener('click',()=>{mxPage++;render(false)});
   reloadSet();
