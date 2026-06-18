@@ -1530,7 +1530,7 @@
       ?'<span class="org-depth-badge" style="background:#FEE2E2;color:#B91C1C;border-color:#FECACA">Неактивний</span>'
       :isActing
       ?'<span class="org-depth-badge" style="background:#FFF7ED;color:#C2410C;border-color:#FED7AA">В.О.</span>'
-      :'';
+      :'<span class="org-depth-badge" style="background:#DCFCE7;color:#15803D;border-color:#BBF7D0">Активний</span>';
     const headDisplay=isActing&&headText?'в.о. '+headText:headText;
     const row='<div class="org-row" data-lvl="'+Math.min(lvl,5)+'" id="orgrow-'+n.id+'" onclick="orgRowClick(event,'+n.id+')" style="'+borderL+'">'+tog+
       '<span class="org-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor">'+icon+'</svg></span>'+
