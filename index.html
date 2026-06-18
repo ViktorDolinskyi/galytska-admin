@@ -418,6 +418,22 @@
   .mx-cb.rc1{background:#E1F5EE;color:#0F6E56}.mx-cb.rc0{background:#E6F1FB;color:#185FA5}
   .mx-cb.rc4{background:#E0F4F5;color:#0E7C86}.mx-cb.rc2{background:#FFF3DC;color:#854F0B}
   .mx-cb.rc6{background:#F1EFE8;color:#5F5E5A}
+  /* Tags mode */
+  .mx-tags-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;flex:1;min-width:0}
+  .mx-tag{display:inline-flex;align-items:center;gap:4px;background:var(--brand-tint);color:var(--brand);border:1px solid var(--brand-tint-2);border-radius:6px;padding:3px 8px;font-size:12px;font-weight:600}
+  .mx-tag-x{cursor:pointer;opacity:.6;line-height:1;font-size:14px;transition:opacity .1s}.mx-tag-x:hover{opacity:1}
+  .mx-tags-add{display:inline-flex;align-items:center;gap:4px;background:transparent;border:1.5px dashed var(--line);border-radius:6px;padding:3px 10px;font-size:12px;font-weight:600;color:var(--slate);cursor:pointer;transition:border-color .12s,color .12s}
+  .mx-tags-add:hover{border-color:var(--brand);color:var(--brand)}
+  .mx-tags-drop{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(27,23,20,.12);z-index:100;max-height:220px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--brand-tint-2) transparent}
+  .mx-tags-drop::-webkit-scrollbar{width:5px}.mx-tags-drop::-webkit-scrollbar-thumb{background:var(--brand-tint-2);border-radius:10px}
+  .mx-code-row-tags{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:.5px solid var(--line);position:relative}
+  .mx-code-row-tags:last-child{border-bottom:none}
+  /* Tabs mode */
+  .mx-tabs-nav{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+  .mx-tab-btn{padding:5px 12px;border-radius:7px;border:1.5px solid var(--line);background:var(--card);font-size:12px;font-weight:700;cursor:pointer;transition:.12s;color:var(--slate)}
+  .mx-tab-btn.on{border-color:var(--brand);background:var(--brand-tint);color:var(--brand)}
+  .mx-tab-content{display:none}.mx-tab-content.on{display:block}
+  /* Shared list */
   .mx-units-list{border:1px solid var(--line);border-radius:10px;max-height:160px;overflow-y:auto;background:var(--card);scrollbar-width:thin;scrollbar-color:var(--brand-tint-2) transparent}
   .mx-units-list::-webkit-scrollbar{width:5px}
   .mx-units-list::-webkit-scrollbar-track{background:transparent;border-radius:10px}
@@ -896,7 +912,14 @@
               </div>
               <!-- Права колонка: призначення -->
               <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:0;padding:20px">
-                <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:12px">Призначення підрозділів до кодів</div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                  <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">Призначення підрозділів до кодів</span>
+                  <div class="seg" style="font-size:11px" id="mxViewSeg">
+                    <button class="on" onclick="mxSetDisplayMode('list')">Списки</button>
+                    <button onclick="mxSetDisplayMode('tags')">Теги</button>
+                    <button onclick="mxSetDisplayMode('tabs')">Вкладки</button>
+                  </div>
+                </div>
                 <div id="mxCodesWrap"></div>
               </div>
             </div>
@@ -1461,43 +1484,143 @@
   function reloadSet(){buildFilters();buildLegend();render(true)}
 
   let mxEditId=null;
+  let _mxDisplayMode='list', _mxActiveTab=null, _mxCodes=[], _mxUnits=[], _mxInitSels={};
+
+  function mxUnitRow(u,code){
+    return '<label class="mx-urow '+(u.level===0?'mx-urow-parent':'mx-urow-child')+'" style="padding-left:'+(10+u.level*14)+'px">'+
+      '<input type="checkbox" data-code="'+code+'" data-uid="'+u.id+'">'+
+      '<span class="mx-chk"></span>'+
+      '<span class="mx-urow-name">'+esc(u.name)+'</span>'+
+    '</label>';
+  }
+
+  function mxRenderCodes(){
+    const codes=_mxCodes, units=_mxUnits;
+    if(!codes.length){return;}
+
+    if(_mxDisplayMode==='list'){
+      $('mxCodesWrap').innerHTML=codes.map(code=>
+        '<div class="mx-code-row">'+
+          '<span class="mx-cb '+codeClass(code)+'">'+esc(code)+'</span>'+
+          '<div class="mx-units-list">'+units.map(u=>mxUnitRow(u,code)).join('')+'</div>'+
+        '</div>'
+      ).join('');
+    }
+
+    else if(_mxDisplayMode==='tags'){
+      $('mxCodesWrap').innerHTML=codes.map(code=>
+        '<div class="mx-code-row-tags" id="mxTagsRow_'+code+'">'+
+          '<span class="mx-cb '+codeClass(code)+'" style="flex:none">'+esc(code)+'</span>'+
+          '<div class="mx-tags-row" id="mxTagsArea_'+code+'"></div>'+
+          '<div class="mx-tags-drop" id="mxTagsDrop_'+code+'" style="display:none">'+
+            units.map(u=>mxUnitRow(u,code)).join('')+
+          '</div>'+
+        '</div>'
+      ).join('');
+      // wire add buttons & tag clicks
+      codes.forEach(code=>{
+        mxTagsRefresh(code);
+      });
+    }
+
+    else if(_mxDisplayMode==='tabs'){
+      if(!_mxActiveTab||!codes.includes(_mxActiveTab)) _mxActiveTab=codes[0];
+      $('mxCodesWrap').innerHTML=
+        '<div class="mx-tabs-nav" id="mxTabsNav">'+
+          codes.map(c=>'<button class="mx-tab-btn'+(c===_mxActiveTab?' on':'')+'" onclick="mxSwitchTab(\''+c+'\')">'+
+            '<span class="mx-cb '+codeClass(c)+'" style="font-size:10px;padding:2px 6px;margin-right:4px">'+esc(c)+'</span>'+
+          '</button>').join('')+
+        '</div>'+
+        codes.map(code=>
+          '<div class="mx-tab-content'+(code===_mxActiveTab?' on':'')+'" id="mxTab_'+code+'">'+
+            '<div class="mx-units-list" style="max-height:280px">'+units.map(u=>mxUnitRow(u,code)).join('')+'</div>'+
+          '</div>'
+        ).join('');
+    }
+
+    // restore saved selections
+    codes.forEach(code=>{
+      const ids=(_mxInitSels[code]||[]).map(String);
+      document.querySelectorAll('[data-code="'+code+'"]').forEach(cb=>{
+        cb.checked=ids.includes(String(cb.dataset.uid));
+      });
+    });
+
+    if(_mxDisplayMode==='tags') codes.forEach(c=>mxTagsRefresh(c));
+
+    // close tags dropdowns on outside click
+    if(_mxDisplayMode==='tags'){
+      setTimeout(()=>document.addEventListener('click',mxTagsOutside,{once:false}),10);
+    } else {
+      document.removeEventListener('click',mxTagsOutside);
+    }
+  }
+
+  function mxTagsRefresh(code){
+    const area=$('mxTagsArea_'+code); if(!area)return;
+    const checked=[...document.querySelectorAll('[data-code="'+code+'"]')].filter(c=>c.checked);
+    const tags=checked.map(cb=>{
+      const lbl=cb.closest('label'); const name=lbl?lbl.querySelector('.mx-urow-name').textContent:'';
+      return '<span class="mx-tag">'+esc(name)+'<span class="mx-tag-x" onclick="mxTagRemove(\''+code+'\',\''+cb.dataset.uid+'\')">×</span></span>';
+    }).join('');
+    area.innerHTML=tags+'<button class="mx-tags-add" onclick="mxTagsToggle(\''+code+'\',event)">+ Додати</button>';
+  }
+
+  window.mxTagsToggle=function(code,e){
+    e.stopPropagation();
+    const drop=$('mxTagsDrop_'+code); if(!drop)return;
+    const isOpen=drop.style.display==='block';
+    document.querySelectorAll('.mx-tags-drop').forEach(d=>d.style.display='none');
+    if(!isOpen){drop.style.display='block';}
+    // attach change listeners
+    drop.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+      cb.onchange=()=>mxTagsRefresh(code);
+    });
+  };
+  window.mxTagRemove=function(code,uid){
+    const cb=document.querySelector('[data-code="'+code+'"][data-uid="'+uid+'"]');
+    if(cb){cb.checked=false;mxTagsRefresh(code);}
+  };
+  function mxTagsOutside(e){
+    if(!e.target.closest('.mx-code-row-tags'))
+      document.querySelectorAll('.mx-tags-drop').forEach(d=>d.style.display='none');
+  }
+
+  window.mxSwitchTab=function(code){
+    _mxActiveTab=code;
+    document.querySelectorAll('.mx-tab-btn').forEach(b=>b.classList.toggle('on',b.textContent.trim().startsWith(code)||(b.querySelector('.mx-cb')&&b.querySelector('.mx-cb').textContent.trim()===code)));
+    document.querySelectorAll('.mx-tab-content').forEach(t=>t.classList.toggle('on',t.id==='mxTab_'+code));
+  };
+
+  window.mxSetDisplayMode=function(mode){
+    // save current selections before re-render
+    _mxCodes.forEach(code=>{
+      _mxInitSels[code]=[...document.querySelectorAll('[data-code="'+code+'"]:checked')].map(c=>c.dataset.uid);
+    });
+    _mxDisplayMode=mode;
+    document.querySelectorAll('#mxViewSeg button').forEach(b=>b.classList.toggle('on',b.textContent.trim()===({'list':'Списки','tags':'Теги','tabs':'Вкладки'}[mode])));
+    mxRenderCodes();
+  };
 
   window.mxOpenModal=function(rowId){
     mxEditId=rowId||null;
-    const codes=mxSet==='pov'?['DI','A','P','V','I']:['m','a','o','d','h'];
+    _mxCodes=mxSet==='pov'?['DI','A','P','V','I']:['m','a','o','d','h'];
+    _mxUnits=flatOrgUnits();
+    _mxInitSels={};
     $('mxModalTitle').textContent=mxEditId?'Редагувати процес':'Новий процес';
     $('mxSlaLabel').textContent=mxSet==='pov'?'SLA':'Капітан';
-    const units=flatOrgUnits();
-    $('mxCodesWrap').innerHTML=codes.map(code=>
-      '<div class="mx-code-row">'+
-        '<span class="mx-cb '+codeClass(code)+'">'+esc(code)+'</span>'+
-        '<div class="mx-units-list">'+
-          units.map(u=>
-            '<label class="mx-urow '+(u.level===0?'mx-urow-parent':'mx-urow-child')+'" style="padding-left:'+(10+u.level*14)+'px;--mx-lvl:'+u.level+'">'+
-              '<input type="checkbox" data-code="'+code+'" data-uid="'+u.id+'">'+
-              '<span class="mx-chk"></span>'+
-              '<span class="mx-urow-name">'+esc(u.name)+'</span>'+
-            '</label>'
-          ).join('')+
-        '</div>'+
-      '</div>'
-    ).join('');
     if(mxEditId!==null){
       const r=rows().find(x=>x.id===mxEditId);
       if(r){
-        $('mxCatIn').value=r.c||'';
-        $('mxDescIn').value=r.d||'';
-        $('mxSlaIn').value=r.sla||r.cap||'';
-        codes.forEach(code=>{
-          const ids=(Array.isArray(r.a[code])?r.a[code]:[]).map(String);
-          document.querySelectorAll('[data-code="'+code+'"]').forEach(cb=>{
-            cb.checked=ids.includes(cb.dataset.uid);
-          });
-        });
+        $('mxCatIn').value=r.c||'';$('mxDescIn').value=r.d||'';$('mxSlaIn').value=r.sla||r.cap||'';
+        _mxCodes.forEach(code=>{_mxInitSels[code]=(Array.isArray(r.a[code])?r.a[code]:[]).map(String);});
       }
     } else {
       $('mxCatIn').value='';$('mxDescIn').value='';$('mxSlaIn').value='';
     }
+    // sync seg buttons
+    document.querySelectorAll('#mxViewSeg button').forEach(b=>b.classList.toggle('on',b.textContent.trim()===({'list':'Списки','tags':'Теги','tabs':'Вкладки'}[_mxDisplayMode])));
+    mxRenderCodes();
     $('mxModal').style.display='flex';
     setTimeout(()=>{_mxSnapshot=mxGetState();},0);
   };
