@@ -798,7 +798,9 @@
         <div class="modal" style="max-width:440px">
           <h3 id="empModalTitle">Новий співробітник</h3>
           <div class="body">
-            <div><label>ПІБ (повне ім'я)</label><input id="empName" placeholder="Напр., Іваненко Іван Іванович" /></div>
+            <div><label>Прізвище</label><input id="empLastName" placeholder="Напр., Іваненко" /></div>
+            <div><label>Ім'я</label><input id="empFirstName" placeholder="Напр., Іван" /></div>
+            <div><label>По батькові</label><input id="empPatronymic" placeholder="Напр., Іванович" /></div>
           </div>
           <div class="foot">
             <button class="btn" onclick="empCloseModal()">Скасувати</button>
@@ -1240,7 +1242,7 @@
     const emp=n.employee_id?dictEmps.find(e=>e.id===n.employee_id):null;
     const type=n.unit_type_id?dictTypes.find(t=>t.id===n.unit_type_id):null;
     const kind=n.unit_kind_id?dictKinds.find(k=>k.id===n.unit_kind_id):null;
-    const headText=emp?emp.full_name:(n.head||'');
+    const headText=emp?empFull(emp):(n.head||'');
     const icon=type?(ICON_SET[type.icon||'building']||ICON_SET.building):ORG_ICONS[Math.min(lvl,ORG_ICONS.length-1)];
     const tog=has
       ?('<button class="org-toggle '+(n.collapsed?'collapsed':'')+'" onclick="orgToggle('+n.id+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6"/></svg></button>')
@@ -1280,7 +1282,7 @@
 
   function fillOrgModalSelects(){
     const es=document.getElementById('orgEmployee');const c1=es.value;
-    es.innerHTML='<option value="">— Не вказано —</option>'+dictEmps.map(r=>`<option value="${r.id}">${orgEsc(r.full_name)}</option>`).join('');es.value=c1;
+    es.innerHTML='<option value="">— Не вказано —</option>'+dictEmps.map(r=>`<option value="${r.id}">${orgEsc(empFull(r))}</option>`).join('');es.value=c1;
     const ts=document.getElementById('orgUnitType');const c2=ts.value;
     ts.innerHTML='<option value="">— Не вказано —</option>'+dictTypes.map(r=>`<option value="${r.id}">${orgEsc(r.name)}</option>`).join('');ts.value=c2;
     const ks=document.getElementById('orgUnitKind');const c3=ks.value;
@@ -1331,7 +1333,7 @@
   document.getElementById('typeModal').addEventListener('click',e=>{if(e.target.id==='typeModal')typeCloseModal();});
   document.getElementById('kindModal').addEventListener('click',e=>{if(e.target.id==='kindModal')kindCloseModal();});
   document.getElementById('orgName').addEventListener('keydown',e=>{if(e.key==='Enter')orgSave();});
-  document.getElementById('empName').addEventListener('keydown',e=>{if(e.key==='Enter')empSave();});
+  [$('empLastName'),$('empFirstName'),$('empPatronymic')].forEach(el=>el.addEventListener('keydown',e=>{if(e.key==='Enter')empSave();}));
   document.getElementById('typeName').addEventListener('keydown',e=>{if(e.key==='Enter')typeSave();});
   document.getElementById('kindName').addEventListener('keydown',e=>{if(e.key==='Enter')kindSave();});
 
@@ -1342,7 +1344,7 @@
 
   async function loadAllDicts(){
     const [e,t,k]=await Promise.all([
-      db.from('dict_employees').select('*').order('full_name'),
+      db.from('dict_employees').select('*').order('last_name'),
       db.from('dict_unit_types').select('*').order('name'),
       db.from('dict_unit_kinds').select('*').order('name')
     ]);
@@ -1353,13 +1355,14 @@
   }
 
   /* --- Співробітники --- */
+  function empFull(r){return[r.last_name,r.first_name,r.patronymic].filter(Boolean).join(' ');}
   function renderEmps(){
     const tbody=document.getElementById('empBody');if(!tbody)return;
     document.getElementById('empCount').textContent=dictEmps.length;
     tbody.innerHTML=dictEmps.map(r=>`<tr>
-      <td class="t-name">${orgEsc(r.full_name)}</td>
+      <td class="t-name">${orgEsc(empFull(r))}</td>
       <td><div class="row-act" id="empAct-${r.id}">
-        <button class="ico-btn" onclick="empEditOpen(${r.id},${qs(r.full_name)})">${_eIco}</button>
+        <button class="ico-btn" onclick="empEditOpen(${r.id},${qs(r.last_name||'')},${qs(r.first_name||'')},${qs(r.patronymic||'')})">${_eIco}</button>
         <button class="ico-btn del" onclick="empAskDel(${r.id})">${_dIco}</button>
       </div></td></tr>`).join('')||'<tr><td colspan="2" class="empty">Немає записів</td></tr>';
   }
@@ -1367,12 +1370,17 @@
     const el=document.getElementById('empAct-'+id);
     el.outerHTML=`<span class="org-confirm" id="empAct-${id}">Видалити? <button class="yes" onclick="empDel(${id})">Так</button><button onclick="renderEmps()">Ні</button></span>`;
   };
-  window.empAdd=()=>{empEdit=null;$('empModalTitle').textContent='Новий співробітник';$('empName').value='';$('empModal').classList.add('open');$('empName').focus();};
-  window.empEditOpen=(id,name)=>{empEdit=id;$('empModalTitle').textContent='Редагувати';$('empName').value=name;$('empModal').classList.add('open');$('empName').focus();};
+  window.empAdd=()=>{empEdit=null;$('empModalTitle').textContent='Новий співробітник';$('empLastName').value='';$('empFirstName').value='';$('empPatronymic').value='';$('empModal').classList.add('open');$('empLastName').focus();};
+  window.empEditOpen=(id,ln,fn,pat)=>{empEdit=id;$('empModalTitle').textContent='Редагувати';$('empLastName').value=ln;$('empFirstName').value=fn;$('empPatronymic').value=pat;$('empModal').classList.add('open');$('empLastName').focus();};
   window.empCloseModal=()=>$('empModal').classList.remove('open');
   window.empSave=async()=>{
-    const full_name=$('empName').value.trim();if(!full_name){$('empName').focus();return;}
-    const res=empEdit!==null?await db.from('dict_employees').update({full_name}).eq('id',empEdit):await db.from('dict_employees').insert({full_name});
+    const last_name=$('empLastName').value.trim();
+    const first_name=$('empFirstName').value.trim();
+    const patronymic=$('empPatronymic').value.trim();
+    if(!last_name){$('empLastName').focus();return;}
+    const res=empEdit!==null
+      ?await db.from('dict_employees').update({last_name,first_name,patronymic}).eq('id',empEdit)
+      :await db.from('dict_employees').insert({last_name,first_name,patronymic});
     if(res.error){alert('Помилка: '+res.error.message);return;}
     empCloseModal();await loadAllDicts();
   };
