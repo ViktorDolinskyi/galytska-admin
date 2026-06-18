@@ -850,7 +850,7 @@
         <div id="companyTab-structure">
           <div class="kpis" style="grid-template-columns:repeat(5,1fr);margin-bottom:22px" id="orgKpiGrid">
             <div class="kpi">
-              <div class="k-top">Усього підрозділів<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span></div>
+              <div class="k-top">Структурних одиниць<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span></div>
               <div class="k-val" id="orgKpiAll">0</div>
               <div class="k-sub" id="orgKpiDepSub"></div>
             </div>
@@ -1627,7 +1627,7 @@
     walk(orgData,1);
     const pct=(v)=>all?Math.round(v/all*100)+'%':'0%';
     document.getElementById('orgKpiAll').textContent=all;
-    document.getElementById('orgKpiDepSub').textContent=orgData.length+' департамент'+(orgData.length===1?'':'и')+' · '+maxDepth+' рівн'+(maxDepth===1?'ень':'ів');
+    document.getElementById('orgKpiDepSub').textContent=dictEmps.length+' співробітник'+(dictEmps.length===1?'':'ів')+' в довіднику';
     document.getElementById('orgKpiActive').textContent=active;
     document.getElementById('orgKpiActiveSub').textContent=pct(active)+' від загального';
     document.getElementById('orgKpiActing').textContent=acting;
