@@ -477,7 +477,8 @@
   .modal input[type="date"]{color-scheme:light;cursor:pointer}
   .modal input[type="date"]::-webkit-calendar-picker-indicator{display:none}
   /* ── Flatpickr override ── */
-  .flatpickr-calendar{font-family:'Manrope',sans-serif;border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 32px rgba(27,23,20,.18);padding:10px;background:#fff !important;opacity:1!important;z-index:99999!important}
+  .flatpickr-calendar{font-family:'Manrope',sans-serif;border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 32px rgba(27,23,20,.18);padding:10px;background:#fff !important;opacity:1!important;z-index:99999!important;width:307.875px!important}
+  .flatpickr-days,.dayContainer{width:287.875px!important;min-width:287.875px!important;max-width:287.875px!important}
   .flatpickr-months{padding:0 4px 6px;align-items:center}
   .flatpickr-month{color:var(--ink);fill:var(--ink)}
   .flatpickr-current-month{font-size:14px;font-weight:700;color:var(--ink)}
@@ -1601,7 +1602,7 @@
   document.getElementById('kindModal').addEventListener('click',e=>{if(e.target.id==='kindModal')kindCloseModal();});
   document.getElementById('orgName').addEventListener('keydown',e=>{if(e.key==='Enter')orgSave();});
   [$('empLastName'),$('empFirstName'),$('empPatronymic')].forEach(el=>el.addEventListener('keydown',e=>{if(e.key==='Enter')empSave();}));
-  const _fpBirth = flatpickr($('empBirthdate'),{locale:flatpickr.l10ns.uk,dateFormat:'Y-m-d',altInput:true,altFormat:'d.m.Y',allowInput:true,disableMobile:true});
+  window._fpBirth = flatpickr($('empBirthdate'),{locale:flatpickr.l10ns.uk,dateFormat:'Y-m-d',altInput:true,altFormat:'d.m.Y',allowInput:true,disableMobile:true});
   document.getElementById('typeName').addEventListener('keydown',e=>{if(e.key==='Enter')typeSave();});
   document.getElementById('kindName').addEventListener('keydown',e=>{if(e.key==='Enter')kindSave();});
 
@@ -1643,7 +1644,9 @@
   window.empEditOpen=(id,ln,fn,pat)=>{
     empEdit=id;$('empModalTitle').textContent='Редагувати';
     $('empLastName').value=ln;$('empFirstName').value=fn;$('empPatronymic').value=pat;
-    const r=dictEmps.find(e=>e.id===id);$('empBirthdate').value=r&&r.birthdate?r.birthdate:'';
+    const r=dictEmps.find(e=>e.id===id);
+    const bd=r&&r.birthdate?r.birthdate:'';
+    if(window._fpBirth){_fpBirth.setDate(bd,false);}else{$('empBirthdate').value=bd;}
     $('empModal').classList.add('open');$('empLastName').focus();
   };
   window.empCloseModal=()=>$('empModal').classList.remove('open');
