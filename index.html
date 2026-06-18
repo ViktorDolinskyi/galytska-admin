@@ -352,10 +352,18 @@
   .mx-cell.rc4{background:#E0F4F5;color:#0E7C86}.mx-cell.rc5{background:#FDE8DC;color:#B0561E}
   .mx-cell.rc6{background:#F1EFE8;color:#5F5E5A}.mx-cell.rc7{background:#FAECE7;color:#993C1D}
   .mx-cell.rc8{background:var(--page);color:var(--slate)}
-  /* Matrix list view */
-  .mx-code-th{text-align:center;font-family:ui-monospace,monospace;font-weight:800;font-size:12px;min-width:110px;padding:8px 6px}
-  .mx-code-cell{padding:4px 8px;vertical-align:top}
-  .mx-unit-pill{display:inline-block;background:var(--page);border:1px solid var(--line);border-radius:6px;padding:2px 7px;font-size:11px;font-weight:600;color:var(--slate);margin:2px 2px 0 0;white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis;vertical-align:middle}
+  /* Matrix card list */
+  .mx-proc-row{display:flex;align-items:flex-start;gap:10px;background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--brand-tint-2);border-radius:11px;padding:11px 13px 11px 14px;box-shadow:var(--shadow);margin-bottom:8px;transition:box-shadow .15s,border-color .15s}
+  .mx-proc-row:hover{box-shadow:0 2px 6px rgba(27,23,20,.06),0 12px 30px rgba(27,23,20,.09);border-left-color:var(--brand)}
+  .mx-proc-ic{width:30px;height:30px;border-radius:8px;flex:none;display:grid;place-items:center;background:var(--page);color:var(--slate)}
+  .mx-proc-ic svg{width:15px;height:15px;stroke-width:2}
+  .mx-proc-info{flex:1;min-width:0}
+  .mx-proc-info>b{font-weight:700;font-size:13.5px;display:block;line-height:1.3;letter-spacing:-.01em}
+  .mx-proc-meta{display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap}
+  .mx-proc-codes{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .mx-code-group{display:inline-flex;align-items:center;gap:3px;flex-wrap:wrap}
+  .mx-list-cat{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:16px 2px 6px}
+  .mx-unit-pill{display:inline-block;background:var(--page);border:1px solid var(--line);border-radius:6px;padding:2px 7px;font-size:11px;font-weight:600;color:var(--slate);margin:1px;white-space:nowrap;max-width:140px;overflow:hidden;text-overflow:ellipsis;vertical-align:middle}
   /* Matrix edit modal */
   .mx-code-row{display:grid;grid-template-columns:52px 1fr;gap:10px;align-items:start;margin-bottom:14px}
   .mx-cb{display:inline-flex;align-items:center;justify-content:center;font-family:ui-monospace,monospace;font-weight:800;font-size:13px;width:46px;height:36px;border-radius:8px;flex-shrink:0;margin-top:1px}
@@ -793,14 +801,7 @@
           </div>
         </div>
 
-        <div class="card">
-          <div class="mx-table-wrap">
-            <table id="mxTable">
-              <thead id="mxHead"><tr><th class="mx-th-proc">Рішення / дія</th></tr></thead>
-              <tbody id="mxBody"></tbody>
-            </table>
-          </div>
-        </div>
+        <div id="mxBody"></div>
         <button class="btn load-more" id="mxMore" style="display:none">Показати ще</button>
 
         <!-- Matrix process modal -->
@@ -1180,44 +1181,52 @@
     return '<div class="chips">'+out+'</div>';
   }
 
+  const MX_IC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>';
+  const MX_EDIT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+  const MX_DEL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+
   function render(reset){
     if(reset){mxPage=0}
     const codes=mxSet==='pov'?['DI','A','P','V','I']:['m','a','o','d','h'];
     const data=filtered();
     const end=(mxPage+1)*MX_PAGE;
     const slice=data.slice(0,end);
-    const cols=codes.length+3;
-
-    $('mxHead').innerHTML='<tr>'+
-      '<th style="width:36px;text-align:center;color:var(--muted);font-size:11px">#</th>'+
-      '<th style="width:150px">Категорія</th>'+
-      '<th>Бізнес-процес / рішення</th>'+
-      codes.map(c=>'<th class="mx-code-th '+codeClass(c)+'">'+esc(c)+'</th>').join('')+
-      '<th style="width:56px"></th></tr>';
 
     let lastCat='__NONE__',html='';
-    slice.forEach((r,i)=>{
-      html+='<tr>';
-      html+='<td style="text-align:center;color:var(--muted);font-size:12px">'+(i+1)+'</td>';
-      html+='<td>'+(r.c?'<span class="cat-tag">'+esc(r.c)+'</span>':'')+'</td>';
-      html+='<td class="mx-proc-cell">'+esc(r.d||'—')+
-        (r.sla?'<span class="mx-sub">SLA: '+esc(r.sla)+'</span>':'')+
-        (r.cap?'<span class="mx-sub">'+esc(r.cap)+'</span>':'')+'</td>';
-      codes.forEach(code=>{
+    slice.forEach(r=>{
+      if(r.c!==lastCat){lastCat=r.c;html+='<div class="mx-list-cat">'+esc(r.c||'Без категорії')+'</div>';}
+
+      const codeGroups=codes.map(code=>{
         const names=getCellUnits(r,code);
-        html+='<td class="mx-code-cell">'+(names.length
-          ?names.map(n=>'<span class="mx-unit-pill" title="'+esc(n)+'">'+esc(n)+'</span>').join('')
-          :'')+'</td>';
-      });
-      html+='<td style="white-space:nowrap;text-align:center">'+
-        '<button class="icon-btn" title="Редагувати" onclick="mxOpenModal('+r.id+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:15px;height:15px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>'+
-        '<button class="icon-btn" title="Видалити" onclick="mxAskDel('+r.id+',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:15px;height:15px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>'+
-        '</td>';
-      html+='</tr>';
+        if(!names.length)return'';
+        return'<span class="mx-code-group">'+
+          '<span class="mx-cb '+codeClass(code)+'" style="font-size:11px;width:30px;height:22px;border-radius:5px;flex-shrink:0">'+esc(code)+'</span>'+
+          names.map(n=>'<span class="mx-unit-pill" title="'+esc(n)+'">'+esc(n)+'</span>').join('')+
+        '</span>';
+      }).filter(Boolean).join('');
+
+      html+=
+        '<div class="mx-proc-row" id="mxrow-'+r.id+'">'+
+          '<span class="mx-proc-ic">'+MX_IC+'</span>'+
+          '<span class="mx-proc-info">'+
+            '<b>'+esc(r.d||'—')+'</b>'+
+            '<span class="mx-proc-meta">'+
+              (r.c?'<span class="cat-tag" style="font-size:10.5px;padding:2px 7px">'+esc(r.c)+'</span>':'')+
+              (r.sla?'<span style="color:var(--muted);font-size:11.5px">SLA: '+esc(r.sla)+'</span>':'')+
+              (r.cap?'<span style="color:var(--muted);font-size:11.5px">'+esc(r.cap)+'</span>':'')+
+            '</span>'+
+            (codeGroups?'<span class="mx-proc-codes">'+codeGroups+'</span>':'')+
+          '</span>'+
+          '<span class="org-acts" id="mxact-'+r.id+'">'+
+            '<button class="ico-btn" title="Редагувати" onclick="mxOpenModal('+r.id+')">'+MX_EDIT+'</button>'+
+            '<button class="ico-btn del" title="Видалити" onclick="mxAskDel('+r.id+')">'+MX_DEL+'</button>'+
+          '</span>'+
+        '</div>';
     });
 
-    $('mxBody').innerHTML=html||'<tr><td colspan="'+cols+'" class="empty">'+
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><br>Нічого не знайдено</td></tr>';
+    $('mxBody').innerHTML=html||'<div class="empty" style="padding:40px;text-align:center">'+
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:32px;height:32px;stroke-width:1.5;color:var(--muted)"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>'+
+      '<p style="color:var(--muted);margin-top:10px">Нічого не знайдено</p></div>';
     $('mxMore').style.display=data.length>end?'block':'none';
     $('mxStats').innerHTML=
       '<span><b>'+[...new Set(rows().map(r=>r.s).filter(Boolean))].length+'</b> матриць</span>'+
@@ -1288,9 +1297,10 @@
     mxCloseModal();await mxLoad();
   };
 
-  window.mxAskDel=function(id,btn){
-    const td=btn.closest('td');
-    td.innerHTML='<span class="org-confirm">Видалити? '+
+  window.mxAskDel=function(id){
+    const el=document.getElementById('mxact-'+id);
+    if(!el)return;
+    el.innerHTML='<span class="org-confirm">Видалити? '+
       '<button class="yes" onclick="mxDelRow('+id+')">Так</button>'+
       '<button onclick="render(false)">Ні</button></span>';
   };
