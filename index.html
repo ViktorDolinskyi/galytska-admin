@@ -874,7 +874,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
       </button>
       <div>
-        <div class="eyebrow">Облік виробництва</div>
+        <div class="eyebrow" id="eyebrow">Огляд діяльності</div>
         <h1 id="crumb">Панель</h1>
       </div>
       <div class="search">
@@ -1615,6 +1615,16 @@
   const items = document.querySelectorAll('.nav-item');
   const views = document.querySelectorAll('.view');
   const crumb = document.getElementById('crumb');
+  const eyebrow = document.getElementById('eyebrow');
+  const EYEBROWS={
+    dashboard:'Огляд діяльності',
+    users:'Управління персоналом',
+    processes:'Операційна діяльність',
+    matrix:'Операційна діяльність',
+    goals:'Стратегічний розвиток',
+    company:'Структура організації',
+    settings:'Налаштування системи',
+  };
   items.forEach(btn=>{
     btn.addEventListener('click',()=>{
       items.forEach(i=>i.classList.remove('active'));
@@ -1622,6 +1632,7 @@
       const id = btn.dataset.view;
       views.forEach(v=>v.classList.toggle('active', v.id==='view-'+id));
       crumb.textContent = btn.dataset.label || btn.textContent.trim();
+      if(eyebrow) eyebrow.textContent = EYEBROWS[id] || 'Галицька Свіжина';
       if(btn.dataset.companyTab) companyTab(btn.dataset.companyTab);
       else if(id==='company') companyTab('structure');
       closeNav();
