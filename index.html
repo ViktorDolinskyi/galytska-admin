@@ -901,7 +901,12 @@
           <h3 id="orgModalTitle">Новий підрозділ</h3>
           <div class="body">
             <div><label>Назва підрозділу</label><input id="orgName" placeholder="Напр., Відділ маркетингу" /></div>
-            <div><label>Керівник</label><select id="orgEmployee" class="modal-sel"><option value="">— Не вказано —</option></select></div>
+            <div><label>Статус</label><select id="orgStatus" class="modal-sel" onchange="orgStatusChange(this.value)">
+              <option value="active">Активний</option>
+              <option value="inactive">Неактивний</option>
+              <option value="acting">Функція (в.о.)</option>
+            </select></div>
+            <div><label id="orgEmpLabel">Керівник</label><select id="orgEmployee" class="modal-sel"><option value="">— Не вказано —</option></select></div>
             <div><label>Тип структурної одиниці</label><select id="orgUnitType" class="modal-sel"><option value="">— Не вказано —</option></select></div>
             <div><label>Вид структурної одиниці</label><select id="orgUnitKind" class="modal-sel"><option value="">— Не вказано —</option></select></div>
             <div><label>Підпорядковується</label><select id="orgParentSel" class="modal-sel"></select></div>
@@ -1497,14 +1502,22 @@
     const typeBadge=type
       ?'<span class="org-depth-badge" style="background:var(--brand-tint);color:var(--brand);border-color:var(--brand-tint-2)">'+orgEsc(type.name)+'</span>'
       :'<span class="org-depth-badge">'+lvlLabel+'</span>';
-    const kindDot='';
-    const borderL=kind?'border-left:3px solid '+kind.color+';background:'+kind.color+'18;':'';
+    const status=n.status||'active';
+    const isActing=status==='acting';
+    const isInactive=status==='inactive';
+    const borderL=(kind?'border-left:3px solid '+kind.color+';background:'+kind.color+'18;':'')+(isInactive?'opacity:0.55;':'');
+    const statusBadge=isInactive
+      ?'<span class="org-depth-badge" style="background:#FEE2E2;color:#B91C1C;border-color:#FECACA">Неактивний</span>'
+      :isActing
+      ?'<span class="org-depth-badge" style="background:#FFF7ED;color:#C2410C;border-color:#FED7AA">В.О.</span>'
+      :'';
+    const headDisplay=isActing&&headText?'в.о. '+headText:headText;
     const row='<div class="org-row" data-lvl="'+Math.min(lvl,5)+'" id="orgrow-'+n.id+'" onclick="orgRowClick(event,'+n.id+')" style="'+borderL+'">'+tog+
       '<span class="org-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor">'+icon+'</svg></span>'+
-      '<span class="org-info"><b>'+orgEsc(n.name)+'</b>'+(headText
-        ?'<span>'+kindDot+(emp?'<button class="emp-link" onclick="event.stopPropagation();empEditOpen('+emp.id+','+qs(emp.last_name||'')+','+qs(emp.first_name||'')+','+qs(emp.patronymic||'')+')">'+orgEsc(headText)+'</button>':orgEsc(headText))+'</span>'
+      '<span class="org-info"><b>'+orgEsc(n.name)+'</b>'+(headDisplay
+        ?'<span>'+(emp?'<button class="emp-link" onclick="event.stopPropagation();empEditOpen('+emp.id+','+qs(emp.last_name||'')+','+qs(emp.first_name||'')+','+qs(emp.patronymic||'')+')">'+orgEsc(headDisplay)+'</button>':orgEsc(headDisplay))+'</span>'
         :'<span>Керівника не призначено</span>')+'</span>'+
-      typeBadge+cnt+
+      typeBadge+statusBadge+cnt+
       '<span class="org-acts">'+
         '<button class="ico-btn" title="Додати підрозділ" onclick="orgOpen('+n.id+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg></button>'+
         '<button class="ico-btn" title="Редагувати" onclick="orgEditNode('+n.id+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>'+
@@ -1535,10 +1548,15 @@
     const ks=document.getElementById('orgUnitKind');const c3=ks.value;
     ks.innerHTML='<option value="">— Не вказано —</option>'+dictKinds.map(r=>`<option value="${r.id}">${orgEsc(r.name)}</option>`).join('');ks.value=c3;
   }
+  window.orgStatusChange=function(v){
+    $('orgEmpLabel').textContent=v==='acting'?'Виконуючий обов\'язки (в.о.)':'Керівник';
+  };
   window.orgOpen=parentId=>{
     orgEdit=null;orgParent=parentId;
     document.getElementById('orgModalTitle').textContent=parentId===null?'Новий департамент':'Новий підрозділ';
     document.getElementById('orgName').value='';
+    document.getElementById('orgStatus').value='active';
+    orgStatusChange('active');
     fillOrgModalSelects();
     document.getElementById('orgEmployee').value='';
     document.getElementById('orgUnitType').value='';
@@ -1551,6 +1569,8 @@
     const n=orgFind(orgData,id);if(!n)return;orgEdit=id;orgParent=null;
     document.getElementById('orgModalTitle').textContent='Редагувати підрозділ';
     document.getElementById('orgName').value=n.name;
+    document.getElementById('orgStatus').value=n.status||'active';
+    orgStatusChange(n.status||'active');
     fillOrgModalSelects();
     document.getElementById('orgEmployee').value=n.employee_id||'';
     document.getElementById('orgUnitType').value=n.unit_type_id||'';
@@ -1715,10 +1735,12 @@
 
   // Завантаження структури з бази та побудова дерева
   async function orgLoad(){
+    const collapsed=new Set();
+    (function saveC(l){l.forEach(n=>{if(n.collapsed)collapsed.add(n.id);saveC(n.children||[]);});})(orgData);
     const {data,error}=await db.from('company_units').select('*').order('sort').order('id');
     if(error){console.error(error);alert('Помилка завантаження: '+error.message);return;}
     const map={},roots=[];
-    data.forEach(r=>{map[r.id]={id:r.id,name:r.name,head:r.head||'',employee_id:r.employee_id||null,unit_type_id:r.unit_type_id||null,unit_kind_id:r.unit_kind_id||null,children:[],collapsed:false};});
+    data.forEach(r=>{map[r.id]={id:r.id,name:r.name,head:r.head||'',employee_id:r.employee_id||null,unit_type_id:r.unit_type_id||null,unit_kind_id:r.unit_kind_id||null,status:r.status||'active',children:[],collapsed:collapsed.has(r.id)};});
     data.forEach(r=>{const n=map[r.id];if(r.parent_id&&map[r.parent_id])map[r.parent_id].children.push(n);else roots.push(n);});
     orgData=roots;orgRender();
   }
@@ -1731,7 +1753,8 @@
     const pidVal=$('orgParentSel').value;
     const newParId=pidVal===''?null:parseInt(pidVal);
     if(!name){$('orgName').focus();return;}
-    const payload={name,employee_id,unit_type_id,unit_kind_id,parent_id:newParId};
+    const status=$('orgStatus').value||'active';
+    const payload={name,employee_id,unit_type_id,unit_kind_id,parent_id:newParId,status};
     const res=orgEdit!==null?await db.from('company_units').update(payload).eq('id',orgEdit):await db.from('company_units').insert(payload);
     if(res.error){alert('Помилка збереження: '+res.error.message);return;}
     orgCloseModal();await orgLoad();
