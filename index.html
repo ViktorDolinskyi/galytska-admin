@@ -43,17 +43,37 @@
   }
   ::selection{background:var(--brand-tint);}
 
-  .app{display:grid; grid-template-columns:var(--sb) 1fr; min-height:100vh;}
+  .app{display:grid; grid-template-columns:var(--sb) 1fr; min-height:100vh; transition:grid-template-columns .22s ease;}
+  .app.sb-collapsed{grid-template-columns:60px 1fr}
 
   /* ---------- Сайдбар ---------- */
   .sidebar{
     background:var(--surface); border-right:1px solid var(--line);
     display:flex; flex-direction:column; position:sticky; top:0; height:100vh;
+    overflow:hidden; transition:width .22s ease; width:var(--sb);
   }
+  .app.sb-collapsed .sidebar{width:60px}
+  /* Кнопка згортання */
+  .sb-collapse-btn{
+    position:absolute;top:20px;right:-13px;z-index:10;
+    width:26px;height:26px;border-radius:50%;
+    background:var(--surface);border:1.5px solid var(--line);
+    display:grid;place-items:center;cursor:pointer;
+    color:var(--slate);transition:background .12s,color .12s,transform .22s;
+    box-shadow:0 1px 4px rgba(27,23,20,.1);
+  }
+  .sb-collapse-btn svg{width:13px;height:13px;stroke-width:2.5;transition:transform .22s}
+  .sb-collapse-btn:hover{background:var(--brand-tint);color:var(--brand);border-color:var(--brand-tint-2)}
+  .app.sb-collapsed .sb-collapse-btn svg{transform:rotate(180deg)}
+
   .brand{
     display:flex; align-items:center; gap:12px;
     padding:20px 20px 18px; border-bottom:1px solid var(--line);
+    white-space:nowrap; overflow:hidden;
   }
+  .app.sb-collapsed .brand{padding:16px 0;justify-content:center;border-bottom-color:transparent}
+  .app.sb-collapsed .wordmark{display:none}
+  .app.sb-collapsed .logo-mark{margin:0 auto}
   /* Слот для лого: замініть .logo-mark на <img src="..."> з вашим логотипом */
   .logo-mark{
     width:38px; height:38px; border-radius:9px; flex:none;
@@ -68,30 +88,48 @@
   }
   .wordmark span{font-size:11px; color:var(--muted); letter-spacing:.06em; text-transform:uppercase;}
 
-  .nav{padding:14px 12px; display:flex; flex-direction:column; gap:2px; flex:1;}
-  .nav-label{font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); padding:12px 12px 6px;}
+  .nav{padding:14px 12px; display:flex; flex-direction:column; gap:2px; flex:1; overflow:hidden;}
+  .app.sb-collapsed .nav{padding:10px 8px}
+  .nav-label{font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); padding:12px 12px 6px; white-space:nowrap;}
+  .app.sb-collapsed .nav-label{display:none}
   .nav-item{
     display:flex; align-items:center; gap:11px;
     padding:9px 12px; border-radius:9px; cursor:pointer;
     color:var(--slate); font-weight:600; font-size:13.5px;
     border:none; background:none; width:100%; text-align:left;
-    position:relative; transition:background .12s, color .12s;
+    position:relative; transition:background .12s, color .12s; white-space:nowrap;
   }
+  .app.sb-collapsed .nav-item{padding:9px;justify-content:center;gap:0}
   .nav-item svg{width:18px; height:18px; flex:none; stroke-width:1.9;}
+  .nav-item .nav-label-txt{transition:opacity .15s}
+  .app.sb-collapsed .nav-item .nav-label-txt{display:none}
   .nav-item:hover{background:#FAF7F5; color:var(--ink);}
   .nav-item.active{background:var(--brand-tint); color:var(--brand);}
   .nav-item.active::before{
     content:""; position:absolute; left:-12px; top:7px; bottom:7px;
     width:3px; border-radius:0 3px 3px 0; background:var(--brand);
   }
+  .app.sb-collapsed .nav-item.active::before{left:-8px}
   .nav-item:focus-visible{outline:2px solid var(--brand); outline-offset:2px;}
+  /* Tooltip при collapsed */
+  .app.sb-collapsed .nav-item{position:relative}
+  .app.sb-collapsed .nav-item:hover::after{
+    content:attr(data-label);position:absolute;left:calc(100% + 10px);top:50%;
+    transform:translateY(-50%);background:var(--ink);color:#fff;
+    font-size:12px;font-weight:600;padding:5px 10px;border-radius:7px;
+    white-space:nowrap;z-index:100;pointer-events:none;
+    box-shadow:0 4px 12px rgba(27,23,20,.2);
+  }
 
-  .sb-foot{padding:14px; border-top:1px solid var(--line); display:flex; align-items:center; gap:10px;}
+  .sb-foot{padding:14px; border-top:1px solid var(--line); display:flex; align-items:center; gap:10px; overflow:hidden; white-space:nowrap;}
+  .app.sb-collapsed .sb-foot{padding:10px 8px;justify-content:center;flex-direction:column;gap:6px}
   .avatar{width:34px;height:34px;border-radius:50%;background:var(--brand-tint-2);color:var(--brand);
     display:grid;place-items:center;font-weight:800;font-size:13px;flex:none;}
-  .sb-foot .who{line-height:1.2;min-width:0}
+  .sb-foot .who{line-height:1.2;min-width:0;overflow:hidden}
   .sb-foot .who b{display:block;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .sb-foot .who span{font-size:11.5px;color:var(--muted)}
+  .app.sb-collapsed .sb-foot .who{display:none}
+  .app.sb-collapsed .sb-foot .ico-btn{margin-left:0!important}
 
   /* ---------- Контент ---------- */
   .main{display:flex;flex-direction:column;min-width:0;}
@@ -390,9 +428,11 @@
 <div class="app">
 
   <!-- ============ САЙДБАР ============ -->
-  <aside class="sidebar" id="sidebar">
+  <aside class="sidebar" id="sidebar" style="position:relative">
+    <button class="sb-collapse-btn" id="sbCollapseBtn" title="Згорнути меню" onclick="toggleSidebar()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
     <div class="brand">
-      <!-- ЛОГОТИП: замініть цей div на <img src="ваш-логотип.svg" alt="Галицька Свіжина" style="height:38px"> -->
       <div class="logo-mark">ГС</div>
       <div class="wordmark">
         <b>Галицька<br>Свіжина</b>
@@ -402,33 +442,33 @@
 
     <nav class="nav">
       <div class="nav-label">Управління</div>
-      <button class="nav-item active" data-view="dash">
+      <button class="nav-item active" data-view="dash" data-label="Панель">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-        Панель
+        <span class="nav-label-txt">Панель</span>
       </button>
-      <button class="nav-item" data-view="users">
+      <button class="nav-item" data-view="users" data-label="Користувачі">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>
-        Користувачі
+        <span class="nav-label-txt">Користувачі</span>
       </button>
-      <button class="nav-item" data-view="proc">
+      <button class="nav-item" data-view="proc" data-label="Процеси">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
-        Процеси
+        <span class="nav-label-txt">Процеси</span>
       </button>
-      <button class="nav-item" data-view="matrix">
+      <button class="nav-item" data-view="matrix" data-label="Матриці">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
-        Матриці
+        <span class="nav-label-txt">Матриці</span>
       </button>
-      <button class="nav-item" data-view="company">
+      <button class="nav-item" data-view="company" data-label="Компанія">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>
-        Компанія
+        <span class="nav-label-txt">Компанія</span>
       </button>
-      <button class="nav-item" data-view="reports">
+      <button class="nav-item" data-view="reports" data-label="Звіти">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
-        Звіти
+        <span class="nav-label-txt">Звіти</span>
       </button>
-      <button class="nav-item" data-view="analytics">
+      <button class="nav-item" data-view="analytics" data-label="Аналітика">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M7 15l3-4 3 3 4-6"/></svg>
-        Аналітика
+        <span class="nav-label-txt">Аналітика</span>
       </button>
     </nav>
 
@@ -751,6 +791,15 @@
   const sb = document.getElementById('sidebar');
   const scrim = document.getElementById('scrim');
   function closeNav(){sb.classList.remove('open');scrim.classList.remove('open')}
+
+  // Згортання сайдбару
+  const app = document.querySelector('.app');
+  const SB_KEY = 'sb_collapsed';
+  if(localStorage.getItem(SB_KEY)=='1') app.classList.add('sb-collapsed');
+  function toggleSidebar(){
+    const collapsed = app.classList.toggle('sb-collapsed');
+    localStorage.setItem(SB_KEY, collapsed?'1':'0');
+  }
   document.getElementById('burger').addEventListener('click',()=>{
     sb.classList.toggle('open');scrim.classList.toggle('open');
   });
