@@ -1357,11 +1357,15 @@
     document.getElementById('empCount').textContent=dictEmps.length;
     tbody.innerHTML=dictEmps.map(r=>`<tr>
       <td class="t-name">${orgEsc(r.full_name)}</td>
-      <td><div class="row-act">
+      <td><div class="row-act" id="empAct-${r.id}">
         <button class="ico-btn" onclick="empEditOpen(${r.id},${JSON.stringify(r.full_name)})">${_eIco}</button>
-        <button class="ico-btn del" onclick="empDel(${r.id})">${_dIco}</button>
+        <button class="ico-btn del" onclick="empAskDel(${r.id})">${_dIco}</button>
       </div></td></tr>`).join('')||'<tr><td colspan="2" class="empty">Немає записів</td></tr>';
   }
+  window.empAskDel=id=>{
+    const el=document.getElementById('empAct-'+id);
+    el.outerHTML=`<span class="org-confirm" id="empAct-${id}">Видалити? <button class="yes" onclick="empDel(${id})">Так</button><button onclick="renderEmps()">Ні</button></span>`;
+  };
   window.empAdd=()=>{empEdit=null;$('empModalTitle').textContent='Новий співробітник';$('empName').value='';$('empModal').classList.add('open');$('empName').focus();};
   window.empEditOpen=(id,name)=>{empEdit=id;$('empModalTitle').textContent='Редагувати';$('empName').value=name;$('empModal').classList.add('open');$('empName').focus();};
   window.empCloseModal=()=>$('empModal').classList.remove('open');
@@ -1372,7 +1376,6 @@
     empCloseModal();await loadAllDicts();
   };
   window.empDel=async(id)=>{
-    if(!confirm('Видалити цього співробітника?'))return;
     await db.from('dict_employees').delete().eq('id',id);await loadAllDicts();
   };
 
@@ -1389,11 +1392,15 @@
     tbody.innerHTML=dictTypes.map(r=>`<tr>
       <td style="text-align:center">${iconSvg(r.icon||'building')}</td>
       <td class="t-name">${orgEsc(r.name)}</td>
-      <td><div class="row-act">
+      <td><div class="row-act" id="typeAct-${r.id}">
         <button class="ico-btn" onclick="typeEditOpen(${r.id},${JSON.stringify(r.name)},${JSON.stringify(r.icon||'building')})">${_eIco}</button>
-        <button class="ico-btn del" onclick="typeDel(${r.id})">${_dIco}</button>
+        <button class="ico-btn del" onclick="typeAskDel(${r.id})">${_dIco}</button>
       </div></td></tr>`).join('')||'<tr><td colspan="3" class="empty">Немає записів</td></tr>';
   }
+  window.typeAskDel=id=>{
+    const el=document.getElementById('typeAct-'+id);
+    el.outerHTML=`<span class="org-confirm" id="typeAct-${id}">Видалити? <button class="yes" onclick="typeDel(${id})">Так</button><button onclick="renderTypes()">Ні</button></span>`;
+  };
   window.typeAdd=()=>{typeEdit=null;selectedIcon='building';$('typeModalTitle').textContent='Новий тип';$('typeName').value='';buildIconPicker();$('typeModal').classList.add('open');$('typeName').focus();};
   window.typeEditOpen=(id,name,icon)=>{typeEdit=id;selectedIcon=icon||'building';$('typeModalTitle').textContent='Редагувати тип';$('typeName').value=name;buildIconPicker();$('typeModal').classList.add('open');$('typeName').focus();};
   window.typeCloseModal=()=>$('typeModal').classList.remove('open');
@@ -1415,11 +1422,15 @@
     tbody.innerHTML=dictKinds.map(r=>`<tr>
       <td style="text-align:center"><span class="color-swatch" style="background:${orgEsc(r.color||'#888')}"></span></td>
       <td class="t-name">${orgEsc(r.name)}</td>
-      <td><div class="row-act">
+      <td><div class="row-act" id="kindAct-${r.id}">
         <button class="ico-btn" onclick="kindEditOpen(${r.id},${JSON.stringify(r.name)},${JSON.stringify(r.color||'#888888')})">${_eIco}</button>
-        <button class="ico-btn del" onclick="kindDel(${r.id})">${_dIco}</button>
+        <button class="ico-btn del" onclick="kindAskDel(${r.id})">${_dIco}</button>
       </div></td></tr>`).join('')||'<tr><td colspan="3" class="empty">Немає записів</td></tr>';
   }
+  window.kindAskDel=id=>{
+    const el=document.getElementById('kindAct-'+id);
+    el.outerHTML=`<span class="org-confirm" id="kindAct-${id}">Видалити? <button class="yes" onclick="kindDel(${id})">Так</button><button onclick="renderKinds()">Ні</button></span>`;
+  };
   window.kindAdd=()=>{kindEdit=null;$('kindModalTitle').textContent='Новий вид';$('kindName').value='';$('kindColor').value='#4B5563';$('kindModal').classList.add('open');$('kindName').focus();};
   window.kindEditOpen=(id,name,color)=>{kindEdit=id;$('kindModalTitle').textContent='Редагувати вид';$('kindName').value=name;$('kindColor').value=color;$('kindModal').classList.add('open');$('kindName').focus();};
   window.kindCloseModal=()=>$('kindModal').classList.remove('open');
