@@ -305,6 +305,10 @@
   .legend-note{padding:0 18px 8px;color:var(--muted);font-size:12px}
   .legend-grid{padding:6px 18px 16px;display:flex;flex-wrap:wrap;gap:8px}
   .legend-grid .chip{cursor:default}
+  details.legend>div{padding:0 18px 18px}
+  .legend-table{width:100%;border-collapse:collapse;font-size:13px}
+  .legend-table td{padding:8px 10px;border:1px solid var(--line);vertical-align:top;line-height:1.5}
+  .legend-code{font-weight:800;font-size:15px;text-align:center;white-space:nowrap;background:var(--brand-tint);color:var(--brand);width:44px}
   .mx-table-wrap{overflow-x:auto}
   td.mx-dec{max-width:420px}
   td.mx-dec b{font-weight:700;font-size:13.5px;display:block}
@@ -703,8 +707,36 @@
 
         <details class="legend">
           <summary><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18l6-6-6-6"/></svg>Легенда кодів</summary>
-          <div class="legend-note">Розшифровку кодів у вихідному файлі (аркуш «ЛІТЕРИ») не заповнено. Нижче — усі коди, що зустрічаються; впишіть значення у файлі-джерелі.</div>
-          <div class="legend-grid" id="mxLegend"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:12px">
+
+            <div>
+              <div style="font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:10px">Матриця повноважень</div>
+              <table class="legend-table">
+                <tbody>
+                  <tr><td class="legend-code">DI</td><td>Має повноваження і повністю відповідає за впровадження рішення, включаючи негативні наслідки</td></tr>
+                  <tr><td class="legend-code">A</td><td>Схвалює рішення. У разі несхвалення відправляє назад заявнику (в т. ч. групі) і пояснює чому «ні». Не може прийняти рішення самостійно з моменту відмови</td></tr>
+                  <tr><td class="legend-code">P</td><td>Обов'язково бере участь (не може відмовитися або бути відмовленим). Може частково або повністю не погодитися, але не може ветувати</td></tr>
+                  <tr><td class="legend-code">V</td><td>Верифікація. Перевірка на відповідність усім правилам і політикам компанії. Може накласти вето і точно пояснити в чому порушення. Не може ветувати просто за своїм бажанням</td></tr>
+                  <tr><td class="legend-code">I</td><td>Повинен бути обов'язково проінформований про факт прийняття рішення</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div>
+              <div style="font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:10px">Матриця відповідальності</div>
+              <table class="legend-table">
+                <tbody>
+                  <tr><td class="legend-code">m</td><td>Визначає правила, є власником процесу, несе найвищу відповідальність за процес</td></tr>
+                  <tr><td class="legend-code">a</td><td>Періодичний контроль</td></tr>
+                  <tr><td class="legend-code">o</td><td>Організовує, приймає результат</td></tr>
+                  <tr><td class="legend-code">d</td><td>Виконує</td></tr>
+                  <tr><td class="legend-code">h</td><td>Допомагає, має місце будь-яка інша специфічна відповідальність</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+          <div class="legend-grid" id="mxLegend" style="margin-top:16px"></div>
         </details>
 
         <div class="mx-controls">
