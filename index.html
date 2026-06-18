@@ -46,6 +46,10 @@
   .app{display:grid; grid-template-columns:var(--sb) 1fr; min-height:100vh;}
   .app.sb-collapsed{grid-template-columns:60px 1fr}
 
+  /* Явне призначення grid-колонок */
+  .sidebar{grid-column:1}
+  .main{grid-column:2}
+
   /* ---------- Сайдбар ---------- */
   .sidebar{
     background:var(--surface); border-right:1px solid var(--line);
@@ -243,6 +247,9 @@
 
   /* мобільне */
   .burger{display:none}
+  /* Scrim завжди fixed — не займає grid-клітинку */
+  .scrim{position:fixed;inset:0;background:rgba(27,23,20,.4);z-index:20;display:none}
+  .scrim.open{display:block}
   @media(max-width:880px){
     /* Повністю відновлюємо оригінальний адаптив */
     .app{grid-template-columns:1fr !important}
