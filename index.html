@@ -297,6 +297,11 @@
   .mx-controls select{min-width:190px}
   .org-filters{display:flex;gap:10px;flex-wrap:nowrap;align-items:center;margin:14px 0}
   .org-filters select{min-width:0;flex:1;max-width:200px}
+  .emp-unit-link{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);margin-bottom:6px;cursor:pointer;transition:background .12s,border-color .12s;text-align:left;width:100%}
+  .emp-unit-link:hover{background:var(--brand-tint);border-color:var(--brand-tint-2)}
+  .emp-unit-link:hover .emp-unit-arrow{opacity:.7;color:var(--brand)}
+  .emp-unit-link b{font-size:13px;font-weight:700;display:block;line-height:1.3}
+  .emp-unit-arrow{width:14px;height:14px;flex:none;opacity:.3;transition:opacity .12s}
   .mx-stats{display:flex;gap:22px;flex-wrap:wrap;color:var(--slate);font-size:12.5px;font-weight:600;margin-bottom:4px}
   .mx-stats b{font-family:'Unbounded';font-weight:700;color:var(--ink);font-size:15px}
   details.legend{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin:16px 0;box-shadow:var(--shadow)}
@@ -950,6 +955,10 @@
             <div><label>Ім'я</label><input id="empFirstName" placeholder="Напр., Іван" /></div>
             <div><label>По батькові</label><input id="empPatronymic" placeholder="Напр., Іванович" /></div>
             <div><label>Дата народження</label><input id="empBirthdate" type="date" class="modal-sel" /></div>
+          </div>
+          <div id="empOrgSection" style="display:none;border-top:1px solid var(--line);padding:14px 20px">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px">Структурні одиниці</div>
+            <div id="empOrgLinks"></div>
           </div>
           <div class="foot">
             <button class="btn" onclick="empCloseModal()">Скасувати</button>
@@ -1699,7 +1708,45 @@
     const r=dictEmps.find(e=>e.id===id);
     const bd=r&&r.birthdate?r.birthdate:'';
     if(window._fpBirth){_fpBirth.setDate(bd,false);}else{$('empBirthdate').value=bd;}
+    // Структурні одиниці де цей співробітник є керівником
+    const linked=(orgData&&orgData.length?orgFlatAll():[]).filter(({n})=>n.employee_id===id).map(({n})=>n);
+    const sec=$('empOrgSection'),lnks=$('empOrgLinks');
+    if(linked.length){
+      const STATUS={active:{label:'Активний',color:'#15803D'},inactive:{label:'Неактивний',color:'#B91C1C'},acting:{label:'В.О.',color:'#C2410C'}};
+      lnks.innerHTML=linked.map(n=>{
+        const st=STATUS[n.status||'active']||STATUS.active;
+        const kind=n.unit_kind_id?dictKinds.find(k=>k.id===n.unit_kind_id):null;
+        const type=n.unit_type_id?dictTypes.find(t=>t.id===n.unit_type_id):null;
+        const meta=[type&&type.name,kind&&kind.name].filter(Boolean).join(' · ');
+        return '<button class="emp-unit-link" onclick="goToOrgUnit('+n.id+')">'+
+          (kind?'<span style="width:4px;align-self:stretch;border-radius:3px;background:'+kind.color+';flex:none"></span>':'')+
+          '<span style="flex:1;min-width:0">'+
+            '<b>'+orgEsc(n.name)+'</b>'+
+            '<span style="font-size:11.5px;color:var(--muted)">'+
+              (meta?orgEsc(meta)+' · ':'')+
+              '<span style="color:'+st.color+'">'+st.label+'</span>'+
+            '</span>'+
+          '</span>'+
+          '<svg class="emp-unit-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18l6-6-6-6"/></svg>'+
+        '</button>';
+      }).join('');
+      sec.style.display='';
+    }else{
+      lnks.innerHTML='<div style="font-size:13px;color:var(--muted)">Не призначено жодної одиниці</div>';
+      sec.style.display='';
+    }
     $('empModal').classList.add('open');$('empLastName').focus();
+  };
+  window.goToOrgUnit=function(unitId){
+    empCloseModal();
+    const navBtn=document.querySelector('.nav-item[data-view="company"]');
+    if(navBtn)navBtn.click();
+    setTimeout(()=>{
+      companyTab('structure');
+      const row=document.getElementById('orgrow-'+unitId);
+      if(row){row.scrollIntoView({behavior:'smooth',block:'center'});row.style.outline='2px solid var(--brand)';row.style.outlineOffset='2px';setTimeout(()=>{row.style.outline='';row.style.outlineOffset='';},1800);}
+      else{orgEditNode(unitId);}
+    },120);
   };
   window.empCloseModal=()=>$('empModal').classList.remove('open');
   window.empSave=async()=>{
