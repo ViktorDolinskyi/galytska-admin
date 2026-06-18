@@ -890,9 +890,12 @@
               <div class="csel-opt selected" data-val="">Усі категорії</div>
             </div>
           </div>
-          <div class="search" style="margin-left:0;width:260px">
+          <div class="search org-search-wrap" style="margin-left:0;width:260px">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-            <input id="mxSearch" placeholder="Пошук рішення…" />
+            <input id="mxSearch" placeholder="Пошук рішення…" oninput="render(true);mxSearchToggleClear()"/>
+            <button id="mxSearchClear" class="org-search-clear" onclick="mxSearchClear()" style="display:none" title="Очистити пошук">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
           </div>
         </div>
 
@@ -1811,7 +1814,8 @@
   }
   _mxCselInit('cselMxSource','source');
   _mxCselInit('cselMxCat','cat');
-  $('mxSearch').addEventListener('input',()=>render(true));
+  window.mxSearchToggleClear=()=>{const btn=$('mxSearchClear');if(btn)btn.style.display=$('mxSearch').value?'grid':'none';};
+  window.mxSearchClear=()=>{$('mxSearch').value='';$('mxSearchClear').style.display='none';render(true);$('mxSearch').focus();};
   $('mxMore').addEventListener('click',()=>{mxPage++;render(false)});
   reloadSet();
 
