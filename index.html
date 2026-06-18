@@ -985,13 +985,42 @@
             </div>
           </div>
           <ul class="org-tree" id="orgTree"></ul>
-          <div id="orgChart" style="display:none;width:100%;height:78vh;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--page);position:relative">
-            <div style="position:absolute;top:10px;right:12px;z-index:5;display:flex;gap:6px">
-              <button class="btn" style="padding:6px 10px;font-size:12px" onclick="orgChartZoom(1.25)">+</button>
-              <button class="btn" style="padding:6px 10px;font-size:12px" onclick="orgChartZoom(0.8)">−</button>
-              <button class="btn" style="padding:6px 10px;font-size:12px" onclick="orgChartFit()">⤢</button>
+          <div id="orgChart" style="display:none;width:100%;height:80vh;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--page);position:relative">
+            <!-- Ліва панель: колір + орієнтація -->
+            <div style="position:absolute;top:10px;left:12px;z-index:10;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+              <div class="seg" id="ocColorSeg" style="font-size:11.5px">
+                <button class="on" onclick="ocSetColorMode('kind')">За видом</button>
+                <button onclick="ocSetColorMode('status')">За статусом</button>
+                <button onclick="ocSetColorMode('depth')">За рівнем</button>
+              </div>
+              <button class="btn" id="ocOrientBtn" onclick="ocToggleOrientation()" title="Змінити орієнтацію" style="padding:5px 10px;font-size:12px">↕ Вертикально</button>
+            </div>
+            <!-- Права панель: collapse/expand + zoom -->
+            <div style="position:absolute;top:10px;right:12px;z-index:10;display:flex;gap:5px">
+              <button class="btn" onclick="ocCollapseAll()" title="Згорнути все" style="padding:5px 9px;font-size:13px">−</button>
+              <button class="btn" onclick="ocExpandAll()" title="Розгорнути все" style="padding:5px 9px;font-size:13px">+</button>
+              <button class="btn" onclick="orgChartZoom(1.3)" style="padding:5px 9px;font-size:13px">⊕</button>
+              <button class="btn" onclick="orgChartZoom(0.77)" style="padding:5px 9px;font-size:13px">⊖</button>
+              <button class="btn" onclick="orgChartFit()" title="Вписати в екран" style="padding:5px 9px;font-size:13px">⤢</button>
+            </div>
+            <!-- Пошук по схемі -->
+            <div style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:10;width:280px">
+              <div class="search" style="background:var(--surface);box-shadow:0 2px 12px rgba(0,0,0,.1)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                <input id="ocSearch" placeholder="Пошук на схемі…" oninput="ocSearchHighlight()"/>
+              </div>
+            </div>
+            <!-- Tooltip -->
+            <div id="ocTooltip" style="position:absolute;display:none;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:11px 14px;font-size:12.5px;line-height:1.6;box-shadow:0 6px 24px rgba(27,23,20,.14);pointer-events:none;z-index:20;max-width:240px"></div>
+            <!-- Drag hint -->
+            <div id="ocDragHint" style="position:absolute;bottom:14px;right:14px;z-index:10;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;pointer-events:none">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:13px;height:13px"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20"/></svg>
+              Перетягніть вузол для зміни підпорядкування
             </div>
             <svg id="orgChartSvg" width="100%" height="100%">
+              <defs>
+                <filter id="oc-drag-shadow"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.2"/></filter>
+              </defs>
               <g id="orgChartG"></g>
             </svg>
           </div>
@@ -1815,6 +1844,14 @@
 
   /* ===== Org Chart (D3) ===== */
   let orgView='list', _ocZoom=null;
+  let _ocCollapsed=new Set();
+  let _ocColorMode='kind';
+  let _ocOrientation='vertical';
+  let _ocNodePos=new Map();
+  let _ocDragId=null, _ocDragTargetId=null;
+
+  const OC_NW=168, OC_NH=58;
+  const OC_DEPTH_COLORS=['#6366F1','#8B5CF6','#EC4899','#EF4444','#F97316','#EAB308','#22C55E','#14B8A6'];
 
   window.orgSetView=function(v){
     orgView=v;
@@ -1828,81 +1865,230 @@
     if(v==='chart') orgChartRender();
   };
 
-  function orgToD3Node(n){
+  function ocNodeColor(nd,depth){
+    if(_ocColorMode==='status')
+      return nd.status==='inactive'?'#DC2626':nd.status==='acting'?'#EA580C':'#16A34A';
+    if(_ocColorMode==='depth') return OC_DEPTH_COLORS[depth%OC_DEPTH_COLORS.length];
+    return nd.kindColor||'#D1CBC4';
+  }
+
+  // Return all descendant IDs of a raw orgData node
+  function orgDescIds(node){
+    const ids=[];
+    const walk=n=>{(n.children||[]).forEach(c=>{ids.push(c.id);walk(c);});};
+    walk(node);return ids;
+  }
+  function orgFind(list,id){
+    for(const n of list){if(n.id===id)return n;const f=orgFind(n.children||[],id);if(f)return f;}
+    return null;
+  }
+
+  function orgToD3Node(n,depth){
+    depth=depth||0;
     const emp=n.employee_id?dictEmps.find(e=>e.id===n.employee_id):null;
     const type=n.unit_type_id?dictTypes.find(t=>t.id===n.unit_type_id):null;
     const kind=n.unit_kind_id?dictKinds.find(k=>k.id===n.unit_kind_id):null;
+    const kids=(n.children||[]);
+    const hasKids=kids.length>0;
     return{id:n.id,name:n.name,head:emp?empFull(emp):(n.head||''),status:n.status||'active',
       typeLabel:type?type.name:'',kindColor:kind?kind.color:'',
-      children:(n.children||[]).map(c=>orgToD3Node(c))};
+      depth,hasKids,isCollapsed:_ocCollapsed.has(n.id),childCount:kids.length,
+      children:hasKids&&!_ocCollapsed.has(n.id)?kids.map(c=>orgToD3Node(c,depth+1)):undefined};
   }
   function orgToD3(nodes){
     if(!nodes||!nodes.length)return null;
-    const roots=nodes.map(n=>orgToD3Node(n));
+    const roots=nodes.map(n=>orgToD3Node(n,0));
     return roots.length===1?roots[0]:{id:'__root__',name:'',_virtual:true,children:roots};
   }
 
   window.orgChartRender=function(){
     if(!window.d3){setTimeout(orgChartRender,300);return;}
-    const svg=d3.select('#orgChartSvg');
+    const svgEl=$('orgChartSvg');
+    const svg=d3.select(svgEl);
     const g=d3.select('#orgChartG');
     g.selectAll('*').remove();
-    const W=$('orgChart').clientWidth||900, H=$('orgChart').clientHeight||600;
-    const NW=164, NH=56, GX=28, GY=64;
-    const root=d3.hierarchy(orgToD3(orgData),d=>d.children&&d.children.length?d.children:null);
-    d3.tree().nodeSize([NW+GX,NH+GY])(root);
+    _ocNodePos.clear();
+    const W=svgEl.clientWidth||900, H=svgEl.clientHeight||600;
+    const NW=OC_NW, NH=OC_NH;
+    const isH=_ocOrientation==='horizontal';
+    const GX=isH?90:32, GY=isH?32:70;
+
+    const rootData=orgToD3(orgData);
+    if(!rootData)return;
+    const root=d3.hierarchy(rootData,d=>d.children);
+    const tree=d3.tree();
+    isH?tree.nodeSize([NH+GY,NW+GX]):tree.nodeSize([NW+GX,NH+GY]);
+    tree(root);
+
+    const nx=d=>isH?d.y-NW/2:d.x-NW/2;
+    const ny=d=>isH?d.x-NH/2:d.y-NH/2;
+
+    root.descendants().forEach(d=>{
+      if(!d.data._virtual&&d.data.id) _ocNodePos.set(d.data.id,{cx:nx(d)+NW/2,cy:ny(d)+NH/2});
+    });
 
     // Links
+    const linkFn=isH
+      ?d3.linkHorizontal().x(d=>d.y).y(d=>d.x)
+      :d3.linkVertical().x(d=>d.x).y(d=>d.y+NH/2);
     g.append('g').selectAll('path').data(root.links()).enter().append('path')
-      .attr('class','oc-link')
-      .attr('d',d3.linkVertical().x(d=>d.x).y(d=>d.y+NH/2));
+      .attr('class','oc-link').attr('d',linkFn);
 
     // Nodes
     const node=g.append('g').selectAll('g').data(root.descendants()).enter().append('g')
       .attr('class','oc-node')
-      .attr('transform',d=>`translate(${d.x-NW/2},${d.y-NH/2})`)
-      .on('click',(_,d)=>{if(!d.data._virtual&&d.data.id)orgEditNode(d.data.id);});
+      .attr('data-id',d=>d.data.id||'')
+      .attr('transform',d=>`translate(${nx(d)},${ny(d)})`);
 
     node.each(function(d){
       if(d.data._virtual)return;
       const nd=d.data;
-      const kc=nd.kindColor;
-      const fill=kc?kc+'22':'#FFFFFF';
-      const stroke=kc||'#D1CBC4';
+      const mainColor=ocNodeColor(nd,nd.depth);
+      const fill=_ocColorMode==='kind'?(nd.kindColor?nd.kindColor+'22':'#FFFFFF'):mainColor+'18';
+      const stroke=mainColor;
       const stColor=nd.status==='inactive'?'#B91C1C':nd.status==='acting'?'#C2410C':'#15803D';
-      const stLabel=nd.status==='inactive'?'Неактивний':nd.status==='acting'?'В.О.':'Активний';
+      const stLabel=nd.status==='inactive'?'Неакт.':nd.status==='acting'?'В.О.':'Актив.';
       const el=d3.select(this);
-      el.append('rect').attr('width',NW).attr('height',NH).attr('rx',9)
-        .attr('fill',fill).attr('stroke',stroke).attr('stroke-width',1.5);
-      if(kc) el.append('rect').attr('width',3).attr('height',NH-8).attr('x',0).attr('y',4).attr('rx',2).attr('fill',kc);
-      const px=kc?11:8;
+
+      el.append('rect').attr('class','oc-card-bg').attr('width',NW).attr('height',NH).attr('rx',9)
+        .attr('fill',fill).attr('stroke',stroke).attr('stroke-width',1.5)
+        .style('cursor','pointer')
+        .on('click',()=>orgEditNode(nd.id));
+      el.append('rect').attr('width',3).attr('height',NH-8).attr('x',0).attr('y',4).attr('rx',2).attr('fill',mainColor);
+
       const nm=nd.name||'';
-      el.append('text').attr('class','oc-name').attr('x',px).attr('y',21)
-        .text(nm.length>21?nm.slice(0,21)+'…':nm);
-      if(nd.head){
-        const h=nd.head;
-        el.append('text').attr('class','oc-head').attr('x',px).attr('y',35)
-          .text(h.length>26?h.slice(0,26)+'…':h);
-      }else{
-        el.append('text').attr('class','oc-head').attr('x',px).attr('y',35).attr('fill','#B0A89E')
-          .text('Керівника не призначено');
-      }
-      // Status pill
-      const bw=nd.status==='inactive'?62:nd.status==='acting'?28:46;
-      el.append('rect').attr('x',NW-bw-6).attr('y',5).attr('width',bw).attr('height',13)
+      el.append('text').attr('class','oc-name').attr('x',11).attr('y',22)
+        .text(nm.length>22?nm.slice(0,22)+'…':nm);
+      el.append('text').attr('class','oc-head').attr('x',11).attr('y',36)
+        .attr('fill',nd.head?'#6B6560':'#B0A89E')
+        .text(nd.head?(nd.head.length>25?nd.head.slice(0,25)+'…':nd.head):'Керівника не призначено');
+
+      const bw=nd.status==='inactive'?44:nd.status==='acting'?28:42;
+      el.append('rect').attr('x',NW-bw-6).attr('y',5).attr('width',bw).attr('height',14)
         .attr('rx',4).attr('fill',stColor+'22');
       el.append('text').attr('class','oc-badge').attr('fill',stColor)
-        .attr('x',NW-bw/2-6).attr('y',14.5).attr('text-anchor','middle').text(stLabel);
+        .attr('x',NW-bw/2-6).attr('y',15).attr('text-anchor','middle').text(stLabel);
+
+      if(nd.hasKids){
+        const tb=el.append('g').attr('class','oc-toggle')
+          .attr('transform',isH?`translate(${NW},${NH/2})`:`translate(${NW/2},${NH})`)
+          .style('cursor','pointer')
+          .on('click',(e)=>{e.stopPropagation();ocToggleNode(nd.id);});
+        tb.append('circle').attr('r',9).attr('fill','var(--surface)').attr('stroke',stroke).attr('stroke-width',1.5);
+        tb.append('text').attr('text-anchor','middle').attr('dy',4)
+          .attr('font-size',12).attr('font-weight',700).attr('fill',stroke)
+          .text(nd.isCollapsed?`+${nd.childCount}`:'−');
+      }
     });
 
+    // Tooltip
+    const tip=$('ocTooltip');
+    node.on('mouseover',(event,d)=>{
+      if(d.data._virtual||!tip)return;
+      const nd=d.data;
+      tip.style.display='block';
+      tip.innerHTML=`<b style="font-size:13px">${orgEsc(nd.name)}</b><br>`+
+        (nd.head?`<span style="color:var(--slate)">👤 ${orgEsc(nd.head)}</span><br>`:`<span style="color:#B0A89E">Керівника не призначено</span><br>`)+
+        (nd.typeLabel?`<span style="color:var(--muted);font-size:11px">${orgEsc(nd.typeLabel)}</span><br>`:'')+
+        `<span style="font-size:11px;color:var(--muted)">${nd.childCount} підрозд. нижче · Рівень ${nd.depth+1}</span>`;
+    }).on('mousemove',event=>{
+      if(!tip)return;
+      const rect=$('orgChart').getBoundingClientRect();
+      let lx=event.clientX-rect.left+14, ly=event.clientY-rect.top+14;
+      if(lx+250>rect.width)lx-=270;
+      tip.style.left=lx+'px';tip.style.top=ly+'px';
+    }).on('mouseout',()=>{if(tip)tip.style.display='none';});
+
+    // Drag & drop
+    const dragBehavior=d3.drag()
+      .filter(event=>!event.target.closest('.oc-toggle'))
+      .on('start',(event,d)=>{
+        if(d.data._virtual||!d.data.id)return;
+        _ocDragId=d.data.id;
+        d3.select(event.currentTarget).raise()
+          .select('.oc-card-bg').attr('filter','url(#oc-drag-shadow)').attr('stroke-width',2.5);
+      })
+      .on('drag',(event,d)=>{
+        if(!_ocDragId)return;
+        const el=d3.select(event.currentTarget);
+        const m=el.attr('transform').match(/translate\(([^,]+),([^)]+)\)/);
+        const x=parseFloat(m[1])+event.dx, y=parseFloat(m[2])+event.dy;
+        el.attr('transform',`translate(${x},${y})`);
+        const t=d3.zoomTransform(svgEl);
+        const mx=(event.x-t.x)/t.k, my=(event.y-t.y)/t.k;
+        let bestId=null,bestDist=Infinity;
+        _ocNodePos.forEach((pos,id)=>{
+          if(id===_ocDragId)return;
+          const dist=Math.hypot(mx-pos.cx,my-pos.cy);
+          if(dist<bestDist&&dist<OC_NW*0.8){bestDist=dist;bestId=id;}
+        });
+        g.selectAll('.oc-node').select('.oc-card-bg')
+          .attr('stroke-width',(_,i,nodes)=>{
+            const nid=+d3.select(nodes[i].parentNode).attr('data-id');
+            return nid===bestId?3:(_ocDragId===nid?2.5:1.5);
+          })
+          .attr('stroke-dasharray',(_,i,nodes)=>{
+            const nid=+d3.select(nodes[i].parentNode).attr('data-id');
+            return nid===bestId?'5,3':null;
+          });
+        _ocDragTargetId=bestId||null;
+      })
+      .on('end',async()=>{
+        if(!_ocDragId){return;}
+        const fromId=_ocDragId, toId=_ocDragTargetId;
+        _ocDragId=null;_ocDragTargetId=null;
+        if(toId&&toId!==fromId){
+          const fromNode=orgFind(orgData,fromId);
+          if(fromNode&&!orgDescIds(fromNode).includes(toId)){
+            const{error}=await db.from('company_units').update({parent_id:toId}).eq('id',fromId);
+            if(!error){await orgLoad();}
+            else{alert('Помилка: '+error.message);orgChartRender();}
+            return;
+          }
+        }
+        orgChartRender();
+      });
+    node.filter(d=>!d.data._virtual).call(dragBehavior);
+
     // Zoom
-    const zoom=d3.zoom().scaleExtent([.05,3]).on('zoom',e=>g.attr('transform',e.transform));
+    const zoom=d3.zoom().scaleExtent([.04,4]).on('zoom',e=>g.attr('transform',e.transform));
     svg.call(zoom);_ocZoom=zoom;
     const box=g.node().getBBox();
-    const scale=Math.min(.85,Math.min(W/(box.width+80),H/(box.height+80)));
-    svg.call(zoom.transform,d3.zoomIdentity.translate(W/2-(box.x+box.width/2)*scale,30-box.y*scale).scale(scale));
+    const scale=Math.min(.88,Math.min(W/(box.width+80),H/(box.height+100)));
+    svg.call(zoom.transform,d3.zoomIdentity.translate(W/2-(box.x+box.width/2)*scale,50-box.y*scale).scale(scale));
   };
 
+  window.ocSetColorMode=function(m){
+    _ocColorMode=m;
+    document.querySelectorAll('#ocColorSeg button').forEach(b=>{
+      const txt=b.textContent.trim();
+      b.classList.toggle('on',(m==='kind'&&txt==='За видом')||(m==='status'&&txt==='За статусом')||(m==='depth'&&txt==='За рівнем'));
+    });
+    orgChartRender();
+  };
+  window.ocToggleOrientation=function(){
+    _ocOrientation=_ocOrientation==='vertical'?'horizontal':'vertical';
+    const btn=$('ocOrientBtn');if(btn)btn.textContent=_ocOrientation==='vertical'?'↕ Вертикально':'↔ Горизонтально';
+    orgChartRender();
+  };
+  window.ocToggleNode=function(id){
+    _ocCollapsed.has(id)?_ocCollapsed.delete(id):_ocCollapsed.add(id);
+    orgChartRender();
+  };
+  window.ocCollapseAll=function(){
+    orgFlatAll().forEach(({n})=>{if((n.children||[]).length)_ocCollapsed.add(n.id);});
+    orgChartRender();
+  };
+  window.ocExpandAll=function(){_ocCollapsed.clear();orgChartRender();};
+  window.ocSearchHighlight=function(){
+    const q=($('ocSearch')||{value:''}).value.trim().toLowerCase();
+    d3.selectAll('.oc-node').each(function(d){
+      if(d.data._virtual)return;
+      const match=!q||(d.data.name||'').toLowerCase().includes(q)||((d.data.head||'').toLowerCase().includes(q));
+      d3.select(this).selectAll('rect,text,circle').attr('opacity',match?1:0.15);
+    });
+    d3.selectAll('.oc-link').attr('opacity',q?0.1:1);
+  };
   window.orgChartZoom=f=>{if(_ocZoom)d3.select('#orgChartSvg').transition().duration(220).call(_ocZoom.scaleBy,f);};
   window.orgChartFit=orgChartRender;
 
