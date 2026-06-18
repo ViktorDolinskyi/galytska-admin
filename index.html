@@ -297,6 +297,11 @@
   .mx-controls select{min-width:190px}
   .org-filters{display:flex;gap:10px;flex-wrap:nowrap;align-items:center;margin:14px 0}
   .org-filters select{min-width:0;flex:1;max-width:200px}
+  .org-search-wrap{position:relative}
+  .org-search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;border:none;background:var(--muted);color:#fff;display:grid;place-items:center;cursor:pointer;padding:0;opacity:.7;transition:opacity .12s}
+  .org-search-clear:hover{opacity:1}
+  .org-search-clear svg{width:11px;height:11px;stroke-width:2.5}
+  .org-search-wrap input{padding-right:32px}
   .emp-unit-link{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);margin-bottom:6px;cursor:pointer;transition:background .12s,border-color .12s;text-align:left;width:100%}
   .emp-unit-link:hover{background:var(--brand-tint);border-color:var(--brand-tint-2)}
   .emp-unit-link:hover .emp-unit-arrow{opacity:.7;color:var(--brand)}
@@ -896,9 +901,12 @@
             <select id="orgFilterKind" onchange="orgRender()">
               <option value="">Будь-який вид</option>
             </select>
-            <div class="search" style="flex:1;min-width:160px;max-width:280px">
+            <div class="search org-search-wrap" style="min-width:160px;max-width:280px;flex:1">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-              <input id="orgSearch" placeholder="Пошук підрозділу…" oninput="orgRender()"/>
+              <input id="orgSearch" placeholder="Пошук підрозділу…" oninput="orgRender();orgSearchToggleClear()"/>
+              <button id="orgSearchClear" class="org-search-clear" onclick="orgSearchClear()" style="display:none" title="Очистити пошук">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
             </div>
           </div>
           <ul class="org-tree" id="orgTree"></ul>
@@ -1637,6 +1645,8 @@
     document.getElementById('orgKpiInactive').textContent=inactive;
     document.getElementById('orgKpiInactiveSub').textContent=inactive?pct(inactive)+' від загального':'Всі підрозділи активні';
   }
+  window.orgSearchToggleClear=()=>{const btn=$('orgSearchClear');if(btn)btn.style.display=$('orgSearch').value?'grid':'none';};
+  window.orgSearchClear=()=>{$('orgSearch').value='';$('orgSearchClear').style.display='none';orgRender();$('orgSearch').focus();};
   window.orgToggle=id=>{const n=orgFind(orgData,id);if(n){n.collapsed=!n.collapsed;orgRender();}};
   window.orgExpandAll=open=>{const w=l=>l.forEach(n=>{n.collapsed=!open;w(n.children||[]);});w(orgData);orgRender();};
   window.orgRowClick=(e,id)=>{if(e.target.closest('.org-acts,.org-toggle,.org-confirm'))return;orgEditNode(id);};
