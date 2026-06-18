@@ -329,6 +329,29 @@
   .co.rc6{background:#9B948E}.co.rc7{background:#B01E28}.co.rc8{background:#5A6470}
   .load-more{margin:16px auto 0;display:block}
   @media(max-width:880px){td.mx-dec{max-width:none}.chip .dn{max-width:120px}}
+  /* ── Matrix grid layout ── */
+  #mxTable{table-layout:auto;border-collapse:collapse;font-size:12px}
+  #mxTable th,#mxTable td{border:0.5px solid var(--line)}
+  .mx-th-proc{text-align:left;position:sticky;left:0;z-index:3;background:var(--surface);min-width:240px;padding:10px 14px;font-size:12px;border-right:2px solid var(--line)}
+  .mx-th-dept{writing-mode:vertical-rl;transform:rotate(180deg);height:120px;vertical-align:bottom;padding:8px 5px;font-size:11px;font-weight:600;text-align:left;min-width:44px;max-width:60px;white-space:normal;word-break:break-word}
+  .mx-cat-row td{background:var(--page)!important;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:5px 14px;border-top:2px solid var(--line)}
+  .mx-proc-cell{position:sticky;left:0;background:var(--surface);font-size:12.5px;padding:8px 14px;min-width:240px;max-width:300px;white-space:normal;line-height:1.4;border-right:2px solid var(--line);font-weight:600;vertical-align:middle}
+  .mx-sub{display:block;font-size:11px;font-weight:400;color:var(--muted);margin-top:2px}
+  .mx-cell{text-align:center;font-weight:700;font-size:12px;padding:0;min-width:44px;vertical-align:middle;height:36px}
+  #mxTable tbody tr:not(.mx-cat-row):hover td{background:rgba(0,0,0,.025)!important}
+  #mxTable tbody tr:not(.mx-cat-row):hover .mx-proc-cell{background:var(--surface)!important}
+  .mx-cell.cc-DI{background:#E1F5EE;color:#0F6E56}
+  .mx-cell.cc-A{background:#E6F1FB;color:#185FA5}
+  .mx-cell.cc-P{background:#FFF3DC;color:#854F0B}
+  .mx-cell.cc-V{background:#FAECE7;color:#993C1D}
+  .mx-cell.cc-I{background:#F1EFE8;color:#5F5E5A}
+  .mx-cell.cc-R{background:#E1F5EE;color:#0F6E56}
+  .mx-cell.cc-X{background:var(--page);color:var(--slate)}
+  .mx-cell.rc0{background:#E6F1FB;color:#185FA5}.mx-cell.rc1{background:#E1F5EE;color:#0F6E56}
+  .mx-cell.rc2{background:#FFF3DC;color:#854F0B}.mx-cell.rc3{background:#EDE8F8;color:#3C3489}
+  .mx-cell.rc4{background:#E0F4F5;color:#0E7C86}.mx-cell.rc5{background:#FDE8DC;color:#B0561E}
+  .mx-cell.rc6{background:#F1EFE8;color:#5F5E5A}.mx-cell.rc7{background:#FAECE7;color:#993C1D}
+  .mx-cell.rc8{background:var(--page);color:var(--slate)}
 
 
   /* ===== Компанія / Оргструктура ===== */
@@ -752,7 +775,7 @@
         <div class="card">
           <div class="mx-table-wrap">
             <table id="mxTable">
-              <thead><tr><th style="width:40px">#</th><th style="width:150px">Категорія</th><th>Рішення / дія</th><th>Відповідальні департаменти</th></tr></thead>
+              <thead id="mxHead"><tr><th class="mx-th-proc">Рішення / дія</th></tr></thead>
               <tbody id="mxBody"></tbody>
             </table>
           </div>
@@ -1101,21 +1124,37 @@
 
   function render(reset){
     if(reset){mxPage=0}
-    const data=filtered(); const end=(mxPage+1)*MX_PAGE;
+    const deps=depList();
+    const data=filtered();
+    const end=(mxPage+1)*MX_PAGE;
     const slice=data.slice(0,end);
-    $('mxBody').innerHTML=slice.map((r,i)=>
-      '<tr><td style="color:var(--muted);font-size:12px">'+(i+1)+'</td>'+
-      '<td class="mx-cat">'+(r.c?'<span class="cat-tag">'+esc(r.c)+'</span>':'')+'</td>'+
-      '<td class="mx-dec"><b>'+esc(r.d||'—')+'</b>'+
-        (r.cap?'<span class="sla">Капітан: '+esc(r.cap)+'</span>':'')+
-        (r.sla?'<span class="sla">SLA: '+esc(r.sla)+'</span>':'')+'</td>'+
-      '<td>'+chipHtml(r)+'</td></tr>').join('')
-      || '<tr><td colspan="4" class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><br>Нічого не знайдено за фільтрами</td></tr>';
-    $('mxMore').style.display = data.length>end ? 'block':'none';
-    $('mxStats').innerHTML =
+    const cols=deps.length+1;
+
+    $('mxHead').innerHTML='<tr><th class="mx-th-proc">Рішення / дія</th>'+
+      deps.map(d=>'<th class="mx-th-dept" title="'+esc(d)+'"><span>'+esc(d)+'</span></th>').join('')+'</tr>';
+
+    let lastCat='__NONE__', html='';
+    slice.forEach(r=>{
+      if(r.c!==lastCat){
+        lastCat=r.c;
+        html+='<tr class="mx-cat-row"><td colspan="'+cols+'">'+esc(r.c||'—')+'</td></tr>';
+      }
+      html+='<tr><td class="mx-proc-cell">'+esc(r.d||'—')+
+        (r.sla?'<span class="mx-sub">SLA: '+esc(r.sla)+'</span>':'')+
+        (r.cap?'<span class="mx-sub">'+esc(r.cap)+'</span>':'')+
+        '</td>'+
+        deps.map((_,j)=>{const c=(r.a[String(j)]||'').trim();
+          return c?'<td class="mx-cell '+codeClass(c)+'">'+esc(c)+'</td>':'<td class="mx-cell"></td>';
+        }).join('')+'</tr>';
+    });
+
+    $('mxBody').innerHTML=html||
+      '<tr><td colspan="'+cols+'" class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><br>Нічого не знайдено за фільтрами</td></tr>';
+    $('mxMore').style.display=data.length>end?'block':'none';
+    $('mxStats').innerHTML=
       '<span><b>'+[...new Set(rows().map(r=>r.s).filter(Boolean))].length+'</b> матриць</span>'+
       '<span><b>'+data.length+'</b> '+(mxSet==='pov'?'рішень':'дій')+'</span>'+
-      '<span><b>'+depList().length+'</b> департаментів</span>';
+      '<span><b>'+deps.length+'</b> департаментів</span>';
   }
 
   function reloadSet(){buildFilters();buildLegend();render(true)}
