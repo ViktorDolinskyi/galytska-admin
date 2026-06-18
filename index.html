@@ -1304,7 +1304,7 @@
     const typeBadge=type
       ?'<span class="org-depth-badge" style="background:var(--brand-tint);color:var(--brand);border-color:var(--brand-tint-2)">'+orgEsc(type.name)+'</span>'
       :'<span class="org-depth-badge">'+lvlLabel+'</span>';
-    const kindDot=kind?'<span class="org-kind-dot" style="background:'+kind.color+'"></span>':'';
+    const kindDot='';
     const borderL=kind?'border-left:3px solid '+kind.color+';background:'+kind.color+'18;':'';
     const row='<div class="org-row" data-lvl="'+Math.min(lvl,5)+'" id="orgrow-'+n.id+'" onclick="orgRowClick(event,'+n.id+')" style="'+borderL+'">'+tog+
       '<span class="org-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor">'+icon+'</svg></span>'+
