@@ -13,8 +13,8 @@
      БРЕНД — змініть тут, щоб підставити точні фірмові значення
      ============================================================ */
   :root{
-    --brand:        #B01E28;   /* основний червоний (з логотипа) */
-    --brand-dark:   #8F151E;   /* темніший — для hover */
+    --brand:        #D52B1E;   /* PANTONE 485 — фірмовий червоний */
+    --brand-dark:   #B01E14;   /* темніший — для hover */
     --brand-tint:   #FBEAEB;   /* м'яка заливка активних станів */
     --brand-tint-2: #F6DCDD;
 
@@ -80,13 +80,12 @@
   .app.sb-collapsed .brand{padding:16px 0;justify-content:center;border-bottom-color:transparent}
   .app.sb-collapsed .wordmark{display:none}
   .app.sb-collapsed .logo-mark{margin:0 auto}
-  /* Слот для лого: замініть .logo-mark на <img src="..."> з вашим логотипом */
   .logo-mark{
     width:38px; height:38px; border-radius:9px; flex:none;
     background:var(--brand); color:#fff;
-    display:grid; place-items:center;
-    font-family:'Unbounded'; font-weight:800; font-size:18px;
+    display:grid; place-items:center; padding:5px;
   }
+  .logo-mark svg{width:100%;height:100%}
   .wordmark{line-height:1.02}
   .wordmark b{
     display:block; font-family:'Unbounded'; font-weight:700;
@@ -677,7 +676,8 @@
   .auth-scrim{position:fixed;inset:0;background:var(--page);z-index:100;display:none;align-items:center;justify-content:center;padding:24px}
   .auth-scrim.open{display:flex}
   .auth-card{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:0 24px 60px rgba(27,23,20,.12);width:100%;max-width:382px;padding:30px 28px}
-  .auth-logo{width:50px;height:50px;border-radius:12px;background:var(--brand);color:#fff;display:grid;place-items:center;font-family:'Unbounded';font-weight:800;font-size:22px;margin-bottom:16px}
+  .auth-logo{width:60px;height:60px;border-radius:14px;background:var(--brand);color:#fff;display:grid;place-items:center;padding:8px;margin-bottom:16px}
+  .auth-logo svg{width:100%;height:100%}
   .auth-card h2{font-size:19px;font-weight:800;letter-spacing:-.01em}
   .auth-card>p{color:var(--slate);font-size:13px;margin:4px 0 22px}
   .auth-field{margin-bottom:12px}
@@ -700,7 +700,7 @@
 <body>
 <div class="auth-scrim open" id="authScrim">
   <div class="auth-card">
-    <div class="auth-logo">ГС</div>
+    <div class="auth-logo"><svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M41,9 L41,22 L59,22 L59,9" stroke="currentColor" stroke-width="7" stroke-linejoin="miter" stroke-linecap="square"/><path d="M91,41 L78,41 L78,59 L91,59" stroke="currentColor" stroke-width="7" stroke-linejoin="miter" stroke-linecap="square"/><path d="M41,91 L41,78 L59,78 L59,91" stroke="currentColor" stroke-width="7" stroke-linejoin="miter" stroke-linecap="square"/><path d="M9,41 L22,41 L22,59 L9,59" stroke="currentColor" stroke-width="7" stroke-linejoin="miter" stroke-linecap="square"/><path d="M50,35 A15,15 0 1,1 65,50" stroke="currentColor" stroke-width="8.5" stroke-linecap="round"/><path d="M35,50 A15,15 0 1,1 50,35" stroke="currentColor" stroke-width="8.5" stroke-linecap="round"/><path d="M50,65 A15,15 0 1,1 35,50" stroke="currentColor" stroke-width="8.5" stroke-linecap="round"/><path d="M65,50 A15,15 0 1,1 50,65" stroke="currentColor" stroke-width="8.5" stroke-linecap="round"/></svg></div>
     <h2>Вхід до адмінпанелі</h2>
     <p>Облік виробництва «Галицька Свіжина»</p>
     <div class="auth-field"><label>Email</label><input id="authEmail" type="email" placeholder="you@company.com" autocomplete="username"></div>
@@ -719,7 +719,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18l-6-6 6-6"/></svg>
     </button>
     <div class="brand">
-      <div class="logo-mark">ГС</div>
+      <div class="logo-mark"><svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M41,9 L41,22 L59,22 L59,9" stroke="currentColor" stroke-width="7" stroke-linejoin="miter" stroke-linecap="square"/><path d="M91,41 L78,41 L78,59 L91,59" stroke="currentColor" stroke-width="7" stroke-linejoin="miter" stroke-linecap="square"/><path d="M41,91 L41,78 L59,78 L59,91" stroke="currentColor" stroke-width="7" stroke-linejoin="miter" stroke-linecap="square"/><path d="M9,41 L22,41 L22,59 L9,59" stroke="currentColor" stroke-width="7" stroke-linejoin="miter" stroke-linecap="square"/><path d="M50,35 A15,15 0 1,1 65,50" stroke="currentColor" stroke-width="8.5" stroke-linecap="round"/><path d="M35,50 A15,15 0 1,1 50,35" stroke="currentColor" stroke-width="8.5" stroke-linecap="round"/><path d="M50,65 A15,15 0 1,1 35,50" stroke="currentColor" stroke-width="8.5" stroke-linecap="round"/><path d="M65,50 A15,15 0 1,1 50,65" stroke="currentColor" stroke-width="8.5" stroke-linecap="round"/></svg></div>
       <div class="wordmark">
         <b>Галицька<br>Свіжина</b>
         <span>облік виробництва</span>
