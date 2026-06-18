@@ -418,11 +418,26 @@
   .mx-cb.rc1{background:#E1F5EE;color:#0F6E56}.mx-cb.rc0{background:#E6F1FB;color:#185FA5}
   .mx-cb.rc4{background:#E0F4F5;color:#0E7C86}.mx-cb.rc2{background:#FFF3DC;color:#854F0B}
   .mx-cb.rc6{background:#F1EFE8;color:#5F5E5A}
-  .mx-units-list{border:1px solid var(--line);border-radius:10px;max-height:150px;overflow-y:auto;background:var(--card)}
-  .mx-urow{display:flex;align-items:center;gap:8px;padding:6px 10px;font-size:13px;cursor:pointer;border-bottom:0.5px solid var(--line);user-select:none}
+  .mx-units-list{border:1px solid var(--line);border-radius:10px;max-height:160px;overflow-y:auto;background:var(--card);scrollbar-width:thin;scrollbar-color:var(--brand-tint-2) transparent}
+  .mx-units-list::-webkit-scrollbar{width:5px}
+  .mx-units-list::-webkit-scrollbar-track{background:transparent;border-radius:10px}
+  .mx-units-list::-webkit-scrollbar-thumb{background:var(--brand-tint-2);border-radius:10px}
+  .mx-units-list::-webkit-scrollbar-thumb:hover{background:var(--brand)}
+  .mx-urow{display:flex;align-items:center;gap:9px;padding:7px 10px;font-size:12.5px;cursor:pointer;border-bottom:0.5px solid var(--line);user-select:none;transition:background .1s;position:relative}
   .mx-urow:last-child{border-bottom:none}
   .mx-urow:hover{background:var(--brand-tint)}
-  .mx-urow input[type=checkbox]{flex-shrink:0;accent-color:var(--brand);width:15px;height:15px;cursor:pointer}
+  .mx-urow.checked{background:var(--brand-tint)}
+  /* Custom checkbox */
+  .mx-urow input[type=checkbox]{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+  .mx-urow .mx-chk{flex-shrink:0;width:16px;height:16px;border-radius:5px;border:1.5px solid var(--line);background:var(--surface);display:grid;place-items:center;transition:border-color .12s,background .12s}
+  .mx-urow input[type=checkbox]:checked~.mx-chk{background:var(--brand);border-color:var(--brand)}
+  .mx-urow input[type=checkbox]:checked~.mx-chk::after{content:'';width:9px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px);display:block}
+  .mx-urow:hover .mx-chk{border-color:var(--brand)}
+  /* Tree indent line */
+  .mx-urow-child::before{content:'';position:absolute;left:calc(var(--mx-lvl,0)*14px + 14px);top:0;bottom:0;width:1px;background:var(--line)}
+  .mx-urow-name{flex:1;line-height:1.3}
+  .mx-urow-parent{font-weight:700;color:var(--ink)}
+  .mx-urow-child{color:var(--slate)}
 
 
   /* ===== Компанія / Оргструктура ===== */
@@ -1453,9 +1468,10 @@
         '<span class="mx-cb '+codeClass(code)+'">'+esc(code)+'</span>'+
         '<div class="mx-units-list">'+
           units.map(u=>
-            '<label class="mx-urow" style="padding-left:'+(8+u.level*14)+'px">'+
+            '<label class="mx-urow '+(u.level===0?'mx-urow-parent':'mx-urow-child')+'" style="padding-left:'+(10+u.level*14)+'px;--mx-lvl:'+u.level+'">'+
               '<input type="checkbox" data-code="'+code+'" data-uid="'+u.id+'">'+
-              '<span>'+esc(u.name)+'</span>'+
+              '<span class="mx-chk"></span>'+
+              '<span class="mx-urow-name">'+esc(u.name)+'</span>'+
             '</label>'
           ).join('')+
         '</div>'+
