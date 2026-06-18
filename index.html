@@ -1187,7 +1187,7 @@
         </div>
 
         <!-- KPI -->
-        <div class="kpi-row" id="gKpi"></div>
+        <div class="kpis" id="gKpi" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px"></div>
 
         <!-- Filters -->
         <div class="goal-filters">
@@ -2260,7 +2260,7 @@
 
   function _makeCsel(wrapEl,placeholder,opts,onChange){
     const val={v:''};
-    wrapEl.innerHTML=`<div class="csel-trigger"><span class="csel-label">${placeholder}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div>
+    wrapEl.innerHTML=`<div class="csel-trigger"><span class="csel-label">${placeholder}</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="flex:none;color:var(--slate)"><path d="m6 9 6 6 6-6"/></svg></div>
       <div class="csel-drop">
         <div class="csel-opt" data-val="">— Всі —</div>
         ${opts.map(o=>`<div class="csel-opt" data-val="${o.v}">${o.l}</div>`).join('')}
@@ -2411,10 +2411,10 @@
     const avgProg=allInds.length?Math.round(allInds.reduce((a,i)=>a+(i.progress||0),0)/allInds.length):0;
     const patterns=new Set(goalsData.map(g=>g.pattern).filter(Boolean)).size;
     $('gKpi').innerHTML=`
-      <div class="kpi-card"><div class="kpi-label">Всього цілей</div><div class="kpi-val">${total}</div></div>
-      <div class="kpi-card"><div class="kpi-label">Патернів</div><div class="kpi-val">${patterns}</div></div>
-      <div class="kpi-card"><div class="kpi-label">Індикаторів</div><div class="kpi-val">${totalInds}</div></div>
-      <div class="kpi-card"><div class="kpi-label">Сер. прогрес</div><div class="kpi-val" style="color:${_progColor(avgProg)}">${avgProg}%</div></div>
+      <div class="kpi"><div class="k-top">Всього цілей</div><div class="k-val">${total}</div></div>
+      <div class="kpi"><div class="k-top">Патернів</div><div class="k-val">${patterns}</div></div>
+      <div class="kpi"><div class="k-top">Індикаторів</div><div class="k-val">${totalInds}</div></div>
+      <div class="kpi"><div class="k-top">Сер. прогрес</div><div class="k-val" style="color:${_progColor(avgProg)}">${avgProg}%</div></div>
     `;
   }
 
