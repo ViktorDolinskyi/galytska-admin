@@ -297,6 +297,15 @@
   .mx-controls select{min-width:190px}
   .org-filters{display:flex;gap:10px;flex-wrap:nowrap;align-items:center;margin:14px 0}
   .org-filters select{min-width:0;flex:1;max-width:200px}
+  /* Org chart */
+  .oc-node{cursor:pointer}
+  .oc-node rect{rx:8;transition:filter .15s}
+  .oc-node:hover rect{filter:brightness(.93)}
+  .oc-name{font-family:'Manrope',sans-serif;font-weight:700;font-size:11.5px;fill:#1B1714;pointer-events:none}
+  .oc-head{font-family:'Manrope',sans-serif;font-weight:500;font-size:10px;fill:#6B6560;pointer-events:none}
+  .oc-link{fill:none;stroke:#D1CBC4;stroke-width:1.5}
+  .oc-badge{font-family:'Manrope',sans-serif;font-weight:700;font-size:9px;pointer-events:none}
+  #orgViewSeg button{display:inline-flex;align-items:center}
   .org-search-wrap{position:relative}
   .org-search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;border:none;background:var(--muted);color:#fff;display:grid;place-items:center;cursor:pointer;padding:0;opacity:.7;transition:opacity .12s}
   .org-search-clear:hover{opacity:1}
@@ -537,6 +546,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/uk.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 </head>
 <body>
 <div class="auth-scrim open" id="authScrim">
@@ -882,12 +892,20 @@
           </div>
           <div class="org-toolbar">
             <button class="btn primary" onclick="orgOpen(null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Додати департамент</button>
-            <button class="btn" onclick="orgExpandAll(true)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg>Розгорнути все</button>
-            <button class="btn" onclick="orgExpandAll(false)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 11l-5-5-5 5M17 18l-5-5-5 5"/></svg>Згорнути все</button>
+            <button class="btn" id="orgExpandBtn" onclick="orgExpandAll(true)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg>Розгорнути все</button>
+            <button class="btn" id="orgCollapseBtn" onclick="orgExpandAll(false)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 11l-5-5-5 5M17 18l-5-5-5 5"/></svg>Згорнути все</button>
             <span style="flex:1"></span>
+            <div class="seg" id="orgViewSeg" style="margin-right:8px">
+              <button class="on" data-orgview="list" onclick="orgSetView('list')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;margin-right:5px"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Список
+              </button>
+              <button data-orgview="chart" onclick="orgSetView('chart')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;margin-right:5px"><rect x="8" y="2" width="8" height="4" rx="1"/><rect x="1" y="16" width="6" height="4" rx="1"/><rect x="9" y="16" width="6" height="4" rx="1"/><rect x="17" y="16" width="6" height="4" rx="1"/><path d="M12 6v4M4 16v-4h16v4"/></svg>Схема
+              </button>
+            </div>
             <button class="btn" onclick="orgExport()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>Зберегти у файл</button>
           </div>
-          <div class="org-filters">
+          <div class="org-filters" id="orgFiltersRow">
             <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 3H2l8 9.5V19l4 2v-8.5z"/></svg>Фільтр</span>
             <select id="orgFilterStatus" onchange="orgRender()">
               <option value="">Будь-який статус</option>
@@ -910,6 +928,16 @@
             </div>
           </div>
           <ul class="org-tree" id="orgTree"></ul>
+          <div id="orgChart" style="display:none;width:100%;height:78vh;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--page);position:relative">
+            <div style="position:absolute;top:10px;right:12px;z-index:5;display:flex;gap:6px">
+              <button class="btn" style="padding:6px 10px;font-size:12px" onclick="orgChartZoom(1.25)">+</button>
+              <button class="btn" style="padding:6px 10px;font-size:12px" onclick="orgChartZoom(0.8)">−</button>
+              <button class="btn" style="padding:6px 10px;font-size:12px" onclick="orgChartFit()">⤢</button>
+            </div>
+            <svg id="orgChartSvg" width="100%" height="100%">
+              <g id="orgChartG"></g>
+            </svg>
+          </div>
         </div>
 
         <!-- === Налаштування === -->
@@ -1650,6 +1678,99 @@
   window.orgToggle=id=>{const n=orgFind(orgData,id);if(n){n.collapsed=!n.collapsed;orgRender();}};
   window.orgExpandAll=open=>{const w=l=>l.forEach(n=>{n.collapsed=!open;w(n.children||[]);});w(orgData);orgRender();};
   window.orgRowClick=(e,id)=>{if(e.target.closest('.org-acts,.org-toggle,.org-confirm'))return;orgEditNode(id);};
+
+  /* ===== Org Chart (D3) ===== */
+  let orgView='list', _ocZoom=null;
+
+  window.orgSetView=function(v){
+    orgView=v;
+    const isList=v==='list';
+    $('orgTree').style.display=isList?'':'none';
+    $('orgChart').style.display=isList?'none':'';
+    $('orgFiltersRow').style.display=isList?'':'none';
+    $('orgExpandBtn').style.display=isList?'':'none';
+    $('orgCollapseBtn').style.display=isList?'':'none';
+    [...document.querySelectorAll('#orgViewSeg button')].forEach(b=>b.classList.toggle('on',b.dataset.orgview===v));
+    if(v==='chart') orgChartRender();
+  };
+
+  function orgToD3Node(n){
+    const emp=n.employee_id?dictEmps.find(e=>e.id===n.employee_id):null;
+    const type=n.unit_type_id?dictTypes.find(t=>t.id===n.unit_type_id):null;
+    const kind=n.unit_kind_id?dictKinds.find(k=>k.id===n.unit_kind_id):null;
+    return{id:n.id,name:n.name,head:emp?empFull(emp):(n.head||''),status:n.status||'active',
+      typeLabel:type?type.name:'',kindColor:kind?kind.color:'',
+      children:(n.children||[]).map(c=>orgToD3Node(c))};
+  }
+  function orgToD3(nodes){
+    if(!nodes||!nodes.length)return null;
+    const roots=nodes.map(n=>orgToD3Node(n));
+    return roots.length===1?roots[0]:{id:'__root__',name:'',_virtual:true,children:roots};
+  }
+
+  window.orgChartRender=function(){
+    if(!window.d3){setTimeout(orgChartRender,300);return;}
+    const svg=d3.select('#orgChartSvg');
+    const g=d3.select('#orgChartG');
+    g.selectAll('*').remove();
+    const W=$('orgChart').clientWidth||900, H=$('orgChart').clientHeight||600;
+    const NW=164, NH=56, GX=28, GY=64;
+    const root=d3.hierarchy(orgToD3(orgData),d=>d.children&&d.children.length?d.children:null);
+    d3.tree().nodeSize([NW+GX,NH+GY])(root);
+
+    // Links
+    g.append('g').selectAll('path').data(root.links()).enter().append('path')
+      .attr('class','oc-link')
+      .attr('d',d3.linkVertical().x(d=>d.x).y(d=>d.y+NH/2));
+
+    // Nodes
+    const node=g.append('g').selectAll('g').data(root.descendants()).enter().append('g')
+      .attr('class','oc-node')
+      .attr('transform',d=>`translate(${d.x-NW/2},${d.y-NH/2})`)
+      .on('click',(_,d)=>{if(!d.data._virtual&&d.data.id){orgSetView('list');setTimeout(()=>orgEditNode(d.data.id),80);}});
+
+    node.each(function(d){
+      if(d.data._virtual)return;
+      const nd=d.data;
+      const kc=nd.kindColor;
+      const fill=kc?kc+'22':'#FFFFFF';
+      const stroke=kc||'#D1CBC4';
+      const stColor=nd.status==='inactive'?'#B91C1C':nd.status==='acting'?'#C2410C':'#15803D';
+      const stLabel=nd.status==='inactive'?'Неактивний':nd.status==='acting'?'В.О.':'Активний';
+      const el=d3.select(this);
+      el.append('rect').attr('width',NW).attr('height',NH).attr('rx',9)
+        .attr('fill',fill).attr('stroke',stroke).attr('stroke-width',1.5);
+      if(kc) el.append('rect').attr('width',3).attr('height',NH-8).attr('x',0).attr('y',4).attr('rx',2).attr('fill',kc);
+      const px=kc?11:8;
+      const nm=nd.name||'';
+      el.append('text').attr('class','oc-name').attr('x',px).attr('y',21)
+        .text(nm.length>21?nm.slice(0,21)+'…':nm);
+      if(nd.head){
+        const h=nd.head;
+        el.append('text').attr('class','oc-head').attr('x',px).attr('y',35)
+          .text(h.length>26?h.slice(0,26)+'…':h);
+      }else{
+        el.append('text').attr('class','oc-head').attr('x',px).attr('y',35).attr('fill','#B0A89E')
+          .text('Керівника не призначено');
+      }
+      // Status pill
+      const bw=nd.status==='inactive'?62:nd.status==='acting'?28:46;
+      el.append('rect').attr('x',NW-bw-6).attr('y',5).attr('width',bw).attr('height',13)
+        .attr('rx',4).attr('fill',stColor+'22');
+      el.append('text').attr('class','oc-badge').attr('fill',stColor)
+        .attr('x',NW-bw/2-6).attr('y',14.5).attr('text-anchor','middle').text(stLabel);
+    });
+
+    // Zoom
+    const zoom=d3.zoom().scaleExtent([.05,3]).on('zoom',e=>g.attr('transform',e.transform));
+    svg.call(zoom);_ocZoom=zoom;
+    const box=g.node().getBBox();
+    const scale=Math.min(.85,Math.min(W/(box.width+80),H/(box.height+80)));
+    svg.call(zoom.transform,d3.zoomIdentity.translate(W/2-(box.x+box.width/2)*scale,30-box.y*scale).scale(scale));
+  };
+
+  window.orgChartZoom=f=>{if(_ocZoom)d3.select('#orgChartSvg').transition().duration(220).call(_ocZoom.scaleBy,f);};
+  window.orgChartFit=orgChartRender;
 
   function fillOrgModalSelects(){
     const es=document.getElementById('orgEmployee');const c1=es.value;
