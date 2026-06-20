@@ -69,6 +69,10 @@
   [data-theme="dark"] .auth-scrim{background:#19171A}
   [data-theme="dark"] .auth-card{background:#252220;border-color:#2E2B28}
   [data-theme="dark"] input,[data-theme="dark"] textarea,[data-theme="dark"] select{background:#1E1C1A!important;color:var(--ink)!important;border-color:var(--line)!important}
+  [data-theme="dark"] .mx-cross-wrap{background:var(--surface)}
+  [data-theme="dark"] .mx-cross thead th{background:var(--surface)}
+  [data-theme="dark"] .mx-cross .mx-cr-name{background:var(--surface)}
+  [data-theme="dark"] .mx-cross .mx-cr-cell[style]{filter:brightness(.85) saturate(.8)}
   [data-theme="dark"] .flatpickr-calendar{background:#252220!important;border-color:#2E2B28;color:#F0EDE9}
   [data-theme="dark"] .flatpickr-months,[data-theme="dark"] .flatpickr-weekdays{background:#252220!important}
   [data-theme="dark"] .flatpickr-month,[data-theme="dark"] .flatpickr-current-month,[data-theme="dark"] .flatpickr-current-month select,[data-theme="dark"] .flatpickr-current-month input{color:#F0EDE9!important;fill:#F0EDE9!important}
@@ -439,6 +443,24 @@
   .emp-unit-link:hover .emp-unit-arrow{opacity:.7;color:var(--brand)}
   .emp-unit-link b{font-size:13px;font-weight:700;display:block;line-height:1.3}
   .emp-unit-arrow{width:14px;height:14px;flex:none;opacity:.3;transition:opacity .12s}
+  /* Cross-matrix view */
+  .mx-cross-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 280px);border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+  .mx-cross{border-collapse:collapse;min-width:100%;font-size:12px}
+  .mx-cross thead th{position:sticky;top:0;z-index:3;background:var(--surface);border-bottom:2px solid var(--line)}
+  .mx-cross thead th:first-child{left:0;z-index:4;min-width:240px;max-width:300px;text-align:left;padding:8px 12px;font-size:12px;font-weight:700;color:var(--muted)}
+  .mx-cross .mx-cr-dep-th{width:36px;min-width:36px;max-width:36px;padding:0;vertical-align:bottom;border-left:1px solid var(--line)}
+  .mx-cross .mx-cr-dep-th div{writing-mode:vertical-rl;transform:rotate(180deg);padding:10px 8px 6px;white-space:nowrap;font-size:11px;font-weight:600;color:var(--ink);max-height:160px;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
+  .mx-cross tbody tr:hover td{background:var(--hover-bg)}
+  .mx-cross tbody tr:hover td:first-child{background:var(--hover-bg-2)}
+  .mx-cross .mx-cr-name{position:sticky;left:0;z-index:2;background:var(--surface);border-right:2px solid var(--line);padding:6px 12px;font-size:12px;color:var(--ink);white-space:normal;line-height:1.35;min-width:240px;max-width:300px;cursor:pointer}
+  .mx-cross .mx-cr-name:hover{color:var(--brand)}
+  .mx-cross .mx-cr-sep td{background:var(--page);border-top:2px solid var(--line);border-bottom:1px solid var(--line)}
+  .mx-cross .mx-cr-sep .mx-cr-name{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;cursor:default}
+  .mx-cross .mx-cr-sep .mx-cr-name:hover{color:var(--muted)}
+  .mx-cross td{border-left:1px solid var(--line);border-top:1px solid var(--line);text-align:center;padding:0;width:36px;min-width:36px}
+  .mx-cross .mx-cr-cell{width:36px;height:32px;display:grid;place-items:center;font-size:11px;font-weight:800;letter-spacing:.01em}
+  .mx-cross .mx-cr-empty{color:var(--line)}
+
   .mx-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
   .mx-stat-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 18px;display:flex;flex-direction:column;gap:4px}
   .mx-stat-card .k-top{font-size:12px;font-weight:600;color:var(--muted)}
@@ -1105,6 +1127,9 @@
             </button>
             <button onclick="mxSetBodyView('table')">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:13px;height:13px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>Таблиця
+            </button>
+            <button onclick="mxSetBodyView('cross')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:13px;height:13px;margin-right:4px"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Матриця
             </button>
           </div>
         </div>
@@ -1971,9 +1996,13 @@
   window.mxSetBodyView=function(v){
     _mxBodyView=v;
     document.querySelectorAll('#mxBodyViewSeg button').forEach(b=>
-      b.classList.toggle('on', (v==='list'&&b.textContent.includes('Список'))||(v==='table'&&b.textContent.includes('Таблиця')))
+      b.classList.toggle('on',
+        (v==='list'&&b.textContent.includes('Список'))||
+        (v==='table'&&b.textContent.includes('Таблиця'))||
+        (v==='cross'&&b.textContent.includes('Матриця'))
+      )
     );
-    $('mxMore').style.display=v==='table'?'none':'';
+    $('mxMore').style.display=(v==='table'||v==='cross')?'none':'';
     render(false);
   };
 
@@ -2058,12 +2087,68 @@
     render(false);
   };
 
+  function renderCross(data){
+    const deps=depList();
+    // Find which dept indices actually appear in filtered data
+    const usedIdx=new Set();
+    data.forEach(r=>Object.keys(r.a||{}).forEach(k=>{if(r.a[k])usedIdx.add(+k);}));
+    const colIdx=[...usedIdx].sort((a,b)=>a-b);
+
+    if(!data.length||!colIdx.length){
+      $('mxBody').innerHTML='<div class="mx-tbl-empty">Нічого не знайдено</div>';return;
+    }
+
+    // Color map per code
+    const cellColor=code=>{
+      const u=(code||'').toUpperCase().replace('І','I');
+      if(u==='DI'||u.includes('DI'))return{bg:'#EFF6FF',fg:'#1D4ED8'};
+      if(u==='A')return{bg:'#FEF2F2',fg:'#DC2626'};
+      if(u==='P')return{bg:'#F0FDF4',fg:'#16A34A'};
+      if(u==='V')return{bg:'#FFFBEB',fg:'#D97706'};
+      if(u==='I')return{bg:'#F5F3FF',fg:'#7C3AED'};
+      if(u==='R'||u==='Р')return{bg:'#FFF7ED',fg:'#EA580C'};
+      return{bg:'var(--hover-bg)',fg:'var(--ink)'};
+    };
+
+    let html='<div class="mx-cross-wrap"><table class="mx-cross"><thead><tr>'+
+      '<th>Процес / рішення</th>'+
+      colIdx.map(i=>'<th class="mx-cr-dep-th"><div title="'+esc(deps[i]||'')+'">'+esc(deps[i]||'')+'</div></th>').join('')+
+      '</tr></thead><tbody>';
+
+    let lastSrc='__';
+    data.forEach(r=>{
+      if(r.s!==lastSrc){
+        lastSrc=r.s;
+        html+='<tr class="mx-cr-sep"><td class="mx-cr-name">'+esc(r.s||'—')+'</td>'+
+          colIdx.map(()=>'<td></td>').join('')+'</tr>';
+      }
+      html+='<tr><td class="mx-cr-name" onclick="mxOpenModal('+r.id+')" title="Редагувати: '+esc(r.d||'')+'">'+esc(r.d||'—')+'</td>';
+      colIdx.forEach(i=>{
+        const code=(r.a||{})[String(i)]||'';
+        if(code){
+          const {bg,fg}=cellColor(code);
+          html+='<td><div class="mx-cr-cell" style="background:'+bg+';color:'+fg+'">'+esc(code)+'</div></td>';
+        } else {
+          html+='<td><div class="mx-cr-cell mx-cr-empty">·</div></td>';
+        }
+      });
+      html+='</tr>';
+    });
+
+    html+='</tbody></table></div>';
+    $('mxBody').innerHTML=html;
+  }
+
   function render(reset){
     if(reset){mxPage=0}
     const codes=mxSet==='pov'?['DI','A','P','V','I']:['m','a','o','d','h'];
     const data=filtered();
+    const _mc=v=>`<div class="mx-stat-card"><div class="k-top">${v[0]}</div><div class="k-val">${v[1]}</div></div>`;
+    const statsHtml=_mc(['Матриць',[...new Set(rows().map(r=>r.s).filter(Boolean))].length])+_mc([mxSet==='pov'?'Рішень':'Дій',data.length])+_mc(['Процесів',rows().length]);
+    $('mxStats').innerHTML=statsHtml;
 
-    if(_mxBodyView==='table'){renderTable(data);const _mc=v=>`<div class="mx-stat-card"><div class="k-top">${v[0]}</div><div class="k-val">${v[1]}</div></div>`;$('mxStats').innerHTML=_mc(['Матриць',[...new Set(rows().map(r=>r.s).filter(Boolean))].length])+_mc([mxSet==='pov'?'Рішень':'Дій',data.length])+_mc(['Процесів',rows().length]);return;}
+    if(_mxBodyView==='table'){renderTable(data);return;}
+    if(_mxBodyView==='cross'){renderCross(data);return;}
 
     const end=(mxPage+1)*MX_PAGE;
     const slice=data.slice(0,end);
@@ -2104,8 +2189,6 @@
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:32px;height:32px;stroke-width:1.5;color:var(--muted)"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>'+
       '<p style="color:var(--muted);margin-top:10px">Нічого не знайдено</p></div>';
     $('mxMore').style.display=data.length>end?'block':'none';
-    const _mc=v=>`<div class="mx-stat-card"><div class="k-top">${v[0]}</div><div class="k-val">${v[1]}</div></div>`;
-    $('mxStats').innerHTML=_mc(['Матриць',[...new Set(rows().map(r=>r.s).filter(Boolean))].length])+_mc([mxSet==='pov'?'Рішень':'Дій',data.length])+_mc(['Процесів',rows().length]);
   }
 
   function reloadSet(){buildFilters();buildLegend();render(true)}
