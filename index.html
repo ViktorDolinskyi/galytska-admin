@@ -1046,9 +1046,6 @@
         </div>
 
         <div class="org-toolbar">
-          <button class="btn primary" onclick="mxOpenModal(null)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Додати процес
-          </button>
           <span style="flex:1"></span>
           <button class="btn" onclick="document.getElementById('mxImportFile').click()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg>Імпорт з Excel
@@ -1095,9 +1092,12 @@
           <div class="legend-grid" id="mxLegend" style="margin-top:16px"></div>
         </details>
 
-        <div class="mx-controls">
+        <div class="mx-controls" style="margin-top:14px">
+          <button class="btn primary" onclick="mxOpenModal(null)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Додати процес
+          </button>
           <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 3H2l8 9.5V19l4 2v-8.5z"/></svg>Фільтр</span>
-          <div class="csel" id="cselMxSource" style="max-width:220px">
+          <div class="csel" id="cselMxSource" style="max-width:200px">
             <button class="csel-trigger" type="button">
               <span class="csel-label">Усі матриці</span>
               <svg class="csel-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6"/></svg>
@@ -1106,7 +1106,7 @@
               <div class="csel-opt selected" data-val="">Усі матриці</div>
             </div>
           </div>
-          <div class="csel" id="cselMxCat" style="max-width:220px">
+          <div class="csel" id="cselMxCat" style="max-width:200px">
             <button class="csel-trigger" type="button">
               <span class="csel-label">Усі категорії</span>
               <svg class="csel-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6"/></svg>
@@ -1115,17 +1115,14 @@
               <div class="csel-opt selected" data-val="">Усі категорії</div>
             </div>
           </div>
-          <div class="search org-search-wrap" style="margin-left:0;width:260px">
+          <div class="search org-search-wrap" style="margin-left:0;flex:1;min-width:160px">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
             <input id="mxSearch" placeholder="Пошук рішення…" oninput="render(true);mxSearchToggleClear()"/>
             <button id="mxSearchClear" class="org-search-clear" onclick="mxSearchClear()" style="display:none" title="Очистити пошук">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
-        </div>
-
-        <div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:10px">
-          <div class="seg" id="mxBodyViewSeg" style="font-size:12px">
+          <div class="seg" id="mxBodyViewSeg" style="font-size:12px;flex:none">
             <button class="on" onclick="mxSetBodyView('list')">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:13px;height:13px;margin-right:4px"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Список
             </button>
