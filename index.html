@@ -846,6 +846,7 @@
 
     <nav class="nav">
       <div class="nav-label">Управління</div>
+      <div id="navSortable">
       <button class="nav-item active" data-view="dash" data-label="Панель" draggable="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
         <span class="nav-label-txt">Панель</span>
@@ -887,6 +888,7 @@
         <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </button>
 
+      </div><!-- /navSortable -->
       <div class="nav-label">Система</div>
       <button class="nav-item" data-view="settings" data-label="Налаштування">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -1779,11 +1781,12 @@
 
   // ===== Nav drag-and-drop reorder =====
   (function(){
-    const nav = document.querySelector('.nav');
+    const container = document.getElementById('navSortable');
+    if(!container) return;
     const NAV_ORDER_KEY = 'gs_nav_order';
     let dragSrc = null;
 
-    function getNavItems(){ return [...nav.querySelectorAll('.nav-item[draggable]')]; }
+    function getNavItems(){ return [...container.querySelectorAll('.nav-item[draggable]')]; }
 
     function saveOrder(){
       localStorage.setItem(NAV_ORDER_KEY, JSON.stringify(getNavItems().map(el=>el.dataset.view)));
@@ -1793,13 +1796,10 @@
       try{
         const order = JSON.parse(localStorage.getItem(NAV_ORDER_KEY)||'null');
         if(!Array.isArray(order)) return;
-        const label = nav.querySelector('.nav-label');
         order.forEach(view=>{
-          const el = nav.querySelector(`.nav-item[data-view="${view}"]`);
-          if(el) nav.appendChild(el);
+          const el = container.querySelector(`.nav-item[data-view="${view}"]`);
+          if(el) container.appendChild(el);
         });
-        // keep nav-label at top
-        if(label) nav.prepend(label);
       } catch(e){}
     }
 
@@ -1809,7 +1809,7 @@
 
     restoreOrder();
 
-    nav.addEventListener('dragstart', e=>{
+    container.addEventListener('dragstart', e=>{
       dragSrc = e.target.closest('.nav-item[draggable]');
       if(!dragSrc) return;
       e.dataTransfer.effectAllowed = 'move';
@@ -1817,7 +1817,7 @@
       setTimeout(()=>dragSrc.classList.add('nav-dragging'), 0);
     });
 
-    nav.addEventListener('dragover', e=>{
+    container.addEventListener('dragover', e=>{
       e.preventDefault();
       e.dataTransfer.dropEffect = 'move';
       const over = e.target.closest('.nav-item[draggable]');
@@ -1825,26 +1825,25 @@
       if(dragSrc) dragSrc.classList.add('nav-dragging');
       if(!over || over === dragSrc) return;
       const rect = over.getBoundingClientRect();
-      const mid = rect.top + rect.height / 2;
-      over.classList.add(e.clientY < mid ? 'nav-drag-over-top' : 'nav-drag-over-bot');
+      over.classList.add(e.clientY < rect.top + rect.height/2 ? 'nav-drag-over-top' : 'nav-drag-over-bot');
     });
 
-    nav.addEventListener('dragleave', e=>{
-      if(!nav.contains(e.relatedTarget)) clearIndicators();
+    container.addEventListener('dragleave', e=>{
+      if(!container.contains(e.relatedTarget)) clearIndicators();
     });
 
-    nav.addEventListener('drop', e=>{
+    container.addEventListener('drop', e=>{
       e.preventDefault();
       const over = e.target.closest('.nav-item[draggable]');
       clearIndicators();
       if(!dragSrc || !over || over === dragSrc) return;
       const rect = over.getBoundingClientRect();
-      const before = e.clientY < rect.top + rect.height / 2;
-      nav.insertBefore(dragSrc, before ? over : over.nextSibling);
+      const before = e.clientY < rect.top + rect.height/2;
+      container.insertBefore(dragSrc, before ? over : over.nextSibling);
       saveOrder();
     });
 
-    nav.addEventListener('dragend', ()=>{ clearIndicators(); dragSrc=null; });
+    container.addEventListener('dragend', ()=>{ clearIndicators(); dragSrc=null; });
   })();
 
   // Мобільне меню
