@@ -439,8 +439,10 @@
   .emp-unit-link:hover .emp-unit-arrow{opacity:.7;color:var(--brand)}
   .emp-unit-link b{font-size:13px;font-weight:700;display:block;line-height:1.3}
   .emp-unit-arrow{width:14px;height:14px;flex:none;opacity:.3;transition:opacity .12s}
-  .mx-stats{display:flex;gap:22px;flex-wrap:wrap;color:var(--slate);font-size:12.5px;font-weight:600;margin-bottom:4px}
-  .mx-stats b{font-family:'Unbounded';font-weight:700;color:var(--ink);font-size:15px}
+  .mx-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+  .mx-stat-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 18px;display:flex;flex-direction:column;gap:4px}
+  .mx-stat-card .k-top{font-size:12px;font-weight:600;color:var(--muted)}
+  .mx-stat-card .k-val{font-family:'Unbounded';font-weight:700;font-size:26px;color:var(--ink);letter-spacing:-.02em;line-height:1}
   details.legend{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin:16px 0;box-shadow:var(--shadow)}
   details.legend summary{cursor:pointer;padding:13px 18px;font-weight:800;font-size:13.5px;list-style:none;display:flex;align-items:center;gap:8px}
   details.legend summary::-webkit-details-marker{display:none}
@@ -1057,6 +1059,7 @@
         </div>
 
         <div class="mx-stats" id="mxStats"></div>
+
 
         <details class="legend">
           <summary><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18l6-6-6-6"/></svg>Легенда кодів</summary>
@@ -2060,7 +2063,7 @@
     const codes=mxSet==='pov'?['DI','A','P','V','I']:['m','a','o','d','h'];
     const data=filtered();
 
-    if(_mxBodyView==='table'){renderTable(data);$('mxStats').innerHTML='<span><b>'+[...new Set(rows().map(r=>r.s).filter(Boolean))].length+'</b> матриць</span><span><b>'+data.length+'</b> '+(mxSet==='pov'?'рішень':'дій')+'</span><span><b>'+rows().length+'</b> процесів</span>';return;}
+    if(_mxBodyView==='table'){renderTable(data);const _mc=v=>`<div class="mx-stat-card"><div class="k-top">${v[0]}</div><div class="k-val">${v[1]}</div></div>`;$('mxStats').innerHTML=_mc(['Матриць',[...new Set(rows().map(r=>r.s).filter(Boolean))].length])+_mc([mxSet==='pov'?'Рішень':'Дій',data.length])+_mc(['Процесів',rows().length]);return;}
 
     const end=(mxPage+1)*MX_PAGE;
     const slice=data.slice(0,end);
@@ -2101,10 +2104,8 @@
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:32px;height:32px;stroke-width:1.5;color:var(--muted)"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>'+
       '<p style="color:var(--muted);margin-top:10px">Нічого не знайдено</p></div>';
     $('mxMore').style.display=data.length>end?'block':'none';
-    $('mxStats').innerHTML=
-      '<span><b>'+[...new Set(rows().map(r=>r.s).filter(Boolean))].length+'</b> матриць</span>'+
-      '<span><b>'+data.length+'</b> '+(mxSet==='pov'?'рішень':'дій')+'</span>'+
-      '<span><b>'+rows().length+'</b> процесів</span>';
+    const _mc=v=>`<div class="mx-stat-card"><div class="k-top">${v[0]}</div><div class="k-val">${v[1]}</div></div>`;
+    $('mxStats').innerHTML=_mc(['Матриць',[...new Set(rows().map(r=>r.s).filter(Boolean))].length])+_mc([mxSet==='pov'?'Рішень':'Дій',data.length])+_mc(['Процесів',rows().length]);
   }
 
   function reloadSet(){buildFilters();buildLegend();render(true)}
