@@ -210,6 +210,13 @@
   .app.sb-collapsed .nav-item.active::before{left:-8px}
   .nav-item:focus-visible{outline:2px solid var(--brand); outline-offset:2px;}
   .nav-sub{padding-left:28px; font-size:13px;}
+  /* Drag-and-drop nav reorder */
+  .nav-item .nav-grip{width:14px;height:14px;flex:none;opacity:0;transition:opacity .12s;cursor:grab;color:var(--muted);margin-left:auto}
+  .nav-item:hover .nav-grip{opacity:1}
+  .app.sb-collapsed .nav-item .nav-grip{display:none}
+  .nav-item.nav-dragging{opacity:.35;background:var(--hover-bg)}
+  .nav-item.nav-drag-over-top{box-shadow:0 -2px 0 var(--brand)}
+  .nav-item.nav-drag-over-bot{box-shadow:0 2px 0 var(--brand)}
   .nav-sub svg{width:15px; height:15px;}
   .app.sb-collapsed .nav-sub{padding-left:9px;}
   /* Tooltip при collapsed */
@@ -839,37 +846,45 @@
 
     <nav class="nav">
       <div class="nav-label">Управління</div>
-      <button class="nav-item active" data-view="dash" data-label="Панель">
+      <button class="nav-item active" data-view="dash" data-label="Панель" draggable="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
         <span class="nav-label-txt">Панель</span>
+        <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </button>
-      <button class="nav-item" data-view="users" data-label="Користувачі">
+      <button class="nav-item" data-view="users" data-label="Користувачі" draggable="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>
         <span class="nav-label-txt">Користувачі</span>
+        <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </button>
-      <button class="nav-item" data-view="proc" data-label="Процеси">
+      <button class="nav-item" data-view="proc" data-label="Процеси" draggable="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
         <span class="nav-label-txt">Процеси</span>
+        <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </button>
-      <button class="nav-item" data-view="matrix" data-label="Матриці">
+      <button class="nav-item" data-view="matrix" data-label="Матриці" draggable="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
         <span class="nav-label-txt">Матриці</span>
+        <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </button>
-      <button class="nav-item" data-view="goals" data-label="Цілі">
+      <button class="nav-item" data-view="goals" data-label="Цілі" draggable="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
         <span class="nav-label-txt">Цілі</span>
+        <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </button>
-      <button class="nav-item" data-view="company" data-label="Компанія">
+      <button class="nav-item" data-view="company" data-label="Компанія" draggable="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>
         <span class="nav-label-txt">Компанія</span>
+        <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </button>
-      <button class="nav-item" data-view="reports" data-label="Звіти">
+      <button class="nav-item" data-view="reports" data-label="Звіти" draggable="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
         <span class="nav-label-txt">Звіти</span>
+        <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </button>
-      <button class="nav-item" data-view="analytics" data-label="Аналітика">
+      <button class="nav-item" data-view="analytics" data-label="Аналітика" draggable="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M7 15l3-4 3 3 4-6"/></svg>
         <span class="nav-label-txt">Аналітика</span>
+        <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </button>
 
       <div class="nav-label">Система</div>
@@ -1761,6 +1776,76 @@
       document.querySelector('.content').scrollTo({top:0,behavior:'smooth'});
     });
   });
+
+  // ===== Nav drag-and-drop reorder =====
+  (function(){
+    const nav = document.querySelector('.nav');
+    const NAV_ORDER_KEY = 'gs_nav_order';
+    let dragSrc = null;
+
+    function getNavItems(){ return [...nav.querySelectorAll('.nav-item[draggable]')]; }
+
+    function saveOrder(){
+      localStorage.setItem(NAV_ORDER_KEY, JSON.stringify(getNavItems().map(el=>el.dataset.view)));
+    }
+
+    function restoreOrder(){
+      try{
+        const order = JSON.parse(localStorage.getItem(NAV_ORDER_KEY)||'null');
+        if(!Array.isArray(order)) return;
+        const label = nav.querySelector('.nav-label');
+        order.forEach(view=>{
+          const el = nav.querySelector(`.nav-item[data-view="${view}"]`);
+          if(el) nav.appendChild(el);
+        });
+        // keep nav-label at top
+        if(label) nav.prepend(label);
+      } catch(e){}
+    }
+
+    function clearIndicators(){
+      getNavItems().forEach(el=>el.classList.remove('nav-drag-over-top','nav-drag-over-bot','nav-dragging'));
+    }
+
+    restoreOrder();
+
+    nav.addEventListener('dragstart', e=>{
+      dragSrc = e.target.closest('.nav-item[draggable]');
+      if(!dragSrc) return;
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', dragSrc.dataset.view);
+      setTimeout(()=>dragSrc.classList.add('nav-dragging'), 0);
+    });
+
+    nav.addEventListener('dragover', e=>{
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const over = e.target.closest('.nav-item[draggable]');
+      clearIndicators();
+      if(dragSrc) dragSrc.classList.add('nav-dragging');
+      if(!over || over === dragSrc) return;
+      const rect = over.getBoundingClientRect();
+      const mid = rect.top + rect.height / 2;
+      over.classList.add(e.clientY < mid ? 'nav-drag-over-top' : 'nav-drag-over-bot');
+    });
+
+    nav.addEventListener('dragleave', e=>{
+      if(!nav.contains(e.relatedTarget)) clearIndicators();
+    });
+
+    nav.addEventListener('drop', e=>{
+      e.preventDefault();
+      const over = e.target.closest('.nav-item[draggable]');
+      clearIndicators();
+      if(!dragSrc || !over || over === dragSrc) return;
+      const rect = over.getBoundingClientRect();
+      const before = e.clientY < rect.top + rect.height / 2;
+      nav.insertBefore(dragSrc, before ? over : over.nextSibling);
+      saveOrder();
+    });
+
+    nav.addEventListener('dragend', ()=>{ clearIndicators(); dragSrc=null; });
+  })();
 
   // Мобільне меню
   const sb = document.getElementById('sidebar');
