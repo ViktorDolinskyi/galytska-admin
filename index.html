@@ -903,7 +903,7 @@
     </nav>
 
     <div class="sb-foot">
-      <div class="avatar">ГС</div>
+      <div class="avatar sb-avatar">??</div>
       <div class="who"><b class="js-user">—</b><span>Авторизований</span></div>
       <button class="ico-btn" title="Вийти" onclick="authSignOut()" style="margin-left:auto;flex:none">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
@@ -3616,6 +3616,8 @@
     if(session){
       authScrim.classList.remove('open');
       document.querySelectorAll('.js-user').forEach(el=>el.textContent=session.user.email);
+      const _initials=(session.user.user_metadata?.full_name||session.user.email||'').trim().split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2)||'??';
+      document.querySelectorAll('.sb-avatar').forEach(el=>el.textContent=_initials);
       orgLoad();
       mxLoad();
       loadAllDicts().then(()=>{goalsLoad();goalTypesLoad();goalPatternsLoad();});
