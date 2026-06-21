@@ -630,6 +630,15 @@
   .mx-urow-child{color:var(--slate)}
 
 
+  /* ===== Settings ===== */
+  .sett-nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-size:13px;font-weight:600;color:var(--slate);cursor:pointer;transition:background .12s,color .12s;margin-bottom:2px}
+  .sett-nav-item svg{width:16px;height:16px;flex:none;stroke-width:2}
+  .sett-nav-item:hover{background:var(--hover-bg);color:var(--ink)}
+  .sett-nav-item.active{background:var(--brand-tint);color:var(--brand)}
+  .sett-dir-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:.5px solid var(--line);cursor:pointer;transition:background .1s;border-radius:8px}
+  .sett-dir-row:last-child{border-bottom:none}
+  .sett-dir-row:hover{background:var(--hover-bg);padding-left:6px}
+
   /* ===== Цілі — двохрівнева структура ===== */
   /* -------- Розвиток / Dev -------- */
   .dev-plan-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:14px;transition:box-shadow .15s,border-color .15s}
@@ -2271,58 +2280,157 @@
         <div class="page-head">
           <div>
             <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>Налаштування</h2>
-            <p>Конфігурація системи, довідники та параметри обліку.</p>
+            <p>Конфігурація системи, зовнішній вигляд та управління доступом.</p>
           </div>
         </div>
-        <div class="two-col">
-          <div class="card">
-            <div class="card-head"><h3>Зовнішній вигляд</h3></div>
-            <div style="padding:0 0 4px">
-              <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Тема інтерфейсу</div>
-              <div class="theme-options">
-                <div class="theme-opt" id="themeOptLight" onclick="setTheme('light')" title="Світла тема">
-                  <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="36" height="36" rx="8" fill="#F7F5F2" stroke="#ECE7E2" stroke-width="1.5"/>
-                    <rect x="6" y="6" width="24" height="16" rx="4" fill="#FFFFFF" stroke="#ECE7E2" stroke-width="1"/>
-                    <rect x="8" y="8" width="8" height="5" rx="2" fill="#D52B1E" opacity=".7"/>
-                    <rect x="8" y="15" width="20" height="2" rx="1" fill="#ECE7E2"/>
-                    <rect x="8" y="27" width="10" height="3" rx="1.5" fill="#D52B1E"/>
-                  </svg>
-                  <span>Світла</span>
+
+        <div style="display:grid;grid-template-columns:220px 1fr;gap:24px;align-items:start">
+          <!-- Бічна навігація -->
+          <div class="card" style="padding:8px">
+            <div class="sett-nav-item active" onclick="settTab('appearance',this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+              Зовнішній вигляд
+            </div>
+            <div class="sett-nav-item" onclick="settTab('profile',this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Профіль
+            </div>
+            <div class="sett-nav-item" onclick="settTab('directories',this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              Довідники
+            </div>
+            <div class="sett-nav-item" onclick="settTab('system',this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+              Система
+            </div>
+            <div class="sett-nav-item" onclick="settTab('about',this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+              Про систему
+            </div>
+          </div>
+
+          <!-- Контент -->
+          <div>
+
+            <!-- Зовнішній вигляд -->
+            <div id="settTab-appearance">
+              <div class="card" style="margin-bottom:16px">
+                <div class="card-head"><h3>Тема інтерфейсу</h3></div>
+                <div class="theme-options">
+                  <div class="theme-opt" id="themeOptLight" onclick="setTheme('light')" title="Світла тема">
+                    <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="36" height="36" rx="8" fill="#F7F5F2" stroke="#ECE7E2" stroke-width="1.5"/><rect x="6" y="6" width="24" height="16" rx="4" fill="#FFFFFF" stroke="#ECE7E2" stroke-width="1"/><rect x="8" y="8" width="8" height="5" rx="2" fill="#D52B1E" opacity=".7"/><rect x="8" y="15" width="20" height="2" rx="1" fill="#ECE7E2"/><rect x="8" y="27" width="10" height="3" rx="1.5" fill="#D52B1E"/></svg>
+                    <span>Світла</span>
+                  </div>
+                  <div class="theme-opt" id="themeOptDark" onclick="setTheme('dark')" title="Темна тема">
+                    <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="36" height="36" rx="8" fill="#19171A" stroke="#2E2B28" stroke-width="1.5"/><rect x="6" y="6" width="24" height="16" rx="4" fill="#252220" stroke="#2E2B28" stroke-width="1"/><rect x="8" y="8" width="8" height="5" rx="2" fill="#E03427" opacity=".8"/><rect x="8" y="15" width="20" height="2" rx="1" fill="#2E2B28"/><rect x="8" y="27" width="10" height="3" rx="1.5" fill="#E03427"/></svg>
+                    <span>Темна</span>
+                  </div>
+                  <div class="theme-opt" id="themeOptSystem" onclick="setTheme('system')" title="Як у системі">
+                    <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="18" height="36" rx="0" fill="#F7F5F2"/><rect x="18" width="18" height="36" fill="#19171A"/><rect width="36" height="36" rx="8" fill="none" stroke="#9B948E" stroke-width="1.5"/><rect x="6" y="6" width="11" height="16" rx="3" fill="#FFFFFF" stroke="#ECE7E2" stroke-width="1"/><rect x="19" y="6" width="11" height="16" rx="3" fill="#252220" stroke="#2E2B28" stroke-width="1"/><rect x="8" y="27" width="8" height="3" rx="1.5" fill="#D52B1E"/><rect x="20" y="27" width="8" height="3" rx="1.5" fill="#E03427"/></svg>
+                    <span>Системна</span>
+                  </div>
                 </div>
-                <div class="theme-opt" id="themeOptDark" onclick="setTheme('dark')" title="Темна тема">
-                  <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="36" height="36" rx="8" fill="#19171A" stroke="#2E2B28" stroke-width="1.5"/>
-                    <rect x="6" y="6" width="24" height="16" rx="4" fill="#252220" stroke="#2E2B28" stroke-width="1"/>
-                    <rect x="8" y="8" width="8" height="5" rx="2" fill="#E03427" opacity=".8"/>
-                    <rect x="8" y="15" width="20" height="2" rx="1" fill="#2E2B28"/>
-                    <rect x="8" y="27" width="10" height="3" rx="1.5" fill="#E03427"/>
-                  </svg>
-                  <span>Темна</span>
-                </div>
-                <div class="theme-opt" id="themeOptSystem" onclick="setTheme('system')" title="Як у системі">
-                  <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="18" height="36" rx="0" fill="#F7F5F2"/><rect x="18" width="18" height="36" fill="#19171A"/>
-                    <rect width="36" height="36" rx="8" fill="none" stroke="#9B948E" stroke-width="1.5"/>
-                    <rect x="6" y="6" width="11" height="16" rx="3" fill="#FFFFFF" stroke="#ECE7E2" stroke-width="1"/>
-                    <rect x="19" y="6" width="11" height="16" rx="3" fill="#252220" stroke="#2E2B28" stroke-width="1"/>
-                    <rect x="8" y="27" width="8" height="3" rx="1.5" fill="#D52B1E"/>
-                    <rect x="20" y="27" width="8" height="3" rx="1.5" fill="#E03427"/>
-                  </svg>
-                  <span>Системна</span>
+              </div>
+              <div class="card">
+                <div class="card-head"><h3>Мова інтерфейсу</h3></div>
+                <div style="display:flex;align-items:center;gap:12px;padding:4px 0">
+                  <div style="width:36px;height:36px;border-radius:8px;background:var(--brand-tint);color:var(--brand);display:grid;place-items:center;font-size:18px;flex:none">🇺🇦</div>
+                  <div><div style="font-size:13.5px;font-weight:700;color:var(--ink)">Українська</div><div style="font-size:12px;color:var(--muted)">Інтерфейс відображається українською мовою</div></div>
+                  <span class="badge success" style="margin-left:auto">Активна</span>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="card">
-            <div class="card-head"><h3>Розділи налаштувань</h3></div>
-            <div class="list-line" style="cursor:pointer" onclick="document.querySelector('[data-view=dicts]').click()">
-              <span class="org-ic" style="width:32px;height:32px;border-radius:8px;background:var(--brand-tint);color:var(--brand);display:grid;place-items:center;flex:none">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px;stroke-width:2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-              </span>
-              <div style="flex:1;min-width:0"><b style="font-size:13.5px;font-weight:700">Довідники</b><div style="font-size:12px;color:var(--muted);margin-top:2px">Типи підрозділів, категорії, статуси</div></div>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px;stroke-width:2;color:var(--muted)"><path d="M9 18l6-6-6-6"/></svg>
+
+            <!-- Профіль -->
+            <div id="settTab-profile" style="display:none">
+              <div class="card" style="margin-bottom:16px">
+                <div class="card-head"><h3>Обліковий запис</h3></div>
+                <div style="display:flex;align-items:center;gap:16px;padding:4px 0 16px">
+                  <div class="avatar" style="width:52px;height:52px;font-size:18px;flex:none" id="settAvatar">??</div>
+                  <div>
+                    <div style="font-size:15px;font-weight:700;color:var(--ink)" id="settUserEmail">—</div>
+                    <div style="font-size:12px;color:var(--muted);margin-top:2px">Адміністратор системи</div>
+                  </div>
+                </div>
+                <div style="border-top:1px solid var(--line);padding-top:14px">
+                  <button class="btn" onclick="window.authSignOut&&authSignOut()" style="color:#DC2626;border-color:#DC2626">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;margin-right:6px"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    Вийти з системи
+                  </button>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-head"><h3>Безпека</h3></div>
+                <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Для зміни пароля або email зверніться до адміністратора Supabase</div>
+                <a href="https://supabase.com/dashboard" target="_blank" class="btn ghost" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  Supabase Dashboard
+                </a>
+              </div>
             </div>
+
+            <!-- Довідники -->
+            <div id="settTab-directories" style="display:none">
+              <div class="card">
+                <div class="card-head"><h3>Довідники системи</h3></div>
+                <div style="display:flex;flex-direction:column;gap:2px">
+                  <div class="sett-dir-row" onclick="navTo('company','settings')">
+                    <div style="width:36px;height:36px;border-radius:9px;background:var(--brand-tint);color:var(--brand);display:grid;place-items:center;flex:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3"/></svg></div>
+                    <div style="flex:1"><div style="font-size:13.5px;font-weight:700;color:var(--ink)">Структура компанії</div><div style="font-size:12px;color:var(--muted);margin-top:1px">Відділи, підрозділи, посади</div></div>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px;color:var(--muted)"><path d="M9 18l6-6-6-6"/></svg>
+                  </div>
+                  <div class="sett-dir-row" onclick="navTo('goals','settings')">
+                    <div style="width:36px;height:36px;border-radius:9px;background:#EFF6FF;color:#2563EB;display:grid;place-items:center;flex:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+                    <div style="flex:1"><div style="font-size:13.5px;font-weight:700;color:var(--ink)">Типи та патерни цілей</div><div style="font-size:12px;color:var(--muted);margin-top:1px">Класифікатори для розділу «Цілі»</div></div>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px;color:var(--muted)"><path d="M9 18l6-6-6-6"/></svg>
+                  </div>
+                  <div class="sett-dir-row" onclick="navTo('users',null)">
+                    <div style="width:36px;height:36px;border-radius:9px;background:#F0FDF4;color:#16A34A;display:grid;place-items:center;flex:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                    <div style="flex:1"><div style="font-size:13.5px;font-weight:700;color:var(--ink)">Довідник співробітників</div><div style="font-size:12px;color:var(--muted);margin-top:1px">Перелік персоналу, імпорт з CSV</div></div>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px;color:var(--muted)"><path d="M9 18l6-6-6-6"/></svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Система -->
+            <div id="settTab-system" style="display:none">
+              <div class="card" style="margin-bottom:16px">
+                <div class="card-head"><h3>Підключення до бази даних</h3></div>
+                <div style="display:flex;align-items:center;gap:12px;padding:4px 0">
+                  <div style="width:10px;height:10px;border-radius:50%;background:#16A34A;flex:none;box-shadow:0 0 0 3px rgba(22,163,74,.2)"></div>
+                  <div><div style="font-size:13.5px;font-weight:700;color:var(--ink)">Supabase</div><div style="font-size:12px;color:var(--muted)">З'єднання активне</div></div>
+                  <span class="badge success" style="margin-left:auto">Online</span>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-head"><h3>Керування доступом</h3></div>
+                <div style="font-size:13px;color:var(--muted);margin-bottom:12px">Додавання та керування користувачами системи відбувається через Supabase Authentication</div>
+                <a href="https://supabase.com/dashboard" target="_blank" class="btn ghost" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  Supabase → Authentication → Users
+                </a>
+              </div>
+            </div>
+
+            <!-- Про систему -->
+            <div id="settTab-about" style="display:none">
+              <div class="card">
+                <div style="display:flex;align-items:center;gap:16px;padding:4px 0 20px">
+                  <div style="width:52px;height:52px;border-radius:13px;background:var(--brand);color:#fff;display:grid;place-items:center;flex:none;padding:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:100%;height:100%"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+                  <div>
+                    <div style="font-size:17px;font-weight:800;color:var(--ink)">Галицька Свіжина</div>
+                    <div style="font-size:12px;color:var(--muted);margin-top:2px">Система управління трансформацією</div>
+                  </div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:16px">
+                  <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span style="color:var(--muted)">Версія</span><span style="font-weight:700;color:var(--ink)">1.0.0</span></div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span style="color:var(--muted)">База даних</span><span style="font-weight:700;color:var(--ink)">Supabase PostgreSQL</span></div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span style="color:var(--muted)">Рік</span><span style="font-weight:700;color:var(--ink)">2025</span></div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
@@ -3108,6 +3216,35 @@
   window.mxSearchClear=()=>{$('mxSearch').value='';$('mxSearchClear').style.display='none';render(true);$('mxSearch').focus();};
   $('mxMore').addEventListener('click',()=>{mxPage++;render(false)});
   reloadSet();
+
+  /* ===== Settings ===== */
+  window.settTab=function(tab,el){
+    ['appearance','profile','directories','system','about'].forEach(t=>{
+      const d=document.getElementById('settTab-'+t);
+      if(d)d.style.display=t===tab?'':'none';
+    });
+    document.querySelectorAll('.sett-nav-item').forEach(b=>b.classList.remove('active'));
+    if(el)el.classList.add('active');
+    // fill profile data
+    if(tab==='profile'){
+      const email=document.querySelector('.js-user')?.textContent||'';
+      const el2=document.getElementById('settUserEmail');
+      if(el2)el2.textContent=email||'—';
+      const av=document.querySelector('.sb-avatar')?.textContent||'??';
+      const av2=document.getElementById('settAvatar');
+      if(av2)av2.textContent=av;
+    }
+  };
+  window.navTo=function(view,tab){
+    const btn=document.querySelector(`.nav-item[data-view="${view}"]`);
+    if(btn)btn.click();
+    if(tab){
+      setTimeout(()=>{
+        if(view==='company'&&window.companyTab) companyTab(tab);
+        if(view==='goals'&&window.goalsTab) goalsTab(tab);
+      },100);
+    }
+  };
 
   /* ===== ЦІЛІ ===== */
   /* ===== Goals two-level ===== */
