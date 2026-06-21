@@ -4287,7 +4287,16 @@
   document.getElementById('kindModal').addEventListener('click',e=>{if(e.target.id==='kindModal')kindCloseModal();});
   document.getElementById('orgName').addEventListener('keydown',e=>{if(e.key==='Enter')orgSave();});
   [$('empLastName'),$('empFirstName'),$('empPatronymic')].forEach(el=>el.addEventListener('keydown',e=>{if(e.key==='Enter')empSave();}));
-  window._fpBirth = flatpickr($('empBirthdate'),{locale:flatpickr.l10ns.uk,dateFormat:'Y-m-d',altInput:true,altFormat:'d.m.Y',allowInput:true,disableMobile:true});
+  window._fpBirth = flatpickr($('empBirthdate'),{locale:flatpickr.l10ns.uk,dateFormat:'Y-m-d',altInput:true,altFormat:'d.m.Y',allowInput:true,disableMobile:true,
+    onOpen:function(_,__,fp){
+      var cal=fp.calendarContainer;
+      if(!cal)return;
+      requestAnimationFrame(function(){
+        var r=cal.getBoundingClientRect();
+        if(r.right>window.innerWidth-8){cal.style.left=(parseFloat(cal.style.left||0)-(r.right-window.innerWidth+12))+'px';}
+      });
+    }
+  });
   document.getElementById('typeName').addEventListener('keydown',e=>{if(e.key==='Enter')typeSave();});
   document.getElementById('kindName').addEventListener('keydown',e=>{if(e.key==='Enter')kindSave();});
 
