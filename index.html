@@ -1705,12 +1705,10 @@
               <table style="width:100%;border-collapse:collapse;font-size:13px">
                 <thead>
                   <tr style="background:var(--page)">
-                    <th style="padding:8px 12px;text-align:left;font-weight:700;border-bottom:1px solid var(--line)">#</th>
-                    <th style="padding:8px 12px;text-align:left;font-weight:700;border-bottom:1px solid var(--line)">Прізвище</th>
-                    <th style="padding:8px 12px;text-align:left;font-weight:700;border-bottom:1px solid var(--line)">Ім'я</th>
-                    <th style="padding:8px 12px;text-align:left;font-weight:700;border-bottom:1px solid var(--line)">По батькові</th>
-                    <th style="padding:8px 12px;text-align:left;font-weight:700;border-bottom:1px solid var(--line)">Дата нар.</th>
-                    <th style="padding:8px 12px;text-align:left;font-weight:700;border-bottom:1px solid var(--line)">Статус</th>
+                    <th style="padding:8px 12px;text-align:left;font-weight:700;border-bottom:1px solid var(--line);width:40px">#</th>
+                    <th style="padding:8px 12px;text-align:left;font-weight:700;border-bottom:1px solid var(--line)">ПІБ</th>
+                    <th style="padding:8px 12px;text-align:left;font-weight:700;border-bottom:1px solid var(--line);width:130px">Дата народження</th>
+                    <th style="padding:8px 12px;text-align:left;font-weight:700;border-bottom:1px solid var(--line);width:90px">Статус</th>
                   </tr>
                 </thead>
                 <tbody id="empImportBody"></tbody>
@@ -1720,7 +1718,7 @@
           </div>
           <div style="padding:16px 24px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:space-between;align-items:center">
             <div style="font-size:12px;color:var(--muted)">
-              Очікуваний формат CSV: <code style="background:var(--page);padding:2px 6px;border-radius:4px">Прізвище,Ім'я,По батькові,Дата народження</code>
+              Очікуваний формат CSV: <code style="background:var(--page);padding:2px 6px;border-radius:4px">ПІБ,Дата народження</code>
             </div>
             <div style="display:flex;gap:8px">
               <button class="btn" onclick="empImportClose()">Скасувати</button>
@@ -3934,10 +3932,9 @@
   /* --- Імпорт / Експорт співробітників --- */
   window.empExportCsv=function(){
     const BOM='﻿';
-    const header='Прізвище,Ім\'я,По батькові,Дата народження';
-    const rows=dictEmps.map(r=>[
-      r.last_name||'', r.first_name||'', r.patronymic||'', r.birthdate||''
-    ].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(','));
+    const q=v=>'"'+String(v||'').replace(/"/g,'""')+'"';
+    const header='ПІБ,Дата народження';
+    const rows=dictEmps.map(r=>q(empFull(r))+','+q(r.birthdate||''));
     const csv=BOM+[header,...rows].join('\r\n');
     const a=document.createElement('a');
     a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
@@ -3952,19 +3949,16 @@
     input.value='';
     const reader=new FileReader();
     reader.onload=e=>{
-      const text=e.target.result.replace(/^﻿/,''); // strip BOM
+      const text=e.target.result.replace(/^﻿/,'');
       const lines=text.split(/\r?\n/).filter(l=>l.trim());
       if(!lines.length){ _showImportError('Файл порожній'); return; }
 
-      // Detect if first line is header (contains Прізвище / last_name)
       const firstLow=lines[0].toLowerCase();
-      const hasHeader=/прізвище|last_name|призвище/.test(firstLow);
+      const hasHeader=/піб|пиб|прізвище|last_name|full_name|name/.test(firstLow);
       const dataLines=hasHeader?lines.slice(1):lines;
-
       if(!dataLines.length){ _showImportError('Немає рядків з даними'); return; }
 
-      function parseLine(line){
-        // Handle quoted CSV fields
+      function parseCsvLine(line){
         const fields=[]; let cur='', inQ=false;
         for(let i=0;i<line.length;i++){
           const c=line[i];
@@ -3976,36 +3970,39 @@
         return fields;
       }
 
+      function parseDate(raw){
+        if(!raw)return null;
+        const ym=/^(\d{4})-(\d{2})-(\d{2})$/.exec(raw);
+        if(ym)return raw;
+        const dm=/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})$/.exec(raw);
+        if(dm)return `${dm[3]}-${dm[2].padStart(2,'0')}-${dm[1].padStart(2,'0')}`;
+        return null;
+      }
+
       _empImportRows=dataLines.map((line,idx)=>{
-        const f=parseLine(line);
-        const last_name=(f[0]||'').trim();
-        const first_name=(f[1]||'').trim();
-        const patronymic=(f[2]||'').trim();
-        const rawDate=(f[3]||'').trim();
-        // Parse date: support dd.mm.yyyy, yyyy-mm-dd, dd/mm/yyyy
-        let birthdate=null;
-        if(rawDate){
-          const dm=/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})$/.exec(rawDate);
-          const ym=/^(\d{4})-(\d{2})-(\d{2})$/.exec(rawDate);
-          if(ym) birthdate=rawDate;
-          else if(dm) birthdate=`${dm[3]}-${dm[2].padStart(2,'0')}-${dm[1].padStart(2,'0')}`;
-        }
-        const err=!last_name?'Відсутнє прізвище':'';
-        return {last_name,first_name,patronymic,birthdate,rawDate,err,_row:idx+1};
-      }).filter(r=>r.last_name||r.first_name); // skip fully empty lines
+        const f=parseCsvLine(line);
+        // Колонка 1: ПІБ — розбиваємо на частини
+        const pib=(f[0]||'').trim();
+        const parts=pib.split(/\s+/).filter(Boolean);
+        const last_name=parts[0]||'';
+        const first_name=parts[1]||'';
+        const patronymic=parts.slice(2).join(' ');
+        // Колонка 2: Дата народження
+        const rawDate=(f[1]||'').trim();
+        const birthdate=parseDate(rawDate);
+        const err=!last_name?'Відсутнє ПІБ':'';
+        return {pib,last_name,first_name,patronymic,birthdate,rawDate,err,_row:idx+1};
+      }).filter(r=>r.pib);
 
       if(!_empImportRows.length){ _showImportError('Не знайдено жодного запису'); return; }
 
       const errCount=_empImportRows.filter(r=>r.err).length;
-      const $info=$('empImportInfo');
-      $info.innerHTML=`Знайдено рядків: <b>${_empImportRows.length}</b>`+
+      $('empImportInfo').innerHTML=`Знайдено рядків: <b>${_empImportRows.length}</b>`+
         (errCount?` &nbsp;·&nbsp; <span style="color:#DC2626">Помилок: ${errCount}</span>`:'');
 
       $('empImportBody').innerHTML=_empImportRows.map(r=>`<tr style="${r.err?'background:#FEF2F2':''}">
-        <td style="padding:6px 12px;border-top:1px solid var(--line);color:var(--muted)">${r._row}</td>
-        <td style="padding:6px 12px;border-top:1px solid var(--line);font-weight:600">${orgEsc(r.last_name||'—')}</td>
-        <td style="padding:6px 12px;border-top:1px solid var(--line)">${orgEsc(r.first_name||'')}</td>
-        <td style="padding:6px 12px;border-top:1px solid var(--line)">${orgEsc(r.patronymic||'')}</td>
+        <td style="padding:6px 12px;border-top:1px solid var(--line);color:var(--muted);font-size:12px">${r._row}</td>
+        <td style="padding:6px 12px;border-top:1px solid var(--line);font-weight:600">${orgEsc(r.pib||'—')}</td>
         <td style="padding:6px 12px;border-top:1px solid var(--line)">${r.birthdate||orgEsc(r.rawDate)||'—'}</td>
         <td style="padding:6px 12px;border-top:1px solid var(--line)">
           ${r.err
