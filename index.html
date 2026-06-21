@@ -630,6 +630,21 @@
   .mx-urow-child{color:var(--slate)}
 
 
+  /* ===== Dashboard ===== */
+  .dash-loading{text-align:center;padding:32px 0;color:var(--muted);font-size:13px}
+  .dash-plan-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:.5px solid var(--line)}
+  .dash-plan-row:last-child{border-bottom:none}
+  .dash-plan-av{width:34px;height:34px;border-radius:50%;background:var(--brand-tint-2,#e8a09a);color:var(--brand);display:grid;place-items:center;font-weight:800;font-size:12px;flex:none}
+  .dash-plan-info{flex:1;min-width:0}
+  .dash-plan-name{font-size:13px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dash-plan-role{font-size:11px;color:var(--muted);margin-top:1px}
+  .dash-goal-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:.5px solid var(--line)}
+  .dash-goal-row:last-child{border-bottom:none}
+  .dash-goal-name{flex:1;font-size:13px;font-weight:500;color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .dash-goal-bar{width:80px;height:6px;background:var(--line);border-radius:3px;flex:none;overflow:hidden}
+  .dash-goal-bar-fill{height:100%;border-radius:3px}
+  .dash-goal-pct{font-size:11px;font-weight:700;min-width:30px;text-align:right}
+
   /* ===== Settings ===== */
   .sett-nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-size:13px;font-weight:600;color:var(--slate);cursor:pointer;transition:background .12s,color .12s;margin-bottom:2px}
   .sett-nav-item svg{width:16px;height:16px;flex:none;stroke-width:2}
@@ -1171,39 +1186,40 @@
       <section class="view active" id="view-dash">
         <div class="page-head">
           <div>
-            <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>Огляд за зміну</h2>
-            <p>Стан виробничих процесів цеху в реальному часі. Дані оновлюються щохвилини.</p>
+            <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>Панель керування</h2>
+            <p>Зведена інформація по ключових показниках трансформації.</p>
           </div>
-          <button class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Запустити процес</button>
+          <button class="btn ghost" id="dashRefreshBtn" onclick="dashLoad()" title="Оновити дані">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:15px;height:15px;margin-right:5px"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Оновити
+          </button>
         </div>
 
-        <div class="kpis">
-          <div class="kpi"><div class="k-top">Активні процеси<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="3"/></svg></span></div><div class="k-val">7</div><div class="k-sub"><span class="trend up">+2</span> від учора</div></div>
-          <div class="kpi"><div class="k-top">Прийнято сировини<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></span></div><div class="k-val">4 280 <small style="font-size:14px;font-family:Manrope;color:var(--slate)">кг</small></div><div class="k-sub"><span class="trend up">+8%</span> до плану</div></div>
-          <div class="kpi"><div class="k-top">Операторів на зміні<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span></div><div class="k-val">12</div><div class="k-sub">з 14 запланованих</div></div>
-          <div class="kpi"><div class="k-top">Звітів сьогодні<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span></div><div class="k-val">38</div><div class="k-sub"><span class="trend down">3</span> потребують уваги</div></div>
+        <!-- KPI -->
+        <div class="kpis" id="dashKpi" style="grid-template-columns:repeat(5,1fr);margin-bottom:24px">
+          <div class="kpi"><div class="k-top">Співробітників<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span></div><div class="k-val" id="dashEmpCount">—</div><div class="k-sub">у довіднику</div></div>
+          <div class="kpi"><div class="k-top">Планів розвитку<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg></span></div><div class="k-val" id="dashPlansCount">—</div><div class="k-sub" id="dashPlansActive"></div></div>
+          <div class="kpi"><div class="k-top">GROW-сесій<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span></div><div class="k-val" id="dashSessCount">—</div><div class="k-sub">проведено</div></div>
+          <div class="kpi"><div class="k-top">Цілей<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span></div><div class="k-val" id="dashGoalsCount">—</div><div class="k-sub" id="dashGoalsProgress"></div></div>
+          <div class="kpi"><div class="k-top">SWOT пунктів<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg></span></div><div class="k-val" id="dashSwotCount">—</div><div class="k-sub">по всіх квадрантах</div></div>
         </div>
 
         <div class="two-col">
+          <!-- Активні плани розвитку -->
           <div class="card">
-            <div class="card-head"><h3>Процеси в роботі</h3><span class="badge ok">Онлайн</span></div>
-            <table>
-              <thead><tr><th>Процес</th><th>Оператор</th><th>Стан</th><th>Прогрес</th></tr></thead>
-              <tbody>
-                <tr><td class="t-name">Приймання<small>chicken_receiving</small></td><td>О. Коваль</td><td><span class="badge ok">Активний</span></td><td>74%</td></tr>
-                <tr><td class="t-name">Забій та первинна розробка<small>chicken_slaughter</small></td><td>І. Гриценко</td><td><span class="badge ok">Активний</span></td><td>52%</td></tr>
-                <tr><td class="t-name">Ручний облік курки<small>chicken_manual_v1</small></td><td>М. Сорока</td><td><span class="badge warn">Очікує</span></td><td>—</td></tr>
-                <tr><td class="t-name">Пакування<small>chicken_packing</small></td><td>Бригада №2</td><td><span class="badge ok">Активний</span></td><td>33%</td></tr>
-              </tbody>
-            </table>
+            <div class="card-head">
+              <h3>Плани розвитку</h3>
+              <button class="btn ghost" style="font-size:11px;padding:4px 10px" onclick="document.querySelector('.nav-item[data-view=dev]').click()">Всі →</button>
+            </div>
+            <div id="dashPlansList"><div class="dash-loading">Завантаження…</div></div>
           </div>
+
+          <!-- Прогрес цілей -->
           <div class="card">
-            <div class="card-head"><h3>Останні події</h3></div>
-            <div class="list-line"><span class="dotc" style="background:var(--ok)"></span><b>Приймання завершено</b><span>17:28</span></div>
-            <div class="list-line"><span class="dotc" style="background:var(--info)"></span><b>Нова партія №А-1182</b><span>17:14</span></div>
-            <div class="list-line"><span class="dotc" style="background:var(--warn)"></span><b>Відхилення ваги −2.1%</b><span>16:52</span></div>
-            <div class="list-line"><span class="dotc" style="background:var(--ok)"></span><b>Звіт пакування здано</b><span>16:40</span></div>
-            <div class="list-line"><span class="dotc" style="background:var(--brand)"></span><b>Оператор М. Сорока увійшов</b><span>16:31</span></div>
+            <div class="card-head">
+              <h3>Прогрес цілей</h3>
+              <button class="btn ghost" style="font-size:11px;padding:4px 10px" onclick="document.querySelector('.nav-item[data-view=goals]').click()">Всі →</button>
+            </div>
+            <div id="dashGoalsList"><div class="dash-loading">Завантаження…</div></div>
           </div>
         </div>
       </section>
@@ -2472,6 +2488,7 @@
       if(btn.dataset.companyTab) companyTab(btn.dataset.companyTab);
       else if(id==='company') companyTab('structure');
       if(id==='dev' && window.devRender) { setTimeout(()=>{ if(window.devTab) window.devTab('plans'); else window.devRender(); },0); }
+      if(id==='dash' && window.dashLoad) { setTimeout(dashLoad, 100); }
       closeNav();
       document.querySelector('.content').scrollTo({top:0,behavior:'smooth'});
     });
@@ -4600,7 +4617,7 @@
       document.querySelectorAll('.sb-avatar').forEach(el=>el.textContent=_initials);
       orgLoad();
       mxLoad();
-      loadAllDicts().then(()=>{goalsLoad();goalTypesLoad();goalPatternsLoad();});
+      loadAllDicts().then(()=>{goalsLoad();goalTypesLoad();goalPatternsLoad();setTimeout(dashLoad,300);});
     } else {
       authScrim.classList.add('open');
       if(sbCollapseBtn)sbCollapseBtn.style.display='none';
@@ -4617,6 +4634,96 @@
     if(error){ authErr.textContent='Невірний email або пароль.'; }
   };
   window.authSignOut = async ()=>{ await db.auth.signOut(); };
+
+  /* ===== DASHBOARD ===== */
+  window.dashLoad = async function(){
+    const btn=document.getElementById('dashRefreshBtn');
+    if(btn) btn.disabled=true;
+    try {
+      const [
+        {data:emps},
+        {data:plans},
+        {data:sessions},
+        {data:goals},
+        {data:indicators},
+        {data:swotItems}
+      ] = await Promise.all([
+        db.from('dict_employees').select('id',{count:'exact',head:false}),
+        db.from('dev_plans').select('id,employee_id,role,status'),
+        db.from('dev_sessions').select('id',{count:'exact',head:false}),
+        db.from('goals').select('id,title,type'),
+        db.from('goal_indicators').select('goal_id,progress'),
+        db.from('dev_swot').select('id',{count:'exact',head:false}),
+      ]);
+
+      // KPI
+      const empCount=(emps||[]).length;
+      const plansAll=(plans||[]).length;
+      const plansActive=(plans||[]).filter(p=>p.status==='active').length;
+      const sessCount=(sessions||[]).length;
+      const goalsAll=(goals||[]).length;
+      const allInds=(indicators||[]);
+      const avgProg=allInds.length?Math.round(allInds.reduce((a,i)=>a+(i.progress||0),0)/allInds.length):0;
+      const swotCount=(swotItems||[]).length;
+
+      const _set=(id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
+      _set('dashEmpCount', empCount);
+      _set('dashPlansCount', plansAll);
+      _set('dashPlansActive', plansActive ? `${plansActive} активних` : 'немає активних');
+      _set('dashSessCount', sessCount);
+      _set('dashGoalsCount', goalsAll);
+      const progEl=document.getElementById('dashGoalsProgress');
+      if(progEl){ progEl.innerHTML=goalsAll?`<span style="color:${avgProg>=60?'#16A34A':avgProg>=30?'#CA8A04':'#DC2626'};font-weight:700">${avgProg}%</span> середній прогрес`:'немає даних'; }
+      _set('dashSwotCount', swotCount);
+
+      // Список планів (топ 5 активних)
+      const plansList=document.getElementById('dashPlansList');
+      if(plansList){
+        const dictE=typeof dictEmps!=='undefined'?dictEmps:[];
+        const activePlans=(plans||[]).filter(p=>p.status==='active').slice(0,5);
+        if(!activePlans.length){
+          plansList.innerHTML='<div class="dash-loading">Активних планів немає</div>';
+        } else {
+          plansList.innerHTML=activePlans.map(p=>{
+            const emp=dictE.find(e=>String(e.id)===String(p.employee_id));
+            const name=emp?[emp.last_name,emp.first_name,emp.patronymic].filter(Boolean).join(' '):'—';
+            const ini=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)||'?';
+            return `<div class="dash-plan-row">
+              <div class="dash-plan-av">${ini}</div>
+              <div class="dash-plan-info">
+                <div class="dash-plan-name">${name}</div>
+                <div class="dash-plan-role">${p.role||'—'}</div>
+              </div>
+              <span class="badge success" style="font-size:10px">Активний</span>
+            </div>`;
+          }).join('');
+        }
+      }
+
+      // Список цілей з прогресом (топ 6)
+      const goalsList=document.getElementById('dashGoalsList');
+      if(goalsList){
+        const goalsTop=(goals||[]).slice(0,6);
+        if(!goalsTop.length){
+          goalsList.innerHTML='<div class="dash-loading">Цілей ще немає</div>';
+        } else {
+          const indsByGoal={};
+          (indicators||[]).forEach(i=>{ if(!indsByGoal[i.goal_id]) indsByGoal[i.goal_id]=[]; indsByGoal[i.goal_id].push(i); });
+          const _pc=p=>p>=100?'#16A34A':p>=60?'#2563EB':p>=30?'#CA8A04':'#DC2626';
+          goalsList.innerHTML=goalsTop.map(g=>{
+            const inds=indsByGoal[g.id]||[];
+            const prog=inds.length?Math.round(inds.reduce((a,i)=>a+(i.progress||0),0)/inds.length):0;
+            return `<div class="dash-goal-row">
+              <div class="dash-goal-name" title="${g.title||''}">${g.title||'—'}</div>
+              <div class="dash-goal-bar"><div class="dash-goal-bar-fill" style="width:${prog}%;background:${_pc(prog)}"></div></div>
+              <div class="dash-goal-pct" style="color:${_pc(prog)}">${prog}%</div>
+            </div>`;
+          }).join('');
+        }
+      }
+    } catch(e){ console.error('dashLoad',e); }
+    if(btn) btn.disabled=false;
+  };
   db.auth.onAuthStateChange((_e,session)=>setAuth(session));
   document.getElementById('authPass').addEventListener('keydown',e=>{ if(e.key==='Enter') authSignIn(); });
   (async()=>{ const { data:{ session } } = await db.auth.getSession(); setAuth(session); })();
