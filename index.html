@@ -1766,8 +1766,7 @@
               <input type="checkbox" id="empImportCheckAll" onchange="empImportToggleAll(this.checked)">
               <span>Обрати всі</span>
             </label>
-            <button class="imp-sel-btn" onclick="empImportToggleAll(true)">Вибрати всі</button>
-            <button class="imp-sel-btn" onclick="empImportToggleAll(false)">Зняти всі</button>
+            <button class="imp-sel-btn" id="empImportToggleBtn" onclick="empImportToggleBtnClick()">Зняти всі</button>
             <span id="empImportSelCount" class="imp-sel-count"></span>
           </div>
 
@@ -4151,6 +4150,8 @@
     if(allChk){ allChk.checked=sel===total; allChk.indeterminate=sel>0&&sel<total; }
     const selCount=$('empImportSelCount');
     if(selCount) selCount.textContent=sel>0?`Обрано: ${sel} з ${total}`:'';
+    const toggleBtn=$('empImportToggleBtn');
+    if(toggleBtn) toggleBtn.textContent=sel===total?'Зняти всі':'Обрати всі';
     const btn=$('empImportConfirmBtn');
     if(btn) btn.disabled=sel===0;
   };
@@ -4159,6 +4160,12 @@
     document.querySelectorAll('[data-imp-chk]').forEach(c=>c.checked=state);
     const allChk=$('empImportCheckAll'); if(allChk){ allChk.checked=state; allChk.indeterminate=false; }
     empImportUpdateSel();
+  };
+
+  window.empImportToggleBtnClick=function(){
+    const checks=[...document.querySelectorAll('[data-imp-chk]')];
+    const allChecked=checks.every(c=>c.checked);
+    empImportToggleAll(!allChecked);
   };
 
   window.empImportConfirm=async function(){
