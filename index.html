@@ -4046,7 +4046,7 @@
     function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
 
     function empFullDev(e){ return e?[e.last_name,e.first_name,e.patronymic].filter(Boolean).join(' '):'—'; }
-    function devEmp(plan){ return (window.dictEmps||[]).find(e=>e.id===plan.employee_id)||null; }
+    function devEmp(plan){ return (dictEmps||[]).find(e=>e.id===plan.employee_id)||null; }
     function devEmpName(plan){ const e=devEmp(plan); return e?empFullDev(e):(plan.name||'—'); }
     function initials(name){ return (name||'?').trim().split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2)||'??'; }
 
@@ -4254,7 +4254,7 @@
 
     function devFillEmpSelect(selectId, selectedEmpId){
       const sel=document.getElementById(selectId); if(!sel)return;
-      const emps=(window.dictEmps||[]).slice().sort((a,b)=>(a.last_name||'').localeCompare(b.last_name||'','uk'));
+      const emps=(dictEmps||[]).slice().sort((a,b)=>(a.last_name||'').localeCompare(b.last_name||'','uk'));
       sel.innerHTML='<option value="">— Оберіть співробітника —</option>'+
         emps.map(e=>`<option value="${e.id}"${e.id===selectedEmpId?' selected':''}>${esc(empFullDev(e))}</option>`).join('');
     }
