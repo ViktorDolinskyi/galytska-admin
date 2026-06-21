@@ -4458,14 +4458,22 @@
 
   /* ===== РОЗВИТОК / DEV ===== */
   (function(){
-    const LS_PLANS='gs_dev_plans', LS_SESS='gs_dev_sessions';
     let devPlans=[], devSessions=[], _devEditPlanId=null, _devEditSessId=null, _devCurrentTab='plans', _devSwotEmpId=null;
 
-    function devLoadData(){
-      try{ devPlans=JSON.parse(localStorage.getItem(LS_PLANS)||'[]'); }catch(e){ devPlans=[]; }
-      try{ devSessions=JSON.parse(localStorage.getItem(LS_SESS)||'[]'); }catch(e){ devSessions=[]; }
+    async function devLoadData(){
+      const [{ data: plans, error: pe }, { data: sessions, error: se }] = await Promise.all([
+        db.from('dev_plans').select('*').order('created_at'),
+        db.from('dev_sessions').select('*').order('created_at'),
+      ]);
+      if(!pe) devPlans = (plans||[]).map(p=>({
+        ...p,
+        startDate: p.date,
+        wlOps: p.wl_ops??60, wlDev: p.wl_dev??30, wlStr: p.wl_str??10,
+      }));
+      if(!se) devSessions = (sessions||[]).map(s=>({
+        ...s, planId: s.plan_id,
+      }));
     }
-    function devSaveData(){ localStorage.setItem(LS_PLANS,JSON.stringify(devPlans)); localStorage.setItem(LS_SESS,JSON.stringify(devSessions)); }
 
     function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
 
@@ -4493,8 +4501,37 @@
         <div class="kpi"><div class="k-top">Вех виконано</div><div class="k-val">${doneMs}</div></div>`;
     }
 
-    window.devRender=function(){
-      devLoadData(); devRenderKpi();
+    // Одноразова міграція localStorage → Supabase
+    async function devMigrateFromLocalStorage(){
+      const lsPlans=JSON.parse(localStorage.getItem('gs_dev_plans')||'[]');
+      const lsSess=JSON.parse(localStorage.getItem('gs_dev_sessions')||'[]');
+      if(!lsPlans.length && !lsSess.length) return;
+      if(lsPlans.length){
+        const mapped=lsPlans.map(p=>({
+          id:p.id, employee_id:p.employee_id||null, role:p.role||null,
+          status:p.status||'new', date:p.startDate||null,
+          wl_ops:p.wlOps||60, wl_dev:p.wlDev||30, wl_str:p.wlStr||10,
+          context:p.context||null, ms3:p.ms3||null, ms3st:p.ms3st||'pending',
+          ms6:p.ms6||null, ms6st:p.ms6st||'pending', motiv:p.motiv||null,
+        }));
+        await db.from('dev_plans').upsert(mapped,{onConflict:'id',ignoreDuplicates:true});
+      }
+      if(lsSess.length){
+        const mapped=lsSess.map(s=>({
+          id:s.id, plan_id:s.planId||null, date:s.date||null,
+          b1:s.b1||null, b2:s.b2||null, b3:s.b3||null,
+          b4:s.b4||null, b5:s.b5||null, b6:s.b6||null, next:s.next||null,
+        }));
+        await db.from('dev_sessions').upsert(mapped,{onConflict:'id',ignoreDuplicates:true});
+      }
+      localStorage.removeItem('gs_dev_plans');
+      localStorage.removeItem('gs_dev_sessions');
+      console.log('[dev] migrated',lsPlans.length,'plans,',lsSess.length,'sessions from localStorage');
+    }
+
+    window.devRender=async function(){
+      await devMigrateFromLocalStorage();
+      await devLoadData(); devRenderKpi();
       if(_devCurrentTab==='plans') devRenderPlans();
       else if(_devCurrentTab==='sessions') devRenderSessions();
       else if(_devCurrentTab==='swot') devRenderSwotTab();
@@ -4513,8 +4550,8 @@
         return;
       }
       el.innerHTML=plans.map(p=>{
-        const ops=p.wlOps||60, dev=p.wlDev||30, str=p.wlStr||10;
-        const sessForPlan=devSessions.filter(s=>s.planId===p.id).length;
+        const ops=p.wl_ops||60, dev=p.wl_dev||30, str=p.wl_str||10;
+        const sessForPlan=devSessions.filter(s=>s.plan_id===p.id).length;
         const empName=devEmpName(p);
         return `<div class="dev-plan-card">
           <div class="dev-plan-head">
@@ -4573,7 +4610,7 @@
         return;
       }
       el.innerHTML=sorted.map(s=>{
-        const plan=devPlans.find(p=>p.id===s.planId)||{};
+        const plan=devPlans.find(p=>p.id===s.plan_id)||{};
         const sEmpName=devEmpName(plan);
         return `<div class="grow-session-card">
           <div class="grow-session-head">
@@ -4738,17 +4775,16 @@
 
     /* Open/close plan modal */
     window.devOpenPlan=function(id){
-      devLoadData();
       _devEditPlanId=id;
       const plan=id?devPlans.find(p=>p.id===id):null;
-      document.getElementById('devPlanTitle').textContent=plan?'Редагувати план':'Новий план розвитку';
+      document.getElementById('devPlanTitle').textContent=plan?'Редагувати план':'Новий план';
       devFillEmpSelect('devPEmpId', plan?plan.employee_id:null);
       document.getElementById('devPRole').value=plan?plan.role||'':'';
       document.getElementById('devPStatus').value=plan?plan.status||'new':'new';
-      document.getElementById('devPDate').value=plan?plan.startDate||'':'';
-      document.getElementById('devWlOps').value=plan?plan.wlOps||60:60;
-      document.getElementById('devWlDev').value=plan?plan.wlDev||30:30;
-      document.getElementById('devWlStr').value=plan?plan.wlStr||10:10;
+      document.getElementById('devPDate').value=plan?plan.date||'':'';
+      document.getElementById('devWlOps').value=plan?plan.wl_ops??60:60;
+      document.getElementById('devWlDev').value=plan?plan.wl_dev??30:30;
+      document.getElementById('devWlStr').value=plan?plan.wl_str??10:10;
       document.getElementById('devPContext').value=plan?plan.context||'':'';
       document.getElementById('devMs3').value=plan?plan.ms3||'':'';
       document.getElementById('devMs3st').value=plan?plan.ms3st||'pending':'pending';
@@ -4823,72 +4859,77 @@
       if(sum){ const total=ops+dev+str; sum.textContent='Сума: '+total+'%'; sum.style.color=total===100?'var(--muted)':'#DC2626'; }
     };
 
-    window.devSavePlan=function(){
+    window.devSavePlan=async function(){
       const empId=+document.getElementById('devPEmpId').value;
       if(!empId){ alert('Оберіть співробітника'); return; }
-      const plan={
-        id:_devEditPlanId||uid(), employee_id:empId,
+      const payload={
+        id:_devEditPlanId||uid(),
+        employee_id:empId,
         role:document.getElementById('devPRole').value.trim(),
         status:document.getElementById('devPStatus').value,
-        startDate:document.getElementById('devPDate').value,
-        wlOps:+document.getElementById('devWlOps').value||60,
-        wlDev:+document.getElementById('devWlDev').value||30,
-        wlStr:+document.getElementById('devWlStr').value||10,
-        context:document.getElementById('devPContext').value.trim(),
-        ms3:document.getElementById('devMs3').value.trim(),
+        date:document.getElementById('devPDate').value||null,
+        wl_ops:+document.getElementById('devWlOps').value||60,
+        wl_dev:+document.getElementById('devWlDev').value||30,
+        wl_str:+document.getElementById('devWlStr').value||10,
+        context:document.getElementById('devPContext').value.trim()||null,
+        ms3:document.getElementById('devMs3').value.trim()||null,
         ms3st:document.getElementById('devMs3st').value,
-        ms6:document.getElementById('devMs6').value.trim(),
+        ms6:document.getElementById('devMs6').value.trim()||null,
         ms6st:document.getElementById('devMs6st').value,
-        motiv:document.getElementById('devPMotiv').value.trim(),
-        updatedAt:new Date().toISOString(),
+        motiv:document.getElementById('devPMotiv').value.trim()||null,
       };
-      if(_devEditPlanId){ const i=devPlans.findIndex(p=>p.id===_devEditPlanId); if(i>=0)devPlans[i]=plan; else devPlans.push(plan); }
-      else devPlans.push(plan);
-      devSaveData(); devClosePlan(); devRender();
+      const {error}=_devEditPlanId
+        ? await db.from('dev_plans').update(payload).eq('id',_devEditPlanId)
+        : await db.from('dev_plans').insert(payload);
+      if(error){ alert('Помилка збереження: '+error.message); return; }
+      devClosePlan(); await devRender();
     };
 
-    window.devDeletePlan=function(id){
+    window.devDeletePlan=async function(id){
       if(!confirm('Видалити план розвитку?'))return;
-      devPlans=devPlans.filter(p=>p.id!==id);
-      devSessions=devSessions.filter(s=>s.planId!==id);
-      devSaveData(); devRender();
+      const {error}=await db.from('dev_plans').delete().eq('id',id);
+      if(error){ alert('Помилка: '+error.message); return; }
+      await devRender();
     };
 
     /* Open/close session modal */
     window.devOpenSession=function(id,presetPlanId){
-      devLoadData();
       _devEditSessId=id;
       const sess=id?devSessions.find(s=>s.id===id):null;
       document.getElementById('devSessionTitle').textContent=sess?'Редагувати сесію':'Нова GROW-сесія';
       const empSel=document.getElementById('devSEmp');
       empSel.innerHTML='<option value="">— Оберіть —</option>'+devPlans.map(p=>`<option value="${p.id}">${esc(devEmpName(p))}${p.role?' · '+esc(p.role):''}</option>`).join('');
-      empSel.value=sess?sess.planId:(presetPlanId||'');
+      empSel.value=sess?sess.plan_id:(presetPlanId||'');
       document.getElementById('devSDate').value=sess?sess.date:new Date().toISOString().slice(0,10);
       ['b1','b2','b3','b4','b5','b6','next'].forEach(k=>{ const el=document.getElementById('devS'+k.charAt(0).toUpperCase()+k.slice(1)); if(el)el.value=sess?sess[k]||'':''; });
       document.getElementById('devSessionScrim').classList.add('open');
     };
     window.devCloseSession=function(){ document.getElementById('devSessionScrim').classList.remove('open'); };
 
-    window.devSaveSession=function(){
+    window.devSaveSession=async function(){
       const planId=document.getElementById('devSEmp').value;
       if(!planId){ alert('Оберіть співробітника'); return; }
-      const get=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
-      const sess={
-        id:_devEditSessId||uid(), planId,
-        date:document.getElementById('devSDate').value,
+      const get=id=>{ const el=document.getElementById(id); return el?el.value.trim()||null:''; };
+      const payload={
+        id:_devEditSessId||uid(),
+        plan_id:planId,
+        date:document.getElementById('devSDate').value||null,
         b1:get('devSB1'), b2:get('devSB2'), b3:get('devSB3'),
         b4:get('devSB4'), b5:get('devSB5'), b6:get('devSB6'),
-        next:get('devSNext'), createdAt:new Date().toISOString(),
+        next:get('devSNext'),
       };
-      if(_devEditSessId){ const i=devSessions.findIndex(s=>s.id===_devEditSessId); if(i>=0)devSessions[i]=sess; else devSessions.push(sess); }
-      else devSessions.push(sess);
-      devSaveData(); devCloseSession(); devRender();
+      const {error}=_devEditSessId
+        ? await db.from('dev_sessions').update(payload).eq('id',_devEditSessId)
+        : await db.from('dev_sessions').insert(payload);
+      if(error){ alert('Помилка: '+error.message); return; }
+      devCloseSession(); await devRender();
     };
 
-    window.devDeleteSession=function(id){
+    window.devDeleteSession=async function(id){
       if(!confirm('Видалити сесію?'))return;
-      devSessions=devSessions.filter(s=>s.id!==id);
-      devSaveData(); devRender();
+      const {error}=await db.from('dev_sessions').delete().eq('id',id);
+      if(error){ alert('Помилка: '+error.message); return; }
+      await devRender();
     };
 
     window.devOpenPlanSwot=function(planId){
