@@ -854,7 +854,8 @@
   .modal input:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-tint)}
 
   /* ── Import modal ── */
-  .imp-modal .modal-head{padding:18px 24px;border-bottom:1px solid var(--line)}
+  .imp-modal .modal-head{padding:16px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+  .imp-modal .modal-head h3{font-size:16px;font-weight:800;padding:0;border:none}
   .imp-summary{display:flex;flex-wrap:wrap;gap:8px;padding:14px 24px 10px;border-bottom:1px solid var(--line);font-size:12px}
   .imp-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-weight:700;font-size:12px}
   .imp-badge.new{background:var(--green-tint,#DCFCE7);color:#16A34A}
@@ -875,7 +876,7 @@
   .imp-table{width:100%;border-collapse:collapse;font-size:13px}
   .imp-th{padding:9px 12px;text-align:left;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);background:var(--page);border-bottom:1px solid var(--line);white-space:nowrap}
   .imp-th-chk{width:36px;padding:9px 0 9px 12px}
-  .imp-th-num{width:32px;padding:9px 8px}
+  .imp-th-num{width:40px;padding:9px 8px;text-align:center}
   .imp-th-date{width:128px}
   .imp-th-status{width:160px}
   .imp-tr{transition:background .12s}
@@ -893,7 +894,7 @@
   .imp-td{padding:8px 12px;vertical-align:middle}
   .imp-td-chk{padding:8px 0 8px 12px}
   .imp-td input[type=checkbox]{width:15px;height:15px;accent-color:var(--brand);cursor:pointer}
-  .imp-td-num{padding:8px 8px;color:var(--muted);font-size:11px}
+  .imp-td-num{padding:8px 8px;color:var(--muted);font-size:11px;text-align:center;white-space:nowrap}
   .imp-td-name{font-weight:600;color:var(--ink)}
   .imp-td-date{color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
   .imp-status{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;white-space:nowrap}
@@ -4106,7 +4107,7 @@
       function _statusCell(r){
         if(r.err)      return `<span class="imp-status s-err">⚠ ${orgEsc(r.err)}</span>`;
         if(r.dupInFile)return `<span class="imp-status s-dup">↩ Дубль рядка ${r.dupInFile}</span>`;
-        if(r.existing) return `<span class="imp-status s-upd">✎ Оновити дату</span>`;
+        if(r.existing) return `<span class="imp-status s-upd">✎ Оновити</span>`;
         return `<span class="imp-status s-new">✓ Новий запис</span>`;
       }
       function _rowCls(r){
