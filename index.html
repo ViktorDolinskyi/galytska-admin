@@ -668,7 +668,7 @@
 
   /* GROW session card */
   .grow-session-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:10px}
-  .grow-session-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .grow-session-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
   .grow-session-date{font-size:12px;font-weight:700;color:var(--ink)}
   .grow-session-emp{font-size:12px;color:var(--muted)}
   .grow-block{margin-bottom:12px}
@@ -2034,6 +2034,7 @@
             <button class="dev-modal-tab active" onclick="devModalTab('info',this)">Профіль</button>
             <button class="dev-modal-tab" onclick="devModalTab('workload',this)">Навантаження</button>
             <button class="dev-modal-tab" onclick="devModalTab('milestones',this)">Віхи</button>
+            <button class="dev-modal-tab" onclick="devModalTab('grow',this)">GROW-сесії</button>
             <button class="dev-modal-tab" onclick="devModalTab('swot',this)">SWOT</button>
           </div>
 
@@ -2136,6 +2137,15 @@
                 </div>
                 <input class="dpm-input" id="devMs6" placeholder="Опишіть очікуваний результат за 6 місяців…">
               </div>
+            </div>
+
+            <!-- GROW-сесії -->
+            <div id="devMTab-grow" style="display:none">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+                <div class="dpm-section-label" style="margin:0">Сесії за планом</div>
+                <button class="btn primary" style="font-size:12px;padding:6px 14px" onclick="devOpenSessionFromModal()">+ Нова сесія</button>
+              </div>
+              <div id="devModalGrowList"></div>
             </div>
 
             <!-- SWOT -->
@@ -4585,8 +4595,8 @@
             </div>
           </div>
           <div class="dev-actions">
-            <button class="btn" onclick="devOpenSession(null,'${p.id}')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:13px;height:13px;margin-right:4px"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>GROW-сесія
+            <button class="btn" onclick="devOpenPlanGrow('${p.id}')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:13px;height:13px;margin-right:4px"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>GROW-сесії
             </button>
             <button class="btn" onclick="devOpenPlanSwot('${p.id}')">SWOT</button>
             <button class="btn" onclick="devOpenPlan('${p.id}')">Редагувати</button>
@@ -4798,14 +4808,66 @@
     window.devClosePlan=function(){ document.getElementById('devPlanScrim').classList.remove('open'); };
 
     window.devModalTab=function(tab,btn){
-      ['info','workload','milestones','swot'].forEach(t=>{
+      ['info','workload','milestones','grow','swot'].forEach(t=>{
         const el=document.getElementById('devMTab-'+t);
         if(el)el.style.display=t===tab?'':'none';
       });
       document.querySelectorAll('.dev-modal-tab').forEach(b=>b.classList.toggle('active',b===btn));
       const footer=document.getElementById('devPlanFooter');
-      if(footer) footer.style.display=tab==='swot'?'none':'flex';
+      if(footer) footer.style.display=(tab==='swot'||tab==='grow')?'none':'flex';
       if(tab==='swot') devModalSwotRender();
+      if(tab==='grow') devModalGrowRender();
+    };
+
+    function devModalGrowRender(){
+      const el=document.getElementById('devModalGrowList'); if(!el)return;
+      if(!_devEditPlanId){
+        el.innerHTML='<div style="text-align:center;padding:32px 0;color:var(--muted)">Спочатку збережіть план</div>';
+        return;
+      }
+      const sessions=devSessions.filter(s=>s.plan_id===_devEditPlanId)
+        .sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+      if(!sessions.length){
+        el.innerHTML='<div style="text-align:center;padding:40px 0;color:var(--muted);font-size:13px">Сесій ще немає.<br>Натисніть «+ Нова сесія» щоб розпочати.</div>';
+        return;
+      }
+      const blocks=[
+        ['b1','1. Контекст'],['b2','2. Роль'],['b3','3. Мотив'],
+        ['b4','4. Підтримка'],['b5','5. KPI'],['b6','6. Бар\'єри'],
+      ];
+      el.innerHTML=sessions.map(s=>`
+        <div class="grow-session-card">
+          <div class="grow-session-head">
+            <span class="grow-session-date">${s.date||'—'}</span>
+            <div style="display:flex;gap:6px">
+              <button class="ico-btn" title="Редагувати" onclick="devOpenSessionFromModal('${s.id}')">${_eIco}</button>
+              <button class="ico-btn del" title="Видалити" onclick="devDeleteSessionFromModal('${s.id}')">${_dIco}</button>
+            </div>
+          </div>
+          <div class="grow-session-blocks">
+            ${blocks.filter(([k])=>s[k]).map(([k,l])=>`
+              <div class="grow-block">
+                <div class="grow-block-label">${l}</div>
+                <div class="grow-block-text">${esc(s[k])}</div>
+              </div>`).join('')}
+            ${s.next?`<div class="grow-block"><div class="grow-block-label">Наступні кроки</div><div class="grow-block-text">${esc(s.next)}</div></div>`:''}
+          </div>
+        </div>`).join('');
+    }
+
+    window.devOpenSessionFromModal=function(sessId){
+      devOpenSession(sessId||null, _devEditPlanId);
+      // після збереження сесії — оновлюємо GROW вкладку
+      _devGrowRefreshAfterSession=true;
+    };
+
+    window.devDeleteSessionFromModal=async function(id){
+      if(!confirm('Видалити сесію?'))return;
+      const {error}=await db.from('dev_sessions').delete().eq('id',id);
+      if(error){ alert('Помилка: '+error.message); return; }
+      await devLoadData();
+      devModalGrowRender();
+      devRenderKpi();
     };
 
     async function devModalSwotRender(){
@@ -4922,7 +4984,10 @@
         ? await db.from('dev_sessions').update(payload).eq('id',_devEditSessId)
         : await db.from('dev_sessions').insert(payload);
       if(error){ alert('Помилка: '+error.message); return; }
-      devCloseSession(); await devRender();
+      devCloseSession();
+      await devLoadData();
+      devRenderKpi(); devRenderPlans();
+      devModalGrowRender();
     };
 
     window.devDeleteSession=async function(id){
@@ -4935,8 +5000,16 @@
     window.devOpenPlanSwot=function(planId){
       devOpenPlan(planId);
       setTimeout(()=>{
-        const btn=document.querySelector('.dev-modal-tab:last-child');
+        const btn=[...document.querySelectorAll('.dev-modal-tab')].find(b=>b.textContent==='SWOT');
         if(btn) devModalTab('swot',btn);
+      },80);
+    };
+
+    window.devOpenPlanGrow=function(planId){
+      devOpenPlan(planId);
+      setTimeout(()=>{
+        const btn=[...document.querySelectorAll('.dev-modal-tab')].find(b=>b.textContent.includes('GROW'));
+        if(btn) devModalTab('grow',btn);
       },80);
     };
 
