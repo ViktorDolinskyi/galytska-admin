@@ -3523,7 +3523,7 @@
   window.goalSave=async function(){
     const title=$('gTitleIn').value.trim();
     if(!title){$('gTitleIn').focus();return;}
-    const activeBtn=$('gTypeSwitch').querySelector('.g-type-btn.active');
+    const activeBtn=$('gTypeSwitch').querySelector('.g-type-seg-btn.active');
     const payload={
       title,
       pattern:$('gPatternIn').value.trim()||null,
