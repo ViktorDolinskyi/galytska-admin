@@ -1594,7 +1594,16 @@
             <div class="card-head">
               <h3>Співробітники</h3>
               <span class="badge info" id="empCount">0</span>
-              <button class="btn primary" onclick="empAdd()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Додати</button>
+              <div style="display:flex;gap:8px;margin-left:auto;align-items:center">
+                <button class="btn" onclick="empExportCsv()" title="Вивантажити CSV">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;margin-right:4px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Експорт
+                </button>
+                <button class="btn" onclick="document.getElementById('empCsvInput').click()" title="Завантажити CSV">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;margin-right:4px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Імпорт
+                </button>
+                <input type="file" id="empCsvInput" accept=".csv" style="display:none" onchange="empImportCsv(this)">
+                <button class="btn primary" onclick="empAdd()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;margin-right:4px"><path d="M12 5v14M5 12h14"/></svg>Додати</button>
+              </div>
             </div>
             <table>
               <thead><tr><th>ПІБ</th><th style="width:120px">Дата народження</th><th style="width:80px"></th></tr></thead>
@@ -1679,6 +1688,44 @@
           <div class="foot">
             <button class="btn" onclick="empCloseModal()">Скасувати</button>
             <button class="btn primary" onclick="empSave()">Зберегти</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- модалка: імпорт співробітників -->
+      <div class="modal-scrim" id="empImportModal" onclick="if(event.target===this)empImportClose()">
+        <div class="modal" style="max-width:600px;max-height:90vh;display:flex;flex-direction:column">
+          <div class="modal-head">
+            <h3>Імпорт співробітників</h3>
+            <button class="ico-btn" onclick="empImportClose()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+          </div>
+          <div style="padding:0 24px 8px;flex:1;overflow-y:auto">
+            <div id="empImportInfo" style="font-size:13px;color:var(--muted);margin-bottom:14px"></div>
+            <div style="overflow-x:auto;border:1px solid var(--line);border-radius:8px">
+              <table style="width:100%;border-collapse:collapse;font-size:13px">
+                <thead>
+                  <tr style="background:var(--page)">
+                    <th style="padding:8px 12px;text-align:left;font-weight:700;border-bottom:1px solid var(--line)">#</th>
+                    <th style="padding:8px 12px;text-align:left;font-weight:700;border-bottom:1px solid var(--line)">Прізвище</th>
+                    <th style="padding:8px 12px;text-align:left;font-weight:700;border-bottom:1px solid var(--line)">Ім'я</th>
+                    <th style="padding:8px 12px;text-align:left;font-weight:700;border-bottom:1px solid var(--line)">По батькові</th>
+                    <th style="padding:8px 12px;text-align:left;font-weight:700;border-bottom:1px solid var(--line)">Дата нар.</th>
+                    <th style="padding:8px 12px;text-align:left;font-weight:700;border-bottom:1px solid var(--line)">Статус</th>
+                  </tr>
+                </thead>
+                <tbody id="empImportBody"></tbody>
+              </table>
+            </div>
+            <div id="empImportError" style="margin-top:10px;color:#DC2626;font-size:13px;display:none"></div>
+          </div>
+          <div style="padding:16px 24px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:space-between;align-items:center">
+            <div style="font-size:12px;color:var(--muted)">
+              Очікуваний формат CSV: <code style="background:var(--page);padding:2px 6px;border-radius:4px">Прізвище,Ім'я,По батькові,Дата народження</code>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn" onclick="empImportClose()">Скасувати</button>
+              <button class="btn primary" id="empImportConfirmBtn" onclick="empImportConfirm()">Імпортувати</button>
+            </div>
           </div>
         </div>
       </div>
@@ -3882,6 +3929,119 @@
   };
   window.empDel=async(id)=>{
     await db.from('dict_employees').delete().eq('id',id);await loadAllDicts();
+  };
+
+  /* --- Імпорт / Експорт співробітників --- */
+  window.empExportCsv=function(){
+    const BOM='﻿';
+    const header='Прізвище,Ім\'я,По батькові,Дата народження';
+    const rows=dictEmps.map(r=>[
+      r.last_name||'', r.first_name||'', r.patronymic||'', r.birthdate||''
+    ].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(','));
+    const csv=BOM+[header,...rows].join('\r\n');
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+    a.download='employees_'+new Date().toISOString().slice(0,10)+'.csv';
+    a.click(); URL.revokeObjectURL(a.href);
+  };
+
+  let _empImportRows=[];
+
+  window.empImportCsv=function(input){
+    const file=input.files[0]; if(!file)return;
+    input.value='';
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const text=e.target.result.replace(/^﻿/,''); // strip BOM
+      const lines=text.split(/\r?\n/).filter(l=>l.trim());
+      if(!lines.length){ _showImportError('Файл порожній'); return; }
+
+      // Detect if first line is header (contains Прізвище / last_name)
+      const firstLow=lines[0].toLowerCase();
+      const hasHeader=/прізвище|last_name|призвище/.test(firstLow);
+      const dataLines=hasHeader?lines.slice(1):lines;
+
+      if(!dataLines.length){ _showImportError('Немає рядків з даними'); return; }
+
+      function parseLine(line){
+        // Handle quoted CSV fields
+        const fields=[]; let cur='', inQ=false;
+        for(let i=0;i<line.length;i++){
+          const c=line[i];
+          if(c==='"'){ if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ; }
+          else if(c===','&&!inQ){ fields.push(cur.trim());cur=''; }
+          else cur+=c;
+        }
+        fields.push(cur.trim());
+        return fields;
+      }
+
+      _empImportRows=dataLines.map((line,idx)=>{
+        const f=parseLine(line);
+        const last_name=(f[0]||'').trim();
+        const first_name=(f[1]||'').trim();
+        const patronymic=(f[2]||'').trim();
+        const rawDate=(f[3]||'').trim();
+        // Parse date: support dd.mm.yyyy, yyyy-mm-dd, dd/mm/yyyy
+        let birthdate=null;
+        if(rawDate){
+          const dm=/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})$/.exec(rawDate);
+          const ym=/^(\d{4})-(\d{2})-(\d{2})$/.exec(rawDate);
+          if(ym) birthdate=rawDate;
+          else if(dm) birthdate=`${dm[3]}-${dm[2].padStart(2,'0')}-${dm[1].padStart(2,'0')}`;
+        }
+        const err=!last_name?'Відсутнє прізвище':'';
+        return {last_name,first_name,patronymic,birthdate,rawDate,err,_row:idx+1};
+      }).filter(r=>r.last_name||r.first_name); // skip fully empty lines
+
+      if(!_empImportRows.length){ _showImportError('Не знайдено жодного запису'); return; }
+
+      const errCount=_empImportRows.filter(r=>r.err).length;
+      const $info=$('empImportInfo');
+      $info.innerHTML=`Знайдено рядків: <b>${_empImportRows.length}</b>`+
+        (errCount?` &nbsp;·&nbsp; <span style="color:#DC2626">Помилок: ${errCount}</span>`:'');
+
+      $('empImportBody').innerHTML=_empImportRows.map(r=>`<tr style="${r.err?'background:#FEF2F2':''}">
+        <td style="padding:6px 12px;border-top:1px solid var(--line);color:var(--muted)">${r._row}</td>
+        <td style="padding:6px 12px;border-top:1px solid var(--line);font-weight:600">${orgEsc(r.last_name||'—')}</td>
+        <td style="padding:6px 12px;border-top:1px solid var(--line)">${orgEsc(r.first_name||'')}</td>
+        <td style="padding:6px 12px;border-top:1px solid var(--line)">${orgEsc(r.patronymic||'')}</td>
+        <td style="padding:6px 12px;border-top:1px solid var(--line)">${r.birthdate||orgEsc(r.rawDate)||'—'}</td>
+        <td style="padding:6px 12px;border-top:1px solid var(--line)">
+          ${r.err
+            ?`<span style="color:#DC2626;font-size:12px">⚠ ${orgEsc(r.err)}</span>`
+            :'<span style="color:#16A34A;font-size:12px">✓ Готово</span>'}
+        </td>
+      </tr>`).join('');
+
+      $('empImportError').style.display='none';
+      $('empImportConfirmBtn').disabled=errCount===_empImportRows.length;
+      $('empImportModal').classList.add('open');
+    };
+    reader.readAsText(file,'UTF-8');
+  };
+
+  function _showImportError(msg){
+    $('empImportError').textContent=msg; $('empImportError').style.display='';
+    $('empImportModal').classList.add('open'); $('empImportBody').innerHTML=''; $('empImportInfo').innerHTML='';
+  }
+
+  window.empImportConfirm=async function(){
+    const valid=_empImportRows.filter(r=>!r.err);
+    if(!valid.length)return;
+    const btn=$('empImportConfirmBtn');
+    btn.disabled=true; btn.textContent='Зберігаємо…';
+    const payload=valid.map(({last_name,first_name,patronymic,birthdate})=>
+      ({last_name,first_name:first_name||null,patronymic:patronymic||null,birthdate:birthdate||null}));
+    const {error}=await db.from('dict_employees').insert(payload);
+    btn.disabled=false; btn.textContent='Імпортувати';
+    if(error){ $('empImportError').textContent='Помилка: '+error.message; $('empImportError').style.display=''; return; }
+    empImportClose(); await loadAllDicts();
+  };
+
+  window.empImportClose=function(){
+    $('empImportModal').classList.remove('open'); _empImportRows=[];
+    $('empImportBody').innerHTML=''; $('empImportInfo').innerHTML=''; $('empImportError').style.display='none';
   };
 
   /* --- Типи структурних одиниць --- */
