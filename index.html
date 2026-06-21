@@ -4645,18 +4645,18 @@
         <h3 style="margin-bottom:4px;font-size:15px">${esc(devEmpName(plan))}</h3>
         <p style="font-size:12px;color:var(--muted);margin-bottom:0">${esc(plan.role||'')}</p>
         <div class="swot-grid">
-          ${quadrant('S','swot-s','💪 Сильні сторони')}
-          ${quadrant('W','swot-w','⚠️ Слабкі сторони')}
-          ${quadrant('O','swot-o','🚀 Можливості')}
-          ${quadrant('T','swot-t','⛔ Загрози')}
+          ${quadrant('S','swot-s','💪 Сильні сторони <span style="font-weight:400;opacity:.55;font-size:.85em">(Strengths)</span>')}
+          ${quadrant('W','swot-w','⚠️ Слабкі сторони <span style="font-weight:400;opacity:.55;font-size:.85em">(Weaknesses)</span>')}
+          ${quadrant('O','swot-o','🚀 Можливості <span style="font-weight:400;opacity:.55;font-size:.85em">(Opportunities)</span>')}
+          ${quadrant('T','swot-t','⛔ Загрози <span style="font-weight:400;opacity:.55;font-size:.85em">(Threats)</span>')}
         </div>`;
     }
 
     const _swotQuadrantMeta={
-      S:{label:'💪 Сильні сторони', bg:'#DCFCE7', color:'#16A34A', darkBg:'rgba(22,163,74,.15)'},
-      W:{label:'⚠️ Слабкі сторони', bg:'#FEE2E2', color:'#DC2626', darkBg:'rgba(220,38,38,.15)'},
-      O:{label:'🚀 Можливості',      bg:'#EFF6FF', color:'#2563EB', darkBg:'rgba(37,99,235,.15)'},
-      T:{label:'⛔ Загрози',          bg:'#FEF9C3', color:'#CA8A04', darkBg:'rgba(202,138,4,.15)'},
+      S:{label:'💪 Сильні сторони <span style="font-weight:400;opacity:.55;font-size:.85em">(Strengths)</span>', bg:'#DCFCE7', color:'#16A34A', darkBg:'rgba(22,163,74,.15)'},
+      W:{label:'⚠️ Слабкі сторони <span style="font-weight:400;opacity:.55;font-size:.85em">(Weaknesses)</span>', bg:'#FEE2E2', color:'#DC2626', darkBg:'rgba(220,38,38,.15)'},
+      O:{label:'🚀 Можливості <span style="font-weight:400;opacity:.55;font-size:.85em">(Opportunities)</span>',      bg:'#EFF6FF', color:'#2563EB', darkBg:'rgba(37,99,235,.15)'},
+      T:{label:'⛔ Загрози <span style="font-weight:400;opacity:.55;font-size:.85em">(Threats)</span>',          bg:'#FEF9C3', color:'#CA8A04', darkBg:'rgba(202,138,4,.15)'},
     };
     let _swotModal={planId:null,quadrant:null,editId:null};
 
@@ -4796,10 +4796,10 @@
             onclick="devAddSwotItem('${planId}','${key}')">+ Додати</button>
         </div>`;
       el.innerHTML=`<div class="swot-grid" style="margin-top:0">
-        ${quadrant('S','swot-s','💪 Сильні сторони')}
-        ${quadrant('W','swot-w','⚠️ Слабкі сторони')}
-        ${quadrant('O','swot-o','🚀 Можливості')}
-        ${quadrant('T','swot-t','⛔ Загрози')}
+        ${quadrant('S','swot-s','💪 Сильні сторони <span style="font-weight:400;opacity:.55;font-size:.85em">(Strengths)</span>')}
+        ${quadrant('W','swot-w','⚠️ Слабкі сторони <span style="font-weight:400;opacity:.55;font-size:.85em">(Weaknesses)</span>')}
+        ${quadrant('O','swot-o','🚀 Можливості <span style="font-weight:400;opacity:.55;font-size:.85em">(Opportunities)</span>')}
+        ${quadrant('T','swot-t','⛔ Загрози <span style="font-weight:400;opacity:.55;font-size:.85em">(Threats)</span>')}
       </div>`;
     }
 
@@ -4931,10 +4931,10 @@
             onclick="devAddSwotItem('${planId}','${key}')">+ Додати</button>
         </div>`;
       el.innerHTML=`<div class="swot-grid">
-        ${quadrant('S','swot-s','💪 Сильні сторони')}
-        ${quadrant('W','swot-w','⚠️ Слабкі сторони')}
-        ${quadrant('O','swot-o','🚀 Можливості')}
-        ${quadrant('T','swot-t','⛔ Загрози')}
+        ${quadrant('S','swot-s','💪 Сильні сторони <span style="font-weight:400;opacity:.55;font-size:.85em">(Strengths)</span>')}
+        ${quadrant('W','swot-w','⚠️ Слабкі сторони <span style="font-weight:400;opacity:.55;font-size:.85em">(Weaknesses)</span>')}
+        ${quadrant('O','swot-o','🚀 Можливості <span style="font-weight:400;opacity:.55;font-size:.85em">(Opportunities)</span>')}
+        ${quadrant('T','swot-t','⛔ Загрози <span style="font-weight:400;opacity:.55;font-size:.85em">(Threats)</span>')}
       </div>`;
     };
 
