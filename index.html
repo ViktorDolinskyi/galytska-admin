@@ -2054,6 +2054,7 @@
             <button class="on" onclick="devTab('plans')">Плани</button>
             <button onclick="devTab('swot')">SWOT</button>
             <button onclick="devTab('surveys')">Опитування</button>
+            <button onclick="devTab('settings')">Налаштування</button>
           </div>
         </div>
 
@@ -2113,6 +2114,119 @@
             <div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px">Опитувань ще немає</div>
             <div style="font-size:13px;color:var(--muted);max-width:320px;margin:0 auto;line-height:1.5">Створіть перше пульс-опитування щоб отримати зворотній зв'язок від команди</div>
           </div>
+        <!-- ── Налаштування ── -->
+        <div id="devTab-settings" style="display:none">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+            <!-- Ролі розвитку -->
+            <div class="card">
+              <div class="card-head">
+                <span class="ic" style="color:var(--brand)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+                <h3>Ролі розвитку</h3>
+              </div>
+              <div style="padding:16px 18px">
+                <div style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5">Посади та ролі, що використовуються у планах розвитку</div>
+                <div style="display:flex;flex-direction:column;gap:8px" id="devRolesList">
+                  <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--page);border-radius:10px;font-size:13px;font-weight:600;color:var(--ink)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;color:var(--muted)"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    Директор з інженерного розвитку
+                  </div>
+                  <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--page);border-radius:10px;font-size:13px;font-weight:600;color:var(--ink)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;color:var(--muted)"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    Директор з технологічного розвитку
+                  </div>
+                </div>
+                <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">
+                  <span style="font-size:12px;color:var(--muted)">Ролі підтягуються автоматично з планів розвитку</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Статуси планів -->
+            <div class="card">
+              <div class="card-head">
+                <span class="ic" style="color:#2563EB"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>
+                <h3>Статуси планів</h3>
+              </div>
+              <div style="padding:16px 18px">
+                <div style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5">Можливі статуси плану розвитку співробітника</div>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--page);border-radius:10px">
+                    <span class="dev-status active">Активний</span>
+                    <span style="font-size:12px;color:var(--muted)">— план у процесі виконання</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--page);border-radius:10px">
+                    <span class="dev-status pause">Призупинений</span>
+                    <span style="font-size:12px;color:var(--muted)">— тимчасово заморожений</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--page);border-radius:10px">
+                    <span class="dev-status done" style="background:#E0F2FE;color:#0369A1">Завершений</span>
+                    <span style="font-size:12px;color:var(--muted)">— ціль досягнута</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SWOT квадранти -->
+            <div class="card">
+              <div class="card-head">
+                <span class="ic" style="color:#CA8A04"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg></span>
+                <h3>SWOT квадранти</h3>
+              </div>
+              <div style="padding:16px 18px">
+                <div style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5">Чотири квадранти SWOT-аналізу розвитку</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                  <div style="padding:10px 12px;border-radius:10px;background:#F0FDF4;border:1px solid #BBF7D0">
+                    <div style="font-size:12px;font-weight:800;color:#16A34A;margin-bottom:2px">S — Сильні сторони</div>
+                    <div style="font-size:11px;color:#166534">Strengths</div>
+                  </div>
+                  <div style="padding:10px 12px;border-radius:10px;background:#EFF6FF;border:1px solid #BFDBFE">
+                    <div style="font-size:12px;font-weight:800;color:#2563EB;margin-bottom:2px">W — Слабкі сторони</div>
+                    <div style="font-size:11px;color:#1E40AF">Weaknesses</div>
+                  </div>
+                  <div style="padding:10px 12px;border-radius:10px;background:#FFFBEB;border:1px solid #FDE68A">
+                    <div style="font-size:12px;font-weight:800;color:#CA8A04;margin-bottom:2px">O — Можливості</div>
+                    <div style="font-size:11px;color:#92400E">Opportunities</div>
+                  </div>
+                  <div style="padding:10px 12px;border-radius:10px;background:#FEF2F2;border:1px solid #FECACA">
+                    <div style="font-size:12px;font-weight:800;color:#DC2626;margin-bottom:2px">T — Загрози</div>
+                    <div style="font-size:11px;color:#991B1B">Threats</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- GROW методологія -->
+            <div class="card">
+              <div class="card-head">
+                <span class="ic" style="color:#16A34A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span>
+                <h3>GROW методологія</h3>
+              </div>
+              <div style="padding:16px 18px">
+                <div style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5">Структура коучингових сесій розвитку</div>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <div style="display:flex;gap:12px;align-items:flex-start;padding:10px 12px;background:var(--page);border-radius:10px">
+                    <span style="font-size:13px;font-weight:800;color:var(--brand);min-width:20px">G</span>
+                    <div><div style="font-size:13px;font-weight:700;color:var(--ink)">Goal — Ціль</div><div style="font-size:11px;color:var(--muted)">Що хочемо досягти?</div></div>
+                  </div>
+                  <div style="display:flex;gap:12px;align-items:flex-start;padding:10px 12px;background:var(--page);border-radius:10px">
+                    <span style="font-size:13px;font-weight:800;color:#2563EB;min-width:20px">R</span>
+                    <div><div style="font-size:13px;font-weight:700;color:var(--ink)">Reality — Реальність</div><div style="font-size:11px;color:var(--muted)">Де ми зараз?</div></div>
+                  </div>
+                  <div style="display:flex;gap:12px;align-items:flex-start;padding:10px 12px;background:var(--page);border-radius:10px">
+                    <span style="font-size:13px;font-weight:800;color:#CA8A04;min-width:20px">O</span>
+                    <div><div style="font-size:13px;font-weight:700;color:var(--ink)">Options — Варіанти</div><div style="font-size:11px;color:var(--muted)">Які є можливості?</div></div>
+                  </div>
+                  <div style="display:flex;gap:12px;align-items:flex-start;padding:10px 12px;background:var(--page);border-radius:10px">
+                    <span style="font-size:13px;font-weight:800;color:#16A34A;min-width:20px">W</span>
+                    <div><div style="font-size:13px;font-weight:700;color:var(--ink)">Will — Воля до дії</div><div style="font-size:11px;color:var(--muted)">Що і коли зробимо?</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
         </div>
       </section>
 
@@ -5466,10 +5580,10 @@
       devToggleSwot(planId);
     };
 
-    const _devTabMap={'plans':'Плани','swot':'SWOT','surveys':'Опитування','sessions':'Сесії'};
+    const _devTabMap={'plans':'Плани','swot':'SWOT','surveys':'Опитування','sessions':'Сесії','settings':'Налаштування'};
     window.devTab=function(tab){
       _devCurrentTab=tab;
-      ['plans','sessions','swot','surveys'].forEach(t=>{
+      ['plans','sessions','swot','surveys','settings'].forEach(t=>{
         const el=document.getElementById('devTab-'+t);
         if(el)el.style.display=t===tab?'':'none';
       });
