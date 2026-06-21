@@ -131,6 +131,12 @@
 
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
+  *{scrollbar-width:thin;scrollbar-color:var(--brand-tint-2,#e8a09a) transparent}
+  ::-webkit-scrollbar{width:6px;height:6px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:var(--brand-tint-2,#e8a09a);border-radius:10px}
+  ::-webkit-scrollbar-thumb:hover{background:var(--brand,#D52B1E)}
+  ::-webkit-scrollbar-corner{background:transparent}
   body{
     font-family:'Manrope',system-ui,-apple-system,sans-serif;
     background:var(--page); color:var(--ink);
