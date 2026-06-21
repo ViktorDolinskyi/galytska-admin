@@ -962,8 +962,11 @@
   .modal h3{font-size:16px;font-weight:800;padding:18px 20px;border-bottom:1px solid var(--line)}
   .modal .body{padding:18px 20px;display:flex;flex-direction:column;gap:14px}
   .modal label{font-size:12px;font-weight:700;color:var(--slate);display:block;margin-bottom:6px}
-  .modal input{width:100%;font:inherit;font-size:14px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--ink);outline:none;background:var(--card)}
-  .modal input:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-tint)}
+  .modal input,.modal textarea{width:100%;font:inherit;font-size:14px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--ink);outline:none;background:var(--card);box-sizing:border-box}
+  .modal textarea{resize:vertical;min-height:72px}
+  .modal input:focus,.modal textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-tint)}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line)}
+  .modal-head h3{font-size:16px;font-weight:800;padding:0;border:none;color:var(--ink)}
 
   /* ── Import modal ── */
   .imp-modal .modal-head{padding:16px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
@@ -2148,35 +2151,21 @@
 
       <!-- Modal: тип опитування -->
       <div class="modal-scrim" id="surveyTypeScrim" onclick="if(event.target===this)surveyTypeClose()">
-        <div class="modal" style="max-width:560px">
+        <div class="modal" style="max-width:560px;max-height:90vh;display:flex;flex-direction:column">
           <div class="modal-head">
             <h3 id="surveyTypeModalTitle">Новий тип опитування</h3>
-            <button class="modal-close" onclick="surveyTypeClose()">&#x2715;</button>
+            <button class="ico-btn" onclick="surveyTypeClose()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
           </div>
-          <div class="modal-body" style="display:flex;flex-direction:column;gap:14px">
-            <div class="form-group">
-              <label class="form-label">Підхід (Тип) <span style="color:var(--danger)">*</span></label>
-              <input class="form-control" id="stApproach" placeholder="Назва типу опитування">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Суть підходу</label>
-              <textarea class="form-control" id="stEssence" rows="3" placeholder="Короткий опис підходу"></textarea>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Основна мета</label>
-              <textarea class="form-control" id="stGoal" rows="2" placeholder="Що досягається цим підходом"></textarea>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Коли застосовувати в Галицькій Свіжині</label>
-              <textarea class="form-control" id="stWhen" rows="3" placeholder="Умови та ситуації для застосування"></textarea>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Результат / вихід</label>
-              <textarea class="form-control" id="stResult" rows="2" placeholder="Що отримаємо на виході"></textarea>
-            </div>
+          <div class="body" style="flex-direction:column;gap:14px;padding:20px;overflow-y:auto">
+            <div><label>Підхід (Тип) <span style="color:var(--brand)">*</span></label><input id="stApproach" placeholder="Назва типу опитування"></div>
+            <div><label>Суть підходу</label><textarea id="stEssence" rows="3" placeholder="Короткий опис підходу"></textarea></div>
+            <div><label>Основна мета</label><textarea id="stGoal" rows="2" placeholder="Що досягається цим підходом"></textarea></div>
+            <div><label>Коли застосовувати в Галицькій Свіжині</label><textarea id="stWhen" rows="3" placeholder="Умови та ситуації для застосування"></textarea></div>
+            <div><label>Результат / вихід</label><textarea id="stResult" rows="2" placeholder="Що отримаємо на виході"></textarea></div>
           </div>
-          <div class="modal-foot">
-            <button class="btn" onclick="surveyTypeClose()">Скасувати</button>
+          <div class="foot">
+            <button class="btn ghost" id="surveyTypeDelBtn" onclick="surveyTypeDeleteCurrent()" style="margin-right:auto;display:none">Видалити</button>
+            <button class="btn ghost" onclick="surveyTypeClose()">Скасувати</button>
             <button class="btn primary" onclick="surveyTypeSave()">Зберегти</button>
           </div>
         </div>
@@ -5582,8 +5571,8 @@
 
     window.surveyTypeOpen=function(id){
       _surveyTypeEdit=id||null;
-      const modal=document.getElementById('surveyTypeScrim');
       const title=document.getElementById('surveyTypeModalTitle');
+      const delBtn=document.getElementById('surveyTypeDelBtn');
       if(id){
         title.textContent='Редагувати тип опитування';
         const r=(window._surveyTypesCache||[]).find(x=>x.id===id)||{};
@@ -5592,11 +5581,24 @@
         document.getElementById('stGoal').value=r.goal||'';
         document.getElementById('stWhen').value=r.when_to_use||'';
         document.getElementById('stResult').value=r.result||'';
+        if(delBtn)delBtn.style.display='';
       } else {
         title.textContent='Новий тип опитування';
-        ['stApproach','stEssence','stGoal','stWhen','stResult'].forEach(id=>document.getElementById(id).value='');
+        ['stApproach','stEssence','stGoal','stWhen','stResult'].forEach(fid=>document.getElementById(fid).value='');
+        if(delBtn)delBtn.style.display='none';
       }
-      modal.classList.add('open');
+      document.getElementById('surveyTypeScrim').classList.add('open');
+      document.getElementById('stApproach').focus();
+    };
+
+    window.surveyTypeDeleteCurrent=async function(){
+      if(!_surveyTypeEdit)return;
+      if(!confirm('Видалити тип опитування?'))return;
+      const {error}=await db.from('dict_survey_types').delete().eq('id',_surveyTypeEdit);
+      if(error){toast('Помилка: '+error.message,'error');return;}
+      toast('Видалено','success');
+      surveyTypeClose();
+      surveyTypesLoad();
     };
 
     window.surveyTypeClose=function(){
