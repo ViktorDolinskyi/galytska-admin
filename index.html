@@ -2116,119 +2116,70 @@
           </div>
         <!-- ── Налаштування ── -->
         <div id="devTab-settings" style="display:none">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-
-            <!-- Ролі розвитку -->
-            <div class="card">
-              <div class="card-head">
-                <span class="ic" style="color:var(--brand)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-                <h3>Ролі розвитку</h3>
-              </div>
-              <div style="padding:16px 18px">
-                <div style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5">Посади та ролі, що використовуються у планах розвитку</div>
-                <div style="display:flex;flex-direction:column;gap:8px" id="devRolesList">
-                  <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--page);border-radius:10px;font-size:13px;font-weight:600;color:var(--ink)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;color:var(--muted)"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    Директор з інженерного розвитку
-                  </div>
-                  <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--page);border-radius:10px;font-size:13px;font-weight:600;color:var(--ink)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;color:var(--muted)"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    Директор з технологічного розвитку
-                  </div>
-                </div>
-                <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">
-                  <span style="font-size:12px;color:var(--muted)">Ролі підтягуються автоматично з планів розвитку</span>
-                </div>
+          <div class="card">
+            <div class="card-head">
+              <span class="ic" style="color:#2563EB"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg></span>
+              <h3>Типи опитування</h3>
+              <span class="pill" style="margin-left:4px"><span id="surveyTypeCount">0</span></span>
+              <div class="filters">
+                <button class="btn primary" onclick="surveyTypeOpen()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;margin-right:5px"><path d="M12 5v14M5 12h14"/></svg>Новий тип
+                </button>
               </div>
             </div>
-
-            <!-- Статуси планів -->
-            <div class="card">
-              <div class="card-head">
-                <span class="ic" style="color:#2563EB"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>
-                <h3>Статуси планів</h3>
-              </div>
-              <div style="padding:16px 18px">
-                <div style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5">Можливі статуси плану розвитку співробітника</div>
-                <div style="display:flex;flex-direction:column;gap:8px">
-                  <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--page);border-radius:10px">
-                    <span class="dev-status active">Активний</span>
-                    <span style="font-size:12px;color:var(--muted)">— план у процесі виконання</span>
-                  </div>
-                  <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--page);border-radius:10px">
-                    <span class="dev-status pause">Призупинений</span>
-                    <span style="font-size:12px;color:var(--muted)">— тимчасово заморожений</span>
-                  </div>
-                  <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--page);border-radius:10px">
-                    <span class="dev-status done" style="background:#E0F2FE;color:#0369A1">Завершений</span>
-                    <span style="font-size:12px;color:var(--muted)">— ціль досягнута</span>
-                  </div>
-                </div>
-              </div>
+            <div style="overflow-x:auto">
+              <table class="tbl">
+                <thead><tr>
+                  <th style="min-width:140px">Підхід (Тип)</th>
+                  <th style="min-width:180px">Суть підходу</th>
+                  <th style="min-width:180px">Основна мета</th>
+                  <th style="min-width:200px">Коли застосовувати</th>
+                  <th style="min-width:180px">Результат / вихід</th>
+                  <th style="width:44px"></th>
+                </tr></thead>
+                <tbody id="surveyTypeBody"><tr><td colspan="6" class="empty">Немає записів</td></tr></tbody>
+              </table>
             </div>
-
-            <!-- SWOT квадранти -->
-            <div class="card">
-              <div class="card-head">
-                <span class="ic" style="color:#CA8A04"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg></span>
-                <h3>SWOT квадранти</h3>
-              </div>
-              <div style="padding:16px 18px">
-                <div style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5">Чотири квадранти SWOT-аналізу розвитку</div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-                  <div style="padding:10px 12px;border-radius:10px;background:#F0FDF4;border:1px solid #BBF7D0">
-                    <div style="font-size:12px;font-weight:800;color:#16A34A;margin-bottom:2px">S — Сильні сторони</div>
-                    <div style="font-size:11px;color:#166534">Strengths</div>
-                  </div>
-                  <div style="padding:10px 12px;border-radius:10px;background:#EFF6FF;border:1px solid #BFDBFE">
-                    <div style="font-size:12px;font-weight:800;color:#2563EB;margin-bottom:2px">W — Слабкі сторони</div>
-                    <div style="font-size:11px;color:#1E40AF">Weaknesses</div>
-                  </div>
-                  <div style="padding:10px 12px;border-radius:10px;background:#FFFBEB;border:1px solid #FDE68A">
-                    <div style="font-size:12px;font-weight:800;color:#CA8A04;margin-bottom:2px">O — Можливості</div>
-                    <div style="font-size:11px;color:#92400E">Opportunities</div>
-                  </div>
-                  <div style="padding:10px 12px;border-radius:10px;background:#FEF2F2;border:1px solid #FECACA">
-                    <div style="font-size:12px;font-weight:800;color:#DC2626;margin-bottom:2px">T — Загрози</div>
-                    <div style="font-size:11px;color:#991B1B">Threats</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- GROW методологія -->
-            <div class="card">
-              <div class="card-head">
-                <span class="ic" style="color:#16A34A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span>
-                <h3>GROW методологія</h3>
-              </div>
-              <div style="padding:16px 18px">
-                <div style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5">Структура коучингових сесій розвитку</div>
-                <div style="display:flex;flex-direction:column;gap:8px">
-                  <div style="display:flex;gap:12px;align-items:flex-start;padding:10px 12px;background:var(--page);border-radius:10px">
-                    <span style="font-size:13px;font-weight:800;color:var(--brand);min-width:20px">G</span>
-                    <div><div style="font-size:13px;font-weight:700;color:var(--ink)">Goal — Ціль</div><div style="font-size:11px;color:var(--muted)">Що хочемо досягти?</div></div>
-                  </div>
-                  <div style="display:flex;gap:12px;align-items:flex-start;padding:10px 12px;background:var(--page);border-radius:10px">
-                    <span style="font-size:13px;font-weight:800;color:#2563EB;min-width:20px">R</span>
-                    <div><div style="font-size:13px;font-weight:700;color:var(--ink)">Reality — Реальність</div><div style="font-size:11px;color:var(--muted)">Де ми зараз?</div></div>
-                  </div>
-                  <div style="display:flex;gap:12px;align-items:flex-start;padding:10px 12px;background:var(--page);border-radius:10px">
-                    <span style="font-size:13px;font-weight:800;color:#CA8A04;min-width:20px">O</span>
-                    <div><div style="font-size:13px;font-weight:700;color:var(--ink)">Options — Варіанти</div><div style="font-size:11px;color:var(--muted)">Які є можливості?</div></div>
-                  </div>
-                  <div style="display:flex;gap:12px;align-items:flex-start;padding:10px 12px;background:var(--page);border-radius:10px">
-                    <span style="font-size:13px;font-weight:800;color:#16A34A;min-width:20px">W</span>
-                    <div><div style="font-size:13px;font-weight:700;color:var(--ink)">Will — Воля до дії</div><div style="font-size:11px;color:var(--muted)">Що і коли зробимо?</div></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
           </div>
         </div>
         </div>
       </section>
+
+      <!-- Modal: тип опитування -->
+      <div class="modal-scrim" id="surveyTypeScrim" onclick="if(event.target===this)surveyTypeClose()">
+        <div class="modal" style="max-width:560px">
+          <div class="modal-head">
+            <h3 id="surveyTypeModalTitle">Новий тип опитування</h3>
+            <button class="modal-close" onclick="surveyTypeClose()">&#x2715;</button>
+          </div>
+          <div class="modal-body" style="display:flex;flex-direction:column;gap:14px">
+            <div class="form-group">
+              <label class="form-label">Підхід (Тип) <span style="color:var(--danger)">*</span></label>
+              <input class="form-control" id="stApproach" placeholder="Назва типу опитування">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Суть підходу</label>
+              <textarea class="form-control" id="stEssence" rows="3" placeholder="Короткий опис підходу"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Основна мета</label>
+              <textarea class="form-control" id="stGoal" rows="2" placeholder="Що досягається цим підходом"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Коли застосовувати в Галицькій Свіжині</label>
+              <textarea class="form-control" id="stWhen" rows="3" placeholder="Умови та ситуації для застосування"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Результат / вихід</label>
+              <textarea class="form-control" id="stResult" rows="2" placeholder="Що отримаємо на виході"></textarea>
+            </div>
+          </div>
+          <div class="modal-foot">
+            <button class="btn" onclick="surveyTypeClose()">Скасувати</button>
+            <button class="btn primary" onclick="surveyTypeSave()">Зберегти</button>
+          </div>
+        </div>
+      </div>
 
       <!-- Modal: план розвитку -->
       <div class="modal-scrim" id="devPlanScrim" onclick="if(event.target===this)devClosePlan()">
@@ -5594,7 +5545,91 @@
       if(tab==='plans'){ devInitFilters(); devRenderPlans(); }
       else if(tab==='sessions') devRenderSessions();
       else if(tab==='swot') devRenderSwotTab();
+      else if(tab==='settings') surveyTypesLoad();
       devRenderKpi();
+    };
+
+    // ── Survey Types (dict_survey_types) ──────────────────────────
+    let _surveyTypeEdit=null;
+
+    window.surveyTypesLoad=async function(){
+      const {data,error}=await db.from('dict_survey_types').select('*').order('sort_order').order('created_at');
+      if(error){toast('Помилка завантаження: '+error.message,'error');return;}
+      const body=document.getElementById('surveyTypeBody');
+      const cnt=document.getElementById('surveyTypeCount');
+      if(cnt)cnt.textContent=data.length;
+      if(!data.length){
+        body.innerHTML='<tr><td colspan="6" class="empty">Немає записів</td></tr>';
+        return;
+      }
+      body.innerHTML=data.map(r=>`<tr>
+        <td style="font-weight:600">${r.approach||''}</td>
+        <td style="white-space:pre-wrap;max-width:200px;font-size:12px">${r.essence||''}</td>
+        <td style="white-space:pre-wrap;max-width:200px;font-size:12px">${r.goal||''}</td>
+        <td style="white-space:pre-wrap;max-width:220px;font-size:12px">${r.when_to_use||''}</td>
+        <td style="white-space:pre-wrap;max-width:200px;font-size:12px">${r.result||''}</td>
+        <td>
+          <div style="display:flex;gap:6px">
+            <button class="icon-btn" title="Редагувати" onclick="surveyTypeOpen('${r.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+            <button class="icon-btn danger" title="Видалити" onclick="surveyTypeDelete('${r.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+          </div>
+        </td>
+      </tr>`).join('');
+      // store for edit
+      window._surveyTypesCache=data;
+    };
+
+    window.surveyTypeOpen=function(id){
+      _surveyTypeEdit=id||null;
+      const modal=document.getElementById('surveyTypeScrim');
+      const title=document.getElementById('surveyTypeModalTitle');
+      if(id){
+        title.textContent='Редагувати тип опитування';
+        const r=(window._surveyTypesCache||[]).find(x=>x.id===id)||{};
+        document.getElementById('stApproach').value=r.approach||'';
+        document.getElementById('stEssence').value=r.essence||'';
+        document.getElementById('stGoal').value=r.goal||'';
+        document.getElementById('stWhen').value=r.when_to_use||'';
+        document.getElementById('stResult').value=r.result||'';
+      } else {
+        title.textContent='Новий тип опитування';
+        ['stApproach','stEssence','stGoal','stWhen','stResult'].forEach(id=>document.getElementById(id).value='');
+      }
+      modal.classList.add('open');
+    };
+
+    window.surveyTypeClose=function(){
+      document.getElementById('surveyTypeScrim').classList.remove('open');
+    };
+
+    window.surveyTypeSave=async function(){
+      const approach=document.getElementById('stApproach').value.trim();
+      if(!approach){toast('Введіть назву підходу','error');return;}
+      const payload={
+        approach,
+        essence:document.getElementById('stEssence').value.trim(),
+        goal:document.getElementById('stGoal').value.trim(),
+        when_to_use:document.getElementById('stWhen').value.trim(),
+        result:document.getElementById('stResult').value.trim()
+      };
+      let error;
+      if(_surveyTypeEdit){
+        ({error}=await db.from('dict_survey_types').update(payload).eq('id',_surveyTypeEdit));
+      } else {
+        ({error}=await db.from('dict_survey_types').insert(payload));
+      }
+      if(error){toast('Помилка збереження: '+error.message,'error');return;}
+      toast(_surveyTypeEdit?'Оновлено':'Додано','success');
+      surveyTypeClose();
+      surveyTypesLoad();
+    };
+
+    window.surveyTypeDelete=async function(id){
+      if(!confirm('Видалити тип опитування?'))return;
+      const {error}=await db.from('dict_survey_types').delete().eq('id',id);
+      if(error){toast('Помилка: '+error.message,'error');return;}
+      toast('Видалено','success');
+      surveyTypesLoad();
     };
 
     devLoadData();
