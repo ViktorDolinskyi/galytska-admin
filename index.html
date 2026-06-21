@@ -1071,6 +1071,7 @@
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 </head>
 <body>
+<div id="toastContainer"></div>
 <div class="auth-scrim open" id="authScrim">
   <div class="auth-card">
     <div class="auth-brand">
@@ -2061,7 +2062,7 @@
             <div>
               <div style="font-size:13px;color:var(--muted);margin-top:2px">Пульс-опитування команди та зворотній зв'язок</div>
             </div>
-            <button class="btn primary" onclick="alert('Функціонал опитувань у розробці')">
+            <button class="btn primary" onclick="toast('Функціонал опитувань у розробці','info')">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;margin-right:5px"><path d="M12 5v14M5 12h14"/></svg>Нове опитування
             </button>
           </div>
@@ -3115,7 +3116,7 @@
     const res=mxEditId!==null
       ?await db.from('matrix_rows').update(payload).eq('id',mxEditId)
       :await db.from('matrix_rows').insert({...payload,row_order:rows().length});
-    if(res.error){alert('Помилка: '+res.error.message);return;}
+    if(res.error){toast('Помилка: '+res.error.message,'error');return;}
     mxCloseModal(true);await mxLoad();
   };
 
@@ -3129,7 +3130,7 @@
 
   window.mxDelRow=async function(id){
     const res=await db.from('matrix_rows').delete().eq('id',id);
-    if(res.error){alert('Помилка: '+res.error.message);return;}
+    if(res.error){toast('Помилка: '+res.error.message,'error');return;}
     await mxLoad();
   };
 
@@ -3211,11 +3212,11 @@
       const all=[...pov,...resp];
       for(let i=0;i<all.length;i+=BATCH){
         const {error}=await db.from('matrix_rows').insert(all.slice(i,i+BATCH));
-        if(error){alert('Помилка імпорту: '+error.message);if(btn)btn.innerHTML=origText;return;}
+        if(error){toast('Помилка імпорту: '+error.message,'error');if(btn)btn.innerHTML=origText;return;}
       }
-      alert(`✓ Імпортовано: ${pov.length} повноважень, ${resp.length} відповідальностей`);
+      toast(`✓ Імпортовано: ${pov.length} повноважень, ${resp.length} відповідальностей`,'success');
       await mxLoad();
-    }catch(err){alert('Помилка читання файлу: '+err.message);}
+    }catch(err){toast('Помилка читання файлу: '+err.message,'error');}
     if(btn)btn.innerHTML=origText;
   }
 
@@ -3503,7 +3504,7 @@
     const res=goalsEdit
       ?await db.from('goals').update(payload).eq('id',goalsEdit)
       :await db.from('goals').insert(payload);
-    if(res.error){alert('Помилка: '+res.error.message);return;}
+    if(res.error){toast('Помилка: '+res.error.message,'error');return;}
     goalCloseModal();
     await goalsLoad();
   };
@@ -3558,7 +3559,7 @@
     const res=indEdit
       ?await db.from('goal_indicators').update(payload).eq('id',indEdit)
       :await db.from('goal_indicators').insert(payload);
-    if(res.error){alert('Помилка: '+res.error.message);return;}
+    if(res.error){toast('Помилка: '+res.error.message,'error');return;}
     indCloseModal();
     await goalsLoad();
     document.getElementById('gc-'+_indGoalId)?.classList.add('expanded');
@@ -3632,7 +3633,7 @@
     const res=goalTypeEdit
       ?await db.from('goal_types').update(payload).eq('id',goalTypeEdit)
       :await db.from('goal_types').insert(payload);
-    if(res.error){alert('Помилка: '+res.error.message);return;}
+    if(res.error){toast('Помилка: '+res.error.message,'error');return;}
     goalTypeCloseModal();await goalTypesLoad();
   };
   window.goalTypeDelete=async function(){
@@ -3675,7 +3676,7 @@
     const res=goalPatternEdit
       ?await db.from('goal_patterns').update(payload).eq('id',goalPatternEdit)
       :await db.from('goal_patterns').insert(payload);
-    if(res.error){alert('Помилка: '+res.error.message);return;}
+    if(res.error){toast('Помилка: '+res.error.message,'error');return;}
     goalPatternCloseModal();await goalPatternsLoad();
   };
   window.goalPatternDelete=async function(){
@@ -4130,7 +4131,7 @@
           if(fromNode&&!orgDescIds(fromNode).includes(toId)){
             const{error}=await db.from('company_units').update({parent_id:toId}).eq('id',fromId);
             if(!error){await orgLoad();}
-            else{alert('Помилка: '+error.message);orgChartRender();}
+            else{toast('Помилка: '+error.message,'error');orgChartRender();}
             return;
           }
         }
@@ -4336,7 +4337,7 @@
     const res=empEdit!==null
       ?await db.from('dict_employees').update({last_name,first_name,patronymic,birthdate}).eq('id',empEdit)
       :await db.from('dict_employees').insert({last_name,first_name,patronymic,birthdate});
-    if(res.error){alert('Помилка: '+res.error.message);return;}
+    if(res.error){toast('Помилка: '+res.error.message,'error');return;}
     empCloseModal();await loadAllDicts();
   };
   window.empDel=async(id)=>{
@@ -4566,7 +4567,7 @@
   window.typeSave=async()=>{
     const name=$('typeName').value.trim();if(!name){$('typeName').focus();return;}
     const res=typeEdit!==null?await db.from('dict_unit_types').update({name,icon:selectedIcon}).eq('id',typeEdit):await db.from('dict_unit_types').insert({name,icon:selectedIcon});
-    if(res.error){alert('Помилка: '+res.error.message);return;}
+    if(res.error){toast('Помилка: '+res.error.message,'error');return;}
     typeCloseModal();await loadAllDicts();
   };
   window.typeDel=async(id)=>{
@@ -4596,7 +4597,7 @@
   window.kindSave=async()=>{
     const name=$('kindName').value.trim();const color=$('kindColor').value;if(!name){$('kindName').focus();return;}
     const res=kindEdit!==null?await db.from('dict_unit_kinds').update({name,color}).eq('id',kindEdit):await db.from('dict_unit_kinds').insert({name,color});
-    if(res.error){alert('Помилка: '+res.error.message);return;}
+    if(res.error){toast('Помилка: '+res.error.message,'error');return;}
     kindCloseModal();await loadAllDicts();
   };
   window.kindDel=async(id)=>{
@@ -4613,7 +4614,7 @@
     const collapsed=new Set();
     (function saveC(l){l.forEach(n=>{if(n.collapsed)collapsed.add(n.id);saveC(n.children||[]);});})(orgData);
     const {data,error}=await db.from('company_units').select('*').order('sort').order('id');
-    if(error){console.error(error);alert('Помилка завантаження: '+error.message);return;}
+    if(error){console.error(error);toast('Помилка завантаження: '+error.message,'error');return;}
     const map={},roots=[];
     data.forEach(r=>{map[r.id]={id:r.id,name:r.name,head:r.head||'',employee_id:r.employee_id||null,unit_type_id:r.unit_type_id||null,unit_kind_id:r.unit_kind_id||null,status:r.status||'active',children:[],collapsed:collapsed.has(r.id)};});
     data.forEach(r=>{const n=map[r.id];if(r.parent_id&&map[r.parent_id])map[r.parent_id].children.push(n);else roots.push(n);});
@@ -4631,13 +4632,13 @@
     const status=$('orgStatus').value||'active';
     const payload={name,employee_id,unit_type_id,unit_kind_id,parent_id:newParId,status};
     const res=orgEdit!==null?await db.from('company_units').update(payload).eq('id',orgEdit):await db.from('company_units').insert(payload);
-    if(res.error){alert('Помилка збереження: '+res.error.message);return;}
+    if(res.error){toast('Помилка збереження: '+res.error.message,'error');return;}
     orgCloseModal();await orgLoad();
   };
   // Видалити
   window.orgDel=async id=>{
     const {error}=await db.from('company_units').delete().eq('id',id);
-    if(error){alert('Помилка видалення: '+error.message);return;}
+    if(error){toast('Помилка видалення: '+error.message,'error');return;}
     await orgLoad();
   };
 
@@ -4671,6 +4672,22 @@
     if(error){ authErr.textContent='Невірний email або пароль.'; }
   };
   window.authSignOut = async ()=>{ await db.auth.signOut(); };
+  /* ===== TOAST ===== */
+  const _toastIcons={
+    success:'<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>',
+    error:'<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>',
+    info:'<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>',
+    warn:'<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+  };
+  window.toast=function(msg,type,duration){
+    type=type||'info'; duration=duration||3500;
+    var cnt=document.getElementById('toastContainer'); if(!cnt) return;
+    var el=document.createElement('div');
+    el.className='toast '+type;
+    el.innerHTML=(_toastIcons[type]||_toastIcons.info)+'<span class="toast-msg">'+msg+'</span>';
+    cnt.appendChild(el);
+    setTimeout(function(){el.style.animation='toastOut .22s ease forwards';setTimeout(function(){el.remove();},220);},duration);
+  };
 
   /* ===== DASHBOARD ===== */
   window.dashLoad = async function(){
@@ -5077,7 +5094,7 @@
     window.devDelSwotItem=async function(id){
       if(!confirm('Видалити пункт?'))return;
       const {error}=await db.from('dev_swot').delete().eq('id',id);
-      if(error){ alert('Помилка: '+error.message); return; }
+      if(error){ toast('Помилка: '+error.message,'error'); return; }
       devRenderSwotView();
     };
 
@@ -5193,7 +5210,7 @@
     window.devDeleteSessionFromModal=async function(id){
       if(!confirm('Видалити сесію?'))return;
       const {error}=await db.from('dev_sessions').delete().eq('id',id);
-      if(error){ alert('Помилка: '+error.message); return; }
+      if(error){ toast('Помилка: '+error.message,'error'); return; }
       await devLoadData();
       devModalGrowRender();
       devRenderKpi();
@@ -5233,7 +5250,7 @@
     window.devModalSwotDel=async function(id){
       if(!confirm('Видалити пункт?'))return;
       const {error}=await db.from('dev_swot').delete().eq('id',id);
-      if(error){ alert('Помилка: '+error.message); return; }
+      if(error){ toast('Помилка: '+error.message,'error'); return; }
       devModalSwotRender();
     };
 
@@ -5252,7 +5269,7 @@
 
     window.devSavePlan=async function(){
       const empId=+document.getElementById('devPEmpId').value;
-      if(!empId){ alert('Оберіть співробітника'); return; }
+      if(!empId){ toast('Оберіть співробітника','warn'); return; }
       const payload={
         id:_devEditPlanId||uid(),
         employee_id:empId,
@@ -5272,14 +5289,14 @@
       const {error}=_devEditPlanId
         ? await db.from('dev_plans').update(payload).eq('id',_devEditPlanId)
         : await db.from('dev_plans').insert(payload);
-      if(error){ alert('Помилка збереження: '+error.message); return; }
+      if(error){ toast('Помилка збереження: '+error.message,'error'); return; }
       devClosePlan(); await devRender();
     };
 
     window.devDeletePlan=async function(id){
       if(!confirm('Видалити план розвитку?'))return;
       const {error}=await db.from('dev_plans').delete().eq('id',id);
-      if(error){ alert('Помилка: '+error.message); return; }
+      if(error){ toast('Помилка: '+error.message,'error'); return; }
       await devRender();
     };
 
@@ -5299,7 +5316,7 @@
 
     window.devSaveSession=async function(){
       const planId=document.getElementById('devSEmp').value;
-      if(!planId){ alert('Оберіть співробітника'); return; }
+      if(!planId){ toast('Оберіть співробітника','warn'); return; }
       const get=id=>{ const el=document.getElementById(id); return el?el.value.trim()||null:''; };
       const payload={
         id:_devEditSessId||uid(),
@@ -5312,7 +5329,7 @@
       const {error}=_devEditSessId
         ? await db.from('dev_sessions').update(payload).eq('id',_devEditSessId)
         : await db.from('dev_sessions').insert(payload);
-      if(error){ alert('Помилка: '+error.message); return; }
+      if(error){ toast('Помилка: '+error.message,'error'); return; }
       devCloseSession();
       await devLoadData();
       devRenderKpi(); devRenderPlans();
@@ -5322,7 +5339,7 @@
     window.devDeleteSession=async function(id){
       if(!confirm('Видалити сесію?'))return;
       const {error}=await db.from('dev_sessions').delete().eq('id',id);
-      if(error){ alert('Помилка: '+error.message); return; }
+      if(error){ toast('Помилка: '+error.message,'error'); return; }
       await devRender();
     };
 
@@ -5384,7 +5401,7 @@
     window.devDelSwotItemInline=async function(id,planId){
       if(!confirm('Видалити пункт?'))return;
       const {error}=await db.from('dev_swot').delete().eq('id',id);
-      if(error){ alert('Помилка: '+error.message); return; }
+      if(error){ toast('Помилка: '+error.message,'error'); return; }
       devToggleSwot(planId);
       devToggleSwot(planId);
     };
