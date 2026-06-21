@@ -1853,11 +1853,11 @@
             <!-- Info tab -->
             <div id="devMTab-info">
               <div class="form-row">
-                <label class="form-label">Ім'я та прізвище</label>
-                <input class="form-input" id="devPName" placeholder="Олександр Чернуха">
+                <label class="form-label">Співробітник</label>
+                <select class="form-input" id="devPEmpId"></select>
               </div>
               <div class="form-row">
-                <label class="form-label">Посада / Роль</label>
+                <label class="form-label">Роль у плані розвитку</label>
                 <input class="form-input" id="devPRole" placeholder="Директор з технологічного розвитку">
               </div>
               <div class="form-row">
@@ -4045,6 +4045,9 @@
 
     function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
 
+    function empFullDev(e){ return e?[e.last_name,e.first_name,e.patronymic].filter(Boolean).join(' '):'—'; }
+    function devEmp(plan){ return (window.dictEmps||[]).find(e=>e.id===plan.employee_id)||null; }
+    function devEmpName(plan){ const e=devEmp(plan); return e?empFullDev(e):(plan.name||'—'); }
     function initials(name){ return (name||'?').trim().split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2)||'??'; }
 
     function statusLabel(s){ return s==='active'?'Активний':s==='pause'?'Пауза':'Новий'; }
@@ -4088,12 +4091,12 @@
       el.innerHTML=plans.map(p=>{
         const ops=p.wlOps||60, dev=p.wlDev||30, str=p.wlStr||10;
         const sessForPlan=devSessions.filter(s=>s.planId===p.id).length;
-        const ms3done=p.ms3st==='done', ms6done=p.ms6st==='done';
+        const empName=devEmpName(p);
         return `<div class="dev-plan-card">
           <div class="dev-plan-head">
-            <div class="dev-emp-av">${initials(p.name)}</div>
+            <div class="dev-emp-av">${initials(empName)}</div>
             <div class="dev-emp-info">
-              <div class="dev-emp-name">${esc(p.name||'—')}</div>
+              <div class="dev-emp-name">${esc(empName)}</div>
               <div class="dev-emp-role">${esc(p.role||'—')}</div>
             </div>
             <span class="dev-status ${statusClass(p.status)}">${statusLabel(p.status)}</span>
@@ -4147,12 +4150,13 @@
       }
       el.innerHTML=sorted.map(s=>{
         const plan=devPlans.find(p=>p.id===s.planId)||{};
+        const sEmpName=devEmpName(plan);
         return `<div class="grow-session-card">
           <div class="grow-session-head">
-            <div class="dev-emp-av" style="width:32px;height:32px;font-size:12px">${initials(plan.name)}</div>
+            <div class="dev-emp-av" style="width:32px;height:32px;font-size:12px">${initials(sEmpName)}</div>
             <div>
               <div class="grow-session-date">${s.date||'—'}</div>
-              <div class="grow-session-emp">${esc(plan.name||'—')} · ${esc(plan.role||'')}</div>
+              <div class="grow-session-emp">${esc(sEmpName)} · ${esc(plan.role||'')}</div>
             </div>
             <div style="margin-left:auto;display:flex;gap:6px">
               <button class="btn" onclick="devOpenSession('${s.id}')">Редагувати</button>
@@ -4173,7 +4177,7 @@
       const selEl=document.getElementById('devSelSwotEmp');
       if(selEl){
         selEl.innerHTML=''; // reset so _makeCsel re-inits with fresh plan list
-        const opts=[{v:'',l:'Оберіть співробітника'},...devPlans.map(p=>({v:p.id,l:p.name||'—'}))];
+        const opts=[{v:'',l:'Оберіть співробітника'},...devPlans.map(p=>({v:p.id,l:devEmpName(p)+(p.role?' · '+p.role:'')}))];
         _makeCsel(selEl,'Оберіть співробітника',opts,v=>{ _devSwotEmpId=v; devRenderSwotView(); });
         if(_devSwotEmpId){
           const lbl=selEl.querySelector('.csel-label');
@@ -4214,7 +4218,7 @@
         </div>`;
 
       el.innerHTML=`
-        <h3 style="margin-bottom:4px;font-size:15px">${esc(plan.name||'—')}</h3>
+        <h3 style="margin-bottom:4px;font-size:15px">${esc(devEmpName(plan))}</h3>
         <p style="font-size:12px;color:var(--muted);margin-bottom:0">${esc(plan.role||'')}</p>
         <div class="swot-grid">
           ${quadrant('S','swot-s','💪 Сильні сторони')}
@@ -4248,13 +4252,20 @@
       }
     }
 
+    function devFillEmpSelect(selectId, selectedEmpId){
+      const sel=document.getElementById(selectId); if(!sel)return;
+      const emps=(window.dictEmps||[]).slice().sort((a,b)=>(a.last_name||'').localeCompare(b.last_name||'','uk'));
+      sel.innerHTML='<option value="">— Оберіть співробітника —</option>'+
+        emps.map(e=>`<option value="${e.id}"${e.id===selectedEmpId?' selected':''}>${esc(empFullDev(e))}</option>`).join('');
+    }
+
     /* Open/close plan modal */
     window.devOpenPlan=function(id){
       devLoadData();
       _devEditPlanId=id;
       const plan=id?devPlans.find(p=>p.id===id):null;
       document.getElementById('devPlanTitle').textContent=plan?'Редагувати план':'Новий план розвитку';
-      document.getElementById('devPName').value=plan?plan.name||'':'';
+      devFillEmpSelect('devPEmpId', plan?plan.employee_id:null);
       document.getElementById('devPRole').value=plan?plan.role||'':'';
       document.getElementById('devPStatus').value=plan?plan.status||'new':'new';
       document.getElementById('devPDate').value=plan?plan.startDate||'':'';
@@ -4292,10 +4303,10 @@
     };
 
     window.devSavePlan=function(){
-      const name=document.getElementById('devPName').value.trim();
-      if(!name){ alert('Вкажіть ім\'я'); return; }
+      const empId=+document.getElementById('devPEmpId').value;
+      if(!empId){ alert('Оберіть співробітника'); return; }
       const plan={
-        id:_devEditPlanId||uid(), name,
+        id:_devEditPlanId||uid(), employee_id:empId,
         role:document.getElementById('devPRole').value.trim(),
         status:document.getElementById('devPStatus').value,
         startDate:document.getElementById('devPDate').value,
@@ -4329,7 +4340,7 @@
       const sess=id?devSessions.find(s=>s.id===id):null;
       document.getElementById('devSessionTitle').textContent=sess?'Редагувати сесію':'Нова GROW-сесія';
       const empSel=document.getElementById('devSEmp');
-      empSel.innerHTML=devPlans.map(p=>`<option value="${p.id}">${esc(p.name||'—')}</option>`).join('');
+      empSel.innerHTML='<option value="">— Оберіть —</option>'+devPlans.map(p=>`<option value="${p.id}">${esc(devEmpName(p))}${p.role?' · '+esc(p.role):''}</option>`).join('');
       empSel.value=sess?sess.planId:(presetPlanId||'');
       document.getElementById('devSDate').value=sess?sess.date:new Date().toISOString().slice(0,10);
       ['b1','b2','b3','b4','b5','b6','next'].forEach(k=>{ const el=document.getElementById('devS'+k.charAt(0).toUpperCase()+k.slice(1)); if(el)el.value=sess?sess[k]||'':''; });
@@ -4381,22 +4392,6 @@
     };
 
     devLoadData();
-    // Add sample plan from document if empty
-    if(!devPlans.length){
-      devPlans=[{
-        id:uid(), name:'Олександр Чернуха', role:'Директор з технологічного розвитку',
-        status:'active', startDate:new Date().toISOString().slice(0,10),
-        wlOps:60, wlDev:30, wlStr:10,
-        context:'Позиція розвитку, не операційки. Новий працівник забирає 80–90% операційки. Щотижневі зустрічі, фокус на розвитку.',
-        ms3:'Структуризація: каталог технологій, аудит поточних процесів, визначення пріоритетів',
-        ms3st:'progress',
-        ms6:'Перші вимірні ефекти від ініціатив технологічного розвитку',
-        ms6st:'pending',
-        motiv:'Бачимо потенціал лідера технологічних змін. Компанія хоче підтримати та створити умови для результату.',
-        updatedAt:new Date().toISOString(),
-      }];
-      devSaveData();
-    }
   })();
 
   </script>
