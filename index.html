@@ -4171,42 +4171,72 @@
 
     function devRenderSwotTab(){
       const selEl=document.getElementById('devSelSwotEmp');
-      if(selEl&&!selEl.querySelector('.csel-trigger')){
+      if(selEl){
+        selEl.innerHTML=''; // reset so _makeCsel re-inits with fresh plan list
         const opts=[{v:'',l:'Оберіть співробітника'},...devPlans.map(p=>({v:p.id,l:p.name||'—'}))];
         _makeCsel(selEl,'Оберіть співробітника',opts,v=>{ _devSwotEmpId=v; devRenderSwotView(); });
+        if(_devSwotEmpId){
+          const lbl=selEl.querySelector('.csel-label');
+          const found=devPlans.find(p=>p.id===_devSwotEmpId);
+          if(lbl&&found) lbl.textContent=found.name||'—';
+        }
       }
       devRenderSwotView();
     }
 
-    function devRenderSwotView(){
+    async function devRenderSwotView(){
       const el=document.getElementById('devSwotView'); if(!el)return;
       const plan=devPlans.find(p=>p.id===_devSwotEmpId);
-      if(!plan){ el.innerHTML='<div style="text-align:center;padding:48px 0;color:var(--muted)">Оберіть співробітника зі списку вище</div>'; return; }
-      const sw=plan.swot||{S:[],W:[],O:[],T:[]};
-      const quadrant=(key,cls,label,color)=>`
+      if(!plan){
+        el.innerHTML='<div style="text-align:center;padding:48px 0;color:var(--muted)">Оберіть співробітника зі списку вище</div>';
+        return;
+      }
+      el.innerHTML='<div style="text-align:center;padding:32px 0;color:var(--muted);font-size:13px">Завантаження…</div>';
+
+      const {data,error}=await db.from('dev_swot').select('*').eq('plan_id',plan.id).order('created_at');
+      if(error){ el.innerHTML='<div style="color:#DC2626;padding:16px">Помилка: '+esc(error.message)+'</div>'; return; }
+
+      const byQ={S:[],W:[],O:[],T:[]};
+      (data||[]).forEach(r=>{ if(byQ[r.quadrant]) byQ[r.quadrant].push(r); });
+
+      const quadrant=(key,cls,label)=>`
         <div class="swot-cell ${cls}">
           <div class="swot-cell-label">${label}</div>
-          <ul class="swot-cell-items">${(sw[key]||[]).map(i=>`<li>${esc(i)}</li>`).join('')}</ul>
-          <button class="btn" style="margin-top:10px;font-size:11px;padding:4px 10px" onclick="devAddSwotItem('${plan.id}','${key}')">+ Додати</button>
+          <ul class="swot-cell-items" id="swotList-${plan.id}-${key}">
+            ${byQ[key].map(r=>`<li>
+              <span style="flex:1">${esc(r.item_text)}</span>
+              <button onclick="devDelSwotItem('${r.id}','${plan.id}')" title="Видалити"
+                style="background:none;border:none;cursor:pointer;color:var(--muted);padding:0 2px;font-size:14px;line-height:1;flex:none">×</button>
+            </li>`).join('')}
+          </ul>
+          <button class="btn" style="margin-top:10px;font-size:11px;padding:4px 10px"
+            onclick="devAddSwotItem('${plan.id}','${key}')">+ Додати</button>
         </div>`;
-      el.innerHTML=`<h3 style="margin-bottom:4px;font-size:15px">${esc(plan.name||'—')}</h3>
+
+      el.innerHTML=`
+        <h3 style="margin-bottom:4px;font-size:15px">${esc(plan.name||'—')}</h3>
         <p style="font-size:12px;color:var(--muted);margin-bottom:0">${esc(plan.role||'')}</p>
         <div class="swot-grid">
-          ${quadrant('S','swot-s','💪 Сильні сторони','#16A34A')}
-          ${quadrant('W','swot-w','⚠️ Слабкі сторони','#DC2626')}
-          ${quadrant('O','swot-o','🚀 Можливості','#2563EB')}
-          ${quadrant('T','swot-t','⛔ Загрози','#CA8A04')}
+          ${quadrant('S','swot-s','💪 Сильні сторони')}
+          ${quadrant('W','swot-w','⚠️ Слабкі сторони')}
+          ${quadrant('O','swot-o','🚀 Можливості')}
+          ${quadrant('T','swot-t','⛔ Загрози')}
         </div>`;
     }
 
-    window.devAddSwotItem=function(planId,key){
-      const val=prompt(`Додати до "${key}":`);
+    window.devAddSwotItem=async function(planId,quadrant){
+      const val=prompt('Додати пункт:');
       if(!val||!val.trim())return;
-      const plan=devPlans.find(p=>p.id===planId); if(!plan)return;
-      if(!plan.swot)plan.swot={S:[],W:[],O:[],T:[]};
-      if(!plan.swot[key])plan.swot[key]=[];
-      plan.swot[key].push(val.trim());
-      devSaveData(); devRenderSwotView();
+      const {error}=await db.from('dev_swot').insert({plan_id:planId,quadrant,item_text:val.trim()});
+      if(error){ alert('Помилка: '+error.message); return; }
+      devRenderSwotView();
+    };
+
+    window.devDelSwotItem=async function(id,planId){
+      if(!confirm('Видалити пункт?'))return;
+      const {error}=await db.from('dev_swot').delete().eq('id',id);
+      if(error){ alert('Помилка: '+error.message); return; }
+      devRenderSwotView();
     };
 
     let _devCselVals={};
@@ -4278,7 +4308,6 @@
         ms6:document.getElementById('devMs6').value.trim(),
         ms6st:document.getElementById('devMs6st').value,
         motiv:document.getElementById('devPMotiv').value.trim(),
-        swot:(_devEditPlanId&&devPlans.find(p=>p.id===_devEditPlanId)||{}).swot||{S:[],W:[],O:[],T:[]},
         updatedAt:new Date().toISOString(),
       };
       if(_devEditPlanId){ const i=devPlans.findIndex(p=>p.id===_devEditPlanId); if(i>=0)devPlans[i]=plan; else devPlans.push(plan); }
@@ -4364,7 +4393,6 @@
         ms6:'Перші вимірні ефекти від ініціатив технологічного розвитку',
         ms6st:'pending',
         motiv:'Бачимо потенціал лідера технологічних змін. Компанія хоче підтримати та створити умови для результату.',
-        swot:{ S:['Глибоке знання внутрішніх процесів','Авторитет у команді'], W:['Схильність до операційки','Мало досвіду управління проектами розвитку'], O:['Цифровізація виробництва','Автоматизація обліку'], T:['Нестача часу через операційне навантаження'] },
         updatedAt:new Date().toISOString(),
       }];
       devSaveData();
