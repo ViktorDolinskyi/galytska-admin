@@ -1052,7 +1052,7 @@
   </div>
 </div>
 
-<button class="sb-collapse-btn" id="sbCollapseBtn" title="Згорнути меню" onclick="toggleSidebar()">
+<button class="sb-collapse-btn" id="sbCollapseBtn" title="Згорнути меню" onclick="toggleSidebar()" style="display:none">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18l-6-6 6-6"/></svg>
 </button>
 
@@ -4426,9 +4426,11 @@
   /* ---- авторизація ---- */
   const authScrim=document.getElementById('authScrim');
   const authErr=document.getElementById('authErr');
+  const sbCollapseBtn=document.getElementById('sbCollapseBtn');
   function setAuth(session){
     if(session){
       authScrim.classList.remove('open');
+      if(sbCollapseBtn)sbCollapseBtn.style.display='';
       document.querySelectorAll('.js-user').forEach(el=>el.textContent=session.user.email);
       const _initials=(session.user.user_metadata?.full_name||session.user.email||'').trim().split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2)||'??';
       document.querySelectorAll('.sb-avatar').forEach(el=>el.textContent=_initials);
@@ -4437,6 +4439,7 @@
       loadAllDicts().then(()=>{goalsLoad();goalTypesLoad();goalPatternsLoad();});
     } else {
       authScrim.classList.add('open');
+      if(sbCollapseBtn)sbCollapseBtn.style.display='none';
     }
   }
   window.authSignIn = async ()=>{
