@@ -291,12 +291,18 @@
 
   /* KPI */
   .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
-  .kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow)}
-  .kpi .k-top{display:flex;align-items:center;justify-content:space-between;color:var(--slate);font-size:12px;font-weight:600}
-  .kpi .k-ic{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:var(--brand-tint);color:var(--brand)}
-  .kpi .k-ic svg{width:16px;height:16px;stroke-width:2}
-  .kpi .k-val{font-family:'Unbounded';font-weight:700;font-size:30px;letter-spacing:-.02em;margin-top:12px;line-height:1}
-  .kpi .k-sub{font-size:12px;margin-top:7px;color:var(--slate)}
+  .kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--kpi-accent,var(--brand));border-radius:var(--r) var(--r) 0 0}
+  .kpi .k-top{display:flex;align-items:center;justify-content:space-between;color:var(--slate);font-size:12px;font-weight:600;margin-bottom:14px}
+  .kpi .k-ic{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--kpi-ic-bg,var(--brand-tint));color:var(--kpi-ic-color,var(--brand))}
+  .kpi .k-ic svg{width:18px;height:18px;stroke-width:1.8}
+  .kpi .k-val{font-family:'Unbounded';font-weight:700;font-size:32px;letter-spacing:-.02em;line-height:1}
+  .kpi .k-sub{font-size:11.5px;margin-top:8px;color:var(--muted)}
+  .dash-plan-row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:.5px solid var(--line);cursor:pointer;transition:background .12s}
+  .dash-plan-row:hover{background:var(--hover-bg)}
+  .dash-plan-row:last-child{border-bottom:none}
+  .dash-goal-row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:.5px solid var(--line)}
+  .dash-goal-row:last-child{border-bottom:none}
   .trend{font-weight:700}
   .trend.up{color:var(--ok)} .trend.down{color:var(--brand)}
 
@@ -634,18 +640,11 @@
   .dash-loading{text-align:center;padding:32px 0;color:var(--muted);font-size:13px}
   .dash-skel-list{padding:8px 0}
   .dash-skel-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:.5px solid var(--line)}
-  .dash-plan-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:.5px solid var(--line)}
-  .dash-plan-row:last-child{border-bottom:none}
-  .dash-plan-av{width:34px;height:34px;border-radius:50%;background:var(--brand-tint-2,#e8a09a);color:var(--brand);display:grid;place-items:center;font-weight:800;font-size:12px;flex:none}
+  .dash-plan-av{width:36px;height:36px;border-radius:50%;background:var(--brand-tint-2,#e8a09a);color:var(--brand);display:grid;place-items:center;font-weight:800;font-size:12px;flex:none}
   .dash-plan-info{flex:1;min-width:0}
   .dash-plan-name{font-size:13px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .dash-plan-role{font-size:11px;color:var(--muted);margin-top:1px}
-  .dash-goal-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:.5px solid var(--line)}
-  .dash-goal-row:last-child{border-bottom:none}
+  .dash-plan-role{font-size:11px;color:var(--muted);margin-top:2px}
   .dash-goal-name{flex:1;font-size:13px;font-weight:500;color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .dash-goal-bar{width:80px;height:6px;background:var(--line);border-radius:3px;flex:none;overflow:hidden}
-  .dash-goal-bar-fill{height:100%;border-radius:3px}
-  .dash-goal-pct{font-size:11px;font-weight:700;min-width:30px;text-align:right}
 
   /* ===== Settings ===== */
   .sett-nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-size:13px;font-weight:600;color:var(--slate);cursor:pointer;transition:background .12s,color .12s;margin-bottom:2px}
@@ -1227,11 +1226,26 @@
 
         <!-- KPI -->
         <div class="kpis" id="dashKpi" style="grid-template-columns:repeat(5,1fr);margin-bottom:24px">
-          <div class="kpi"><div class="k-top">Співробітників<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span></div><div class="k-val" id="dashEmpCount">—</div><div class="k-sub">у довіднику</div></div>
-          <div class="kpi"><div class="k-top">Планів розвитку<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg></span></div><div class="k-val" id="dashPlansCount">—</div><div class="k-sub" id="dashPlansActive"></div></div>
-          <div class="kpi"><div class="k-top">GROW-сесій<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span></div><div class="k-val" id="dashSessCount">—</div><div class="k-sub">проведено</div></div>
-          <div class="kpi"><div class="k-top">Цілей<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span></div><div class="k-val" id="dashGoalsCount">—</div><div class="k-sub" id="dashGoalsProgress"></div></div>
-          <div class="kpi"><div class="k-top">SWOT пунктів<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg></span></div><div class="k-val" id="dashSwotCount">—</div><div class="k-sub">по всіх квадрантах</div></div>
+          <div class="kpi" style="--kpi-accent:#6B6560;--kpi-ic-bg:#F3F1EF;--kpi-ic-color:#6B6560">
+            <div class="k-top">Співробітників<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span></div>
+            <div class="k-val" id="dashEmpCount">—</div><div class="k-sub">у довіднику</div>
+          </div>
+          <div class="kpi" style="--kpi-accent:#D52B1E;--kpi-ic-bg:#FBEAEB;--kpi-ic-color:#D52B1E">
+            <div class="k-top">Планів розвитку<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg></span></div>
+            <div class="k-val" id="dashPlansCount">—</div><div class="k-sub" id="dashPlansActive"></div>
+          </div>
+          <div class="kpi" style="--kpi-accent:#2563EB;--kpi-ic-bg:#EFF6FF;--kpi-ic-color:#2563EB">
+            <div class="k-top">GROW-сесій<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span></div>
+            <div class="k-val" id="dashSessCount">—</div><div class="k-sub">проведено</div>
+          </div>
+          <div class="kpi" style="--kpi-accent:#16A34A;--kpi-ic-bg:#F0FDF4;--kpi-ic-color:#16A34A">
+            <div class="k-top">Цілей<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span></div>
+            <div class="k-val" id="dashGoalsCount">—</div><div class="k-sub" id="dashGoalsProgress"></div>
+          </div>
+          <div class="kpi" style="--kpi-accent:#CA8A04;--kpi-ic-bg:#FEFCE8;--kpi-ic-color:#CA8A04">
+            <div class="k-top">SWOT пунктів<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg></span></div>
+            <div class="k-val" id="dashSwotCount">—</div><div class="k-sub">по всіх квадрантах</div>
+          </div>
         </div>
 
         <div class="two-col">
@@ -4771,13 +4785,16 @@
             const emp=dictE.find(e=>String(e.id)===String(p.employee_id));
             const name=emp?[emp.last_name,emp.first_name,emp.patronymic].filter(Boolean).join(' '):'—';
             const ini=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)||'?';
-            return `<div class="dash-plan-row">
+            return `<div class="dash-plan-row" onclick="document.querySelector('.nav-item[data-view=dev]').click()">
               <div class="dash-plan-av">${ini}</div>
               <div class="dash-plan-info">
                 <div class="dash-plan-name">${name}</div>
                 <div class="dash-plan-role">${p.role||'—'}</div>
               </div>
-              <span class="badge success" style="font-size:10px">Активний</span>
+              <div style="display:flex;align-items:center;gap:6px;flex:none">
+                <div style="width:6px;height:6px;border-radius:50%;background:#16A34A;flex:none"></div>
+                <span style="font-size:11px;font-weight:600;color:#16A34A">Активний</span>
+              </div>
             </div>`;
           }).join('');
         }
@@ -4796,10 +4813,13 @@
           goalsList.innerHTML=goalsTop.map(g=>{
             const inds=indsByGoal[g.id]||[];
             const prog=inds.length?Math.round(inds.reduce((a,i)=>a+(i.progress||0),0)/inds.length):0;
+            const col=_pc(prog);
             return `<div class="dash-goal-row">
               <div class="dash-goal-name" title="${g.title||''}">${g.title||'—'}</div>
-              <div class="dash-goal-bar"><div class="dash-goal-bar-fill" style="width:${prog}%;background:${_pc(prog)}"></div></div>
-              <div class="dash-goal-pct" style="color:${_pc(prog)}">${prog}%</div>
+              <div style="flex:none;width:100px;height:8px;background:var(--line);border-radius:4px;overflow:hidden">
+                <div style="width:${prog}%;height:100%;background:${col};border-radius:4px;transition:width .4s ease"></div>
+              </div>
+              <div style="font-size:12px;font-weight:700;min-width:36px;text-align:right;color:${col}">${prog}%</div>
             </div>`;
           }).join('');
         }
