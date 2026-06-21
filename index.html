@@ -2027,6 +2027,7 @@
             <div>
               <div class="dev-plan-modal-label">План розвитку</div>
               <h3 id="devPlanTitle">Новий план</h3>
+              <div id="devPlanEmpSubtitle" style="font-size:13px;color:var(--muted);margin-top:3px;display:none"></div>
             </div>
             <button class="ico-btn" onclick="devClosePlan()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
           </div>
@@ -2063,7 +2064,7 @@
                 </div>
                 <div class="dpm-field">
                   <label class="dpm-label">Дата старту</label>
-                  <input class="dpm-input" id="devPDate" type="date">
+                  <input class="dpm-input" id="devPDate" placeholder="дд.мм.рррр" autocomplete="off" readonly>
                 </div>
               </div>
               <div class="dpm-field">
@@ -4792,14 +4793,29 @@
     }
 
     /* Open/close plan modal */
+    let _devPDateFp=null;
     window.devOpenPlan=function(id){
       _devEditPlanId=id;
       const plan=id?devPlans.find(p=>p.id===id):null;
       document.getElementById('devPlanTitle').textContent=plan?'Редагувати план':'Новий план';
+      // subtitle — employee name when editing
+      const subtitleEl=document.getElementById('devPlanEmpSubtitle');
+      if(plan&&plan.employee_id){
+        const emp=(dictEmps||[]).find(e=>e.id===plan.employee_id||String(e.id)===String(plan.employee_id));
+        const eName=emp?[emp.last_name,emp.first_name,emp.patronymic].filter(Boolean).join(' '):'';
+        subtitleEl.textContent=eName;
+        subtitleEl.style.display=eName?'':'none';
+      } else {
+        subtitleEl.textContent='';subtitleEl.style.display='none';
+      }
       devFillEmpSelect('devPEmpId', plan?plan.employee_id:null);
       document.getElementById('devPRole').value=plan?plan.role||'':'';
       document.getElementById('devPStatus').value=plan?plan.status||'new':'new';
-      document.getElementById('devPDate').value=plan?plan.date||'':'';
+      // flatpickr for date
+      if(!_devPDateFp){
+        _devPDateFp=flatpickr('#devPDate',{locale:flatpickr.l10ns.uk,dateFormat:'Y-m-d',altInput:true,altFormat:'d.m.Y',allowInput:false,disableMobile:true});
+      }
+      _devPDateFp.setDate(plan?.date||'',false);
       document.getElementById('devWlOps').value=plan?plan.wl_ops??60:60;
       document.getElementById('devWlDev').value=plan?plan.wl_dev??30:30;
       document.getElementById('devWlStr').value=plan?plan.wl_str??10:10;
@@ -4937,7 +4953,7 @@
         employee_id:empId,
         role:document.getElementById('devPRole').value.trim(),
         status:document.getElementById('devPStatus').value,
-        date:document.getElementById('devPDate').value||null,
+        date:(_devPDateFp?.selectedDates[0]?_devPDateFp.formatDate(_devPDateFp.selectedDates[0],'Y-m-d'):null),
         wl_ops:+document.getElementById('devWlOps').value||60,
         wl_dev:+document.getElementById('devWlDev').value||30,
         wl_str:+document.getElementById('devWlStr').value||10,
