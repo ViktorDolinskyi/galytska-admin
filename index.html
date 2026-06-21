@@ -2219,18 +2219,20 @@
 
       <!-- Modal: SWOT пункт -->
       <div class="modal-scrim" id="devSwotItemScrim" onclick="if(event.target===this)devSwotItemClose()">
-        <div class="modal" style="max-width:480px">
-          <div class="modal-head">
-            <h3 id="devSwotItemTitle">Додати пункт</h3>
-            <button class="ico-btn" onclick="devSwotItemClose()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
-          </div>
-          <div style="padding:20px 24px 24px;display:flex;flex-direction:column;gap:16px">
-            <div>
-              <div id="devSwotItemQuadrantBadge" style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:4px 12px;border-radius:20px;margin-bottom:14px"></div>
-              <label class="form-label">Текст пункту</label>
-              <textarea class="form-input" id="devSwotItemText" rows="4" placeholder="Введіть текст…" style="resize:vertical"></textarea>
+        <div class="modal" style="max-width:520px;padding:0;overflow:hidden">
+          <div style="padding:20px 24px 0">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <div id="devSwotItemQuadrantBadge" style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:5px 14px;border-radius:20px"></div>
+              <button class="ico-btn" onclick="devSwotItemClose()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
             </div>
-            <div id="devSwotItemError" style="display:none;color:#DC2626;font-size:13px"></div>
+            <h3 id="devSwotItemTitle" style="font-size:17px;font-weight:800;color:var(--ink);margin-bottom:18px">Додати пункт</h3>
+          </div>
+          <div style="padding:0 24px 24px;display:flex;flex-direction:column;gap:14px">
+            <div>
+              <label class="form-label" style="font-size:12px;font-weight:700;color:var(--slate);display:block;margin-bottom:6px">Текст пункту</label>
+              <textarea class="form-input" id="devSwotItemText" rows="4" placeholder="Введіть текст…" style="resize:vertical;width:100%"></textarea>
+            </div>
+            <div id="devSwotItemError" style="display:none;color:#DC2626;font-size:13px;background:#FEF2F2;border-radius:8px;padding:8px 12px"></div>
             <div style="display:flex;gap:10px;justify-content:flex-end;border-top:1px solid var(--line);padding-top:16px">
               <button class="btn" onclick="devSwotItemClose()">Скасувати</button>
               <button class="btn primary" id="devSwotItemSaveBtn" onclick="devSwotItemSave()">Зберегти</button>
@@ -4719,7 +4721,7 @@
       document.getElementById('devSwotItemTitle').textContent='Додати пункт';
       document.getElementById('devSwotItemText').value='';
       const badge=document.getElementById('devSwotItemQuadrantBadge');
-      badge.textContent=meta.label||quadrant;
+      badge.innerHTML=meta.label||quadrant;
       badge.style.background=isDark?(meta.darkBg||meta.bg):meta.bg;
       badge.style.color=meta.color||'var(--ink)';
       document.getElementById('devSwotItemError').style.display='none';
@@ -4734,7 +4736,7 @@
       document.getElementById('devSwotItemTitle').textContent='Редагувати пункт';
       document.getElementById('devSwotItemText').value=text;
       const badge=document.getElementById('devSwotItemQuadrantBadge');
-      badge.textContent=meta.label||quadrant;
+      badge.innerHTML=meta.label||quadrant;
       badge.style.background=isDark?(meta.darkBg||meta.bg):meta.bg;
       badge.style.color=meta.color||'var(--ink)';
       document.getElementById('devSwotItemError').style.display='none';
