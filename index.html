@@ -3511,7 +3511,7 @@
     $('gTitleIn').value=g?.title||'';
     $('gPatternIn').value=g?.pattern||'';
     // set type btn
-    const btns=$('gTypeSwitch').querySelectorAll('.g-type-btn');
+    const btns=$('gTypeSwitch').querySelectorAll('.g-type-seg-btn');
     btns.forEach(b=>{b.classList.toggle('active',b.dataset.type===(g?.type||'П'));});
     $('goalModal').style.display='flex';
     setTimeout(()=>$('gTitleIn').focus(),50);
