@@ -662,7 +662,8 @@
   .dev-ms-text{font-size:12px;color:var(--ink);line-height:1.4}
   .dev-ms-status{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:11px;color:var(--slate)}
   .dev-ms-dot{width:8px;height:8px;border-radius:50%;flex:none}
-  .dev-actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+  .dev-actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);align-items:center}
+  .dev-swot-inline{margin-top:16px;padding-top:16px;border-top:1px solid var(--line);animation:fade .18s ease}
   .dev-sessions-count{font-size:12px;color:var(--muted);margin-left:auto;display:flex;align-items:center;gap:5px}
 
   /* GROW session card */
@@ -1934,8 +1935,6 @@
           </div>
           <div class="seg" id="devSeg">
             <button class="on" onclick="devTab('plans')">Плани</button>
-            <button onclick="devTab('sessions')">GROW-сесії</button>
-            <button onclick="devTab('swot')">SWOT</button>
           </div>
         </div>
 
@@ -4484,7 +4483,7 @@
             <button class="btn" onclick="devOpenSession(null,'${p.id}')">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:13px;height:13px;margin-right:4px"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>GROW-сесія
             </button>
-            <button class="btn" onclick="devOpenSwot('${p.id}')">SWOT</button>
+            <button class="btn" id="devSwotToggle-${p.id}" onclick="devToggleSwot('${p.id}')">SWOT ▾</button>
             <button class="btn" onclick="devOpenPlan('${p.id}')">Редагувати</button>
             <div class="dev-sessions-count">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:13px;height:13px"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
@@ -4494,6 +4493,7 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
             </button>
           </div>
+          <div class="dev-swot-inline" id="devSwotInline-${p.id}" style="display:none"></div>
         </div>`;
       }).join('');
     }
@@ -4643,7 +4643,9 @@
       btn.disabled=false; btn.textContent='Зберегти';
       if(error){ errEl.textContent='Помилка: '+error.message; errEl.style.display=''; return; }
       devSwotItemClose();
-      devRenderSwotView();
+      // перезавантажити інлайн-SWOT: закрити і відкрити знову
+      const inlineEl=document.getElementById('devSwotInline-'+_swotModal.planId);
+      if(inlineEl){ inlineEl.style.display='none'; devToggleSwot(_swotModal.planId); }
     };
 
     window.devDelSwotItem=async function(id){
@@ -4780,9 +4782,51 @@
       devSaveData(); devRender();
     };
 
-    window.devOpenSwot=function(planId){
-      _devSwotEmpId=planId;
-      devTab('swot');
+    window.devToggleSwot=async function(planId){
+      const el=document.getElementById('devSwotInline-'+planId);
+      const btn=document.getElementById('devSwotToggle-'+planId);
+      if(!el)return;
+      if(el.style.display!=='none'){
+        el.style.display='none';
+        if(btn) btn.textContent='SWOT ▾';
+        return;
+      }
+      el.style.display='';
+      if(btn) btn.textContent='SWOT ▴';
+      el.innerHTML='<div style="text-align:center;padding:24px 0;color:var(--muted);font-size:13px">Завантаження…</div>';
+      const plan=devPlans.find(p=>p.id===planId);
+      if(!plan){ el.innerHTML=''; return; }
+      const {data,error}=await db.from('dev_swot').select('*').eq('plan_id',planId).order('created_at');
+      if(error){ el.innerHTML=`<div style="color:#DC2626;padding:12px">Помилка: ${esc(error.message)}</div>`; return; }
+      const byQ={S:[],W:[],O:[],T:[]};
+      (data||[]).forEach(r=>{ if(byQ[r.quadrant]) byQ[r.quadrant].push(r); });
+      const quadrant=(key,cls,label)=>`
+        <div class="swot-cell ${cls}">
+          <div class="swot-cell-label">${label}</div>
+          <ul class="swot-cell-items">
+            ${byQ[key].map(r=>`<li>
+              <span style="flex:1;cursor:pointer" onclick="devEditSwotItem('${r.id}','${planId}','${key}',${JSON.stringify(r.item_text)})">${esc(r.item_text)}</span>
+              <button onclick="devDelSwotItemInline('${r.id}','${planId}')" title="Видалити"
+                style="background:none;border:none;cursor:pointer;color:var(--muted);padding:0 4px;font-size:16px;line-height:1;flex:none;opacity:.6" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.6">×</button>
+            </li>`).join('')}
+          </ul>
+          <button class="btn" style="margin-top:10px;font-size:11px;padding:4px 10px"
+            onclick="devAddSwotItem('${planId}','${key}')">+ Додати</button>
+        </div>`;
+      el.innerHTML=`<div class="swot-grid">
+        ${quadrant('S','swot-s','💪 Сильні сторони')}
+        ${quadrant('W','swot-w','⚠️ Слабкі сторони')}
+        ${quadrant('O','swot-o','🚀 Можливості')}
+        ${quadrant('T','swot-t','⛔ Загрози')}
+      </div>`;
+    };
+
+    window.devDelSwotItemInline=async function(id,planId){
+      if(!confirm('Видалити пункт?'))return;
+      const {error}=await db.from('dev_swot').delete().eq('id',id);
+      if(error){ alert('Помилка: '+error.message); return; }
+      devToggleSwot(planId);
+      devToggleSwot(planId);
     };
 
     window.devTab=function(tab){
