@@ -444,7 +444,12 @@
   .emp-unit-link b{font-size:13px;font-weight:700;display:block;line-height:1.3}
   .emp-unit-arrow{width:14px;height:14px;flex:none;opacity:.3;transition:opacity .12s}
   /* Cross-matrix view */
-  .mx-cross-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 280px);border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+  .mx-cross-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 280px);border:1px solid var(--line);border-radius:var(--r);background:var(--surface);scrollbar-width:thin;scrollbar-color:var(--brand-tint-2,#f0c0bc) transparent}
+  .mx-cross-wrap::-webkit-scrollbar{width:6px;height:6px}
+  .mx-cross-wrap::-webkit-scrollbar-track{background:transparent;border-radius:10px}
+  .mx-cross-wrap::-webkit-scrollbar-thumb{background:var(--brand-tint-2,#e8a09a);border-radius:10px}
+  .mx-cross-wrap::-webkit-scrollbar-thumb:hover{background:var(--brand)}
+  .mx-cross-wrap::-webkit-scrollbar-corner{background:transparent}
   .mx-cross{border-collapse:collapse;min-width:100%;font-size:12px}
   .mx-cross thead th{position:sticky;top:0;z-index:3;background:var(--surface);border-bottom:2px solid var(--line)}
   .mx-cross thead th:first-child{left:0;z-index:4;min-width:240px;max-width:300px;text-align:left;padding:8px 12px;font-size:12px;font-weight:700;color:var(--muted)}
