@@ -2128,6 +2128,28 @@
         </div>
       </div>
 
+      <!-- Modal: SWOT пункт -->
+      <div class="modal-scrim" id="devSwotItemScrim" onclick="if(event.target===this)devSwotItemClose()">
+        <div class="modal" style="max-width:480px">
+          <div class="modal-head">
+            <h3 id="devSwotItemTitle">Додати пункт</h3>
+            <button class="ico-btn" onclick="devSwotItemClose()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+          </div>
+          <div style="padding:20px 24px 24px;display:flex;flex-direction:column;gap:16px">
+            <div>
+              <div id="devSwotItemQuadrantBadge" style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:4px 12px;border-radius:20px;margin-bottom:14px"></div>
+              <label class="form-label">Текст пункту</label>
+              <textarea class="form-input" id="devSwotItemText" rows="4" placeholder="Введіть текст…" style="resize:vertical"></textarea>
+            </div>
+            <div id="devSwotItemError" style="display:none;color:#DC2626;font-size:13px"></div>
+            <div style="display:flex;gap:10px;justify-content:flex-end;border-top:1px solid var(--line);padding-top:16px">
+              <button class="btn" onclick="devSwotItemClose()">Скасувати</button>
+              <button class="btn primary" id="devSwotItemSaveBtn" onclick="devSwotItemSave()">Зберегти</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- ===== НАЛАШТУВАННЯ ===== -->
       <section class="view" id="view-settings">
         <div class="page-head">
@@ -4530,11 +4552,11 @@
       const quadrant=(key,cls,label)=>`
         <div class="swot-cell ${cls}">
           <div class="swot-cell-label">${label}</div>
-          <ul class="swot-cell-items" id="swotList-${plan.id}-${key}">
+          <ul class="swot-cell-items">
             ${byQ[key].map(r=>`<li>
-              <span style="flex:1">${esc(r.item_text)}</span>
-              <button onclick="devDelSwotItem('${r.id}','${plan.id}')" title="Видалити"
-                style="background:none;border:none;cursor:pointer;color:var(--muted);padding:0 2px;font-size:14px;line-height:1;flex:none">×</button>
+              <span style="flex:1;cursor:pointer" onclick="devEditSwotItem('${r.id}','${plan.id}','${key}',${JSON.stringify(r.item_text)})">${esc(r.item_text)}</span>
+              <button onclick="devDelSwotItem('${r.id}')" title="Видалити"
+                style="background:none;border:none;cursor:pointer;color:var(--muted);padding:0 4px;font-size:16px;line-height:1;flex:none;opacity:.6" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.6">×</button>
             </li>`).join('')}
           </ul>
           <button class="btn" style="margin-top:10px;font-size:11px;padding:4px 10px"
@@ -4552,15 +4574,68 @@
         </div>`;
     }
 
-    window.devAddSwotItem=async function(planId,quadrant){
-      const val=prompt('Додати пункт:');
-      if(!val||!val.trim())return;
-      const {error}=await db.from('dev_swot').insert({plan_id:planId,quadrant,item_text:val.trim()});
-      if(error){ alert('Помилка: '+error.message); return; }
+    const _swotQuadrantMeta={
+      S:{label:'💪 Сильні сторони', bg:'#DCFCE7', color:'#16A34A', darkBg:'rgba(22,163,74,.15)'},
+      W:{label:'⚠️ Слабкі сторони', bg:'#FEE2E2', color:'#DC2626', darkBg:'rgba(220,38,38,.15)'},
+      O:{label:'🚀 Можливості',      bg:'#EFF6FF', color:'#2563EB', darkBg:'rgba(37,99,235,.15)'},
+      T:{label:'⛔ Загрози',          bg:'#FEF9C3', color:'#CA8A04', darkBg:'rgba(202,138,4,.15)'},
+    };
+    let _swotModal={planId:null,quadrant:null,editId:null};
+
+    window.devAddSwotItem=function(planId,quadrant){
+      _swotModal={planId,quadrant,editId:null};
+      const meta=_swotQuadrantMeta[quadrant]||{};
+      const isDark=document.documentElement.dataset.theme==='dark';
+      document.getElementById('devSwotItemTitle').textContent='Додати пункт';
+      document.getElementById('devSwotItemText').value='';
+      const badge=document.getElementById('devSwotItemQuadrantBadge');
+      badge.textContent=meta.label||quadrant;
+      badge.style.background=isDark?(meta.darkBg||meta.bg):meta.bg;
+      badge.style.color=meta.color||'var(--ink)';
+      document.getElementById('devSwotItemError').style.display='none';
+      document.getElementById('devSwotItemScrim').classList.add('open');
+      setTimeout(()=>document.getElementById('devSwotItemText').focus(),80);
+    };
+
+    window.devEditSwotItem=function(id,planId,quadrant,text){
+      _swotModal={planId,quadrant,editId:id};
+      const meta=_swotQuadrantMeta[quadrant]||{};
+      const isDark=document.documentElement.dataset.theme==='dark';
+      document.getElementById('devSwotItemTitle').textContent='Редагувати пункт';
+      document.getElementById('devSwotItemText').value=text;
+      const badge=document.getElementById('devSwotItemQuadrantBadge');
+      badge.textContent=meta.label||quadrant;
+      badge.style.background=isDark?(meta.darkBg||meta.bg):meta.bg;
+      badge.style.color=meta.color||'var(--ink)';
+      document.getElementById('devSwotItemError').style.display='none';
+      document.getElementById('devSwotItemScrim').classList.add('open');
+      setTimeout(()=>document.getElementById('devSwotItemText').focus(),80);
+    };
+
+    window.devSwotItemClose=function(){
+      document.getElementById('devSwotItemScrim').classList.remove('open');
+    };
+
+    window.devSwotItemSave=async function(){
+      const text=(document.getElementById('devSwotItemText').value||'').trim();
+      const errEl=document.getElementById('devSwotItemError');
+      if(!text){ errEl.textContent='Введіть текст пункту'; errEl.style.display=''; return; }
+      errEl.style.display='none';
+      const btn=document.getElementById('devSwotItemSaveBtn');
+      btn.disabled=true; btn.textContent='Збереження…';
+      let error;
+      if(_swotModal.editId){
+        ({error}=await db.from('dev_swot').update({item_text:text}).eq('id',_swotModal.editId));
+      } else {
+        ({error}=await db.from('dev_swot').insert({plan_id:_swotModal.planId,quadrant:_swotModal.quadrant,item_text:text}));
+      }
+      btn.disabled=false; btn.textContent='Зберегти';
+      if(error){ errEl.textContent='Помилка: '+error.message; errEl.style.display=''; return; }
+      devSwotItemClose();
       devRenderSwotView();
     };
 
-    window.devDelSwotItem=async function(id,planId){
+    window.devDelSwotItem=async function(id){
       if(!confirm('Видалити пункт?'))return;
       const {error}=await db.from('dev_swot').delete().eq('id',id);
       if(error){ alert('Помилка: '+error.message); return; }
