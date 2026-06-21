@@ -3932,9 +3932,10 @@
   /* --- Імпорт / Експорт співробітників --- */
   window.empExportCsv=function(){
     const BOM='﻿';
+    const SEP=';';
     const q=v=>'"'+String(v||'').replace(/"/g,'""')+'"';
-    const header='ПІБ,Дата народження';
-    const rows=dictEmps.map(r=>q(empFull(r))+','+q(r.birthdate||''));
+    const header='ПІБ'+SEP+'Дата народження';
+    const rows=dictEmps.map(r=>q(empFull(r))+SEP+q(r.birthdate||''));
     const csv=BOM+[header,...rows].join('\r\n');
     const a=document.createElement('a');
     a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
@@ -3958,12 +3959,15 @@
       const dataLines=hasHeader?lines.slice(1):lines;
       if(!dataLines.length){ _showImportError('Немає рядків з даними'); return; }
 
+      // Автовизначення роздільника: ; або ,
+      const sep=lines[0].includes(';')?';':',';
+
       function parseCsvLine(line){
         const fields=[]; let cur='', inQ=false;
         for(let i=0;i<line.length;i++){
           const c=line[i];
           if(c==='"'){ if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ; }
-          else if(c===','&&!inQ){ fields.push(cur.trim());cur=''; }
+          else if(c===sep&&!inQ){ fields.push(cur.trim());cur=''; }
           else cur+=c;
         }
         fields.push(cur.trim());
