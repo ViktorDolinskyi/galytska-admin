@@ -1987,6 +1987,7 @@
               <button class="dev-modal-tab active" onclick="devModalTab('info',this)">Профіль</button>
               <button class="dev-modal-tab" onclick="devModalTab('workload',this)">Навантаження</button>
               <button class="dev-modal-tab" onclick="devModalTab('milestones',this)">Вехи</button>
+              <button class="dev-modal-tab" onclick="devModalTab('swot',this)">SWOT</button>
             </div>
 
             <!-- Info tab -->
@@ -2076,7 +2077,12 @@
               </div>
             </div>
 
-            <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--line)">
+            <!-- SWOT tab -->
+            <div id="devMTab-swot" style="display:none">
+              <div id="devModalSwotView" style="min-height:180px"></div>
+            </div>
+
+            <div id="devPlanFooter" style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--line)">
               <button class="btn" onclick="devClosePlan()">Скасувати</button>
               <button class="btn primary" onclick="devSavePlan()">Зберегти план</button>
             </div>
@@ -4483,7 +4489,7 @@
             <button class="btn" onclick="devOpenSession(null,'${p.id}')">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:13px;height:13px;margin-right:4px"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>GROW-сесія
             </button>
-            <button class="btn" id="devSwotToggle-${p.id}" onclick="devToggleSwot('${p.id}')">SWOT ▾</button>
+            <button class="btn" onclick="devOpenPlanSwot('${p.id}')">SWOT</button>
             <button class="btn" onclick="devOpenPlan('${p.id}')">Редагувати</button>
             <div class="dev-sessions-count">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:13px;height:13px"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
@@ -4493,7 +4499,6 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
             </button>
           </div>
-          <div class="dev-swot-inline" id="devSwotInline-${p.id}" style="display:none"></div>
         </div>`;
       }).join('');
     }
@@ -4643,9 +4648,7 @@
       btn.disabled=false; btn.textContent='Зберегти';
       if(error){ errEl.textContent='Помилка: '+error.message; errEl.style.display=''; return; }
       devSwotItemClose();
-      // перезавантажити інлайн-SWOT: закрити і відкрити знову
-      const inlineEl=document.getElementById('devSwotInline-'+_swotModal.planId);
-      if(inlineEl){ inlineEl.style.display='none'; devToggleSwot(_swotModal.planId); }
+      devModalSwotRender();
     };
 
     window.devDelSwotItem=async function(id){
@@ -4697,11 +4700,52 @@
     window.devClosePlan=function(){ document.getElementById('devPlanScrim').classList.remove('open'); };
 
     window.devModalTab=function(tab,btn){
-      ['info','workload','milestones'].forEach(t=>{
+      ['info','workload','milestones','swot'].forEach(t=>{
         const el=document.getElementById('devMTab-'+t);
         if(el)el.style.display=t===tab?'':'none';
       });
       document.querySelectorAll('.dev-modal-tab').forEach(b=>b.classList.toggle('active',b===btn));
+      const footer=document.getElementById('devPlanFooter');
+      if(footer) footer.style.display=tab==='swot'?'none':'flex';
+      if(tab==='swot') devModalSwotRender();
+    };
+
+    async function devModalSwotRender(){
+      const el=document.getElementById('devModalSwotView'); if(!el)return;
+      if(!_devEditPlanId){ el.innerHTML='<div style="color:var(--muted);padding:24px 0;text-align:center">Спочатку збережіть план</div>'; return; }
+      el.innerHTML='<div style="text-align:center;padding:32px 0;color:var(--muted);font-size:13px">Завантаження…</div>';
+      const {data,error}=await db.from('dev_swot').select('*').eq('plan_id',_devEditPlanId).order('created_at');
+      if(error){ el.innerHTML=`<div style="color:#DC2626;padding:12px">Помилка: ${esc(error.message)}</div>`; return; }
+      const byQ={S:[],W:[],O:[],T:[]};
+      (data||[]).forEach(r=>{ if(byQ[r.quadrant]) byQ[r.quadrant].push(r); });
+      const planId=_devEditPlanId;
+      const quadrant=(key,cls,label)=>`
+        <div class="swot-cell ${cls}">
+          <div class="swot-cell-label">${label}</div>
+          <ul class="swot-cell-items">
+            ${byQ[key].map(r=>`<li>
+              <span style="flex:1;cursor:pointer" onclick="devEditSwotItem('${r.id}','${planId}','${key}',${JSON.stringify(r.item_text)})">${esc(r.item_text)}</span>
+              <button onclick="devModalSwotDel('${r.id}')" title="Видалити"
+                style="background:none;border:none;cursor:pointer;color:var(--muted);padding:0 4px;font-size:16px;line-height:1;flex:none;opacity:.6"
+                onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.6">×</button>
+            </li>`).join('')}
+          </ul>
+          <button class="btn" style="margin-top:10px;font-size:11px;padding:4px 10px"
+            onclick="devAddSwotItem('${planId}','${key}')">+ Додати</button>
+        </div>`;
+      el.innerHTML=`<div class="swot-grid" style="margin-top:0">
+        ${quadrant('S','swot-s','💪 Сильні сторони')}
+        ${quadrant('W','swot-w','⚠️ Слабкі сторони')}
+        ${quadrant('O','swot-o','🚀 Можливості')}
+        ${quadrant('T','swot-t','⛔ Загрози')}
+      </div>`;
+    }
+
+    window.devModalSwotDel=async function(id){
+      if(!confirm('Видалити пункт?'))return;
+      const {error}=await db.from('dev_swot').delete().eq('id',id);
+      if(error){ alert('Помилка: '+error.message); return; }
+      devModalSwotRender();
     };
 
     window.devUpdateWlPreview=function(){
@@ -4780,6 +4824,14 @@
       if(!confirm('Видалити сесію?'))return;
       devSessions=devSessions.filter(s=>s.id!==id);
       devSaveData(); devRender();
+    };
+
+    window.devOpenPlanSwot=function(planId){
+      devOpenPlan(planId);
+      setTimeout(()=>{
+        const btn=document.querySelector('.dev-modal-tab:last-child');
+        if(btn) devModalTab('swot',btn);
+      },80);
     };
 
     window.devToggleSwot=async function(planId){
