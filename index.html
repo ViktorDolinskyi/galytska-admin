@@ -632,6 +632,8 @@
 
   /* ===== Dashboard ===== */
   .dash-loading{text-align:center;padding:32px 0;color:var(--muted);font-size:13px}
+  .dash-skel-list{padding:8px 0}
+  .dash-skel-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:.5px solid var(--line)}
   .dash-plan-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:.5px solid var(--line)}
   .dash-plan-row:last-child{border-bottom:none}
   .dash-plan-av{width:34px;height:34px;border-radius:50%;background:var(--brand-tint-2,#e8a09a);color:var(--brand);display:grid;place-items:center;font-weight:800;font-size:12px;flex:none}
@@ -662,6 +664,25 @@
   .sett-dir-card-desc{font-size:11.5px;color:var(--muted);line-height:1.4}
   .sett-dir-card-arrow{width:15px;height:15px;color:var(--muted);flex:none;stroke-width:2;transition:transform .15s}
   .sett-dir-card:hover .sett-dir-card-arrow{transform:translateX(3px);color:var(--brand)}
+  [data-theme="dark"] .sett-dir-card{background:var(--surface);border-color:var(--line)}
+  [data-theme="dark"] .sett-dir-card:hover{border-color:var(--brand-tint-2);box-shadow:0 4px 16px rgba(0,0,0,.3)}
+
+  /* ===== Empty state ===== */
+  .empty-state{display:flex;flex-direction:column;align-items:center;padding:56px 24px;text-align:center}
+  .empty-state-icon{width:64px;height:64px;border-radius:18px;background:var(--brand-tint);color:var(--brand);display:grid;place-items:center;margin-bottom:18px}
+  .empty-state-icon svg{width:28px;height:28px;stroke-width:1.6}
+  .empty-state-title{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:8px}
+  .empty-state-desc{font-size:13px;color:var(--muted);line-height:1.55;max-width:280px;margin-bottom:20px}
+
+  /* ===== Shimmer skeleton ===== */
+  @keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+  .skel{border-radius:6px;background:linear-gradient(90deg,var(--line) 25%,var(--hover-bg) 50%,var(--line) 75%);background-size:400px 100%;animation:shimmer 1.2s ease-in-out infinite}
+
+  /* ===== Micro-interactions ===== */
+  .btn:active,.btn-primary:active{transform:scale(.97)}
+  .kpi{transition:box-shadow .18s,border-color .18s}
+  .kpi:hover{box-shadow:0 4px 20px rgba(27,23,20,.1);border-color:var(--brand-tint-2)}
+  [data-theme="dark"] .kpi:hover{box-shadow:0 4px 20px rgba(0,0,0,.4)}
 
   /* ===== Цілі — двохрівнева структура ===== */
   /* -------- Розвиток / Dev -------- */
@@ -1071,7 +1092,7 @@
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 </head>
 <body>
-<div id="toastContainer"></div>
+<div id="toastContainer" aria-live="polite" aria-atomic="false"></div>
 <div class="auth-scrim open" id="authScrim">
   <div class="auth-card">
     <div class="auth-brand">
@@ -1220,7 +1241,7 @@
               <h3>Плани розвитку</h3>
               <button class="btn ghost" style="font-size:11px;padding:4px 10px" onclick="document.querySelector('.nav-item[data-view=dev]').click()">Всі →</button>
             </div>
-            <div id="dashPlansList"><div class="dash-loading">Завантаження…</div></div>
+            <div id="dashPlansList"><div class="dash-skel-list"><div class="dash-skel-row"><div class="skel" style="width:34px;height:34px;border-radius:50%;flex:none"></div><div style="flex:1"><div class="skel" style="width:65%;height:11px;margin-bottom:6px"></div><div class="skel" style="width:40%;height:9px"></div></div></div><div class="dash-skel-row"><div class="skel" style="width:34px;height:34px;border-radius:50%;flex:none"></div><div style="flex:1"><div class="skel" style="width:55%;height:11px;margin-bottom:6px"></div><div class="skel" style="width:35%;height:9px"></div></div></div><div class="dash-skel-row" style="border-bottom:none"><div class="skel" style="width:34px;height:34px;border-radius:50%;flex:none"></div><div style="flex:1"><div class="skel" style="width:70%;height:11px;margin-bottom:6px"></div><div class="skel" style="width:45%;height:9px"></div></div></div></div></div>
           </div>
 
           <!-- Прогрес цілей -->
@@ -1229,7 +1250,7 @@
               <h3>Прогрес цілей</h3>
               <button class="btn ghost" style="font-size:11px;padding:4px 10px" onclick="document.querySelector('.nav-item[data-view=goals]').click()">Всі →</button>
             </div>
-            <div id="dashGoalsList"><div class="dash-loading">Завантаження…</div></div>
+            <div id="dashGoalsList"><div class="dash-skel-list"><div class="dash-skel-row"><div style="flex:1"><div class="skel" style="width:75%;height:11px;margin-bottom:6px"></div><div class="skel" style="width:50%;height:6px;border-radius:3px"></div></div><div class="skel" style="width:28px;height:9px;border-radius:4px"></div></div><div class="dash-skel-row"><div style="flex:1"><div class="skel" style="width:60%;height:11px;margin-bottom:6px"></div><div class="skel" style="width:50%;height:6px;border-radius:3px"></div></div><div class="skel" style="width:28px;height:9px;border-radius:4px"></div></div><div class="dash-skel-row" style="border-bottom:none"><div style="flex:1"><div class="skel" style="width:80%;height:11px;margin-bottom:6px"></div><div class="skel" style="width:50%;height:6px;border-radius:3px"></div></div><div class="skel" style="width:28px;height:9px;border-radius:4px"></div></div></div></div>
           </div>
         </div>
       </section>
@@ -4736,7 +4757,7 @@
         const dictE=typeof dictEmps!=='undefined'?dictEmps:[];
         const activePlans=(plans||[]).filter(p=>p.status==='active').slice(0,5);
         if(!activePlans.length){
-          plansList.innerHTML='<div class="dash-loading">Активних планів немає</div>';
+          plansList.innerHTML='<div class="empty-state" style="padding:32px 16px"><div class="empty-state-icon" style="width:40px;height:40px;border-radius:12px;margin-bottom:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 12h6M9 16h6M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M13 3v5h5"/></svg></div><div class="empty-state-title" style="font-size:13px">Активних планів немає</div></div>';
         } else {
           plansList.innerHTML=activePlans.map(p=>{
             const emp=dictE.find(e=>String(e.id)===String(p.employee_id));
@@ -4759,7 +4780,7 @@
       if(goalsList){
         const goalsTop=(goals||[]).slice(0,6);
         if(!goalsTop.length){
-          goalsList.innerHTML='<div class="dash-loading">Цілей ще немає</div>';
+          goalsList.innerHTML='<div class="empty-state" style="padding:32px 16px"><div class="empty-state-icon" style="width:40px;height:40px;border-radius:12px;margin-bottom:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div><div class="empty-state-title" style="font-size:13px">Цілей ще немає</div></div>';
         } else {
           const indsByGoal={};
           (indicators||[]).forEach(i=>{ if(!indsByGoal[i.goal_id]) indsByGoal[i.goal_id]=[]; indsByGoal[i.goal_id].push(i); });
@@ -4886,7 +4907,7 @@
       ).sort((a,b)=>devEmpName(a).localeCompare(devEmpName(b),'uk'));
       const el=document.getElementById('devPlans'); if(!el)return;
       if(!plans.length){
-        el.innerHTML='<div style="text-align:center;padding:48px 0;color:var(--muted);font-size:14px">Немає планів розвитку.<br>Натисніть «Новий план» щоб додати.</div>';
+        el.innerHTML=`<div class="empty-state"><div class="empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 12h6M9 16h6M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M13 3v5h5"/></svg></div><div class="empty-state-title">Планів ще немає</div><div class="empty-state-desc">Додайте перший план розвитку для співробітника</div><button class="btn" onclick="devOpenPlan()">+ Новий план</button></div>`;
         return;
       }
       el.innerHTML=plans.map(p=>{
@@ -4947,7 +4968,7 @@
       const el=document.getElementById('devSessionsList'); if(!el)return;
       const sorted=[...devSessions].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
       if(!sorted.length){
-        el.innerHTML='<div style="text-align:center;padding:48px 0;color:var(--muted);font-size:14px">Немає GROW-сесій.<br>Натисніть «Нова сесія» щоб почати.</div>';
+        el.innerHTML=`<div class="empty-state"><div class="empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></div><div class="empty-state-title">Сесій ще немає</div><div class="empty-state-desc">Розпочніть першу GROW-сесію з одним із співробітників</div><button class="btn" onclick="devOpenSession()">+ Нова сесія</button></div>`;
         return;
       }
       el.innerHTML=sorted.map(s=>{
