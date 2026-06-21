@@ -2363,7 +2363,7 @@
             <div id="settTab-appearance">
               <div class="card" style="margin-bottom:16px">
                 <div class="card-head"><h3>Тема інтерфейсу</h3></div>
-                <div class="theme-options">
+                <div style="padding:16px 18px"><div class="theme-options">
                   <div class="theme-opt" id="themeOptLight" onclick="setTheme('light')" title="Світла тема">
                     <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="36" height="36" rx="8" fill="#F7F5F2" stroke="#ECE7E2" stroke-width="1.5"/><rect x="6" y="6" width="24" height="16" rx="4" fill="#FFFFFF" stroke="#ECE7E2" stroke-width="1"/><rect x="8" y="8" width="8" height="5" rx="2" fill="#D52B1E" opacity=".7"/><rect x="8" y="15" width="20" height="2" rx="1" fill="#ECE7E2"/><rect x="8" y="27" width="10" height="3" rx="1.5" fill="#D52B1E"/></svg>
                     <span>Світла</span>
@@ -2376,11 +2376,11 @@
                     <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="18" height="36" rx="0" fill="#F7F5F2"/><rect x="18" width="18" height="36" fill="#19171A"/><rect width="36" height="36" rx="8" fill="none" stroke="#9B948E" stroke-width="1.5"/><rect x="6" y="6" width="11" height="16" rx="3" fill="#FFFFFF" stroke="#ECE7E2" stroke-width="1"/><rect x="19" y="6" width="11" height="16" rx="3" fill="#252220" stroke="#2E2B28" stroke-width="1"/><rect x="8" y="27" width="8" height="3" rx="1.5" fill="#D52B1E"/><rect x="20" y="27" width="8" height="3" rx="1.5" fill="#E03427"/></svg>
                     <span>Системна</span>
                   </div>
-                </div>
+                </div></div>
               </div>
               <div class="card">
                 <div class="card-head"><h3>Мова інтерфейсу</h3></div>
-                <div style="display:flex;align-items:center;gap:12px;padding:4px 0">
+                <div style="padding:16px 18px;display:flex;align-items:center;gap:12px">
                   <div style="width:36px;height:36px;border-radius:8px;background:var(--brand-tint);color:var(--brand);display:grid;place-items:center;font-size:18px;flex:none">🇺🇦</div>
                   <div><div style="font-size:13.5px;font-weight:700;color:var(--ink)">Українська</div><div style="font-size:12px;color:var(--muted)">Інтерфейс відображається українською мовою</div></div>
                   <span class="badge success" style="margin-left:auto">Активна</span>
@@ -2392,7 +2392,8 @@
             <div id="settTab-profile" style="display:none">
               <div class="card" style="margin-bottom:16px">
                 <div class="card-head"><h3>Обліковий запис</h3></div>
-                <div style="display:flex;align-items:center;gap:16px;padding:4px 0 16px">
+                <div style="padding:16px 18px">
+                <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
                   <div class="avatar" style="width:52px;height:52px;font-size:18px;flex:none" id="settAvatar">??</div>
                   <div>
                     <div style="font-size:15px;font-weight:700;color:var(--ink)" id="settUserEmail">—</div>
@@ -2405,14 +2406,17 @@
                     Вийти з системи
                   </button>
                 </div>
+                </div>
               </div>
               <div class="card">
                 <div class="card-head"><h3>Безпека</h3></div>
-                <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Для зміни пароля або email зверніться до адміністратора Supabase</div>
-                <a href="https://supabase.com/dashboard" target="_blank" class="btn ghost" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                  Supabase Dashboard
-                </a>
+                <div style="padding:16px 18px">
+                  <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Для зміни пароля або email зверніться до адміністратора Supabase</div>
+                  <a href="https://supabase.com/dashboard" target="_blank" class="btn ghost" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    Supabase Dashboard
+                  </a>
+                </div>
               </div>
             </div>
 
@@ -2472,7 +2476,7 @@
             <div id="settTab-system" style="display:none">
               <div class="card" style="margin-bottom:16px">
                 <div class="card-head"><h3>Підключення до бази даних</h3></div>
-                <div style="display:flex;align-items:center;gap:12px;padding:4px 0">
+                <div style="padding:16px 18px;display:flex;align-items:center;gap:12px">
                   <div style="width:10px;height:10px;border-radius:50%;background:#16A34A;flex:none;box-shadow:0 0 0 3px rgba(22,163,74,.2)"></div>
                   <div><div style="font-size:13.5px;font-weight:700;color:var(--ink)">Supabase</div><div style="font-size:12px;color:var(--muted)">З'єднання активне</div></div>
                   <span class="badge success" style="margin-left:auto">Online</span>
@@ -2480,18 +2484,21 @@
               </div>
               <div class="card">
                 <div class="card-head"><h3>Керування доступом</h3></div>
-                <div style="font-size:13px;color:var(--muted);margin-bottom:12px">Додавання та керування користувачами системи відбувається через Supabase Authentication</div>
-                <a href="https://supabase.com/dashboard" target="_blank" class="btn ghost" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                  Supabase → Authentication → Users
-                </a>
+                <div style="padding:16px 18px">
+                  <div style="font-size:13px;color:var(--muted);margin-bottom:12px">Додавання та керування користувачами системи відбувається через Supabase Authentication</div>
+                  <a href="https://supabase.com/dashboard" target="_blank" class="btn ghost" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    Supabase → Authentication → Users
+                  </a>
+                </div>
               </div>
             </div>
 
             <!-- Про систему -->
             <div id="settTab-about" style="display:none">
               <div class="card">
-                <div style="display:flex;align-items:center;gap:16px;padding:4px 0 20px">
+                <div style="padding:18px">
+                <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
                   <div style="width:52px;height:52px;border-radius:13px;background:var(--brand);color:#fff;display:grid;place-items:center;flex:none;padding:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:100%;height:100%"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
                   <div>
                     <div style="font-size:17px;font-weight:800;color:var(--ink)">Галицька Свіжина</div>
@@ -2502,6 +2509,7 @@
                   <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span style="color:var(--muted)">Версія</span><span style="font-weight:700;color:var(--ink)">1.0.0</span></div>
                   <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span style="color:var(--muted)">База даних</span><span style="font-weight:700;color:var(--ink)">Supabase PostgreSQL</span></div>
                   <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span style="color:var(--muted)">Рік</span><span style="font-weight:700;color:var(--ink)">2025</span></div>
+                </div>
                 </div>
               </div>
             </div>
