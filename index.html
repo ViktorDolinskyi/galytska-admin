@@ -3983,6 +3983,9 @@
         return null;
       }
 
+      // Нормалізація ПІБ для пошуку дублів
+      function normName(s){ return (s||'').toLowerCase().replace(/\s+/g,' ').trim(); }
+
       _empImportRows=dataLines.map((line,idx)=>{
         const f=parseCsvLine(line);
         // Колонка 1: ПІБ — розбиваємо на частини
@@ -3995,28 +3998,58 @@
         const rawDate=(f[1]||'').trim();
         const birthdate=parseDate(rawDate);
         const err=!last_name?'Відсутнє ПІБ':'';
-        return {pib,last_name,first_name,patronymic,birthdate,rawDate,err,_row:idx+1};
+        // Перевірка на дублікат в існуючих записах
+        const existing=(dictEmps||[]).find(e=>{
+          const eName=normName([e.last_name,e.first_name,e.patronymic].filter(Boolean).join(' '));
+          return eName===normName(pib);
+        })||null;
+        // Перевірка на дубль всередині файлу (за індексом, щоб перший рядок — оригінал)
+        return {pib,last_name,first_name,patronymic,birthdate,rawDate,err,existing,_row:idx+1};
       }).filter(r=>r.pib);
+
+      // Помітити дублі всередині файлу (однакове ПІБ двічі)
+      const seenInFile={};
+      _empImportRows.forEach(r=>{
+        const k=normName(r.pib);
+        if(seenInFile[k]===undefined) seenInFile[k]=r._row;
+        else r.dupInFile=seenInFile[k];
+      });
 
       if(!_empImportRows.length){ _showImportError('Не знайдено жодного запису'); return; }
 
       const errCount=_empImportRows.filter(r=>r.err).length;
-      $('empImportInfo').innerHTML=`Знайдено рядків: <b>${_empImportRows.length}</b>`+
-        (errCount?` &nbsp;·&nbsp; <span style="color:#DC2626">Помилок: ${errCount}</span>`:'');
+      const dupDbCount=_empImportRows.filter(r=>r.existing&&!r.err).length;
+      const dupFileCount=_empImportRows.filter(r=>r.dupInFile&&!r.err).length;
+      const newCount=_empImportRows.filter(r=>!r.err&&!r.existing&&!r.dupInFile).length;
+      $('empImportInfo').innerHTML=
+        `Знайдено рядків: <b>${_empImportRows.length}</b>`+
+        (errCount?` &nbsp;·&nbsp; <span style="color:#DC2626">Помилок: ${errCount}</span>`:'')+
+        (newCount?` &nbsp;·&nbsp; <span style="color:#16A34A">Нових: ${newCount}</span>`:'')+
+        (dupDbCount?` &nbsp;·&nbsp; <span style="color:#D97706">Існуючих: ${dupDbCount} (буде оновлено)</span>`:'')+
+        (dupFileCount?` &nbsp;·&nbsp; <span style="color:#6B7280">Дублів у файлі: ${dupFileCount} (пропустити)</span>`:'');
 
-      $('empImportBody').innerHTML=_empImportRows.map(r=>`<tr style="${r.err?'background:#FEF2F2':''}">
+      function _statusCell(r){
+        if(r.err) return `<span style="color:#DC2626;font-size:12px">⚠ ${orgEsc(r.err)}</span>`;
+        if(r.dupInFile) return `<span style="color:#9CA3AF;font-size:12px">↩ Дубль рядка ${r.dupInFile} (пропустити)</span>`;
+        if(r.existing) return `<span style="color:#D97706;font-size:12px">✎ Існує — оновити дату</span>`;
+        return `<span style="color:#16A34A;font-size:12px">✓ Новий запис</span>`;
+      }
+      function _rowBg(r){
+        if(r.err) return 'background:#FEF2F2';
+        if(r.dupInFile) return 'background:#F9FAFB;opacity:.6';
+        if(r.existing) return 'background:#FFFBEB';
+        return '';
+      }
+
+      $('empImportBody').innerHTML=_empImportRows.map(r=>`<tr style="${_rowBg(r)}">
         <td style="padding:6px 12px;border-top:1px solid var(--line);color:var(--muted);font-size:12px">${r._row}</td>
         <td style="padding:6px 12px;border-top:1px solid var(--line);font-weight:600">${orgEsc(r.pib||'—')}</td>
         <td style="padding:6px 12px;border-top:1px solid var(--line)">${r.birthdate||orgEsc(r.rawDate)||'—'}</td>
-        <td style="padding:6px 12px;border-top:1px solid var(--line)">
-          ${r.err
-            ?`<span style="color:#DC2626;font-size:12px">⚠ ${orgEsc(r.err)}</span>`
-            :'<span style="color:#16A34A;font-size:12px">✓ Готово</span>'}
-        </td>
+        <td style="padding:6px 12px;border-top:1px solid var(--line)">${_statusCell(r)}</td>
       </tr>`).join('');
 
       $('empImportError').style.display='none';
-      $('empImportConfirmBtn').disabled=errCount===_empImportRows.length;
+      $('empImportConfirmBtn').disabled=errCount===_empImportRows.length&&!dupDbCount;
       $('empImportModal').classList.add('open');
     };
     reader.readAsText(file,'UTF-8');
@@ -4028,15 +4061,30 @@
   }
 
   window.empImportConfirm=async function(){
-    const valid=_empImportRows.filter(r=>!r.err);
+    // Валідні рядки без дублів всередині файлу
+    const valid=_empImportRows.filter(r=>!r.err&&!r.dupInFile);
     if(!valid.length)return;
     const btn=$('empImportConfirmBtn');
     btn.disabled=true; btn.textContent='Зберігаємо…';
-    const payload=valid.map(({last_name,first_name,patronymic,birthdate})=>
+
+    const toInsert=valid.filter(r=>!r.existing).map(({last_name,first_name,patronymic,birthdate})=>
       ({last_name,first_name:first_name||null,patronymic:patronymic||null,birthdate:birthdate||null}));
-    const {error}=await db.from('dict_employees').insert(payload);
+    const toUpdate=valid.filter(r=>r.existing);
+
+    const errors=[];
+    if(toInsert.length){
+      const {error}=await db.from('dict_employees').insert(toInsert);
+      if(error) errors.push('Додавання: '+error.message);
+    }
+    for(const r of toUpdate){
+      const {error}=await db.from('dict_employees').update({
+        birthdate:r.birthdate||null
+      }).eq('id',r.existing.id);
+      if(error) errors.push(`Оновлення ${r.pib}: `+error.message);
+    }
+
     btn.disabled=false; btn.textContent='Імпортувати';
-    if(error){ $('empImportError').textContent='Помилка: '+error.message; $('empImportError').style.display=''; return; }
+    if(errors.length){ $('empImportError').textContent=errors.join('; '); $('empImportError').style.display=''; return; }
     empImportClose(); await loadAllDicts();
   };
 
