@@ -1986,7 +1986,7 @@
             <div class="dev-modal-tabs">
               <button class="dev-modal-tab active" onclick="devModalTab('info',this)">Профіль</button>
               <button class="dev-modal-tab" onclick="devModalTab('workload',this)">Навантаження</button>
-              <button class="dev-modal-tab" onclick="devModalTab('milestones',this)">Вехи</button>
+              <button class="dev-modal-tab" onclick="devModalTab('milestones',this)">Віхи</button>
               <button class="dev-modal-tab" onclick="devModalTab('swot',this)">SWOT</button>
             </div>
 
@@ -2048,11 +2048,11 @@
             <!-- Milestones tab -->
             <div id="devMTab-milestones" style="display:none">
               <div class="form-row">
-                <label class="form-label">Веха 3 місяці</label>
+                <label class="form-label">Віха 3 місяці</label>
                 <input class="form-input" id="devMs3" placeholder="Структуризація: каталог технологій, аудит процесів">
               </div>
               <div class="form-row">
-                <label class="form-label">Статус вехи 3м</label>
+                <label class="form-label">Статус віхи 3м</label>
                 <select class="form-input" id="devMs3st">
                   <option value="pending">В очікуванні</option>
                   <option value="progress">В процесі</option>
@@ -2060,11 +2060,11 @@
                 </select>
               </div>
               <div class="form-row">
-                <label class="form-label">Веха 6 місяців</label>
+                <label class="form-label">Віха 6 місяців</label>
                 <input class="form-input" id="devMs6" placeholder="Перші вимірні ефекти від ініціатив розвитку">
               </div>
               <div class="form-row">
-                <label class="form-label">Статус вехи 6м</label>
+                <label class="form-label">Статус віхи 6м</label>
                 <select class="form-input" id="devMs6st">
                   <option value="pending">В очікуванні</option>
                   <option value="progress">В процесі</option>
@@ -4475,12 +4475,12 @@
           </div>
           <div class="dev-milestones">
             <div class="dev-ms">
-              <div class="dev-ms-label">Веха 3 місяці</div>
+              <div class="dev-ms-label">Віха 3 місяці</div>
               <div class="dev-ms-text">${esc(p.ms3||'Не вказано')}</div>
               <div class="dev-ms-status"><div class="dev-ms-dot" style="background:${msColor(p.ms3st||'pending')}"></div>${msLabel(p.ms3st||'pending')}</div>
             </div>
             <div class="dev-ms">
-              <div class="dev-ms-label">Веха 6 місяців</div>
+              <div class="dev-ms-label">Віха 6 місяців</div>
               <div class="dev-ms-text">${esc(p.ms6||'Не вказано')}</div>
               <div class="dev-ms-status"><div class="dev-ms-dot" style="background:${msColor(p.ms6st||'pending')}"></div>${msLabel(p.ms6st||'pending')}</div>
             </div>
