@@ -653,6 +653,15 @@
   .sett-dir-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:.5px solid var(--line);cursor:pointer;transition:background .1s;border-radius:8px}
   .sett-dir-row:last-child{border-bottom:none}
   .sett-dir-row:hover{background:var(--hover-bg);padding-left:6px}
+  .sett-dir-card{display:flex;align-items:center;gap:14px;padding:16px;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+  .sett-dir-card:hover{border-color:var(--brand-tint-2,#e8a09a);box-shadow:0 4px 16px rgba(27,23,20,.08)}
+  .sett-dir-card-icon{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;flex:none}
+  .sett-dir-card-icon svg{width:20px;height:20px;stroke-width:1.8}
+  .sett-dir-card-body{flex:1;min-width:0}
+  .sett-dir-card-title{font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:3px}
+  .sett-dir-card-desc{font-size:11.5px;color:var(--muted);line-height:1.4}
+  .sett-dir-card-arrow{width:15px;height:15px;color:var(--muted);flex:none;stroke-width:2;transition:transform .15s}
+  .sett-dir-card:hover .sett-dir-card-arrow{transform:translateX(3px);color:var(--brand)}
 
   /* ===== Цілі — двохрівнева структура ===== */
   /* -------- Розвиток / Dev -------- */
@@ -1147,7 +1156,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         <span class="nav-label-txt">Налаштування</span>
       </button>
-      <button class="nav-item nav-sub" data-view="company" data-company-tab="settings" data-label="Довідники">
+      <button class="nav-item nav-sub" data-view="company" data-company-tab="settings" data-label="Довідники" style="display:none">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
         <span class="nav-label-txt">Довідники</span>
       </button>
@@ -2387,25 +2396,53 @@
 
             <!-- Довідники -->
             <div id="settTab-directories" style="display:none">
-              <div class="card">
-                <div class="card-head"><h3>Довідники системи</h3></div>
-                <div style="display:flex;flex-direction:column;gap:2px">
-                  <div class="sett-dir-row" onclick="navTo('company','settings')">
-                    <div style="width:36px;height:36px;border-radius:9px;background:var(--brand-tint);color:var(--brand);display:grid;place-items:center;flex:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3"/></svg></div>
-                    <div style="flex:1"><div style="font-size:13.5px;font-weight:700;color:var(--ink)">Структура компанії</div><div style="font-size:12px;color:var(--muted);margin-top:1px">Відділи, підрозділи, посади</div></div>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px;color:var(--muted)"><path d="M9 18l6-6-6-6"/></svg>
+              <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px">Довідники системи</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+
+                <div class="sett-dir-card" onclick="navTo('company','settings')">
+                  <div class="sett-dir-card-icon" style="background:var(--brand-tint);color:var(--brand)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3"/></svg>
                   </div>
-                  <div class="sett-dir-row" onclick="navTo('goals','settings')">
-                    <div style="width:36px;height:36px;border-radius:9px;background:#EFF6FF;color:#2563EB;display:grid;place-items:center;flex:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
-                    <div style="flex:1"><div style="font-size:13.5px;font-weight:700;color:var(--ink)">Типи та патерни цілей</div><div style="font-size:12px;color:var(--muted);margin-top:1px">Класифікатори для розділу «Цілі»</div></div>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px;color:var(--muted)"><path d="M9 18l6-6-6-6"/></svg>
+                  <div class="sett-dir-card-body">
+                    <div class="sett-dir-card-title">Структура компанії</div>
+                    <div class="sett-dir-card-desc">Відділи, підрозділи, посади</div>
                   </div>
-                  <div class="sett-dir-row" onclick="navTo('users',null)">
-                    <div style="width:36px;height:36px;border-radius:9px;background:#F0FDF4;color:#16A34A;display:grid;place-items:center;flex:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-                    <div style="flex:1"><div style="font-size:13.5px;font-weight:700;color:var(--ink)">Довідник співробітників</div><div style="font-size:12px;color:var(--muted);margin-top:1px">Перелік персоналу, імпорт з CSV</div></div>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:16px;height:16px;color:var(--muted)"><path d="M9 18l6-6-6-6"/></svg>
-                  </div>
+                  <svg class="sett-dir-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18l6-6-6-6"/></svg>
                 </div>
+
+                <div class="sett-dir-card" onclick="navTo('users',null)">
+                  <div class="sett-dir-card-icon" style="background:#F0FDF4;color:#16A34A">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  </div>
+                  <div class="sett-dir-card-body">
+                    <div class="sett-dir-card-title">Співробітники</div>
+                    <div class="sett-dir-card-desc">Перелік персоналу, імпорт з CSV</div>
+                  </div>
+                  <svg class="sett-dir-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+
+                <div class="sett-dir-card" onclick="navTo('goals','settings')">
+                  <div class="sett-dir-card-icon" style="background:#EFF6FF;color:#2563EB">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                  </div>
+                  <div class="sett-dir-card-body">
+                    <div class="sett-dir-card-title">Типи та патерни цілей</div>
+                    <div class="sett-dir-card-desc">Класифікатори для розділу «Цілі»</div>
+                  </div>
+                  <svg class="sett-dir-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+
+                <div class="sett-dir-card" onclick="navTo('matrix',null)">
+                  <div class="sett-dir-card-icon" style="background:#FEF9C3;color:#CA8A04">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>
+                  </div>
+                  <div class="sett-dir-card-body">
+                    <div class="sett-dir-card-title">Матриці відповідальності</div>
+                    <div class="sett-dir-card-desc">RACI / DACI матриці процесів</div>
+                  </div>
+                  <svg class="sett-dir-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+
               </div>
             </div>
 
