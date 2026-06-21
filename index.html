@@ -1980,6 +1980,8 @@
           </div>
           <div class="seg" id="devSeg">
             <button class="on" onclick="devTab('plans')">Плани</button>
+            <button onclick="devTab('swot')">SWOT</button>
+            <button onclick="devTab('surveys')">Опитування</button>
           </div>
         </div>
 
@@ -2017,6 +2019,28 @@
             <div class="csel" id="devSelSwotEmp" style="max-width:240px"></div>
           </div>
           <div id="devSwotView"></div>
+        </div>
+
+        <!-- ── Опитування ── -->
+        <div id="devTab-surveys" style="display:none">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+            <div>
+              <div style="font-size:13px;color:var(--muted);margin-top:2px">Пульс-опитування команди та зворотній зв'язок</div>
+            </div>
+            <button class="btn primary" onclick="alert('Функціонал опитувань у розробці')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;margin-right:5px"><path d="M12 5v14M5 12h14"/></svg>Нове опитування
+            </button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
+            <div class="kpi"><div class="k-top">Активних опитувань</div><div class="k-val">0</div></div>
+            <div class="kpi"><div class="k-top">Завершених</div><div class="k-val">0</div></div>
+            <div class="kpi"><div class="k-top">Середній eNPS</div><div class="k-val" style="color:var(--muted)">—</div></div>
+          </div>
+          <div style="background:var(--surface);border:1.5px dashed var(--line);border-radius:16px;padding:48px 24px;text-align:center">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:40px;height:40px;color:var(--line);margin:0 auto 14px;display:block"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
+            <div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px">Опитувань ще немає</div>
+            <div style="font-size:13px;color:var(--muted);max-width:320px;margin:0 auto;line-height:1.5">Створіть перше пульс-опитування щоб отримати зворотній зв'язок від команди</div>
+          </div>
         </div>
       </section>
 
@@ -5084,19 +5108,20 @@
       devToggleSwot(planId);
     };
 
+    const _devTabMap={'plans':'Плани','swot':'SWOT','surveys':'Опитування','sessions':'Сесії'};
     window.devTab=function(tab){
       _devCurrentTab=tab;
-      ['plans','sessions','swot'].forEach(t=>{
+      ['plans','sessions','swot','surveys'].forEach(t=>{
         const el=document.getElementById('devTab-'+t);
         if(el)el.style.display=t===tab?'':'none';
       });
       document.querySelectorAll('#devSeg button').forEach(b=>
-        b.classList.toggle('on',(tab==='plans'&&b.textContent==='Плани')||(tab==='sessions'&&b.textContent.includes('сесії'))||(tab==='swot'&&b.textContent==='SWOT'))
+        b.classList.toggle('on',b.textContent.trim()===(_devTabMap[tab]||''))
       );
       devLoadData();
       if(tab==='plans'){ devInitFilters(); devRenderPlans(); }
       else if(tab==='sessions') devRenderSessions();
-      else if(tab==='swot'){ devRenderSwotTab(); }
+      else if(tab==='swot') devRenderSwotTab();
       devRenderKpi();
     };
 
