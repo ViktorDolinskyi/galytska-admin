@@ -357,9 +357,9 @@
   .empty{padding:48px 18px;text-align:center;color:var(--muted)}
   .empty svg{width:34px;height:34px;stroke-width:1.6;margin-bottom:10px;color:var(--line)}
 
-  .two-col{display:grid;grid-template-columns:1.6fr 1fr;gap:18px;align-items:stretch}
-  .two-col>.card{display:flex;flex-direction:column}
-  .two-col>.card>[id^="dash"]{flex:1}
+  .two-col{display:grid;grid-template-columns:1.6fr 1fr;gap:18px}
+  .two-col>.card{margin-top:0!important;display:flex;flex-direction:column}
+  .two-col>.card>#dashPlansList,.two-col>.card>#dashGoalsList{flex:1}
   .list-line{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--line)}
   .list-line:last-child{border-bottom:none}
   .list-line .dotc{width:9px;height:9px;border-radius:50%;flex:none}
