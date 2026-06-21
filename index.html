@@ -4555,7 +4555,7 @@
       let plans=[...devPlans].filter(p=>
         (!q||(p.name||'').toLowerCase().includes(q)||(p.role||'').toLowerCase().includes(q))&&
         (!selStatus||p.status===selStatus)
-      );
+      ).sort((a,b)=>devEmpName(a).localeCompare(devEmpName(b),'uk'));
       const el=document.getElementById('devPlans'); if(!el)return;
       if(!plans.length){
         el.innerHTML='<div style="text-align:center;padding:48px 0;color:var(--muted);font-size:14px">Немає планів розвитку.<br>Натисніть «Новий план» щоб додати.</div>';
