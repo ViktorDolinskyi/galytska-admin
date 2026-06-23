@@ -1886,6 +1886,7 @@
             <div><label>Ім'я</label><input id="empFirstName" placeholder="Напр., Іван" /></div>
             <div><label>По батькові</label><input id="empPatronymic" placeholder="Напр., Іванович" /></div>
             <div><label>Дата народження</label><input id="empBirthdate" type="date" class="modal-sel" /></div>
+            <div><label>Основний підрозділ</label><select id="empPrimaryUnit" class="modal-sel"><option value="">— не вибрано —</option></select></div>
           </div>
           <div id="empOrgSection" style="display:none;border-top:1px solid var(--line);padding:14px 20px">
             <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px">Структурні одиниці</div>
@@ -4392,13 +4393,20 @@
     const el=document.getElementById('empAct-'+id);
     el.outerHTML=`<span class="org-confirm" id="empAct-${id}">Видалити? <button class="yes" onclick="empDel(${id})">Так</button><button onclick="renderEmps()">Ні</button></span>`;
   };
-  window.empAdd=()=>{empEdit=null;$('empModalTitle').textContent='Новий співробітник';$('empLastName').value='';$('empFirstName').value='';$('empPatronymic').value='';$('empBirthdate').value='';$('empModal').classList.add('open');$('empLastName').focus();};
+  function empFillUnitSelect(selectedId){
+    const sel=$('empPrimaryUnit');
+    const flat=orgFlatAll();
+    sel.innerHTML='<option value="">— не вибрано —</option>'+
+      flat.map(({n,lvl})=>`<option value="${n.id}"${String(n.id)===String(selectedId)?' selected':''}>${'  '.repeat(lvl)}${orgEsc(n.name)}</option>`).join('');
+  }
+  window.empAdd=()=>{empEdit=null;$('empModalTitle').textContent='Новий співробітник';$('empLastName').value='';$('empFirstName').value='';$('empPatronymic').value='';$('empBirthdate').value='';empFillUnitSelect(null);$('empModal').classList.add('open');$('empLastName').focus();};
   window.empEditOpen=(id,ln,fn,pat)=>{
     empEdit=id;$('empModalTitle').textContent='Редагувати';
     $('empLastName').value=ln;$('empFirstName').value=fn;$('empPatronymic').value=pat;
     const r=dictEmps.find(e=>e.id===id);
     const bd=r&&r.birthdate?r.birthdate:'';
     if(window._fpBirth){_fpBirth.setDate(bd,false);}else{$('empBirthdate').value=bd;}
+    empFillUnitSelect(r&&r.primary_unit_id);
     // Структурні одиниці де цей співробітник є керівником
     const linked=(orgData&&orgData.length?orgFlatAll():[]).filter(({n})=>n.employee_id===id).map(({n})=>n);
     const sec=$('empOrgSection'),lnks=$('empOrgLinks');
@@ -4445,10 +4453,11 @@
     const first_name=$('empFirstName').value.trim();
     const patronymic=$('empPatronymic').value.trim();
     const birthdate=$('empBirthdate').value||null;
+    const primary_unit_id=$('empPrimaryUnit').value||null;
     if(!last_name){$('empLastName').focus();return;}
     const res=empEdit!==null
-      ?await db.from('dict_employees').update({last_name,first_name,patronymic,birthdate}).eq('id',empEdit)
-      :await db.from('dict_employees').insert({last_name,first_name,patronymic,birthdate});
+      ?await db.from('dict_employees').update({last_name,first_name,patronymic,birthdate,primary_unit_id}).eq('id',empEdit)
+      :await db.from('dict_employees').insert({last_name,first_name,patronymic,birthdate,primary_unit_id});
     if(res.error){toast('Помилка: '+res.error.message,'error');return;}
     empCloseModal();await loadAllDicts();
   };
