@@ -1878,22 +1878,25 @@
       </div>
 
       <!-- модалка: співробітник -->
-      <div class="modal-scrim" id="empModal">
-        <div class="modal" style="max-width:440px">
-          <h3 id="empModalTitle">Новий співробітник</h3>
-          <div class="body">
+      <div class="modal-scrim" id="empModal" onclick="if(event.target===this)empCloseModal()">
+        <div class="modal" style="max-width:440px;max-height:90vh;display:flex;flex-direction:column">
+          <div class="modal-head">
+            <h3 id="empModalTitle">Новий співробітник</h3>
+            <button class="ico-btn" onclick="empCloseModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+          </div>
+          <div class="body" style="flex-direction:column;gap:14px;padding:20px;overflow-y:auto">
             <div><label>Прізвище</label><input id="empLastName" placeholder="Напр., Іваненко" /></div>
             <div><label>Ім'я</label><input id="empFirstName" placeholder="Напр., Іван" /></div>
             <div><label>По батькові</label><input id="empPatronymic" placeholder="Напр., Іванович" /></div>
             <div><label>Дата народження</label><input id="empBirthdate" type="date" class="modal-sel" /></div>
             <div><label>Основний підрозділ</label><select id="empPrimaryUnit" class="modal-sel"><option value="">— не вибрано —</option></select></div>
-          </div>
-          <div id="empOrgSection" style="display:none;border-top:1px solid var(--line);padding:14px 20px">
-            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px">Структурні одиниці</div>
-            <div id="empOrgLinks"></div>
+            <div id="empOrgSection" style="display:none;border-top:1px solid var(--line);padding-top:14px;margin-top:2px">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px">Структурні одиниці (керівник)</div>
+              <div id="empOrgLinks"></div>
+            </div>
           </div>
           <div class="foot">
-            <button class="btn" onclick="empCloseModal()">Скасувати</button>
+            <button class="btn ghost" onclick="empCloseModal()">Скасувати</button>
             <button class="btn primary" onclick="empSave()">Зберегти</button>
           </div>
         </div>
