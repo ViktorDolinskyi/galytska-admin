@@ -932,6 +932,10 @@
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .emp-link{background:none;border:none;padding:0;font:inherit;font-size:inherit;color:var(--brand);cursor:pointer;text-decoration:underline;text-underline-offset:2px;text-decoration-style:dotted}
   .emp-link:hover{text-decoration-style:solid}
+  .org-staff{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;padding-top:6px;border-top:1px solid var(--line)}
+  .org-staff-chip{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;color:var(--slate);background:var(--page);border:1px solid var(--line);border-radius:20px;padding:2px 8px 2px 6px;cursor:pointer;transition:.12s;white-space:nowrap}
+  .org-staff-chip svg{flex:none;color:var(--muted)}
+  .org-staff-chip:hover{border-color:var(--brand-tint-2);background:var(--brand-tint);color:var(--brand)}
   .org-depth-badge{
     font-size:9.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
     padding:2px 7px;border-radius:20px;flex:none;white-space:nowrap;
@@ -3909,11 +3913,18 @@
       ?'<span class="org-depth-badge" style="background:#FFF7ED;color:#C2410C;border-color:#FED7AA">В.О.</span>'
       :'<span class="org-depth-badge" style="background:#DCFCE7;color:#15803D;border-color:#BBF7D0">Активний</span>';
     const headDisplay=isActing&&headText?'в.о. '+headText:headText;
+    const staff=dictEmps.filter(e=>Number(e.primary_unit_id)===n.id);
+    const staffHtml=staff.length
+      ?'<div class="org-staff" onclick="event.stopPropagation()">'+staff.map(e=>
+          '<button class="org-staff-chip" onclick="empEditOpen('+e.id+','+qs(e.last_name||'')+','+qs(e.first_name||'')+','+qs(e.patronymic||'')+')">'+
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="12" height="12" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>'+
+          orgEsc(empFull(e))+'</button>').join('')+'</div>'
+      :'';
     const row='<div class="org-row" data-lvl="'+Math.min(lvl,5)+'" id="orgrow-'+n.id+'" onclick="orgRowClick(event,'+n.id+')" style="'+borderL+'">'+tog+
       '<span class="org-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor">'+icon+'</svg></span>'+
       '<span class="org-info"><b>'+orgEsc(n.name)+'</b>'+(headDisplay
         ?'<span>'+(emp?'<button class="emp-link" onclick="event.stopPropagation();empEditOpen('+emp.id+','+qs(emp.last_name||'')+','+qs(emp.first_name||'')+','+qs(emp.patronymic||'')+')">'+orgEsc(headDisplay)+'</button>':orgEsc(headDisplay))+'</span>'
-        :'<span>Керівника не призначено</span>')+'</span>'+
+        :'<span>Керівника не призначено</span>')+staffHtml+'</span>'+
       typeBadge+statusBadge+cnt+
       '<span class="org-acts">'+
         '<button class="ico-btn" title="Додати підрозділ" onclick="orgOpen('+n.id+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg></button>'+
