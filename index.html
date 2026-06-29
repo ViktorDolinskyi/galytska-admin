@@ -5970,11 +5970,11 @@
       const head=document.getElementById('budHead');
       const body=document.getElementById('budBody');
 
-      // header
+      const _subLabel=`<span class="bud-head-sub" style="font-weight:400;font-size:9px;display:block;text-align:center">${_budShowFact?'план / факт':'план'}</span>`;
       head.innerHTML='<tr>'+
-        '<th>Стаття витрат</th>'+
-        months.map(m=>`<th>${MONTHS[m-1]}<br><span style="font-weight:400;font-size:9px">план / факт</span></th>`).join('')+
-        `<th>${period==='year'?'Рік':period.toUpperCase()}<br><span style="font-weight:400;font-size:9px">план / факт</span></th>`+
+        '<th style="text-align:left">Стаття витрат</th>'+
+        months.map(m=>`<th style="text-align:center">${MONTHS[m-1]}${_subLabel}</th>`).join('')+
+        `<th style="text-align:center">${period==='year'?'Рік':period.toUpperCase()}${_subLabel}</th>`+
       '</tr>';
 
       if(!_items.length){body.innerHTML='<tr><td colspan="'+(months.length+2)+'" class="empty">Додайте статті витрат у Налаштуваннях</td></tr>';return;}
@@ -6077,6 +6077,7 @@
       if(track) track.style.background=_budShowFact?'var(--brand)':'var(--line)';
       if(thumb) thumb.style.left=_budShowFact?'21px':'3px';
       document.querySelectorAll('.bud-fact-el').forEach(el=>{el.style.display=_budShowFact?'block':'none';});
+      document.querySelectorAll('.bud-head-sub').forEach(el=>{el.textContent=_budShowFact?'план / факт':'план';});
     };
 
     window.budSaveAll=async function(){
