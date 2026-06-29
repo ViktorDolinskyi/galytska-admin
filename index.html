@@ -2691,6 +2691,9 @@
               <thead><tr><th>#</th><th>Назва категорії</th><th>Порядок</th><th></th></tr></thead>
               <tbody id="budCatBody"><tr><td colspan="4" class="empty">Завантаження…</td></tr></tbody>
             </table>
+            <div style="padding:10px 16px;border-top:1px solid var(--line);display:none" id="budCatsToggle-wrap">
+              <button class="btn ghost" id="budCatsToggle" onclick="budCatsToggle()" style="width:100%;font-size:13px"></button>
+            </div>
           </div>
 
           <!-- Статті витрат -->
@@ -2706,6 +2709,9 @@
               <thead><tr><th>#</th><th>Назва статті</th><th>Категорія</th><th>Порядок</th><th></th></tr></thead>
               <tbody id="budItemBody"><tr><td colspan="5" class="empty">Завантаження…</td></tr></tbody>
             </table>
+            <div style="padding:10px 16px;border-top:1px solid var(--line);display:none" id="budItemsToggle-wrap">
+              <button class="btn ghost" id="budItemsToggle" onclick="budItemsToggle()" style="width:100%;font-size:13px"></button>
+            </div>
           </div>
         </div>
       </section>
@@ -5941,14 +5947,15 @@
     };
 
     // ── категорії CRUD ──
-    let _cats=[], _budCatEdit=null;
+    let _cats=[], _budCatEdit=null, _catsExpanded=false;
 
     function budCatsRender(){
       const body=document.getElementById('budCatBody');
       const cnt=document.getElementById('budCatCount');
       if(cnt) cnt.textContent=_cats.length+' категорій';
-      if(!_cats.length){body.innerHTML='<tr><td colspan="4" class="empty">Немає категорій</td></tr>';return;}
-      body.innerHTML=_cats.map((c,i)=>`<tr>
+      if(!_cats.length){body.innerHTML='<tr><td colspan="4" class="empty">Немає категорій</td></tr>';_budCatsToggleBtn();return;}
+      const vis=_catsExpanded?_cats:_cats.slice(0,10);
+      body.innerHTML=vis.map((c,i)=>`<tr>
         <td style="color:var(--muted)">${i+1}</td>
         <td style="font-weight:600">${c.name}</td>
         <td style="color:var(--muted)">${c.sort_order??'—'}</td>
@@ -5957,7 +5964,19 @@
           <button class="ico-btn del" onclick="askRowDel(this,'Видалити категорію?','budCatDel','${c.id}','budCatsLoadRefresh')">${_dIco}</button>
         </div></td>
       </tr>`).join('');
+      _budCatsToggleBtn();
     }
+
+    function _budCatsToggleBtn(){
+      const btn=document.getElementById('budCatsToggle');
+      const wrap=document.getElementById('budCatsToggle-wrap');
+      if(!btn||!wrap) return;
+      if(_cats.length<=10){wrap.style.display='none';return;}
+      wrap.style.display='';
+      btn.textContent=_catsExpanded?'Згорнути':'Показати всі ('+_cats.length+')';
+    }
+
+    window.budCatsToggle=function(){_catsExpanded=!_catsExpanded;budCatsRender();};
 
     window.budCatsLoadRefresh=async function(){
       const r=await db.from('budget_categories').select('*').order('sort_order').order('name');
@@ -6010,12 +6029,15 @@
     };
 
     // ── статті витрат CRUD ──
+    let _itemsExpanded=false;
+
     function budItemsRender(){
       const body=document.getElementById('budItemBody');
       const cnt=document.getElementById('budItemCount');
       if(cnt) cnt.textContent=_items.length+' статей';
-      if(!_items.length){body.innerHTML='<tr><td colspan="6" class="empty">Немає статей</td></tr>';return;}
-      body.innerHTML=_items.map((it,i)=>{
+      if(!_items.length){body.innerHTML='<tr><td colspan="5" class="empty">Немає статей</td></tr>';_budItemsToggleBtn();return;}
+      const vis=_itemsExpanded?_items:_items.slice(0,10);
+      body.innerHTML=vis.map((it,i)=>{
         const cat=_cats.find(c=>c.id===it.category_id);
         return `<tr>
         <td style="color:var(--muted)">${i+1}</td>
@@ -6027,7 +6049,19 @@
           <button class="ico-btn del" onclick="askRowDel(this,'Видалити?','budItemDel','${it.id}','budItemsLoadRefresh')">${_dIco}</button>
         </div></td>
       </tr>`;}).join('');
+      _budItemsToggleBtn();
     }
+
+    function _budItemsToggleBtn(){
+      const btn=document.getElementById('budItemsToggle');
+      const wrap=document.getElementById('budItemsToggle-wrap');
+      if(!btn||!wrap) return;
+      if(_items.length<=10){wrap.style.display='none';return;}
+      wrap.style.display='';
+      btn.textContent=_itemsExpanded?'Згорнути':'Показати всі ('+_items.length+')';
+    }
+
+    window.budItemsToggle=function(){_itemsExpanded=!_itemsExpanded;budItemsRender();};
 
     window.budItemsLoadRefresh=async function(){
       const r=await db.from('budget_expense_items').select('*').order('sort_order').order('name');
