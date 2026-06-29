@@ -2732,6 +2732,10 @@
         <div class="modal" style="width:96vw;max-width:1100px;max-height:92vh;display:flex;flex-direction:column">
           <div class="modal-head">
             <h3 id="budgetModalTitle">Новий бюджет</h3>
+            <div style="display:flex;gap:6px;margin-left:auto;margin-right:12px">
+              <button id="bgTogglePlan" style="padding:5px 14px;border-radius:20px;border:1px solid var(--brand);background:var(--brand);color:#fff;font-size:12px;font-weight:600;cursor:default;opacity:1">План</button>
+              <button id="bgToggleFact" onclick="budgetToggleFact()" style="padding:5px 14px;border-radius:20px;border:1px solid var(--line);background:var(--hover-bg);color:var(--slate);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s">Факт</button>
+            </div>
             <button class="ico-btn" onclick="budgetClose()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
           </div>
           <div class="body" style="flex-direction:column;gap:0;padding:0;overflow-y:auto">
@@ -6216,7 +6220,21 @@
       budgetsRender();
     };
 
-    let _bgEntries={}; // {itemId_month: {plan,fact}}
+    let _bgEntries={}, _bgShowFact=false;
+
+    window.budgetToggleFact=function(){
+      _bgShowFact=!_bgShowFact;
+      const btn=document.getElementById('bgToggleFact');
+      if(btn){
+        btn.style.background=_bgShowFact?'var(--brand)':'var(--hover-bg)';
+        btn.style.color=_bgShowFact?'#fff':'var(--slate)';
+        btn.style.border=_bgShowFact?'1px solid var(--brand)':'1px solid var(--line)';
+      }
+      // показати/сховати рядки факту без перерендеру
+      document.querySelectorAll('.bg-fact-row').forEach(el=>{
+        el.style.display=_bgShowFact?'':'none';
+      });
+    };
 
     window.budgetAmountsRender=function(){
       const period=document.getElementById('bgPeriod').value;
@@ -6244,25 +6262,32 @@
         html+=`<tr class="bud-group"><td colspan="${months.length+2}">${grp}</td></tr>`;
         items.forEach(it=>{
           let rowPlan=0;
-          const cells=months.map(m=>{
+          const planCells=months.map(m=>{
             const key=`${it.id}_${m}`;
-            const e=_bgEntries[key]||{};
-            const plan=e.plan||'';
-            const fact=e.fact||'';
+            const plan=((_bgEntries[key]||{}).plan)||'';
             if(plan) rowPlan+=Number(plan);
             return `<td style="padding:4px 6px">
               <input class="bg-plan-input" data-item="${it.id}" data-month="${m}" data-type="plan"
                 value="${plan}" placeholder="0"
-                style="width:100%;margin-bottom:3px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-size:12px;color:var(--ink)">
+                style="width:100%;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:5px 7px;font-size:12px;color:var(--ink)">
+            </td>`;
+          });
+          const factCells=months.map(m=>{
+            const key=`${it.id}_${m}`;
+            const fact=((_bgEntries[key]||{}).fact)||'';
+            return `<td style="padding:4px 6px">
               <input class="bg-plan-input" data-item="${it.id}" data-month="${m}" data-type="fact"
                 value="${fact}" placeholder="0"
-                style="width:100%;background:var(--hover-bg);border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-size:12px;color:var(--slate)">
+                style="width:100%;background:var(--hover-bg);border:1px solid var(--line);border-radius:6px;padding:5px 7px;font-size:12px;color:var(--slate)">
             </td>`;
           });
           html+=`<tr>
-            <td style="font-size:13px;padding:6px 10px">${it.name}</td>
-            ${cells.join('')}
-            <td style="font-size:12px;font-weight:600;padding:6px 10px;color:var(--slate)" id="bg-row-total-${it.id}">${rowPlan?rowPlan.toLocaleString('uk-UA'):'—'}</td>
+            <td style="font-size:13px;padding:6px 10px;vertical-align:middle" rowspan="2">${it.name}</td>
+            ${planCells.join('')}
+            <td style="font-size:12px;font-weight:600;padding:6px 10px;vertical-align:middle" rowspan="2" id="bg-row-total-${it.id}">${rowPlan?rowPlan.toLocaleString('uk-UA'):'—'}</td>
+          </tr>
+          <tr class="bg-fact-row" style="display:${_bgShowFact?'':'none'}">
+            ${factCells.join('')}
           </tr>`;
         });
       });
@@ -6272,8 +6297,7 @@
       body.querySelectorAll('.bg-plan-input[data-type="plan"]').forEach(inp=>{
         inp.addEventListener('input',()=>{
           const itemId=inp.dataset.item;
-          const period2=document.getElementById('bgPeriod').value;
-          const ms=QUARTERS[period2]||[];
+          const ms=QUARTERS[document.getElementById('bgPeriod').value]||[];
           let s=0;
           ms.forEach(m=>{
             const v=body.querySelector(`.bg-plan-input[data-item="${itemId}"][data-month="${m}"][data-type="plan"]`);
@@ -6288,6 +6312,9 @@
     window.budgetOpen=async function(id){
       _budgetEdit=id||null;
       _bgEntries={};
+      _bgShowFact=false;
+      const factBtn=document.getElementById('bgToggleFact');
+      if(factBtn){factBtn.style.background='var(--hover-bg)';factBtn.style.color='var(--slate)';factBtn.style.border='1px solid var(--line)';}
       const b=id?_budgets.find(x=>String(x.id)===String(id)):null;
       document.getElementById('budgetModalTitle').textContent=id?'Редагувати бюджет':'Новий бюджет';
       const sel=document.getElementById('bgUnit');
