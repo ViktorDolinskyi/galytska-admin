@@ -5986,8 +5986,39 @@
       let html='';
       let totalPlan=Array(months.length).fill(0), totalFact=Array(months.length).fill(0);
 
-      Object.entries(groups).forEach(([grp,items])=>{
-        html+=`<tr class="bud-group"><td colspan="${months.length+2}">${grp}</td></tr>`;
+      Object.entries(groups).forEach(([grp,items],gi)=>{
+        const gid='bgrp_'+gi;
+        const collapsed=_budCollapsed.has(gid);
+
+        // підраховуємо підсумки групи по місяцях
+        const grpPlan=Array(months.length).fill(0);
+        const grpFact=Array(months.length).fill(0);
+        items.forEach(it=>{
+          months.forEach((m,mi)=>{
+            const e=_entries.find(x=>x.expense_item_id===it.id&&x.month===m&&(unitId?String(x.unit_id)===String(unitId):true));
+            grpPlan[mi]+=e?Number(e.amount_plan||0):0;
+            grpFact[mi]+=e?Number(e.amount_fact||0):0;
+          });
+        });
+        const grpSumP=grpPlan.reduce((a,b)=>a+b,0);
+        const grpSumF=grpFact.reduce((a,b)=>a+b,0);
+
+        const grpCells=months.map((_,i)=>`<td style="padding:3px 6px"><div style="display:flex;gap:3px">
+          <span style="flex:1;text-align:right;font-size:11px;opacity:.85">${grpPlan[i]?grpPlan[i].toLocaleString('uk-UA'):'—'}</span>
+          <span class="bud-fact-el" style="flex:1;text-align:right;font-size:11px;opacity:.7;display:${_budShowFact?'block':'none'}">${grpFact[i]?grpFact[i].toLocaleString('uk-UA'):'—'}</span>
+        </div></td>`).join('');
+
+        html+=`<tr class="bud-group" style="cursor:pointer" onclick="budToggleGroup('${gid}')">
+          <td style="padding:6px 10px">
+            <span style="display:inline-block;transition:transform .2s;transform:rotate(${collapsed?'-90':'0'}deg);margin-right:6px;font-size:10px">▼</span>${grp}
+          </td>
+          ${grpCells}
+          <td style="padding:3px 10px"><div style="display:flex;gap:3px">
+            <span style="flex:1;text-align:right;font-size:11px;font-weight:700">${fmtN(grpSumP)}</span>
+            <span class="bud-fact-el" style="flex:1;text-align:right;font-size:11px;opacity:.7;display:${_budShowFact?'block':'none'}">${fmtN(grpSumF)}</span>
+          </div></td>
+        </tr>`;
+
         items.forEach(it=>{
           let rowPlan=0,rowFact=0;
           const cells=months.map((m,mi)=>{
@@ -6001,8 +6032,14 @@
               <input class="bud-entry-input bud-fact-el" data-item="${it.id}" data-month="${m}" data-type="fact" value="${fact||''}" placeholder="0" style="text-align:right;display:${_budShowFact?'block':'none'}">
             </div></td>`;
           });
-          const diffCls=rowFact>=rowPlan?'pos':'neg';
-          html+=`<tr><td>${it.name}</td>${cells.join('')}<td><b>${fmtN(rowPlan)}</b><br><span class="bud-cell-diff ${diffCls}">${fmtN(rowFact)}</span></td></tr>`;
+          html+=`<tr data-group="${gid}" style="display:${collapsed?'none':''}">
+            <td style="padding:5px 10px 5px 24px">${it.name}</td>
+            ${cells.join('')}
+            <td style="padding:3px 10px"><div style="display:flex;gap:3px">
+              <span style="flex:1;text-align:right;font-weight:600;font-size:12px">${fmtN(rowPlan)}</span>
+              <span class="bud-fact-el" style="flex:1;text-align:right;font-size:12px;color:var(--slate);display:${_budShowFact?'block':'none'}">${fmtN(rowFact)}</span>
+            </div></td>
+          </tr>`;
         });
       });
 
@@ -6021,6 +6058,17 @@
     };
 
     function fmtN(n){return n?n.toLocaleString('uk-UA'):'—';}
+
+    window.budToggleGroup=function(gid){
+      if(_budCollapsed.has(gid)) _budCollapsed.delete(gid);
+      else _budCollapsed.add(gid);
+      const rows=document.querySelectorAll(`tr[data-group="${gid}"]`);
+      const collapsed=_budCollapsed.has(gid);
+      rows.forEach(r=>r.style.display=collapsed?'none':'');
+      // обертаємо стрілку
+      const grpRow=[...document.querySelectorAll('tr.bud-group')].find(r=>r.getAttribute('onclick')===`budToggleGroup('${gid}')`);
+      if(grpRow){const arr=grpRow.querySelector('span[style*="rotate"]');if(arr)arr.style.transform=`rotate(${collapsed?'-90':'0'}deg)`;}
+    };
 
     window.budToggleFact=function(){
       _budShowFact=!_budShowFact;
@@ -6237,6 +6285,7 @@
     // ── Бюджети підрозділів CRUD ──
     let _budgets=[], _budgetEdit=null;
     let _budShowFact=false;
+    const _budCollapsed=new Set();
     const BUD_STATUS={draft:'Чернетка',approved:'Затверджений',closed:'Закритий'};
     const BUD_STATUS_CLS={draft:'warn',approved:'success',closed:''};
 
