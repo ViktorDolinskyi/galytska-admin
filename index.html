@@ -958,6 +958,29 @@
   .org-confirm button{font:inherit;font-weight:700;font-size:12px;border-radius:7px;padding:5px 11px;cursor:pointer;border:1px solid var(--line);background:var(--surface)}
   .org-confirm button.yes{background:var(--brand);color:#fff;border-color:var(--brand)}
 
+  /* ===== Бюджет ===== */
+  .bud-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+  .bud-toolbar select{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--line);border-radius:10px;padding:7px 32px 7px 11px;color:var(--ink);background:var(--card);cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239B948E' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;outline:none}
+  .bud-toolbar select:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-tint)}
+  .bud-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--line)}
+  .bud-table{width:100%;border-collapse:collapse;font-size:13px}
+  .bud-table th{background:var(--surface);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:9px 12px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+  .bud-table th:first-child{text-align:left;min-width:220px;position:sticky;left:0;background:var(--surface);z-index:1}
+  .bud-table td{padding:8px 12px;border-bottom:1px solid var(--line);text-align:right;vertical-align:middle;color:var(--ink)}
+  .bud-table td:first-child{text-align:left;font-weight:500;position:sticky;left:0;background:var(--card);z-index:1}
+  .bud-table tr:last-child td{border-bottom:none}
+  .bud-table tr:hover td{background:var(--hover-bg)}
+  .bud-table tr:hover td:first-child{background:var(--hover-bg)}
+  .bud-table .bud-total td{font-weight:700;background:var(--surface);border-top:2px solid var(--line)}
+  .bud-table .bud-total td:first-child{background:var(--surface)}
+  .bud-table .bud-group td{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--page);padding:6px 12px}
+  .bud-table .bud-group td:first-child{background:var(--page)}
+  .bud-cell-plan{color:var(--slate)}
+  .bud-cell-fact{font-weight:600}
+  .bud-cell-diff.pos{color:#15803D}
+  .bud-cell-diff.neg{color:#B91C1C}
+  .bud-entry-input{width:90px;font:inherit;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:4px 7px;text-align:right;background:var(--card);color:var(--ink);outline:none}
+  .bud-entry-input:focus{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-tint)}
   /* модалка */
   .modal-scrim{position:fixed;inset:0;background:rgba(27,23,20,.45);z-index:50;display:none;align-items:center;justify-content:center;padding:20px}
   .modal-scrim.open{display:flex}
@@ -1175,6 +1198,11 @@
       <button class="nav-item" data-view="analytics" data-label="Аналітика" draggable="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M7 15l3-4 3 3 4-6"/></svg>
         <span class="nav-label-txt">Аналітика</span>
+        <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
+      </button>
+      <button class="nav-item" data-view="budget" data-label="Бюджет" draggable="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h2M10 15h4"/></svg>
+        <span class="nav-label-txt">Бюджет</span>
         <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </button>
       <button class="nav-item" data-view="dev" data-label="Розвиток" draggable="true">
@@ -2600,6 +2628,73 @@
         </div>
       </section>
 
+      <!-- ===== view-budget ===== -->
+      <section class="view" id="view-budget">
+        <div class="seg" id="budSeg" style="margin-bottom:20px">
+          <button class="seg-btn active" onclick="budTab('table',this)">Бюджет</button>
+          <button class="seg-btn" onclick="budTab('settings',this)">Налаштування</button>
+        </div>
+
+        <!-- ── Таблиця бюджету ── -->
+        <div id="budTab-table">
+          <div class="bud-toolbar">
+            <select id="budUnit" onchange="budRender()"><option value="">— Всі підрозділи —</option></select>
+            <select id="budYear" onchange="budRender()"></select>
+            <select id="budPeriod" onchange="budRender()">
+              <option value="q1">Q1 (Січ–Бер)</option>
+              <option value="q2">Q2 (Кві–Чер)</option>
+              <option value="q3" selected>Q3 (Лип–Вер)</option>
+              <option value="q4">Q4 (Жов–Гру)</option>
+              <option value="year">Рік (всі місяці)</option>
+            </select>
+            <button class="btn primary" style="margin-left:auto" onclick="budSaveAll()">Зберегти зміни</button>
+          </div>
+          <div class="bud-wrap">
+            <table class="bud-table" id="budTable">
+              <thead id="budHead"></thead>
+              <tbody id="budBody"><tr><td colspan="10" class="empty">Завантаження…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ── Налаштування: статті витрат ── -->
+        <div id="budTab-settings" style="display:none">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Статті витрат</div>
+                <div class="card-sub" id="budItemCount">0 статей</div>
+              </div>
+              <button class="btn primary" onclick="budItemOpen()">+ Додати статтю</button>
+            </div>
+            <table class="tbl">
+              <thead><tr><th>#</th><th>Назва статті</th><th>Група</th><th>Порядок</th><th></th></tr></thead>
+              <tbody id="budItemBody"><tr><td colspan="5" class="empty">Завантаження…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- модалка: стаття витрат -->
+      <div class="modal-scrim" id="budItemScrim" onclick="if(event.target===this)budItemClose()">
+        <div class="modal" style="max-width:440px;max-height:90vh;display:flex;flex-direction:column">
+          <div class="modal-head">
+            <h3 id="budItemTitle">Нова стаття витрат</h3>
+            <button class="ico-btn" onclick="budItemClose()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+          </div>
+          <div class="body" style="flex-direction:column;gap:14px;padding:20px;overflow-y:auto">
+            <div><label>Назва статті <span style="color:var(--brand)">*</span></label><input id="biName" placeholder="Напр., Відрядження"></div>
+            <div><label>Група</label><input id="biGroup" placeholder="Напр., Прямі витрати"></div>
+            <div><label>Порядок сортування</label><input id="biSort" type="number" placeholder="0"></div>
+          </div>
+          <div class="foot">
+            <button class="btn ghost" id="budItemDelBtn" onclick="budItemDeleteCurrent()" style="margin-right:auto;display:none">Видалити</button>
+            <button class="btn ghost" onclick="budItemClose()">Скасувати</button>
+            <button class="btn primary" onclick="budItemSave()">Зберегти</button>
+          </div>
+        </div>
+      </div>
+
       <!-- view-dicts: redirect to company settings tab -->
       <section class="view" id="view-dicts" style="display:none"></section>
 
@@ -2623,6 +2718,7 @@
     company:'Структура організації',
     settings:'Налаштування системи',
     dev:'Управління персоналом',
+    budget:'Фінансове планування',
     reports:'Аналітика та звітність',
     analytics:'Аналітика та звітність',
   };
@@ -2637,6 +2733,7 @@
       if(btn.dataset.companyTab) companyTab(btn.dataset.companyTab);
       else if(id==='company') companyTab('structure');
       if(id==='dev' && window.devRender) { setTimeout(()=>{ if(window.devTab) window.devTab('plans'); else window.devRender(); },0); }
+      if(id==='budget' && window.budgetLoad) { setTimeout(budgetLoad, 100); }
       if(id==='dash' && window.dashLoad) { setTimeout(dashLoad, 100); }
       closeNav();
       document.querySelector('.content').scrollTo({top:0,behavior:'smooth'});
@@ -5662,6 +5759,191 @@
     window.devModalGrowRender=devModalGrowRender;
 
     devLoadData();
+  })();
+
+  /* ===== БЮДЖЕТ ===== */
+  (function(){
+    const MONTHS=['Січ','Лют','Бер','Кві','Тра','Чер','Лип','Сер','Вер','Жов','Лис','Гру'];
+    const QUARTERS={q1:[1,2,3],q2:[4,5,6],q3:[7,8,9],q4:[10,11,12],year:[1,2,3,4,5,6,7,8,9,10,11,12]};
+    let _items=[], _entries=[], _budItemEdit=null;
+
+    // ── заповнити рік select ──
+    (function(){
+      const sel=document.getElementById('budYear');
+      const y=new Date().getFullYear();
+      for(let i=y-1;i<=y+2;i++) sel.innerHTML+=`<option value="${i}"${i===y?' selected':''}>${i}</option>`;
+    })();
+
+    // ── заповнити підрозділи ──
+    function budFillUnits(){
+      const sel=document.getElementById('budUnit');
+      const cur=sel.value;
+      sel.innerHTML='<option value="">— Всі підрозділи —</option>';
+      (function flat(list){list.forEach(n=>{sel.innerHTML+=`<option value="${n.id}">${n.name}</option>`;flat(n.children||[]);});})(window.orgData||[]);
+      if(cur) sel.value=cur;
+    }
+
+    async function budLoad(){
+      budFillUnits();
+      const year=document.getElementById('budYear').value;
+      const [r1,r2]=await Promise.all([
+        db.from('budget_expense_items').select('*').order('sort_order').order('name'),
+        db.from('budget_entries').select('*').eq('year',year)
+      ]);
+      _items=r1.data||[];
+      _entries=r2.data||[];
+      budRender();
+      budItemsRender();
+    }
+    window.budgetLoad=budLoad;
+
+    window.budRender=async function(){
+      const year=+document.getElementById('budYear').value;
+      const period=document.getElementById('budPeriod').value;
+      const unitId=document.getElementById('budUnit').value;
+      const months=QUARTERS[period];
+
+      // підвантажити записи за новий рік якщо змінився
+      const r=await db.from('budget_entries').select('*').eq('year',year);
+      _entries=r.data||[];
+
+      const head=document.getElementById('budHead');
+      const body=document.getElementById('budBody');
+
+      // header
+      head.innerHTML='<tr>'+
+        '<th>Стаття витрат</th>'+
+        months.map(m=>`<th>${MONTHS[m-1]}<br><span style="font-weight:400;font-size:9px">план / факт</span></th>`).join('')+
+        `<th>${period==='year'?'Рік':period.toUpperCase()}<br><span style="font-weight:400;font-size:9px">план / факт</span></th>`+
+      '</tr>';
+
+      if(!_items.length){body.innerHTML='<tr><td colspan="'+(months.length+2)+'" class="empty">Додайте статті витрат у Налаштуваннях</td></tr>';return;}
+
+      // групування
+      const groups={};
+      _items.forEach(it=>{const g=it.group_name||'Витрати';(groups[g]=groups[g]||[]).push(it);});
+
+      let html='';
+      let totalPlan=Array(months.length).fill(0), totalFact=Array(months.length).fill(0);
+
+      Object.entries(groups).forEach(([grp,items])=>{
+        html+=`<tr class="bud-group"><td colspan="${months.length+2}">${grp}</td></tr>`;
+        items.forEach(it=>{
+          let rowPlan=0,rowFact=0;
+          const cells=months.map((m,mi)=>{
+            const e=_entries.find(x=>x.expense_item_id===it.id&&x.month===m&&(unitId?String(x.unit_id)===String(unitId):true));
+            const plan=e?Number(e.amount_plan||0):0;
+            const fact=e?Number(e.amount_fact||0):0;
+            totalPlan[mi]+=plan; totalFact[mi]+=fact;
+            rowPlan+=plan; rowFact+=fact;
+            return `<td><input class="bud-entry-input" data-item="${it.id}" data-month="${m}" data-type="plan" value="${plan||''}" placeholder="0">` +
+                   `<br><input class="bud-entry-input" data-item="${it.id}" data-month="${m}" data-type="fact" value="${fact||''}" placeholder="0"></td>`;
+          });
+          const diffCls=rowFact>=rowPlan?'pos':'neg';
+          html+=`<tr><td>${it.name}</td>${cells.join('')}<td><b>${fmtN(rowPlan)}</b><br><span class="bud-cell-diff ${diffCls}">${fmtN(rowFact)}</span></td></tr>`;
+        });
+      });
+
+      // підсумок
+      const totCells=months.map((_,i)=>`<td><b>${fmtN(totalPlan[i])}</b><br>${fmtN(totalFact[i])}</td>`).join('');
+      const sumP=totalPlan.reduce((a,b)=>a+b,0), sumF=totalFact.reduce((a,b)=>a+b,0);
+      html+=`<tr class="bud-total"><td>РАЗОМ</td>${totCells}<td><b>${fmtN(sumP)}</b><br><b>${fmtN(sumF)}</b></td></tr>`;
+
+      body.innerHTML=html;
+    };
+
+    function fmtN(n){return n?n.toLocaleString('uk-UA'):'—';}
+
+    window.budSaveAll=async function(){
+      const year=+document.getElementById('budYear').value;
+      const unitId=document.getElementById('budUnit').value||null;
+      const inputs=[...document.querySelectorAll('.bud-entry-input')];
+      const map={};
+      inputs.forEach(inp=>{
+        const key=inp.dataset.item+'_'+inp.dataset.month;
+        map[key]=map[key]||{expense_item_id:+inp.dataset.item,month:+inp.dataset.month,year,unit_id:unitId?+unitId:null,amount_plan:0,amount_fact:0};
+        if(inp.dataset.type==='plan') map[key].amount_plan=+inp.value||0;
+        else map[key].amount_fact=+inp.value||0;
+      });
+      const rows=Object.values(map).filter(r=>r.amount_plan||r.amount_fact);
+      if(!rows.length){toast('Немає даних для збереження','error');return;}
+      const {error}=await db.from('budget_entries').upsert(rows,{onConflict:'expense_item_id,month,year,unit_id'});
+      if(error){toast('Помилка: '+error.message,'error');return;}
+      toast('Збережено','success');
+      const r=await db.from('budget_entries').select('*').eq('year',year);
+      _entries=r.data||[];
+    };
+
+    // ── таб ──
+    window.budTab=function(tab,btn){
+      ['table','settings'].forEach(t=>{
+        const el=document.getElementById('budTab-'+t);
+        if(el) el.style.display=t===tab?'':'none';
+      });
+      document.querySelectorAll('#budSeg button').forEach(b=>b.classList.remove('active'));
+      if(btn) btn.classList.add('active');
+      if(tab==='table') budFillUnits();
+    };
+
+    // ── статті витрат CRUD ──
+    function budItemsRender(){
+      const body=document.getElementById('budItemBody');
+      const cnt=document.getElementById('budItemCount');
+      if(cnt) cnt.textContent=_items.length+' статей';
+      if(!_items.length){body.innerHTML='<tr><td colspan="5" class="empty">Немає статей</td></tr>';return;}
+      body.innerHTML=_items.map((it,i)=>`<tr>
+        <td style="color:var(--muted)">${i+1}</td>
+        <td style="font-weight:600">${it.name}</td>
+        <td style="color:var(--muted)">${it.group_name||'—'}</td>
+        <td style="color:var(--muted)">${it.sort_order??'—'}</td>
+        <td><div class="row-act">
+          <button class="ico-btn" onclick="budItemOpen('${it.id}')">${_eIco}</button>
+          <button class="ico-btn del" onclick="askRowDel(this,'Видалити?','budItemDel','${it.id}','budItemsLoadRefresh')">${_dIco}</button>
+        </div></td>
+      </tr>`).join('');
+    }
+
+    window.budItemsLoadRefresh=async function(){
+      const r=await db.from('budget_expense_items').select('*').order('sort_order').order('name');
+      _items=r.data||[];budItemsRender();
+    };
+
+    window.budItemOpen=function(id){
+      _budItemEdit=id||null;
+      const it=id?_items.find(x=>x.id===id):null;
+      document.getElementById('budItemTitle').textContent=id?'Редагувати статтю':'Нова стаття витрат';
+      document.getElementById('biName').value=it?it.name:'';
+      document.getElementById('biGroup').value=it?it.group_name||'':'';
+      document.getElementById('biSort').value=it?it.sort_order??'':'';
+      document.getElementById('budItemDelBtn').style.display=id?'':'none';
+      document.getElementById('budItemScrim').classList.add('open');
+      document.getElementById('biName').focus();
+    };
+
+    window.budItemClose=()=>document.getElementById('budItemScrim').classList.remove('open');
+
+    window.budItemSave=async function(){
+      const name=document.getElementById('biName').value.trim();
+      if(!name){document.getElementById('biName').focus();return;}
+      const payload={name,group_name:document.getElementById('biGroup').value.trim()||null,sort_order:+document.getElementById('biSort').value||0};
+      const res=_budItemEdit
+        ?await db.from('budget_expense_items').update(payload).eq('id',_budItemEdit)
+        :await db.from('budget_expense_items').insert(payload);
+      if(res.error){toast('Помилка: '+res.error.message,'error');return;}
+      budItemClose();await window.budItemsLoadRefresh();
+    };
+
+    window.budItemDeleteCurrent=async function(){
+      if(!_budItemEdit) return;
+      await db.from('budget_expense_items').delete().eq('id',_budItemEdit);
+      budItemClose();await window.budItemsLoadRefresh();
+    };
+
+    window.budItemDel=async function(id){
+      await db.from('budget_expense_items').delete().eq('id',id);
+      await window.budItemsLoadRefresh();
+    };
+
   })();
 
   </script>
