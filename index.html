@@ -6242,8 +6242,8 @@
     window.budgetToggleFact=function(){
       _bgShowFact=!_bgShowFact;
       _bgFactToggleUI();
-      document.querySelectorAll('.bg-fact-row').forEach(el=>{
-        el.style.display=_bgShowFact?'':'none';
+      document.querySelectorAll('.bg-fact-input').forEach(el=>{
+        el.style.display=_bgShowFact?'block':'none';
       });
     };
 
@@ -6273,32 +6273,26 @@
         html+=`<tr class="bud-group"><td colspan="${months.length+2}">${grp}</td></tr>`;
         items.forEach(it=>{
           let rowPlan=0;
-          const planCells=months.map(m=>{
+          const cells=months.map(m=>{
             const key=`${it.id}_${m}`;
             const plan=((_bgEntries[key]||{}).plan)||'';
+            const fact=((_bgEntries[key]||{}).fact)||'';
             if(plan) rowPlan+=Number(plan);
             return `<td style="padding:4px 6px">
-              <input class="bg-plan-input" data-item="${it.id}" data-month="${m}" data-type="plan"
-                value="${plan}" placeholder="0"
-                style="width:100%;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:5px 7px;font-size:12px;color:var(--ink)">
-            </td>`;
-          });
-          const factCells=months.map(m=>{
-            const key=`${it.id}_${m}`;
-            const fact=((_bgEntries[key]||{}).fact)||'';
-            return `<td style="padding:4px 6px">
-              <input class="bg-plan-input" data-item="${it.id}" data-month="${m}" data-type="fact"
-                value="${fact}" placeholder="0"
-                style="width:100%;background:var(--hover-bg);border:1px solid var(--line);border-radius:6px;padding:5px 7px;font-size:12px;color:var(--slate)">
+              <div style="display:flex;gap:4px;align-items:center">
+                <input class="bg-plan-input" data-item="${it.id}" data-month="${m}" data-type="plan"
+                  value="${plan}" placeholder="0"
+                  style="flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:5px 7px;font-size:12px;color:var(--ink)">
+                <input class="bg-plan-input bg-fact-input" data-item="${it.id}" data-month="${m}" data-type="fact"
+                  value="${fact}" placeholder="0"
+                  style="flex:1;min-width:0;display:${_bgShowFact?'block':'none'};background:var(--hover-bg);border:1px solid var(--line);border-radius:6px;padding:5px 7px;font-size:12px;color:var(--slate)">
+              </div>
             </td>`;
           });
           html+=`<tr>
-            <td style="font-size:13px;padding:6px 10px;vertical-align:middle" rowspan="2">${it.name}</td>
-            ${planCells.join('')}
-            <td style="font-size:12px;font-weight:600;padding:6px 10px;vertical-align:middle" rowspan="2" id="bg-row-total-${it.id}">${rowPlan?rowPlan.toLocaleString('uk-UA'):'—'}</td>
-          </tr>
-          <tr class="bg-fact-row" style="display:${_bgShowFact?'':'none'}">
-            ${factCells.join('')}
+            <td style="font-size:13px;padding:6px 10px;vertical-align:middle">${it.name}</td>
+            ${cells.join('')}
+            <td style="font-size:12px;font-weight:600;padding:6px 10px;vertical-align:middle;white-space:nowrap" id="bg-row-total-${it.id}">${rowPlan?rowPlan.toLocaleString('uk-UA'):'—'}</td>
           </tr>`;
         });
       });
