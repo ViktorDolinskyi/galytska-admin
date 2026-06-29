@@ -1840,10 +1840,8 @@
           <!-- Співробітники -->
           <div class="card" style="margin-bottom:16px">
             <div class="card-head">
-              <div>
-                <div class="card-title">Співробітники</div>
-                <div class="card-sub" id="empCount">0 співробітників</div>
-              </div>
+              <h3>Співробітники</h3>
+              <span class="badge info" id="empCount">0</span>
               <div style="display:flex;gap:8px;margin-left:auto;align-items:center">
                 <button class="btn" onclick="empExportCsv()" title="Вивантажити CSV">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;margin-right:4px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Експорт
@@ -1864,10 +1862,9 @@
           <div class="card" style="margin-bottom:16px">
             <div class="card-head">
               <div>
-                <div class="card-title">Типи структурних одиниць</div>
-                <div class="card-sub" id="typeCount">0 типів</div>
-              </div>
-              <button class="btn primary" onclick="typeAdd()" style="margin-left:auto">+ Додати</button>
+              <h3>Типи структурних одиниць</h3>
+              <span class="badge info" id="typeCount">0</span>
+              <button class="btn primary" onclick="typeAdd()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Додати</button>
             </div>
             <table>
               <thead><tr><th style="width:48px">Іконка</th><th>Назва</th><th style="width:80px"></th></tr></thead>
@@ -1878,10 +1875,9 @@
           <div class="card">
             <div class="card-head">
               <div>
-                <div class="card-title">Види структурних одиниць</div>
-                <div class="card-sub" id="kindCount">0 видів</div>
-              </div>
-              <button class="btn primary" onclick="kindAdd()" style="margin-left:auto">+ Додати</button>
+              <h3>Види структурних одиниць</h3>
+              <span class="badge info" id="kindCount">0</span>
+              <button class="btn primary" onclick="kindAdd()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Додати</button>
             </div>
             <table>
               <thead><tr><th style="width:48px">Колір</th><th>Назва</th><th style="width:80px"></th></tr></thead>
@@ -2687,11 +2683,9 @@
           <!-- Категорії -->
           <div class="card">
             <div class="card-head">
-              <div>
-                <div class="card-title">Категорії статей витрат</div>
-                <div class="card-sub" id="budCatCount">0 категорій</div>
-              </div>
-              <button class="btn primary" onclick="budCatOpen()">+ Додати категорію</button>
+              <h3>Категорії статей витрат</h3>
+              <span class="badge info" id="budCatCount">0</span>
+              <button class="btn primary" onclick="budCatOpen()" style="margin-left:auto">+ Додати категорію</button>
             </div>
             <table class="tbl">
               <thead><tr><th>#</th><th>Назва категорії</th><th>Порядок</th><th></th></tr></thead>
@@ -2705,11 +2699,9 @@
           <!-- Статті витрат -->
           <div class="card">
             <div class="card-head">
-              <div>
-                <div class="card-title">Статті витрат</div>
-                <div class="card-sub" id="budItemCount">0 статей</div>
-              </div>
-              <button class="btn primary" onclick="budItemOpen()">+ Додати статтю</button>
+              <h3>Статті витрат</h3>
+              <span class="badge info" id="budItemCount">0</span>
+              <button class="btn primary" onclick="budItemOpen()" style="margin-left:auto">+ Додати статтю</button>
             </div>
             <table class="tbl">
               <thead><tr><th>#</th><th>Назва статті</th><th>Категорія</th><th>Порядок</th><th></th></tr></thead>
@@ -4557,7 +4549,7 @@
   function empFull(r){return[r.last_name,r.first_name,r.patronymic].filter(Boolean).join(' ');}
   function renderEmps(){
     const tbody=document.getElementById('empBody');if(!tbody)return;
-    document.getElementById('empCount').textContent=dictEmps.length+' співробітників';
+    document.getElementById('empCount').textContent=dictEmps.length;
     tbody.innerHTML=dictEmps.map(r=>`<tr>
       <td class="t-name">${orgEsc(empFull(r))}</td>
       <td style="color:var(--slate);font-size:13px">${r.birthdate?new Date(r.birthdate).toLocaleDateString('uk-UA'):'—'}</td>
@@ -4846,7 +4838,7 @@
   window.selectIconKey=key=>{selectedIcon=key;document.querySelectorAll('.icon-opt').forEach(b=>b.classList.toggle('active',b.dataset.icon===key));};
   function renderTypes(){
     const tbody=$('typeBody');if(!tbody)return;
-    $('typeCount').textContent=dictTypes.length+' типів';
+    $('typeCount').textContent=dictTypes.length;
     tbody.innerHTML=dictTypes.map(r=>`<tr>
       <td style="text-align:center">${iconSvg(r.icon||'building')}</td>
       <td class="t-name">${orgEsc(r.name)}</td>
@@ -4875,7 +4867,7 @@
   /* --- Види структурних одиниць --- */
   function renderKinds(){
     const tbody=$('kindBody');if(!tbody)return;
-    $('kindCount').textContent=dictKinds.length+' видів';
+    $('kindCount').textContent=dictKinds.length;
     tbody.innerHTML=dictKinds.map(r=>`<tr>
       <td style="text-align:center"><span class="color-swatch" style="background:${orgEsc(r.color||'#888')}"></span></td>
       <td class="t-name">${orgEsc(r.name)}</td>
@@ -5958,7 +5950,7 @@
     function budCatsRender(){
       const body=document.getElementById('budCatBody');
       const cnt=document.getElementById('budCatCount');
-      if(cnt) cnt.textContent=_cats.length+' категорій';
+      if(cnt) cnt.textContent=_cats.length;
       if(!_cats.length){body.innerHTML='<tr><td colspan="4" class="empty">Немає категорій</td></tr>';_budCatsToggleBtn();return;}
       const vis=_catsExpanded?_cats:_cats.slice(0,5);
       body.innerHTML=vis.map((c,i)=>`<tr>
@@ -6040,7 +6032,7 @@
     function budItemsRender(){
       const body=document.getElementById('budItemBody');
       const cnt=document.getElementById('budItemCount');
-      if(cnt) cnt.textContent=_items.length+' статей';
+      if(cnt) cnt.textContent=_items.length;
       if(!_items.length){body.innerHTML='<tr><td colspan="5" class="empty">Немає статей</td></tr>';_budItemsToggleBtn();return;}
       const vis=_itemsExpanded?_items:_items.slice(0,5);
       body.innerHTML=vis.map((it,i)=>{
