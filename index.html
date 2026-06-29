@@ -2703,8 +2703,8 @@
               <button class="btn primary" onclick="budItemOpen()">+ Додати статтю</button>
             </div>
             <table class="tbl">
-              <thead><tr><th>#</th><th>Назва статті</th><th>Категорія</th><th>Група</th><th>Порядок</th><th></th></tr></thead>
-              <tbody id="budItemBody"><tr><td colspan="6" class="empty">Завантаження…</td></tr></tbody>
+              <thead><tr><th>#</th><th>Назва статті</th><th>Категорія</th><th>Порядок</th><th></th></tr></thead>
+              <tbody id="budItemBody"><tr><td colspan="5" class="empty">Завантаження…</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -2739,7 +2739,6 @@
           <div class="body" style="flex-direction:column;gap:14px;padding:20px">
             <div><label>Назва статті <span style="color:var(--brand)">*</span></label><input id="biName" placeholder="Напр., Відрядження"></div>
             <div><label>Категорія</label><select id="biCategory" class="modal-sel"><option value="">— без категорії —</option></select></div>
-            <div><label>Група</label><input id="biGroup" placeholder="Напр., Прямі витрати"></div>
             <div><label>Порядок сортування</label><input id="biSort" type="number" placeholder="0"></div>
           </div>
           <div class="foot">
@@ -6022,7 +6021,6 @@
         <td style="color:var(--muted)">${i+1}</td>
         <td style="font-weight:600">${it.name}</td>
         <td style="color:var(--muted)">${cat?cat.name:'—'}</td>
-        <td style="color:var(--muted)">${it.group_name||'—'}</td>
         <td style="color:var(--muted)">${it.sort_order??'—'}</td>
         <td><div class="row-act">
           <button class="ico-btn" onclick="budItemOpen('${it.id}')">${_eIco}</button>
@@ -6046,7 +6044,6 @@
       sel.innerHTML='<option value="">— без категорії —</option>'+
         _cats.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
       sel.value=it&&it.category_id?String(it.category_id):'';
-      document.getElementById('biGroup').value=it?it.group_name||'':'';
       document.getElementById('biSort').value=it?it.sort_order??'':'';
       document.getElementById('budItemDelBtn').style.display=id?'':'none';
       document.getElementById('budItemScrim').classList.add('open');
@@ -6062,7 +6059,6 @@
       const payload={
         name,
         category_id:catVal?+catVal:null,
-        group_name:document.getElementById('biGroup').value.trim()||null,
         sort_order:+document.getElementById('biSort').value||0
       };
       const res=_budItemEdit
