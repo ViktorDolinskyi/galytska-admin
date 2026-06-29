@@ -6036,7 +6036,7 @@
 
     window.budItemOpen=function(id){
       _budItemEdit=id||null;
-      const it=id?_items.find(x=>x.id===id):null;
+      const it=id?_items.find(x=>String(x.id)===String(id)):null;
       document.getElementById('budItemTitle').textContent=id?'Редагувати статтю':'Нова стаття витрат';
       document.getElementById('biName').value=it?it.name:'';
       // заповнюємо select категорій
