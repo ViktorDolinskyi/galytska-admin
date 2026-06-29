@@ -1840,8 +1840,10 @@
           <!-- Співробітники -->
           <div class="card" style="margin-bottom:16px">
             <div class="card-head">
-              <h3>Співробітники</h3>
-              <span class="badge info" id="empCount">0</span>
+              <div>
+                <div class="card-title">Співробітники</div>
+                <div class="card-sub" id="empCount">0 співробітників</div>
+              </div>
               <div style="display:flex;gap:8px;margin-left:auto;align-items:center">
                 <button class="btn" onclick="empExportCsv()" title="Вивантажити CSV">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;margin-right:4px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Експорт
@@ -1861,9 +1863,11 @@
           <!-- Типи структурних одиниць -->
           <div class="card" style="margin-bottom:16px">
             <div class="card-head">
-              <h3>Типи структурних одиниць</h3>
-              <span class="badge info" id="typeCount">0</span>
-              <button class="btn primary" onclick="typeAdd()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Додати</button>
+              <div>
+                <div class="card-title">Типи структурних одиниць</div>
+                <div class="card-sub" id="typeCount">0 типів</div>
+              </div>
+              <button class="btn primary" onclick="typeAdd()" style="margin-left:auto">+ Додати</button>
             </div>
             <table>
               <thead><tr><th style="width:48px">Іконка</th><th>Назва</th><th style="width:80px"></th></tr></thead>
@@ -1873,9 +1877,11 @@
           <!-- Види структурних одиниць -->
           <div class="card">
             <div class="card-head">
-              <h3>Види структурних одиниць</h3>
-              <span class="badge info" id="kindCount">0</span>
-              <button class="btn primary" onclick="kindAdd()" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Додати</button>
+              <div>
+                <div class="card-title">Види структурних одиниць</div>
+                <div class="card-sub" id="kindCount">0 видів</div>
+              </div>
+              <button class="btn primary" onclick="kindAdd()" style="margin-left:auto">+ Додати</button>
             </div>
             <table>
               <thead><tr><th style="width:48px">Колір</th><th>Назва</th><th style="width:80px"></th></tr></thead>
@@ -4551,7 +4557,7 @@
   function empFull(r){return[r.last_name,r.first_name,r.patronymic].filter(Boolean).join(' ');}
   function renderEmps(){
     const tbody=document.getElementById('empBody');if(!tbody)return;
-    document.getElementById('empCount').textContent=dictEmps.length;
+    document.getElementById('empCount').textContent=dictEmps.length+' співробітників';
     tbody.innerHTML=dictEmps.map(r=>`<tr>
       <td class="t-name">${orgEsc(empFull(r))}</td>
       <td style="color:var(--slate);font-size:13px">${r.birthdate?new Date(r.birthdate).toLocaleDateString('uk-UA'):'—'}</td>
@@ -4840,7 +4846,7 @@
   window.selectIconKey=key=>{selectedIcon=key;document.querySelectorAll('.icon-opt').forEach(b=>b.classList.toggle('active',b.dataset.icon===key));};
   function renderTypes(){
     const tbody=$('typeBody');if(!tbody)return;
-    $('typeCount').textContent=dictTypes.length;
+    $('typeCount').textContent=dictTypes.length+' типів';
     tbody.innerHTML=dictTypes.map(r=>`<tr>
       <td style="text-align:center">${iconSvg(r.icon||'building')}</td>
       <td class="t-name">${orgEsc(r.name)}</td>
@@ -4869,7 +4875,7 @@
   /* --- Види структурних одиниць --- */
   function renderKinds(){
     const tbody=$('kindBody');if(!tbody)return;
-    $('kindCount').textContent=dictKinds.length;
+    $('kindCount').textContent=dictKinds.length+' видів';
     tbody.innerHTML=dictKinds.map(r=>`<tr>
       <td style="text-align:center"><span class="color-swatch" style="background:${orgEsc(r.color||'#888')}"></span></td>
       <td class="t-name">${orgEsc(r.name)}</td>
