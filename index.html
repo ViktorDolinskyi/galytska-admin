@@ -978,7 +978,7 @@
   .bud-cell-diff.pos{color:#15803D}
   .bud-cell-diff.neg{color:#B91C1C}
   /* read-only sum cells */
-  .bud-sum{text-align:right;padding:4px 12px;white-space:nowrap}
+  .bud-sum{text-align:center;padding:4px 12px;white-space:nowrap}
   .bud-sum-plan{font-weight:600;font-size:13px;color:var(--ink)}
   .bud-sum-fact{font-size:11px;color:var(--slate);margin-left:6px}
   .bud-table .bud-group .bud-sum-plan{font-size:12px;color:var(--muted)}
@@ -5951,14 +5951,16 @@
 
     async function budLoad(){
       const year=document.getElementById('budYear').value;
-      const [r1,r2,r3]=await Promise.all([
+      const [r1,r2,r3,r4]=await Promise.all([
         db.from('budget_expense_items').select('*').order('sort_order').order('name'),
         db.from('budget_entries').select('*').eq('year',year),
-        db.from('budgets').select('*').order('year',{ascending:false}).order('unit_id')
+        db.from('budgets').select('*').order('year',{ascending:false}).order('unit_id'),
+        db.from('budget_categories').select('*').order('sort_order').order('name')
       ]);
       _items=r1.data||[];
       _entries=r2.data||[];
       _budgets=r3.data||[];
+      _cats=r4.data||[];
       budFillUnits();
       budRender();
       budItemsRender();
