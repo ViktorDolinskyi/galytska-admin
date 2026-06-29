@@ -2675,8 +2675,25 @@
           </div>
         </div>
 
-        <!-- ── Налаштування: статті витрат ── -->
-        <div id="budTab-settings" style="display:none">
+        <!-- ── Налаштування ── -->
+        <div id="budTab-settings" style="display:none;display:flex;flex-direction:column;gap:20px">
+
+          <!-- Категорії -->
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Категорії статей витрат</div>
+                <div class="card-sub" id="budCatCount">0 категорій</div>
+              </div>
+              <button class="btn primary" onclick="budCatOpen()">+ Додати категорію</button>
+            </div>
+            <table class="tbl">
+              <thead><tr><th>#</th><th>Назва категорії</th><th>Порядок</th><th></th></tr></thead>
+              <tbody id="budCatBody"><tr><td colspan="4" class="empty">Завантаження…</td></tr></tbody>
+            </table>
+          </div>
+
+          <!-- Статті витрат -->
           <div class="card">
             <div class="card-head">
               <div>
@@ -2686,12 +2703,31 @@
               <button class="btn primary" onclick="budItemOpen()">+ Додати статтю</button>
             </div>
             <table class="tbl">
-              <thead><tr><th>#</th><th>Назва статті</th><th>Група</th><th>Порядок</th><th></th></tr></thead>
-              <tbody id="budItemBody"><tr><td colspan="5" class="empty">Завантаження…</td></tr></tbody>
+              <thead><tr><th>#</th><th>Назва статті</th><th>Категорія</th><th>Група</th><th>Порядок</th><th></th></tr></thead>
+              <tbody id="budItemBody"><tr><td colspan="6" class="empty">Завантаження…</td></tr></tbody>
             </table>
           </div>
         </div>
       </section>
+
+      <!-- модалка: категорія -->
+      <div class="modal-scrim" id="budCatScrim" onclick="if(event.target===this)budCatClose()">
+        <div class="modal" style="max-width:400px;max-height:90vh;display:flex;flex-direction:column">
+          <div class="modal-head">
+            <h3 id="budCatTitle">Нова категорія</h3>
+            <button class="ico-btn" onclick="budCatClose()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+          </div>
+          <div class="body" style="flex-direction:column;gap:14px;padding:20px">
+            <div><label>Назва категорії <span style="color:var(--brand)">*</span></label><input id="bcName" placeholder="Напр., Операційні витрати"></div>
+            <div><label>Порядок сортування</label><input id="bcSort" type="number" placeholder="0"></div>
+          </div>
+          <div class="foot">
+            <button class="btn ghost" id="budCatDelBtn" onclick="budCatDeleteCurrent()" style="margin-right:auto;display:none">Видалити</button>
+            <button class="btn ghost" onclick="budCatClose()">Скасувати</button>
+            <button class="btn primary" onclick="budCatSave()">Зберегти</button>
+          </div>
+        </div>
+      </div>
 
       <!-- модалка: стаття витрат -->
       <div class="modal-scrim" id="budItemScrim" onclick="if(event.target===this)budItemClose()">
@@ -2700,8 +2736,9 @@
             <h3 id="budItemTitle">Нова стаття витрат</h3>
             <button class="ico-btn" onclick="budItemClose()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
           </div>
-          <div class="body" style="flex-direction:column;gap:14px;padding:20px;overflow-y:auto">
+          <div class="body" style="flex-direction:column;gap:14px;padding:20px">
             <div><label>Назва статті <span style="color:var(--brand)">*</span></label><input id="biName" placeholder="Напр., Відрядження"></div>
+            <div><label>Категорія</label><select id="biCategory" class="modal-sel"><option value="">— без категорії —</option></select></div>
             <div><label>Група</label><input id="biGroup" placeholder="Напр., Прямі витрати"></div>
             <div><label>Порядок сортування</label><input id="biSort" type="number" placeholder="0"></div>
           </div>
@@ -5901,6 +5938,76 @@
       document.querySelectorAll('#budSeg button').forEach(b=>b.classList.remove('on'));
       if(btn) btn.classList.add('on');
       if(tab==='table') budFillUnits();
+      if(tab==='settings'){budCatsLoadRefresh();budItemsLoadRefresh();}
+    };
+
+    // ── категорії CRUD ──
+    let _cats=[], _budCatEdit=null;
+
+    function budCatsRender(){
+      const body=document.getElementById('budCatBody');
+      const cnt=document.getElementById('budCatCount');
+      if(cnt) cnt.textContent=_cats.length+' категорій';
+      if(!_cats.length){body.innerHTML='<tr><td colspan="4" class="empty">Немає категорій</td></tr>';return;}
+      body.innerHTML=_cats.map((c,i)=>`<tr>
+        <td style="color:var(--muted)">${i+1}</td>
+        <td style="font-weight:600">${c.name}</td>
+        <td style="color:var(--muted)">${c.sort_order??'—'}</td>
+        <td><div class="row-act">
+          <button class="ico-btn" onclick="budCatOpen('${c.id}')">${_eIco}</button>
+          <button class="ico-btn del" onclick="askRowDel(this,'Видалити категорію?','budCatDel','${c.id}','budCatsLoadRefresh')">${_dIco}</button>
+        </div></td>
+      </tr>`).join('');
+    }
+
+    window.budCatsLoadRefresh=async function(){
+      const r=await db.from('budget_categories').select('*').order('sort_order').order('name');
+      _cats=r.data||[];
+      budCatsRender();
+      // оновлюємо select у модалці статей
+      const sel=document.getElementById('biCategory');
+      if(sel){
+        const cur=sel.value;
+        sel.innerHTML='<option value="">— без категорії —</option>'+
+          _cats.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+        sel.value=cur;
+      }
+    };
+
+    window.budCatOpen=function(id){
+      _budCatEdit=id||null;
+      const c=id?_cats.find(x=>String(x.id)===String(id)):null;
+      document.getElementById('budCatTitle').textContent=id?'Редагувати категорію':'Нова категорія';
+      document.getElementById('bcName').value=c?c.name:'';
+      document.getElementById('bcSort').value=c?c.sort_order??'':'';
+      document.getElementById('budCatDelBtn').style.display=id?'':'none';
+      document.getElementById('budCatScrim').classList.add('open');
+      document.getElementById('bcName').focus();
+    };
+
+    window.budCatClose=()=>document.getElementById('budCatScrim').classList.remove('open');
+
+    window.budCatSave=async function(){
+      const name=document.getElementById('bcName').value.trim();
+      if(!name){document.getElementById('bcName').focus();return;}
+      const payload={name,sort_order:+document.getElementById('bcSort').value||0};
+      const res=_budCatEdit
+        ?await db.from('budget_categories').update(payload).eq('id',_budCatEdit)
+        :await db.from('budget_categories').insert(payload);
+      if(res.error){toast('Помилка: '+res.error.message,'error');return;}
+      budCatClose();await window.budCatsLoadRefresh();
+      toast('Збережено','success');
+    };
+
+    window.budCatDeleteCurrent=async function(){
+      if(!_budCatEdit) return;
+      await db.from('budget_categories').delete().eq('id',_budCatEdit);
+      budCatClose();await window.budCatsLoadRefresh();
+    };
+
+    window.budCatDel=async function(id){
+      await db.from('budget_categories').delete().eq('id',id);
+      await window.budCatsLoadRefresh();
     };
 
     // ── статті витрат CRUD ──
@@ -5908,17 +6015,20 @@
       const body=document.getElementById('budItemBody');
       const cnt=document.getElementById('budItemCount');
       if(cnt) cnt.textContent=_items.length+' статей';
-      if(!_items.length){body.innerHTML='<tr><td colspan="5" class="empty">Немає статей</td></tr>';return;}
-      body.innerHTML=_items.map((it,i)=>`<tr>
+      if(!_items.length){body.innerHTML='<tr><td colspan="6" class="empty">Немає статей</td></tr>';return;}
+      body.innerHTML=_items.map((it,i)=>{
+        const cat=_cats.find(c=>c.id===it.category_id);
+        return `<tr>
         <td style="color:var(--muted)">${i+1}</td>
         <td style="font-weight:600">${it.name}</td>
+        <td style="color:var(--muted)">${cat?cat.name:'—'}</td>
         <td style="color:var(--muted)">${it.group_name||'—'}</td>
         <td style="color:var(--muted)">${it.sort_order??'—'}</td>
         <td><div class="row-act">
           <button class="ico-btn" onclick="budItemOpen('${it.id}')">${_eIco}</button>
           <button class="ico-btn del" onclick="askRowDel(this,'Видалити?','budItemDel','${it.id}','budItemsLoadRefresh')">${_dIco}</button>
         </div></td>
-      </tr>`).join('');
+      </tr>`;}).join('');
     }
 
     window.budItemsLoadRefresh=async function(){
@@ -5931,6 +6041,11 @@
       const it=id?_items.find(x=>x.id===id):null;
       document.getElementById('budItemTitle').textContent=id?'Редагувати статтю':'Нова стаття витрат';
       document.getElementById('biName').value=it?it.name:'';
+      // заповнюємо select категорій
+      const sel=document.getElementById('biCategory');
+      sel.innerHTML='<option value="">— без категорії —</option>'+
+        _cats.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+      sel.value=it&&it.category_id?String(it.category_id):'';
       document.getElementById('biGroup').value=it?it.group_name||'':'';
       document.getElementById('biSort').value=it?it.sort_order??'':'';
       document.getElementById('budItemDelBtn').style.display=id?'':'none';
@@ -5943,12 +6058,19 @@
     window.budItemSave=async function(){
       const name=document.getElementById('biName').value.trim();
       if(!name){document.getElementById('biName').focus();return;}
-      const payload={name,group_name:document.getElementById('biGroup').value.trim()||null,sort_order:+document.getElementById('biSort').value||0};
+      const catVal=document.getElementById('biCategory').value;
+      const payload={
+        name,
+        category_id:catVal?+catVal:null,
+        group_name:document.getElementById('biGroup').value.trim()||null,
+        sort_order:+document.getElementById('biSort').value||0
+      };
       const res=_budItemEdit
         ?await db.from('budget_expense_items').update(payload).eq('id',_budItemEdit)
         :await db.from('budget_expense_items').insert(payload);
       if(res.error){toast('Помилка: '+res.error.message,'error');return;}
       budItemClose();await window.budItemsLoadRefresh();
+      toast('Збережено','success');
     };
 
     window.budItemDeleteCurrent=async function(){
