@@ -5954,7 +5954,7 @@
       const cnt=document.getElementById('budCatCount');
       if(cnt) cnt.textContent=_cats.length+' категорій';
       if(!_cats.length){body.innerHTML='<tr><td colspan="4" class="empty">Немає категорій</td></tr>';_budCatsToggleBtn();return;}
-      const vis=_catsExpanded?_cats:_cats.slice(0,10);
+      const vis=_catsExpanded?_cats:_cats.slice(0,5);
       body.innerHTML=vis.map((c,i)=>`<tr>
         <td style="color:var(--muted)">${i+1}</td>
         <td style="font-weight:600">${c.name}</td>
@@ -5971,7 +5971,7 @@
       const btn=document.getElementById('budCatsToggle');
       const wrap=document.getElementById('budCatsToggle-wrap');
       if(!btn||!wrap) return;
-      if(_cats.length<=10){wrap.style.display='none';return;}
+      if(_cats.length<=5){wrap.style.display='none';return;}
       wrap.style.display='';
       btn.textContent=_catsExpanded?'Згорнути':'Показати всі ('+_cats.length+')';
     }
@@ -6036,7 +6036,7 @@
       const cnt=document.getElementById('budItemCount');
       if(cnt) cnt.textContent=_items.length+' статей';
       if(!_items.length){body.innerHTML='<tr><td colspan="5" class="empty">Немає статей</td></tr>';_budItemsToggleBtn();return;}
-      const vis=_itemsExpanded?_items:_items.slice(0,10);
+      const vis=_itemsExpanded?_items:_items.slice(0,5);
       body.innerHTML=vis.map((it,i)=>{
         const cat=_cats.find(c=>c.id===it.category_id);
         return `<tr>
@@ -6056,7 +6056,7 @@
       const btn=document.getElementById('budItemsToggle');
       const wrap=document.getElementById('budItemsToggle-wrap');
       if(!btn||!wrap) return;
-      if(_items.length<=10){wrap.style.display='none';return;}
+      if(_items.length<=5){wrap.style.display='none';return;}
       wrap.style.display='';
       btn.textContent=_itemsExpanded?'Згорнути':'Показати всі ('+_items.length+')';
     }
