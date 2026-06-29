@@ -5937,7 +5937,7 @@
       document.querySelectorAll('#budSeg button').forEach(b=>b.classList.remove('on'));
       if(btn) btn.classList.add('on');
       if(tab==='table') budFillUnits();
-      if(tab==='settings'){budCatsLoadRefresh();budItemsLoadRefresh();}
+      if(tab==='settings'){budCatsLoadRefresh().then(()=>budItemsLoadRefresh());}
     };
 
     // ── категорії CRUD ──
