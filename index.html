@@ -2732,9 +2732,19 @@
         <div class="modal" style="width:96vw;max-width:1100px;max-height:92vh;display:flex;flex-direction:column">
           <div class="modal-head">
             <h3 id="budgetModalTitle">Новий бюджет</h3>
-            <div style="display:flex;gap:6px;margin-left:auto;margin-right:12px">
-              <button id="bgTogglePlan" style="padding:5px 14px;border-radius:20px;border:1px solid var(--brand);background:var(--brand);color:#fff;font-size:12px;font-weight:600;cursor:default;opacity:1">План</button>
-              <button id="bgToggleFact" onclick="budgetToggleFact()" style="padding:5px 14px;border-radius:20px;border:1px solid var(--line);background:var(--hover-bg);color:var(--slate);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s">Факт</button>
+            <div style="display:flex;align-items:center;gap:16px;margin-left:auto;margin-right:12px">
+              <label style="display:flex;align-items:center;gap:8px;cursor:default;user-select:none">
+                <span style="font-size:12px;font-weight:600;color:var(--ink)">План</span>
+                <span style="position:relative;width:42px;height:24px;border-radius:12px;background:var(--brand);display:inline-block;transition:background .2s;flex-shrink:0">
+                  <span style="position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:left .2s"></span>
+                </span>
+              </label>
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none" onclick="budgetToggleFact()">
+                <span style="font-size:12px;font-weight:600;color:var(--ink)">Факт</span>
+                <span id="bgFactTrack" style="position:relative;width:42px;height:24px;border-radius:12px;background:var(--line);display:inline-block;transition:background .2s;flex-shrink:0">
+                  <span id="bgFactThumb" style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:left .2s"></span>
+                </span>
+              </label>
             </div>
             <button class="ico-btn" onclick="budgetClose()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
           </div>
@@ -6222,15 +6232,16 @@
 
     let _bgEntries={}, _bgShowFact=false;
 
+    function _bgFactToggleUI(){
+      const track=document.getElementById('bgFactTrack');
+      const thumb=document.getElementById('bgFactThumb');
+      if(track) track.style.background=_bgShowFact?'var(--brand)':'var(--line)';
+      if(thumb) thumb.style.left=_bgShowFact?'21px':'3px';
+    }
+
     window.budgetToggleFact=function(){
       _bgShowFact=!_bgShowFact;
-      const btn=document.getElementById('bgToggleFact');
-      if(btn){
-        btn.style.background=_bgShowFact?'var(--brand)':'var(--hover-bg)';
-        btn.style.color=_bgShowFact?'#fff':'var(--slate)';
-        btn.style.border=_bgShowFact?'1px solid var(--brand)':'1px solid var(--line)';
-      }
-      // показати/сховати рядки факту без перерендеру
+      _bgFactToggleUI();
       document.querySelectorAll('.bg-fact-row').forEach(el=>{
         el.style.display=_bgShowFact?'':'none';
       });
@@ -6313,8 +6324,7 @@
       _budgetEdit=id||null;
       _bgEntries={};
       _bgShowFact=false;
-      const factBtn=document.getElementById('bgToggleFact');
-      if(factBtn){factBtn.style.background='var(--hover-bg)';factBtn.style.color='var(--slate)';factBtn.style.border='1px solid var(--line)';}
+      _bgFactToggleUI();
       const b=id?_budgets.find(x=>String(x.id)===String(id)):null;
       document.getElementById('budgetModalTitle').textContent=id?'Редагувати бюджет':'Новий бюджет';
       const sel=document.getElementById('bgUnit');
