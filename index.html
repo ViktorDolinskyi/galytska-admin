@@ -5980,11 +5980,16 @@
       const head=document.getElementById('budHead');
       const body=document.getElementById('budBody');
 
-      const _subLabel=`<span class="bud-head-sub" style="font-weight:400;font-size:9px;display:block;text-align:center">${_budShowFact?'план / факт':'план'}</span>`;
+      const _thSub=`<div style="display:flex;font-size:10px;font-weight:400;color:var(--muted);border-top:1px solid var(--line)">
+        <span style="flex:1;text-align:center;padding:2px 0">план</span>
+        <span class="bud-fact-el bud-head-sub" style="flex:1;text-align:center;padding:2px 0;border-left:1px solid var(--line);display:${_budShowFact?'block':'none'}">факт</span>
+      </div>`;
       head.innerHTML='<tr>'+
-        '<th style="text-align:left">Стаття витрат</th>'+
-        months.map(m=>`<th style="text-align:center">${MONTHS[m-1]}${_subLabel}</th>`).join('')+
-        `<th style="text-align:center">${period==='year'?'Рік':period.toUpperCase()}${_subLabel}</th>`+
+        '<th style="text-align:left;vertical-align:bottom">Стаття витрат</th>'+
+        months.map(m=>`<th style="padding:0;text-align:center;min-width:${_budShowFact?'160':'110'}px">
+          <div style="padding:5px 10px 4px">${MONTHS[m-1]}</div>${_thSub}</th>`).join('')+
+        `<th style="padding:0;text-align:center;min-width:${_budShowFact?'160':'110'}px">
+          <div style="padding:5px 10px 4px">${period==='year'?'Рік':period.toUpperCase()}</div>${_thSub}</th>`+
       '</tr>';
 
       if(!_items.length){body.innerHTML='<tr><td colspan="'+(months.length+2)+'" class="empty">Додайте статті витрат у Налаштуваннях</td></tr>';return;}
@@ -5996,6 +6001,8 @@
         const g=cat?cat.name:'Інше';
         (groups[g]=groups[g]||[]).push(it);
       });
+
+      const _sc=(p,f)=>`<div style="display:flex"><span style="flex:1;text-align:center;padding:4px 8px;font-variant-numeric:tabular-nums" class="bud-sum-plan">${p?p.toLocaleString('uk-UA'):'—'}</span><span class="bud-sum-fact bud-fact-el" style="flex:1;text-align:center;padding:4px 8px;border-left:1px solid var(--line);font-variant-numeric:tabular-nums;display:${_budShowFact?'block':'none'}">${f?f.toLocaleString('uk-UA'):'—'}</span></div>`;
 
       let html='';
       let totalPlan=Array(months.length).fill(0), totalFact=Array(months.length).fill(0);
@@ -6017,20 +6024,14 @@
         const grpSumP=grpPlan.reduce((a,b)=>a+b,0);
         const grpSumF=grpFact.reduce((a,b)=>a+b,0);
 
-        const grpCells=months.map((_,i)=>`<td class="bud-sum">
-          <span class="bud-sum-plan">${grpPlan[i]?grpPlan[i].toLocaleString('uk-UA'):'—'}</span>
-          <span class="bud-sum-fact bud-fact-el" style="display:${_budShowFact?'inline':'none'}">${grpFact[i]?'/ '+grpFact[i].toLocaleString('uk-UA'):''}</span>
-        </td>`).join('');
+        const grpCells=months.map((_,i)=>`<td style="padding:0">${_sc(grpPlan[i],grpFact[i])}</td>`).join('');
 
         html+=`<tr class="bud-group" style="cursor:pointer" onclick="budToggleGroup('${gid}')">
           <td style="padding:6px 10px">
             <span style="display:inline-block;transition:transform .2s;transform:rotate(${collapsed?'-90':'0'}deg);margin-right:6px;font-size:10px">▼</span>${grp}
           </td>
           ${grpCells}
-          <td class="bud-sum bud-row-total">
-            <span class="bud-sum-plan">${fmtN(grpSumP)}</span>
-            <span class="bud-sum-fact bud-fact-el" style="display:${_budShowFact?'inline':'none'}">${grpSumF?'/ '+fmtN(grpSumF):''}</span>
-          </td>
+          <td class="bud-row-total" style="padding:0">${_sc(grpSumP,grpSumF)}</td>
         </tr>`;
 
         items.forEach(it=>{
@@ -6041,35 +6042,23 @@
             const fact=e?Number(e.amount_fact||0):0;
             totalPlan[mi]+=plan; totalFact[mi]+=fact;
             rowPlan+=plan; rowFact+=fact;
-            return `<td class="bud-sum">
-              <span class="bud-sum-plan">${plan?plan.toLocaleString('uk-UA'):'—'}</span>
-              <span class="bud-sum-fact bud-fact-el" style="display:${_budShowFact?'inline':'none'}">${fact?'/ '+fact.toLocaleString('uk-UA'):''}</span>
-            </td>`;
+            return `<td style="padding:0">${_sc(plan,fact)}</td>`;
           });
           const rowEmpty=(rowPlan+rowFact)===0;
           const rowHide=collapsed||(rowEmpty&&_budHideEmpty);
           html+=`<tr data-group="${gid}" data-rowsum="${rowPlan+rowFact}" style="display:${rowHide?'none':''}">
             <td style="padding:5px 10px 5px 24px">${it.name}</td>
             ${cells.join('')}
-            <td class="bud-sum bud-row-total">
-              <span class="bud-sum-plan">${fmtN(rowPlan)}</span>
-              <span class="bud-sum-fact bud-fact-el" style="display:${_budShowFact?'inline':'none'}">${rowFact?'/ '+fmtN(rowFact):''}</span>
-            </td>
+            <td class="bud-row-total" style="padding:0;font-weight:600">${_sc(rowPlan,rowFact)}</td>
           </tr>`;
         });
       });
 
       // підсумок
-      const totCells=months.map((_,i)=>`<td class="bud-sum">
-        <span class="bud-sum-plan">${fmtN(totalPlan[i])}</span>
-        <span class="bud-sum-fact bud-fact-el" style="display:${_budShowFact?'inline':'none'}">${totalFact[i]?'/ '+fmtN(totalFact[i]):''}</span>
-      </td>`).join('');
+      const totCells=months.map((_,i)=>`<td style="padding:0;font-weight:700">${_sc(totalPlan[i],totalFact[i])}</td>`).join('');
       const sumP=totalPlan.reduce((a,b)=>a+b,0), sumF=totalFact.reduce((a,b)=>a+b,0);
       html+=`<tr class="bud-total"><td style="padding:6px 12px">РАЗОМ</td>${totCells}
-        <td class="bud-sum bud-row-total">
-          <span class="bud-sum-plan">${fmtN(sumP)}</span>
-          <span class="bud-sum-fact bud-fact-el" style="display:${_budShowFact?'inline':'none'}">${sumF?'/ '+fmtN(sumF):''}</span>
-        </td>
+        <td class="bud-row-total" style="padding:0;font-weight:700">${_sc(sumP,sumF)}</td>
       </tr>`;
 
       body.innerHTML=html;
@@ -6132,11 +6121,7 @@
       const thumb=document.getElementById('budFactThumb');
       if(track) track.style.background=_budShowFact?'var(--brand)':'var(--line)';
       if(thumb) thumb.style.left=_budShowFact?'21px':'3px';
-      document.querySelectorAll('.bud-fact-el').forEach(el=>{
-        const isInline=el.tagName==='SPAN'||el.classList.contains('bud-sum-fact');
-        el.style.display=_budShowFact?(isInline?'inline':'block'):'none';
-      });
-      document.querySelectorAll('.bud-head-sub').forEach(el=>{el.textContent=_budShowFact?'план / факт':'план';});
+      document.querySelectorAll('.bud-fact-el').forEach(el=>{el.style.display=_budShowFact?'block':'none';});
     };
 
     window.budSaveAll=async function(){
