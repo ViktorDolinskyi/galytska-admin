@@ -2680,6 +2680,19 @@
         <!-- ── Налаштування ── -->
         <div id="budTab-settings" style="display:none;flex-direction:column;gap:20px">
 
+          <!-- Бюджети підрозділів -->
+          <div class="card">
+            <div class="card-head">
+              <h3>Бюджети підрозділів</h3>
+              <span class="badge info" id="budgetsCount">0</span>
+              <button class="btn primary" onclick="budgetOpen()" style="margin-left:auto">+ Додати</button>
+            </div>
+            <table class="tbl">
+              <thead><tr><th>#</th><th>Підрозділ</th><th>Рік</th><th>Статус</th><th></th></tr></thead>
+              <tbody id="budgetsBody"><tr><td colspan="5" class="empty">Завантаження…</td></tr></tbody>
+            </table>
+          </div>
+
           <!-- Категорії -->
           <div class="card">
             <div class="card-head">
@@ -2713,6 +2726,33 @@
           </div>
         </div>
       </section>
+
+      <!-- модалка: бюджет підрозділу -->
+      <div class="modal-scrim" id="budgetScrim" onclick="if(event.target===this)budgetClose()">
+        <div class="modal" style="max-width:440px;max-height:90vh;display:flex;flex-direction:column">
+          <div class="modal-head">
+            <h3 id="budgetModalTitle">Новий бюджет</h3>
+            <button class="ico-btn" onclick="budgetClose()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+          </div>
+          <div class="body" style="flex-direction:column;gap:14px;padding:20px">
+            <div><label>Підрозділ <span style="color:var(--brand)">*</span></label><select id="bgUnit" class="modal-sel"><option value="">— Оберіть підрозділ —</option></select></div>
+            <div><label>Рік <span style="color:var(--brand)">*</span></label><input id="bgYear" type="number" placeholder="2026" min="2020" max="2100"></div>
+            <div><label>Статус</label>
+              <select id="bgStatus" class="modal-sel">
+                <option value="draft">Чернетка</option>
+                <option value="approved">Затверджений</option>
+                <option value="closed">Закритий</option>
+              </select>
+            </div>
+            <div><label>Примітка</label><input id="bgNote" placeholder="Необов'язково"></div>
+          </div>
+          <div class="foot">
+            <button class="btn ghost" id="budgetDelBtn" onclick="budgetDeleteCurrent()" style="margin-right:auto;display:none">Видалити</button>
+            <button class="btn ghost" onclick="budgetClose()">Скасувати</button>
+            <button class="btn primary" onclick="budgetSave()">Зберегти</button>
+          </div>
+        </div>
+      </div>
 
       <!-- модалка: категорія -->
       <div class="modal-scrim" id="budCatScrim" onclick="if(event.target===this)budCatClose()">
@@ -5832,24 +5872,30 @@
       for(let i=y-1;i<=y+2;i++) sel.innerHTML+=`<option value="${i}"${i===y?' selected':''}>${i}</option>`;
     })();
 
-    // ── заповнити підрозділи ──
+    // ── заповнити підрозділи (лише ті що мають бюджет) ──
     function budFillUnits(){
       const sel=document.getElementById('budUnit');
       const cur=sel.value;
       sel.innerHTML='<option value="">— Всі підрозділи —</option>';
-      (function flat(list){list.forEach(n=>{sel.innerHTML+=`<option value="${n.id}">${n.name}</option>`;flat(n.children||[]);});})(window.orgData||[]);
+      const flat=flatOrgUnits();
+      (_budgets||[]).forEach(b=>{
+        const u=flat.find(x=>x.id===b.unit_id);
+        if(u) sel.innerHTML+=`<option value="${u.id}">${u.name} (${b.year})</option>`;
+      });
       if(cur) sel.value=cur;
     }
 
     async function budLoad(){
-      budFillUnits();
       const year=document.getElementById('budYear').value;
-      const [r1,r2]=await Promise.all([
+      const [r1,r2,r3]=await Promise.all([
         db.from('budget_expense_items').select('*').order('sort_order').order('name'),
-        db.from('budget_entries').select('*').eq('year',year)
+        db.from('budget_entries').select('*').eq('year',year),
+        db.from('budgets').select('*').order('year',{ascending:false}).order('unit_id')
       ]);
       _items=r1.data||[];
       _entries=r2.data||[];
+      _budgets=r3.data||[];
+      budFillUnits();
       budRender();
       budItemsRender();
     }
@@ -5941,7 +5987,10 @@
       document.querySelectorAll('#budSeg button').forEach(b=>b.classList.remove('on'));
       if(btn) btn.classList.add('on');
       if(tab==='table') budFillUnits();
-      if(tab==='settings'){budCatsLoadRefresh().then(()=>budItemsLoadRefresh());}
+      if(tab==='settings'){
+        budgetsLoadRefresh();
+        budCatsLoadRefresh().then(()=>budItemsLoadRefresh());
+      }
     };
 
     // ── категорії CRUD ──
@@ -6110,6 +6159,92 @@
     window.budItemDel=async function(id){
       await db.from('budget_expense_items').delete().eq('id',id);
       await window.budItemsLoadRefresh();
+    };
+
+    // ── Бюджети підрозділів CRUD ──
+    let _budgets=[], _budgetEdit=null;
+    const BUD_STATUS={draft:'Чернетка',approved:'Затверджений',closed:'Закритий'};
+    const BUD_STATUS_CLS={draft:'warn',approved:'success',closed:''};
+
+    function budgetsRender(){
+      const body=document.getElementById('budgetsBody');
+      const cnt=document.getElementById('budgetsCount');
+      if(cnt) cnt.textContent=_budgets.length;
+      if(!_budgets.length){body.innerHTML='<tr><td colspan="5" class="empty">Немає бюджетів</td></tr>';return;}
+      const flatUnits=flatOrgUnits();
+      body.innerHTML=_budgets.map((b,i)=>{
+        const unit=flatUnits.find(u=>u.id===b.unit_id);
+        const unitName=unit?unit.name:'—';
+        const cls=BUD_STATUS_CLS[b.status]||'';
+        return `<tr>
+          <td style="color:var(--muted)">${i+1}</td>
+          <td style="font-weight:600">${unitName}</td>
+          <td>${b.year}</td>
+          <td><span class="badge ${cls}">${BUD_STATUS[b.status]||b.status}</span></td>
+          <td><div class="row-act">
+            <button class="ico-btn" onclick="budgetOpen('${b.id}')">${_eIco}</button>
+            <button class="ico-btn del" onclick="askRowDel(this,'Видалити бюджет?','budgetDel','${b.id}','budgetsLoadRefresh')">${_dIco}</button>
+          </div></td>
+        </tr>`;
+      }).join('');
+    }
+
+    window.budgetsLoadRefresh=async function(){
+      const r=await db.from('budgets').select('*').order('year',{ascending:false}).order('unit_id');
+      _budgets=r.data||[];
+      budgetsRender();
+    };
+
+    window.budgetOpen=function(id){
+      _budgetEdit=id||null;
+      const b=id?_budgets.find(x=>String(x.id)===String(id)):null;
+      document.getElementById('budgetModalTitle').textContent=id?'Редагувати бюджет':'Новий бюджет';
+      // заповнити select підрозділів
+      const sel=document.getElementById('bgUnit');
+      const flatUnits=flatOrgUnits();
+      sel.innerHTML='<option value="">— Оберіть підрозділ —</option>'+
+        flatUnits.map(u=>`<option value="${u.id}">${'—'.repeat(u.level)} ${u.name}</option>`).join('');
+      sel.value=b?String(b.unit_id):'';
+      document.getElementById('bgYear').value=b?b.year:new Date().getFullYear();
+      document.getElementById('bgStatus').value=b?b.status:'draft';
+      document.getElementById('bgNote').value=b?b.note||'':'';
+      document.getElementById('budgetDelBtn').style.display=id?'':'none';
+      document.getElementById('budgetScrim').classList.add('open');
+      document.getElementById('bgUnit').focus();
+    };
+
+    window.budgetClose=()=>document.getElementById('budgetScrim').classList.remove('open');
+
+    window.budgetSave=async function(){
+      const unitId=document.getElementById('bgUnit').value;
+      const year=+document.getElementById('bgYear').value;
+      if(!unitId){document.getElementById('bgUnit').focus();return;}
+      if(!year){document.getElementById('bgYear').focus();return;}
+      const payload={
+        unit_id:+unitId,
+        year,
+        status:document.getElementById('bgStatus').value,
+        note:document.getElementById('bgNote').value.trim()||null
+      };
+      const res=_budgetEdit
+        ?await db.from('budgets').update(payload).eq('id',_budgetEdit)
+        :await db.from('budgets').insert(payload);
+      if(res.error){toast('Помилка: '+res.error.message,'error');return;}
+      budgetClose();
+      await window.budgetsLoadRefresh();
+      toast('Збережено','success');
+    };
+
+    window.budgetDeleteCurrent=async function(){
+      if(!_budgetEdit) return;
+      await db.from('budgets').delete().eq('id',_budgetEdit);
+      budgetClose();
+      await window.budgetsLoadRefresh();
+    };
+
+    window.budgetDel=async function(id){
+      await db.from('budgets').delete().eq('id',id);
+      await window.budgetsLoadRefresh();
     };
 
   })();
