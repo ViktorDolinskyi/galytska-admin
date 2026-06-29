@@ -2682,6 +2682,7 @@
                   </span>
                 </label>
               </div>
+              <button class="btn ghost" id="budCollapseBtn" onclick="budToggleAllGroups()" style="font-size:12px;padding:5px 12px">▼ Згорнути всі</button>
               <button class="btn primary" onclick="budSaveAll()">Зберегти зміни</button>
             </div>
             <div class="bud-wrap" style="border:none;border-radius:0">
@@ -5979,9 +5980,13 @@
 
       if(!_items.length){body.innerHTML='<tr><td colspan="'+(months.length+2)+'" class="empty">Додайте статті витрат у Налаштуваннях</td></tr>';return;}
 
-      // групування
+      // групування по категоріях
       const groups={};
-      _items.forEach(it=>{const g=it.group_name||'Витрати';(groups[g]=groups[g]||[]).push(it);});
+      _items.forEach(it=>{
+        const cat=_cats.find(c=>c.id===it.category_id);
+        const g=cat?cat.name:'Інше';
+        (groups[g]=groups[g]||[]).push(it);
+      });
 
       let html='';
       let totalPlan=Array(months.length).fill(0), totalFact=Array(months.length).fill(0);
@@ -6058,6 +6063,22 @@
     };
 
     function fmtN(n){return n?n.toLocaleString('uk-UA'):'—';}
+
+    window.budToggleAllGroups=function(){
+      const btn=document.getElementById('budCollapseBtn');
+      const allIds=[...document.querySelectorAll('tr[data-group]')].map(r=>r.dataset.group).filter((v,i,a)=>a.indexOf(v)===i);
+      const anyExpanded=allIds.some(id=>!_budCollapsed.has(id));
+      allIds.forEach(id=>{
+        if(anyExpanded) _budCollapsed.add(id);
+        else _budCollapsed.delete(id);
+      });
+      document.querySelectorAll('tr[data-group]').forEach(r=>{r.style.display=_budCollapsed.has(r.dataset.group)?'none':'';});
+      document.querySelectorAll('tr.bud-group').forEach(r=>{
+        const m=r.getAttribute('onclick')&&r.getAttribute('onclick').match(/budToggleGroup\('(.+?)'\)/);
+        if(m){const arr=r.querySelector('span[style*="rotate"]');if(arr)arr.style.transform=`rotate(${_budCollapsed.has(m[1])?'-90':'0'}deg)`;}
+      });
+      if(btn) btn.textContent=anyExpanded?'▶ Розгорнути всі':'▼ Згорнути всі';
+    };
 
     window.budToggleGroup=function(gid){
       if(_budCollapsed.has(gid)) _budCollapsed.delete(gid);
