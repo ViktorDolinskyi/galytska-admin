@@ -2630,30 +2630,38 @@
 
       <!-- ===== view-budget ===== -->
       <section class="view" id="view-budget">
-        <div class="seg" id="budSeg" style="margin-bottom:20px">
-          <button class="seg-btn active" onclick="budTab('table',this)">Бюджет</button>
-          <button class="seg-btn" onclick="budTab('settings',this)">Налаштування</button>
+        <div class="page-head">
+          <div>
+            <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h2M10 15h4"/></svg></span>Бюджет</h2>
+            <p>Бюджетування витрат по статтях у розрізі підрозділів та кварталів.</p>
+          </div>
+          <div class="seg" id="budSeg">
+            <button class="on" onclick="budTab('table',this)">Бюджет</button>
+            <button onclick="budTab('settings',this)">Налаштування</button>
+          </div>
         </div>
 
         <!-- ── Таблиця бюджету ── -->
         <div id="budTab-table">
-          <div class="bud-toolbar">
-            <select id="budUnit" onchange="budRender()"><option value="">— Всі підрозділи —</option></select>
-            <select id="budYear" onchange="budRender()"></select>
-            <select id="budPeriod" onchange="budRender()">
-              <option value="q1">Q1 (Січ–Бер)</option>
-              <option value="q2">Q2 (Кві–Чер)</option>
-              <option value="q3" selected>Q3 (Лип–Вер)</option>
-              <option value="q4">Q4 (Жов–Гру)</option>
-              <option value="year">Рік (всі місяці)</option>
-            </select>
-            <button class="btn primary" style="margin-left:auto" onclick="budSaveAll()">Зберегти зміни</button>
-          </div>
-          <div class="bud-wrap">
-            <table class="bud-table" id="budTable">
-              <thead id="budHead"></thead>
-              <tbody id="budBody"><tr><td colspan="10" class="empty">Завантаження…</td></tr></tbody>
-            </table>
+          <div class="card">
+            <div class="card-head">
+              <select id="budUnit" onchange="budRender()"><option value="">— Всі підрозділи —</option></select>
+              <select id="budYear" onchange="budRender()"></select>
+              <select id="budPeriod" onchange="budRender()">
+                <option value="q1">Q1 (Січ–Бер)</option>
+                <option value="q2">Q2 (Кві–Чер)</option>
+                <option value="q3" selected>Q3 (Лип–Вер)</option>
+                <option value="q4">Q4 (Жов–Гру)</option>
+                <option value="year">Рік (всі місяці)</option>
+              </select>
+              <button class="btn primary" style="margin-left:auto" onclick="budSaveAll()">Зберегти зміни</button>
+            </div>
+            <div class="bud-wrap" style="border:none;border-radius:0">
+              <table class="bud-table" id="budTable">
+                <thead id="budHead"></thead>
+                <tbody id="budBody"><tr><td colspan="10" class="empty">Завантаження…</td></tr></tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -5880,8 +5888,8 @@
         const el=document.getElementById('budTab-'+t);
         if(el) el.style.display=t===tab?'':'none';
       });
-      document.querySelectorAll('#budSeg button').forEach(b=>b.classList.remove('active'));
-      if(btn) btn.classList.add('active');
+      document.querySelectorAll('#budSeg button').forEach(b=>b.classList.remove('on'));
+      if(btn) btn.classList.add('on');
       if(tab==='table') budFillUnits();
     };
 
