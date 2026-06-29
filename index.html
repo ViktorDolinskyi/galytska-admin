@@ -2690,7 +2690,6 @@
                 </label>
               </div>
               <button class="btn ghost" id="budCollapseBtn" onclick="budToggleAllGroups()" style="font-size:12px;padding:5px 12px">▼ Згорнути всі</button>
-              <button class="btn primary" onclick="budSaveAll()">Зберегти зміни</button>
             </div>
             <div class="bud-wrap" style="border:none;border-radius:0">
               <table class="bud-table" id="budTable">
@@ -6041,10 +6040,10 @@
             const fact=e?Number(e.amount_fact||0):0;
             totalPlan[mi]+=plan; totalFact[mi]+=fact;
             rowPlan+=plan; rowFact+=fact;
-            return `<td style="padding:3px 6px"><div style="display:flex;gap:3px">
-              <input class="bud-entry-input" data-item="${it.id}" data-month="${m}" data-type="plan" value="${plan||''}" placeholder="0" style="text-align:right">
-              <input class="bud-entry-input bud-fact-el" data-item="${it.id}" data-month="${m}" data-type="fact" value="${fact||''}" placeholder="0" style="text-align:right;display:${_budShowFact?'block':'none'}">
-            </div></td>`;
+            return `<td class="bud-sum">
+              <span class="bud-sum-plan">${plan?plan.toLocaleString('uk-UA'):'—'}</span>
+              <span class="bud-sum-fact bud-fact-el" style="display:${_budShowFact?'inline':'none'}">${fact?'/ '+fact.toLocaleString('uk-UA'):''}</span>
+            </td>`;
           });
           html+=`<tr data-group="${gid}" style="display:${collapsed?'none':''}">
             <td style="padding:5px 10px 5px 24px">${it.name}</td>
