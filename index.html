@@ -2729,31 +2729,43 @@
 
       <!-- модалка: бюджет підрозділу -->
       <div class="modal-scrim" id="budgetScrim" onclick="if(event.target===this)budgetClose()">
-        <div class="modal" style="max-width:440px;max-height:90vh;display:flex;flex-direction:column">
+        <div class="modal" style="width:96vw;max-width:1100px;max-height:92vh;display:flex;flex-direction:column">
           <div class="modal-head">
             <h3 id="budgetModalTitle">Новий бюджет</h3>
             <button class="ico-btn" onclick="budgetClose()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
           </div>
-          <div class="body" style="flex-direction:column;gap:14px;padding:20px">
-            <div><label>Підрозділ <span style="color:var(--brand)">*</span></label><select id="bgUnit" class="modal-sel"><option value="">— Оберіть підрозділ —</option></select></div>
-            <div><label>Рік <span style="color:var(--brand)">*</span></label><input id="bgYear" type="number" placeholder="2026" min="2020" max="2100"></div>
-            <div><label>Квартал за замовчуванням <span style="color:var(--brand)">*</span></label>
-              <select id="bgPeriod" class="modal-sel">
-                <option value="q1">Q1 — Січень–Березень</option>
-                <option value="q2">Q2 — Квітень–Червень</option>
-                <option value="q3" selected>Q3 — Липень–Вересень</option>
-                <option value="q4">Q4 — Жовтень–Грудень</option>
-                <option value="year">Рік (всі місяці)</option>
-              </select>
+          <div class="body" style="flex-direction:column;gap:0;padding:0;overflow-y:auto">
+            <!-- верхня панель: поля бюджету -->
+            <div style="display:grid;grid-template-columns:1fr 120px 1fr 1fr;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line)">
+              <div><label>Підрозділ <span style="color:var(--brand)">*</span></label><select id="bgUnit" class="modal-sel"><option value="">— Оберіть підрозділ —</option></select></div>
+              <div><label>Рік <span style="color:var(--brand)">*</span></label><input id="bgYear" type="number" placeholder="2026" min="2020" max="2100"></div>
+              <div><label>Квартал <span style="color:var(--brand)">*</span></label>
+                <select id="bgPeriod" class="modal-sel" onchange="budgetAmountsRender()">
+                  <option value="q1">Q1 — Січень–Березень</option>
+                  <option value="q2">Q2 — Квітень–Червень</option>
+                  <option value="q3" selected>Q3 — Липень–Вересень</option>
+                  <option value="q4">Q4 — Жовтень–Грудень</option>
+                  <option value="year">Рік (всі місяці)</option>
+                </select>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                <div><label>Статус</label>
+                  <select id="bgStatus" class="modal-sel">
+                    <option value="draft">Чернетка</option>
+                    <option value="approved">Затверджений</option>
+                    <option value="closed">Закритий</option>
+                  </select>
+                </div>
+                <div><label>Примітка</label><input id="bgNote" placeholder="Необов'язково"></div>
+              </div>
             </div>
-            <div><label>Статус</label>
-              <select id="bgStatus" class="modal-sel">
-                <option value="draft">Чернетка</option>
-                <option value="approved">Затверджений</option>
-                <option value="closed">Закритий</option>
-              </select>
+            <!-- таблиця сум по статтях -->
+            <div style="overflow-x:auto;overflow-y:auto;flex:1;min-height:0">
+              <table class="bud-table" id="bgAmountsTable" style="min-width:600px">
+                <thead id="bgAmountsHead"></thead>
+                <tbody id="bgAmountsBody"><tr><td colspan="5" class="empty">Оберіть квартал</td></tr></tbody>
+              </table>
             </div>
-            <div><label>Примітка</label><input id="bgNote" placeholder="Необов'язково"></div>
           </div>
           <div class="foot">
             <button class="btn ghost" id="budgetDelBtn" onclick="budgetDeleteCurrent()" style="margin-right:auto;display:none">Видалити</button>
@@ -6204,11 +6216,80 @@
       budgetsRender();
     };
 
-    window.budgetOpen=function(id){
+    let _bgEntries={}; // {itemId_month: {plan,fact}}
+
+    window.budgetAmountsRender=function(){
+      const period=document.getElementById('bgPeriod').value;
+      const months=QUARTERS[period]||[];
+      const head=document.getElementById('bgAmountsHead');
+      const body=document.getElementById('bgAmountsBody');
+      if(!head||!body) return;
+
+      head.innerHTML='<tr><th style="min-width:220px">Стаття витрат</th>'+
+        months.map(m=>`<th style="min-width:130px">${MONTHS[m-1]}<br><span style="font-weight:400;font-size:10px;opacity:.6">план / факт</span></th>`).join('')+
+        '<th style="min-width:100px">Разом план</th></tr>';
+
+      if(!_items.length){body.innerHTML=`<tr><td colspan="${months.length+2}" class="empty">Спочатку додайте статті витрат</td></tr>`;return;}
+
+      // групуємо за категорією
+      const catMap={};
+      _items.forEach(it=>{
+        const cat=_cats.find(c=>c.id===it.category_id);
+        const grp=cat?cat.name:'Інше';
+        (catMap[grp]=catMap[grp]||[]).push(it);
+      });
+
+      let html='';
+      Object.entries(catMap).forEach(([grp,items])=>{
+        html+=`<tr class="bud-group"><td colspan="${months.length+2}">${grp}</td></tr>`;
+        items.forEach(it=>{
+          let rowPlan=0;
+          const cells=months.map(m=>{
+            const key=`${it.id}_${m}`;
+            const e=_bgEntries[key]||{};
+            const plan=e.plan||'';
+            const fact=e.fact||'';
+            if(plan) rowPlan+=Number(plan);
+            return `<td style="padding:4px 6px">
+              <input class="bg-plan-input" data-item="${it.id}" data-month="${m}" data-type="plan"
+                value="${plan}" placeholder="0"
+                style="width:100%;margin-bottom:3px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-size:12px;color:var(--ink)">
+              <input class="bg-plan-input" data-item="${it.id}" data-month="${m}" data-type="fact"
+                value="${fact}" placeholder="0"
+                style="width:100%;background:var(--hover-bg);border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-size:12px;color:var(--slate)">
+            </td>`;
+          });
+          html+=`<tr>
+            <td style="font-size:13px;padding:6px 10px">${it.name}</td>
+            ${cells.join('')}
+            <td style="font-size:12px;font-weight:600;padding:6px 10px;color:var(--slate)" id="bg-row-total-${it.id}">${rowPlan?rowPlan.toLocaleString('uk-UA'):'—'}</td>
+          </tr>`;
+        });
+      });
+      body.innerHTML=html;
+
+      // live-update рядкових підсумків
+      body.querySelectorAll('.bg-plan-input[data-type="plan"]').forEach(inp=>{
+        inp.addEventListener('input',()=>{
+          const itemId=inp.dataset.item;
+          const period2=document.getElementById('bgPeriod').value;
+          const ms=QUARTERS[period2]||[];
+          let s=0;
+          ms.forEach(m=>{
+            const v=body.querySelector(`.bg-plan-input[data-item="${itemId}"][data-month="${m}"][data-type="plan"]`);
+            s+=Number(v?.value||0);
+          });
+          const tot=document.getElementById(`bg-row-total-${itemId}`);
+          if(tot) tot.textContent=s?s.toLocaleString('uk-UA'):'—';
+        });
+      });
+    };
+
+    window.budgetOpen=async function(id){
       _budgetEdit=id||null;
+      _bgEntries={};
       const b=id?_budgets.find(x=>String(x.id)===String(id)):null;
       document.getElementById('budgetModalTitle').textContent=id?'Редагувати бюджет':'Новий бюджет';
-      // заповнити select підрозділів
       const sel=document.getElementById('bgUnit');
       const flatUnits=flatOrgUnits();
       sel.innerHTML='<option value="">— Оберіть підрозділ —</option>'+
@@ -6220,7 +6301,22 @@
       document.getElementById('bgNote').value=b?b.note||'':'';
       document.getElementById('budgetDelBtn').style.display=id?'':'none';
       document.getElementById('budgetScrim').classList.add('open');
-      document.getElementById('bgUnit').focus();
+
+      // завантажити наявні записи якщо редагування
+      if(b){
+        const year=b.year;
+        const months=QUARTERS[b.period]||[];
+        const {data}=await db.from('budget_entries')
+          .select('*')
+          .eq('unit_id',b.unit_id)
+          .eq('year',year)
+          .in('month',months);
+        _bgEntries={};
+        (data||[]).forEach(e=>{
+          _bgEntries[`${e.expense_item_id}_${e.month}`]={plan:e.amount_plan||'',fact:e.amount_fact||''};
+        });
+      }
+      budgetAmountsRender();
     };
 
     window.budgetClose=()=>document.getElementById('budgetScrim').classList.remove('open');
@@ -6230,17 +6326,39 @@
       const year=+document.getElementById('bgYear').value;
       if(!unitId){document.getElementById('bgUnit').focus();return;}
       if(!year){document.getElementById('bgYear').focus();return;}
+      const period=document.getElementById('bgPeriod').value;
       const payload={
-        unit_id:+unitId,
-        year,
-        period:document.getElementById('bgPeriod').value,
+        unit_id:+unitId, year, period,
         status:document.getElementById('bgStatus').value,
         note:document.getElementById('bgNote').value.trim()||null
       };
-      const res=_budgetEdit
-        ?await db.from('budgets').update(payload).eq('id',_budgetEdit)
-        :await db.from('budgets').insert(payload);
-      if(res.error){toast('Помилка: '+res.error.message,'error');return;}
+
+      // зберегти заголовок бюджету
+      let budgetId=_budgetEdit;
+      if(_budgetEdit){
+        const {error}=await db.from('budgets').update(payload).eq('id',_budgetEdit);
+        if(error){toast('Помилка: '+error.message,'error');return;}
+      } else {
+        const {data,error}=await db.from('budgets').insert(payload).select().single();
+        if(error){toast('Помилка: '+error.message,'error');return;}
+        budgetId=data.id;
+      }
+
+      // зберегти суми по статтях
+      const inputs=[...document.querySelectorAll('.bg-plan-input')];
+      const map={};
+      inputs.forEach(inp=>{
+        const key=`${inp.dataset.item}_${inp.dataset.month}`;
+        map[key]=map[key]||{expense_item_id:+inp.dataset.item,month:+inp.dataset.month,year,unit_id:+unitId,budget_id:budgetId,amount_plan:null,amount_fact:null};
+        if(inp.dataset.type==='plan') map[key].amount_plan=inp.value?+inp.value:null;
+        else map[key].amount_fact=inp.value?+inp.value:null;
+      });
+      const rows=Object.values(map).filter(r=>r.amount_plan!=null||r.amount_fact!=null);
+      if(rows.length){
+        const {error}=await db.from('budget_entries').upsert(rows,{onConflict:'expense_item_id,month,year,unit_id'});
+        if(error){toast('Помилка збереження сум: '+error.message,'error');return;}
+      }
+
       budgetClose();
       await window.budgetsLoadRefresh();
       toast('Збережено','success');
