@@ -2778,11 +2778,16 @@
               <table class="bud-table" id="bgAmountsTable" style="min-width:600px">
                 <thead id="bgAmountsHead"></thead>
                 <tbody id="bgAmountsBody"><tr><td colspan="5" class="empty">Оберіть квартал</td></tr></tbody>
+                <tfoot id="bgAmountsFoot"></tfoot>
               </table>
             </div>
           </div>
-          <div class="foot">
+          <div class="foot" style="flex-wrap:wrap;gap:8px">
             <button class="btn ghost" id="budgetDelBtn" onclick="budgetDeleteCurrent()" style="margin-right:auto;display:none">Видалити</button>
+            <div style="display:flex;gap:16px;align-items:center;margin-right:auto">
+              <span id="bgFootPlan" style="font-size:13px;font-weight:700;color:var(--ink)">План: —</span>
+              <span id="bgFootFact" style="font-size:13px;font-weight:600;color:var(--slate);display:none">Факт: —</span>
+            </div>
             <button class="btn ghost" onclick="budgetClose()">Скасувати</button>
             <button class="btn primary" onclick="budgetSave()">Зберегти</button>
           </div>
@@ -6242,10 +6247,56 @@
     window.budgetToggleFact=function(){
       _bgShowFact=!_bgShowFact;
       _bgFactToggleUI();
-      document.querySelectorAll('.bg-fact-input').forEach(el=>{
-        el.style.display=_bgShowFact?'block':'none';
-      });
+      document.querySelectorAll('.bg-fact-input').forEach(el=>{el.style.display=_bgShowFact?'block':'none';});
+      document.querySelectorAll('.bg-fact-col').forEach(el=>{el.style.display=_bgShowFact?'block':'none';});
+      const footFact=document.getElementById('bgFootFact');
+      if(footFact) footFact.style.display=_bgShowFact?'':'none';
+      _bgUpdateTotals();
     };
+
+    const _fmt=n=>n?Number(n).toLocaleString('uk-UA'):'';
+    const _parse=s=>Number(String(s).replace(/\s/g,'').replace(',','.'))||0;
+
+    function _bgUpdateTotals(){
+      const period=document.getElementById('bgPeriod').value;
+      const months=QUARTERS[period]||[];
+      const body=document.getElementById('bgAmountsBody');
+      const foot=document.getElementById('bgAmountsFoot');
+      if(!body||!foot) return;
+
+      // підсумки по місяцях
+      const colPlan=Array(months.length).fill(0);
+      const colFact=Array(months.length).fill(0);
+      let grandPlan=0, grandFact=0;
+
+      body.querySelectorAll('.bg-plan-input').forEach(inp=>{
+        const mi=months.indexOf(+inp.dataset.month);
+        if(mi<0) return;
+        if(inp.dataset.type==='plan') colPlan[mi]+=_parse(inp.value);
+        else colFact[mi]+=_parse(inp.value);
+      });
+      colPlan.forEach(v=>grandPlan+=v);
+      colFact.forEach(v=>grandFact+=v);
+
+      foot.innerHTML=`<tr class="bud-total">
+        <td style="padding:8px 10px;font-weight:700;font-size:13px">РАЗОМ</td>
+        ${months.map((_,i)=>`<td style="padding:8px 6px">
+          <div style="display:flex;gap:4px">
+            <span style="flex:1;text-align:right;font-weight:700;font-size:12px">${colPlan[i]?colPlan[i].toLocaleString('uk-UA'):'—'}</span>
+            <span class="bg-fact-col" style="flex:1;text-align:right;font-size:12px;color:var(--slate);display:${_bgShowFact?'block':'none'}">${colFact[i]?colFact[i].toLocaleString('uk-UA'):'—'}</span>
+          </div>
+        </td>`).join('')}
+        <td style="padding:8px 10px;font-weight:700;font-size:13px;white-space:nowrap">${grandPlan?grandPlan.toLocaleString('uk-UA'):'—'}</td>
+      </tr>`;
+
+      // підсумки у футері модалки
+      document.getElementById('bgFootPlan').textContent='План: '+(grandPlan?grandPlan.toLocaleString('uk-UA')+' грн':'—');
+      const footFact=document.getElementById('bgFootFact');
+      if(footFact){
+        footFact.textContent='Факт: '+(grandFact?grandFact.toLocaleString('uk-UA')+' грн':'—');
+        footFact.style.display=_bgShowFact?'':'none';
+      }
+    }
 
     window.budgetAmountsRender=function(){
       const period=document.getElementById('bgPeriod').value;
@@ -6255,17 +6306,15 @@
       if(!head||!body) return;
 
       head.innerHTML='<tr><th style="min-width:220px">Стаття витрат</th>'+
-        months.map(m=>`<th style="min-width:130px">${MONTHS[m-1]}<br><span style="font-weight:400;font-size:10px;opacity:.6">план / факт</span></th>`).join('')+
-        '<th style="min-width:100px">Разом план</th></tr>';
+        months.map(m=>`<th style="min-width:150px">${MONTHS[m-1]}</th>`).join('')+
+        '<th style="min-width:110px">Разом план</th></tr>';
 
       if(!_items.length){body.innerHTML=`<tr><td colspan="${months.length+2}" class="empty">Спочатку додайте статті витрат</td></tr>`;return;}
 
-      // групуємо за категорією
       const catMap={};
       _items.forEach(it=>{
         const cat=_cats.find(c=>c.id===it.category_id);
-        const grp=cat?cat.name:'Інше';
-        (catMap[grp]=catMap[grp]||[]).push(it);
+        (catMap[cat?cat.name:'Інше']=catMap[cat?cat.name:'Інше']||[]).push(it);
       });
 
       let html='';
@@ -6278,40 +6327,46 @@
             const plan=((_bgEntries[key]||{}).plan)||'';
             const fact=((_bgEntries[key]||{}).fact)||'';
             if(plan) rowPlan+=Number(plan);
-            return `<td style="padding:4px 6px">
-              <div style="display:flex;gap:4px;align-items:center">
+            return `<td style="padding:3px 6px">
+              <div style="display:flex;gap:3px;align-items:center">
                 <input class="bg-plan-input" data-item="${it.id}" data-month="${m}" data-type="plan"
-                  value="${plan}" placeholder="0"
-                  style="flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:5px 7px;font-size:12px;color:var(--ink)">
+                  value="${_fmt(plan)}" placeholder="0"
+                  style="flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:5px 7px;font-size:12px;color:var(--ink);text-align:right">
                 <input class="bg-plan-input bg-fact-input" data-item="${it.id}" data-month="${m}" data-type="fact"
-                  value="${fact}" placeholder="0"
-                  style="flex:1;min-width:0;display:${_bgShowFact?'block':'none'};background:var(--hover-bg);border:1px solid var(--line);border-radius:6px;padding:5px 7px;font-size:12px;color:var(--slate)">
+                  value="${_fmt(fact)}" placeholder="0"
+                  style="flex:1;min-width:0;display:${_bgShowFact?'block':'none'};background:var(--hover-bg);border:1px solid var(--line);border-radius:6px;padding:5px 7px;font-size:12px;color:var(--slate);text-align:right">
               </div>
             </td>`;
           });
           html+=`<tr>
-            <td style="font-size:13px;padding:6px 10px;vertical-align:middle">${it.name}</td>
+            <td style="font-size:13px;padding:5px 10px">${it.name}</td>
             ${cells.join('')}
-            <td style="font-size:12px;font-weight:600;padding:6px 10px;vertical-align:middle;white-space:nowrap" id="bg-row-total-${it.id}">${rowPlan?rowPlan.toLocaleString('uk-UA'):'—'}</td>
+            <td style="font-size:12px;font-weight:700;padding:5px 10px;white-space:nowrap;text-align:right" id="bg-row-total-${it.id}">${rowPlan?rowPlan.toLocaleString('uk-UA'):'—'}</td>
           </tr>`;
         });
       });
       body.innerHTML=html;
 
-      // live-update рядкових підсумків
-      body.querySelectorAll('.bg-plan-input[data-type="plan"]').forEach(inp=>{
+      // форматування при фокусі/розфокусі + live totals
+      body.querySelectorAll('.bg-plan-input').forEach(inp=>{
+        inp.addEventListener('focus',()=>{inp.value=inp.value.replace(/\s/g,'');});
+        inp.addEventListener('blur',()=>{const n=_parse(inp.value);inp.value=n?_fmt(n):'';});
         inp.addEventListener('input',()=>{
-          const itemId=inp.dataset.item;
-          const ms=QUARTERS[document.getElementById('bgPeriod').value]||[];
-          let s=0;
-          ms.forEach(m=>{
-            const v=body.querySelector(`.bg-plan-input[data-item="${itemId}"][data-month="${m}"][data-type="plan"]`);
-            s+=Number(v?.value||0);
-          });
-          const tot=document.getElementById(`bg-row-total-${itemId}`);
-          if(tot) tot.textContent=s?s.toLocaleString('uk-UA'):'—';
+          if(inp.dataset.type==='plan'){
+            const itemId=inp.dataset.item;
+            const ms=QUARTERS[document.getElementById('bgPeriod').value]||[];
+            let s=0;
+            ms.forEach(m=>{
+              const v=body.querySelector(`.bg-plan-input[data-item="${itemId}"][data-month="${m}"][data-type="plan"]`);
+              s+=_parse(v?.value||0);
+            });
+            const tot=document.getElementById(`bg-row-total-${itemId}`);
+            if(tot) tot.textContent=s?s.toLocaleString('uk-UA'):'—';
+          }
+          _bgUpdateTotals();
         });
       });
+      _bgUpdateTotals();
     };
 
     window.budgetOpen=async function(id){
@@ -6381,8 +6436,8 @@
       inputs.forEach(inp=>{
         const key=`${inp.dataset.item}_${inp.dataset.month}`;
         map[key]=map[key]||{expense_item_id:+inp.dataset.item,month:+inp.dataset.month,year,unit_id:+unitId,budget_id:budgetId,amount_plan:null,amount_fact:null};
-        if(inp.dataset.type==='plan') map[key].amount_plan=inp.value?+inp.value:null;
-        else map[key].amount_fact=inp.value?+inp.value:null;
+        if(inp.dataset.type==='plan') map[key].amount_plan=_parse(inp.value)||null;
+        else map[key].amount_fact=_parse(inp.value)||null;
       });
       const rows=Object.values(map).filter(r=>r.amount_plan!=null||r.amount_fact!=null);
       if(rows.length){
