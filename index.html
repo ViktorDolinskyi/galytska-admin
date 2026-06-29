@@ -2689,6 +2689,7 @@
                   </span>
                 </label>
               </div>
+              <button class="btn ghost" id="budHideEmptyBtn" onclick="budToggleHideEmpty()" style="font-size:12px;padding:5px 12px">Приховати пусті</button>
               <button class="btn ghost" id="budCollapseBtn" onclick="budToggleAllGroups()" style="font-size:12px;padding:5px 12px">▼ Згорнути всі</button>
             </div>
             <div class="bud-wrap" style="border:none;border-radius:0">
@@ -6045,7 +6046,9 @@
               <span class="bud-sum-fact bud-fact-el" style="display:${_budShowFact?'inline':'none'}">${fact?'/ '+fact.toLocaleString('uk-UA'):''}</span>
             </td>`;
           });
-          html+=`<tr data-group="${gid}" style="display:${collapsed?'none':''}">
+          const rowEmpty=(rowPlan+rowFact)===0;
+          const rowHide=collapsed||(rowEmpty&&_budHideEmpty);
+          html+=`<tr data-group="${gid}" data-rowsum="${rowPlan+rowFact}" style="display:${rowHide?'none':''}">
             <td style="padding:5px 10px 5px 24px">${it.name}</td>
             ${cells.join('')}
             <td class="bud-sum bud-row-total">
@@ -6073,6 +6076,28 @@
     };
 
     function fmtN(n){return n?n.toLocaleString('uk-UA'):'—';}
+
+    window.budToggleHideEmpty=function(){
+      _budHideEmpty=!_budHideEmpty;
+      const btn=document.getElementById('budHideEmptyBtn');
+      if(btn){btn.textContent=_budHideEmpty?'Відобразити пусті':'Приховати пусті';btn.classList.toggle('primary',_budHideEmpty);btn.classList.toggle('ghost',!_budHideEmpty);}
+      // показуємо/ховаємо пусті рядки (якщо група не згорнута)
+      document.querySelectorAll('tr[data-rowsum="0"]').forEach(r=>{
+        const gid=r.dataset.group;
+        if(_budCollapsed.has(gid)) return; // вже прихований групою
+        r.style.display=_budHideEmpty?'none':'';
+      });
+      // ховаємо групу якщо всі її рядки приховані
+      document.querySelectorAll('tr.bud-group').forEach(grpRow=>{
+        const m=grpRow.getAttribute('onclick')&&grpRow.getAttribute('onclick').match(/budToggleGroup\('(.+?)'\)/);
+        if(!m) return;
+        const gid=m[1];
+        if(_budCollapsed.has(gid)) return;
+        const itemRows=[...document.querySelectorAll(`tr[data-group="${gid}"]`)];
+        const allHidden=itemRows.length>0&&itemRows.every(r=>r.style.display==='none');
+        grpRow.style.display=allHidden?'none':'';
+      });
+    };
 
     window.budToggleAllGroups=function(){
       const btn=document.getElementById('budCollapseBtn');
@@ -6319,7 +6344,7 @@
 
     // ── Бюджети підрозділів CRUD ──
     let _budgets=[], _budgetEdit=null;
-    let _budShowFact=false;
+    let _budShowFact=false, _budHideEmpty=false;
     const _budCollapsed=new Set();
     const BUD_STATUS={draft:'Чернетка',approved:'Затверджений',closed:'Закритий'};
     const BUD_STATUS_CLS={draft:'warn',approved:'success',closed:''};
