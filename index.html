@@ -2666,7 +2666,23 @@
                 <option value="q4">Q4 (Жов–Гру)</option>
                 <option value="year">Рік (всі місяці)</option>
               </select>
-              <button class="btn primary" style="margin-left:auto" onclick="budSaveAll()">Зберегти зміни</button>
+              <div style="display:flex;align-items:center;gap:12px;margin-left:auto">
+                <!-- Plan toggle — always ON -->
+                <label style="display:flex;align-items:center;gap:6px;cursor:default;user-select:none;font-size:13px;color:var(--ink)">
+                  <span>План</span>
+                  <span style="display:inline-flex;width:40px;height:22px;border-radius:11px;background:var(--brand);position:relative;flex-shrink:0">
+                    <span style="position:absolute;top:3px;right:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s"></span>
+                  </span>
+                </label>
+                <!-- Fact toggle -->
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;font-size:13px;color:var(--ink)" onclick="budToggleFact()">
+                  <span>Факт</span>
+                  <span id="budFactTrack" style="display:inline-flex;width:40px;height:22px;border-radius:11px;background:var(--line);position:relative;flex-shrink:0;transition:background .2s">
+                    <span id="budFactThumb" style="position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s"></span>
+                  </span>
+                </label>
+              </div>
+              <button class="btn primary" onclick="budSaveAll()">Зберегти зміни</button>
             </div>
             <div class="bud-wrap" style="border:none;border-radius:0">
               <table class="bud-table" id="budTable">
@@ -5980,8 +5996,10 @@
             const fact=e?Number(e.amount_fact||0):0;
             totalPlan[mi]+=plan; totalFact[mi]+=fact;
             rowPlan+=plan; rowFact+=fact;
-            return `<td><input class="bud-entry-input" data-item="${it.id}" data-month="${m}" data-type="plan" value="${plan||''}" placeholder="0">` +
-                   `<br><input class="bud-entry-input" data-item="${it.id}" data-month="${m}" data-type="fact" value="${fact||''}" placeholder="0"></td>`;
+            return `<td style="padding:3px 6px"><div style="display:flex;gap:3px">
+              <input class="bud-entry-input" data-item="${it.id}" data-month="${m}" data-type="plan" value="${plan||''}" placeholder="0" style="text-align:right">
+              <input class="bud-entry-input bud-fact-el" data-item="${it.id}" data-month="${m}" data-type="fact" value="${fact||''}" placeholder="0" style="text-align:right;display:${_budShowFact?'block':'none'}">
+            </div></td>`;
           });
           const diffCls=rowFact>=rowPlan?'pos':'neg';
           html+=`<tr><td>${it.name}</td>${cells.join('')}<td><b>${fmtN(rowPlan)}</b><br><span class="bud-cell-diff ${diffCls}">${fmtN(rowFact)}</span></td></tr>`;
@@ -5989,14 +6007,29 @@
       });
 
       // підсумок
-      const totCells=months.map((_,i)=>`<td><b>${fmtN(totalPlan[i])}</b><br>${fmtN(totalFact[i])}</td>`).join('');
+      const totCells=months.map((_,i)=>`<td style="padding:3px 6px"><div style="display:flex;gap:3px">
+        <span style="flex:1;text-align:right;font-weight:700">${fmtN(totalPlan[i])}</span>
+        <span class="bud-fact-el" style="flex:1;text-align:right;color:var(--slate);display:${_budShowFact?'block':'none'}">${fmtN(totalFact[i])}</span>
+      </div></td>`).join('');
       const sumP=totalPlan.reduce((a,b)=>a+b,0), sumF=totalFact.reduce((a,b)=>a+b,0);
-      html+=`<tr class="bud-total"><td>РАЗОМ</td>${totCells}<td><b>${fmtN(sumP)}</b><br><b>${fmtN(sumF)}</b></td></tr>`;
+      html+=`<tr class="bud-total"><td>РАЗОМ</td>${totCells}<td style="padding:3px 10px"><div style="display:flex;gap:3px">
+        <span style="flex:1;text-align:right;font-weight:700">${fmtN(sumP)}</span>
+        <span class="bud-fact-el" style="flex:1;text-align:right;color:var(--slate);display:${_budShowFact?'block':'none'}">${fmtN(sumF)}</span>
+      </div></td></tr>`;
 
       body.innerHTML=html;
     };
 
     function fmtN(n){return n?n.toLocaleString('uk-UA'):'—';}
+
+    window.budToggleFact=function(){
+      _budShowFact=!_budShowFact;
+      const track=document.getElementById('budFactTrack');
+      const thumb=document.getElementById('budFactThumb');
+      if(track) track.style.background=_budShowFact?'var(--brand)':'var(--line)';
+      if(thumb) thumb.style.left=_budShowFact?'21px':'3px';
+      document.querySelectorAll('.bud-fact-el').forEach(el=>{el.style.display=_budShowFact?'block':'none';});
+    };
 
     window.budSaveAll=async function(){
       const year=+document.getElementById('budYear').value;
@@ -6203,6 +6236,7 @@
 
     // ── Бюджети підрозділів CRUD ──
     let _budgets=[], _budgetEdit=null;
+    let _budShowFact=false;
     const BUD_STATUS={draft:'Чернетка',approved:'Затверджений',closed:'Закритий'};
     const BUD_STATUS_CLS={draft:'warn',approved:'success',closed:''};
 
