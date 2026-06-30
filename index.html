@@ -973,7 +973,8 @@
   .bud-table tr:hover td:first-child{background:var(--hover-bg)}
   .bud-table .bud-total td{font-weight:700;background:var(--surface);border-top:2px solid var(--line)}
   .bud-table .bud-total td:first-child{background:var(--surface)}
-  .bud-table .bud-group td{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--page);padding:6px 12px}
+  .bud-table .bud-unit td{font-size:12px;font-weight:700;color:var(--ink);background:rgba(var(--brand-rgb,220,38,38),.08);border-top:1px solid var(--line)}
+  .bud-table .bud-group td{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--page);padding:5px 12px}
   .bud-table .bud-group td:first-child{background:var(--page)}
   .bud-cell-diff.pos{color:#15803D}
   .bud-cell-diff.neg{color:#B91C1C}
@@ -5979,161 +5980,92 @@
       const head=document.getElementById('budHead');
       const body=document.getElementById('budBody');
 
-      // підрозділи що мають бюджет за обраний рік, у порядку ієрархії
       const flat=flatOrgUnits();
       const budgetedUnits=flat.filter(u=>_budgets.some(b=>b.unit_id===u.id&&b.year===year));
+      const activeUnits=unitId?budgetedUnits.filter(u=>String(u.id)===unitId):budgetedUnits;
 
-      // helper: одна value-клітинка план|факт
-      const _sc=(p,f,border=false)=>`<div style="display:flex${border?';border-left:2px solid var(--line)':''}">
-        <span style="flex:1;text-align:center;padding:4px 6px;font-variant-numeric:tabular-nums" class="bud-sum-plan">${p?p.toLocaleString('uk-UA'):'—'}</span>
-        <span class="bud-sum-fact bud-fact-el" style="flex:1;text-align:center;padding:4px 6px;border-left:1px solid var(--line);font-variant-numeric:tabular-nums;display:${_budShowFact?'block':'none'}">${f?f.toLocaleString('uk-UA'):'—'}</span>
-      </div>`;
+      // план|факт клітинка
+      const _sc=(p,f)=>`<div style="display:flex"><span style="flex:1;text-align:center;padding:4px 6px;font-variant-numeric:tabular-nums" class="bud-sum-plan">${p?p.toLocaleString('uk-UA'):'&#8212;'}</span><span class="bud-sum-fact bud-fact-el" style="flex:1;text-align:center;padding:4px 6px;border-left:1px solid var(--line);font-variant-numeric:tabular-nums;display:${_budShowFact?'block':'none'}">${f?f.toLocaleString('uk-UA'):'&#8212;'}</span></div>`;
 
-      // helper: підзаголовок план/факт для місяця
-      const _thSub=`<div style="display:flex;font-size:10px;font-weight:400;color:var(--muted);border-top:1px solid var(--line)">
-        <span style="flex:1;text-align:center;padding:2px 0">план</span>
-        <span class="bud-fact-el bud-head-sub" style="flex:1;text-align:center;padding:2px 0;border-left:1px solid var(--line);display:${_budShowFact?'block':'none'}">факт</span>
-      </div>`;
-      const mw=_budShowFact?'130':'90';
+      // header
+      const _thSub=`<div style="display:flex;font-size:10px;font-weight:400;color:var(--muted);border-top:1px solid var(--line)"><span style="flex:1;text-align:center;padding:2px 0">план</span><span class="bud-fact-el bud-head-sub" style="flex:1;text-align:center;padding:2px 0;border-left:1px solid var(--line);display:${_budShowFact?'block':'none'}">факт</span></div>`;
+      const mw=_budShowFact?'160':'110';
+      head.innerHTML='<tr><th style="text-align:left;vertical-align:bottom">Підрозділ / Категорія / Стаття</th>'+
+        months.map(m=>`<th style="padding:0;text-align:center;min-width:${mw}px"><div style="padding:5px 10px 4px">${MONTHS[m-1]}</div>${_thSub}</th>`).join('')+
+        `<th style="padding:0;text-align:center;min-width:${mw}px"><div style="padding:5px 10px 4px">${period==='year'?'Рік':period.toUpperCase()}</div>${_thSub}</th></tr>`;
 
-      // ── МУЛЬТИ-ПІДРОЗДІЛ: підрозділи як групи колонок ──
-      const multiUnit=!unitId && budgetedUnits.length>1;
+      if(!_items.length){body.innerHTML=`<tr><td colspan="${months.length+2}" class="empty">Додайте статті витрат у Налаштуваннях</td></tr>`;return;}
+      if(!activeUnits.length){body.innerHTML=`<tr><td colspan="${months.length+2}" class="empty">Немає бюджетних файлів за обраний рік</td></tr>`;return;}
 
-      if(multiUnit){
-        // Рядок 1: назви підрозділів (colspan=months) + Разом
-        let h1='<tr><th style="text-align:left;vertical-align:bottom;border-bottom:none" rowspan="2">Стаття витрат</th>';
-        budgetedUnits.forEach((u,ui)=>{
-          const indent=' '.repeat(u.level*2);
-          h1+=`<th colspan="${months.length}" style="text-align:center;padding:4px 10px;border-left:2px solid var(--line);font-size:12px;font-weight:600">${indent}${u.name}</th>`;
-        });
-        h1+=`<th style="text-align:center;padding:4px 10px;border-left:2px solid var(--line);vertical-align:bottom" rowspan="2">Разом</th></tr>`;
-        // Рядок 2: місяці з план/факт підрядком
-        let h2='<tr>';
-        budgetedUnits.forEach((u,ui)=>{
-          months.forEach(m=>{
-            h2+=`<th style="padding:0;text-align:center;min-width:${mw}px${ui===0?';border-left:2px solid var(--line)':''}">
-              <div style="padding:3px 6px 2px;font-size:11px">${MONTHS[m-1]}</div>${_thSub}</th>`;
-          });
-        });
-        h2+='</tr>';
-        head.innerHTML=h1+h2;
-      } else {
-        // ОДИНОЧНИЙ режим
-        head.innerHTML='<tr>'+
-          '<th style="text-align:left;vertical-align:bottom">Стаття витрат</th>'+
-          months.map(m=>`<th style="padding:0;text-align:center;min-width:${_budShowFact?'160':'110'}px">
-            <div style="padding:5px 10px 4px">${MONTHS[m-1]}</div>${_thSub}</th>`).join('')+
-          `<th style="padding:0;text-align:center;min-width:${_budShowFact?'160':'110'}px">
-            <div style="padding:5px 10px 4px">${period==='year'?'Рік':period.toUpperCase()}</div>${_thSub}</th>`+
-        '</tr>';
-      }
-
-      if(!_items.length){
-        const cols=multiUnit?budgetedUnits.length*months.length+2:months.length+2;
-        body.innerHTML=`<tr><td colspan="${cols}" class="empty">Додайте статті витрат у Налаштуваннях</td></tr>`;
-        return;
-      }
-
-      // групування по категоріях
-      const groups={};
+      // карта категорій
+      const catMap={};
       _items.forEach(it=>{
         const cat=_cats.find(c=>c.id===it.category_id);
-        (groups[cat?cat.name:'Інше']=groups[cat?cat.name:'Інше']||[]).push(it);
+        const key=cat?String(cat.id):'0';
+        if(!catMap[key]) catMap[key]={name:cat?cat.name:'Інше',items:[]};
+        catMap[key].items.push(it);
       });
 
       let html='';
-      // підсумки по підрозділах і місяцях для рядка РАЗОМ
-      const grandPlan = multiUnit
-        ? budgetedUnits.map(()=>Array(months.length).fill(0))
-        : Array(months.length).fill(0);
-      const grandFact = multiUnit
-        ? budgetedUnits.map(()=>Array(months.length).fill(0))
-        : Array(months.length).fill(0);
-      let grandTotalP=0, grandTotalF=0;
+      const grandByMonth={plan:Array(months.length).fill(0),fact:Array(months.length).fill(0)};
+      let grandP=0,grandF=0;
 
-      Object.entries(groups).forEach(([grp,items],gi)=>{
-        const gid='bgrp_'+gi;
-        const collapsed=_budCollapsed.has(gid);
+      const getEntry=(itemId,uid,m)=>{
+        const e=_entries.find(x=>x.expense_item_id===itemId&&x.month===m&&String(x.unit_id)===String(uid));
+        return {p:e?Number(e.amount_plan||0):0,f:e?Number(e.amount_fact||0):0};
+      };
 
-        // підсумки групи
-        let grpTotalP=0, grpTotalF=0;
-        const grpCells=multiUnit
-          ? budgetedUnits.map((u,ui)=>{
-              let cellHtml='';
-              months.forEach((m,mi)=>{
-                let p=0,f=0;
-                items.forEach(it=>{
-                  const e=_entries.find(x=>x.expense_item_id===it.id&&x.month===m&&String(x.unit_id)===String(u.id));
-                  p+=e?Number(e.amount_plan||0):0;
-                  f+=e?Number(e.amount_fact||0):0;
-                });
-                grpTotalP+=p; grpTotalF+=f;
-                cellHtml+=`<td style="padding:0">${_sc(p,f,ui===0&&mi===0)}</td>`;
-              });
-              return cellHtml;
-            }).join('')
-          : months.map((m,mi)=>{
-              let p=0,f=0;
-              items.forEach(it=>{
-                const e=_entries.find(x=>x.expense_item_id===it.id&&x.month===m&&(unitId?String(x.unit_id)===String(unitId):true));
-                p+=e?Number(e.amount_plan||0):0;
-                f+=e?Number(e.amount_fact||0):0;
-              });
-              grpTotalP+=p; grpTotalF+=f;
-              return `<td style="padding:0">${_sc(p,f)}</td>`;
-            }).join('');
+      activeUnits.forEach(u=>{
+        const uid='unit_'+u.id;
+        const uCollapsed=_budCollapsed.has(uid);
+        const ipad=8+u.level*16;
 
-        const grpEmpty=(grpTotalP+grpTotalF)===0;
-        html+=`<tr class="bud-group" data-grpsum="${grpTotalP+grpTotalF}" style="cursor:pointer;display:${grpEmpty&&_budHideEmpty?'none':''}" onclick="budToggleGroup('${gid}')">
-          <td style="padding:6px 10px">
-            <span style="display:inline-block;transition:transform .2s;transform:rotate(${collapsed?'-90':'0'}deg);margin-right:6px;font-size:10px">▼</span>${grp}
-          </td>
-          ${grpCells}
-          <td class="bud-row-total" style="padding:0">${_sc(grpTotalP,grpTotalF,multiUnit)}</td>
-        </tr>`;
+        // підсумок підрозділу
+        let uP=0,uF=0;
+        const uCells=months.map((m,mi)=>{
+          let p=0,f=0;
+          _items.forEach(it=>{const e=getEntry(it.id,u.id,m);p+=e.p;f+=e.f;});
+          uP+=p;uF+=f;
+          return `<td style="padding:0;font-weight:700">${_sc(p,f)}</td>`;
+        });
 
-        items.forEach(it=>{
-          let rowTotalP=0, rowTotalF=0;
-          const cells=multiUnit
-            ? budgetedUnits.map((u,ui)=>{
-                let cellHtml='';
-                months.forEach((m,mi)=>{
-                  const e=_entries.find(x=>x.expense_item_id===it.id&&x.month===m&&String(x.unit_id)===String(u.id));
-                  const p=e?Number(e.amount_plan||0):0;
-                  const f=e?Number(e.amount_fact||0):0;
-                  grandPlan[ui][mi]+=p; grandFact[ui][mi]+=f;
-                  rowTotalP+=p; rowTotalF+=f;
-                  cellHtml+=`<td style="padding:0">${_sc(p,f,ui===0&&mi===0)}</td>`;
-                });
-                return cellHtml;
-              }).join('')
-            : months.map((m,mi)=>{
-                const e=_entries.find(x=>x.expense_item_id===it.id&&x.month===m&&(unitId?String(x.unit_id)===String(unitId):true));
-                const p=e?Number(e.amount_plan||0):0;
-                const f=e?Number(e.amount_fact||0):0;
-                grandPlan[mi]+=p; grandFact[mi]+=f;
-                rowTotalP+=p; rowTotalF+=f;
-                return `<td style="padding:0">${_sc(p,f)}</td>`;
-              }).join('');
+        const uEmpty=(uP+uF)===0;
+        html+=`<tr class="bud-unit" data-unitid="${uid}" data-grpsum="${uP+uF}" style="cursor:pointer;display:${uEmpty&&_budHideEmpty?'none':''}" onclick="budToggleGroup('${uid}')"><td style="padding:7px 10px 7px ${ipad}px"><span style="display:inline-block;transition:transform .2s;transform:rotate(${uCollapsed?'-90':'0'}deg);margin-right:6px;font-size:10px">&#9660;</span><b>${u.name}</b></td>${uCells.join('')}<td class="bud-row-total" style="padding:0;font-weight:700">${_sc(uP,uF)}</td></tr>`;
 
-          grandTotalP+=rowTotalP; grandTotalF+=rowTotalF;
-          const rowEmpty=(rowTotalP+rowTotalF)===0;
-          const rowHide=collapsed||(rowEmpty&&_budHideEmpty);
-          html+=`<tr data-group="${gid}" data-rowsum="${rowTotalP+rowTotalF}" style="display:${rowHide?'none':''}">
-            <td style="padding:5px 10px 5px 24px">${it.name}</td>
-            ${cells}
-            <td class="bud-row-total" style="padding:0;font-weight:600">${_sc(rowTotalP,rowTotalF,multiUnit)}</td>
-          </tr>`;
+        Object.entries(catMap).forEach(([catKey,catObj])=>{
+          const cid='cat_'+u.id+'_'+catKey;
+          const cCollapsed=_budCollapsed.has(cid);
+          const cPad=22+u.level*16;
+
+          let cP=0,cF=0;
+          const cCells=months.map((m,mi)=>{
+            let p=0,f=0;
+            catObj.items.forEach(it=>{const e=getEntry(it.id,u.id,m);p+=e.p;f+=e.f;});
+            cP+=p;cF+=f;
+            return `<td style="padding:0">${_sc(p,f)}</td>`;
+          });
+
+          const cEmpty=(cP+cF)===0;
+          const cHide=uCollapsed||(cEmpty&&_budHideEmpty);
+          html+=`<tr class="bud-group" data-group="${uid}" data-catid="${cid}" data-grpsum="${cP+cF}" style="cursor:pointer;display:${cHide?'none':''}" onclick="budToggleCat('${cid}','${uid}')"><td style="padding:5px 10px 5px ${cPad}px"><span style="display:inline-block;transition:transform .2s;transform:rotate(${cCollapsed?'-90':'0'}deg);margin-right:6px;font-size:10px">&#9660;</span>${catObj.name}</td>${cCells.join('')}<td class="bud-row-total" style="padding:0">${_sc(cP,cF)}</td></tr>`;
+
+          catObj.items.forEach(it=>{
+            let iP=0,iF=0;
+            const iCells=months.map((m,mi)=>{
+              const e=getEntry(it.id,u.id,m);
+              iP+=e.p;iF+=e.f;
+              grandByMonth.plan[mi]+=e.p;grandByMonth.fact[mi]+=e.f;
+              return `<td style="padding:0">${_sc(e.p,e.f)}</td>`;
+            });
+            grandP+=iP;grandF+=iF;
+            const iEmpty=(iP+iF)===0;
+            const iHide=uCollapsed||cCollapsed||(iEmpty&&_budHideEmpty);
+            html+=`<tr data-group="${uid}" data-catrow="${cid}" data-rowsum="${iP+iF}" style="display:${iHide?'none':''}"><td style="padding:4px 10px 4px ${36+u.level*16}px;color:var(--muted)">${it.name}</td>${iCells.join('')}<td class="bud-row-total" style="padding:0;font-weight:600">${_sc(iP,iF)}</td></tr>`;
+          });
         });
       });
 
-      // рядок РАЗОМ
-      const totCells=multiUnit
-        ? budgetedUnits.map((u,ui)=>months.map((_,mi)=>`<td style="padding:0;font-weight:700">${_sc(grandPlan[ui][mi],grandFact[ui][mi],ui===0&&mi===0)}</td>`).join('')).join('')
-        : grandPlan.map((p,i)=>`<td style="padding:0;font-weight:700">${_sc(p,grandFact[i])}</td>`).join('');
-      html+=`<tr class="bud-total"><td style="padding:6px 12px">РАЗОМ</td>${totCells}
-        <td class="bud-row-total" style="padding:0;font-weight:700">${_sc(grandTotalP,grandTotalF,multiUnit)}</td>
-      </tr>`;
+      html+=`<tr class="bud-total"><td style="padding:6px 12px">РАЗОМ</td>${grandByMonth.plan.map((p,i)=>`<td style="padding:0;font-weight:700">${_sc(p,grandByMonth.fact[i])}</td>`).join('')}<td class="bud-row-total" style="padding:0;font-weight:700">${_sc(grandP,grandF)}</td></tr>`;
 
       body.innerHTML=html;
     };
@@ -6144,43 +6076,66 @@
       _budHideEmpty=!_budHideEmpty;
       const btn=document.getElementById('budHideEmptyBtn');
       if(btn){btn.textContent=_budHideEmpty?'Відобразити пусті':'Приховати пусті';btn.classList.toggle('primary',_budHideEmpty);btn.classList.toggle('ghost',!_budHideEmpty);}
-      // ховаємо/показуємо пусті рядки статей (якщо група не згорнута)
-      document.querySelectorAll('tr[data-rowsum="0"]').forEach(r=>{
-        const gid=r.dataset.group;
-        if(_budCollapsed.has(gid)) return;
+      // одиниці
+      document.querySelectorAll('tr.bud-unit[data-grpsum="0"]').forEach(r=>{r.style.display=_budHideEmpty?'none':'';});
+      // категорії
+      document.querySelectorAll('tr.bud-group[data-grpsum="0"]').forEach(r=>{
+        const uid=r.dataset.group;
+        if(_budCollapsed.has(uid)) return;
         r.style.display=_budHideEmpty?'none':'';
       });
-      // ховаємо/показуємо групові рядки з нульовим підсумком (незалежно від collapse)
-      document.querySelectorAll('tr.bud-group[data-grpsum="0"]').forEach(r=>{
+      // статті
+      document.querySelectorAll('tr[data-catrow][data-rowsum="0"]').forEach(r=>{
+        const uid=r.dataset.group;
+        const cid=r.dataset.catrow;
+        if(_budCollapsed.has(uid)||_budCollapsed.has(cid)) return;
         r.style.display=_budHideEmpty?'none':'';
       });
     };
 
     window.budToggleAllGroups=function(){
       const btn=document.getElementById('budCollapseBtn');
-      const allIds=[...document.querySelectorAll('tr[data-group]')].map(r=>r.dataset.group).filter((v,i,a)=>a.indexOf(v)===i);
+      const unitIds=[...document.querySelectorAll('tr.bud-unit[data-unitid]')].map(r=>r.dataset.unitid);
+      const catIds=[...document.querySelectorAll('tr.bud-group[data-catid]')].map(r=>r.dataset.catid);
+      const allIds=[...unitIds,...catIds];
       const anyExpanded=allIds.some(id=>!_budCollapsed.has(id));
-      allIds.forEach(id=>{
-        if(anyExpanded) _budCollapsed.add(id);
-        else _budCollapsed.delete(id);
+      allIds.forEach(id=>{ if(anyExpanded) _budCollapsed.add(id); else _budCollapsed.delete(id); });
+      // застосовуємо
+      document.querySelectorAll('tr[data-group]').forEach(r=>{
+        const uid=r.dataset.group;
+        const cid=r.dataset.catrow;
+        r.style.display=(_budCollapsed.has(uid)||(cid&&_budCollapsed.has(cid)))?'none':'';
       });
-      document.querySelectorAll('tr[data-group]').forEach(r=>{r.style.display=_budCollapsed.has(r.dataset.group)?'none':'';});
-      document.querySelectorAll('tr.bud-group').forEach(r=>{
-        const m=r.getAttribute('onclick')&&r.getAttribute('onclick').match(/budToggleGroup\('(.+?)'\)/);
-        if(m){const arr=r.querySelector('span[style*="rotate"]');if(arr)arr.style.transform=`rotate(${_budCollapsed.has(m[1])?'-90':'0'}deg)`;}
+      document.querySelectorAll('tr.bud-unit[data-unitid]').forEach(r=>{
+        const arr=r.querySelector('span[style*="rotate"]');
+        if(arr) arr.style.transform=`rotate(${anyExpanded?'-90':'0'}deg)`;
+      });
+      document.querySelectorAll('tr.bud-group[data-catid]').forEach(r=>{
+        const arr=r.querySelector('span[style*="rotate"]');
+        if(arr) arr.style.transform=`rotate(${anyExpanded?'-90':'0'}deg)`;
       });
       if(btn) btn.textContent=anyExpanded?'▶ Розгорнути всі':'▼ Згорнути всі';
     };
 
-    window.budToggleGroup=function(gid){
-      if(_budCollapsed.has(gid)) _budCollapsed.delete(gid);
-      else _budCollapsed.add(gid);
-      const rows=document.querySelectorAll(`tr[data-group="${gid}"]`);
-      const collapsed=_budCollapsed.has(gid);
-      rows.forEach(r=>r.style.display=collapsed?'none':'');
-      // обертаємо стрілку
-      const grpRow=[...document.querySelectorAll('tr.bud-group')].find(r=>r.getAttribute('onclick')===`budToggleGroup('${gid}')`);
-      if(grpRow){const arr=grpRow.querySelector('span[style*="rotate"]');if(arr)arr.style.transform=`rotate(${collapsed?'-90':'0'}deg)`;}
+    window.budToggleGroup=function(uid){
+      if(_budCollapsed.has(uid)) _budCollapsed.delete(uid); else _budCollapsed.add(uid);
+      const collapsed=_budCollapsed.has(uid);
+      // всі дочірні рядки (категорії та статті)
+      document.querySelectorAll(`tr[data-group="${uid}"]`).forEach(r=>{
+        r.style.display=collapsed?'none':'';
+      });
+      // стрілка самого рядка підрозділу
+      const uRow=document.querySelector(`tr.bud-unit[data-unitid="${uid}"]`);
+      if(uRow){const arr=uRow.querySelector('span[style*="rotate"]');if(arr)arr.style.transform=`rotate(${collapsed?'-90':'0'}deg)`;}
+    };
+
+    window.budToggleCat=function(cid,uid){
+      if(_budCollapsed.has(uid)) return; // unit collapsed — ignore
+      if(_budCollapsed.has(cid)) _budCollapsed.delete(cid); else _budCollapsed.add(cid);
+      const collapsed=_budCollapsed.has(cid);
+      document.querySelectorAll(`tr[data-catrow="${cid}"]`).forEach(r=>{r.style.display=collapsed?'none':'';});
+      const cRow=document.querySelector(`tr.bud-group[data-catid="${cid}"]`);
+      if(cRow){const arr=cRow.querySelector('span[style*="rotate"]');if(arr)arr.style.transform=`rotate(${collapsed?'-90':'0'}deg)`;}
     };
 
     window.budToggleFact=function(){
