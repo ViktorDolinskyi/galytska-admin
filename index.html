@@ -6104,7 +6104,11 @@
       document.querySelectorAll('tr[data-group]').forEach(r=>{
         const uid=r.dataset.group;
         const cid=r.dataset.catrow;
-        r.style.display=(_budCollapsed.has(uid)||(cid&&_budCollapsed.has(cid)))?'none':'';
+        if(_budCollapsed.has(uid)||(cid&&_budCollapsed.has(cid))){r.style.display='none';return;}
+        if(r.classList.contains('bud-group')){
+          r.style.display=(_budHideEmpty&&r.dataset.grpsum==='0')?'none':'';return;
+        }
+        r.style.display=(_budHideEmpty&&r.dataset.rowsum==='0')?'none':'';
       });
       document.querySelectorAll('tr.bud-unit[data-unitid]').forEach(r=>{
         const arr=r.querySelector('span[style*="rotate"]');
