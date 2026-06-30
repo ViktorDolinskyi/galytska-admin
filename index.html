@@ -6325,73 +6325,145 @@
     };
 
     window.hrRender=async function(){
+    window.hrRender=async function(){
       const yearEl=document.getElementById('hrYear');
       if(!yearEl) return;
       const year=+yearEl.value||new Date().getFullYear();
       const period=document.getElementById('hrPeriod').value;
-      const unitId=document.getElementById('hrUnit').value;
+      const filterUnitId=document.getElementById('hrUnit').value;
       const months=QUARTERS[period];
 
       const r=await db.from('hr_entries').select('*').eq('year',year);
       _hrEntries=r.data||[];
 
-      const head=document.getElementById('hrHead');
-      const body=document.getElementById('hrBody');
+      const headEl=document.getElementById('hrHead');
+      const bodyEl=document.getElementById('hrBody');
 
       const mw=_hrShowFact?'150':'110';
       const sub=`<div style="display:flex;font-size:10px;font-weight:400;color:var(--muted);border-top:1px solid var(--line)"><span style="flex:1;text-align:center;padding:2px 0">план</span>${_hrShowFact?'<span style="flex:1;text-align:center;padding:2px 0;border-left:1px solid var(--line)">факт</span>':''}</div>`;
-      head.innerHTML='<tr><th style="text-align:left;vertical-align:bottom">Співробітник</th>'+
+      headEl.innerHTML='<tr><th style="text-align:left;vertical-align:bottom;min-width:260px">Підрозділ / Співробітник</th>'+
         months.map(m=>`<th style="padding:0;text-align:center;min-width:${mw}px"><div style="padding:5px 10px 4px">${MONTHS[m-1]}</div>${sub}</th>`).join('')+
         `<th style="padding:0;text-align:center;min-width:${mw}px"><div style="padding:5px 10px 4px">${period==='year'?'Рік':period.toUpperCase()}</div>${sub}</th></tr>`;
 
-      const flat=flatOrgUnits();
-      const hrUnits=flat.filter(u=>_hrFiles.some(f=>f.unit_id===u.id&&f.year===year)&&(!unitId||String(u.id)===unitId));
-
-      if(!hrUnits.length){body.innerHTML=`<tr><td colspan="${months.length+2}" class="empty">Немає HR-файлів за ${year} рік</td></tr>`;return;}
-
-      const cell=(p,f)=>`<td style="padding:0"><div style="display:flex"><span style="flex:1;text-align:center;padding:5px 8px;font-weight:600;font-variant-numeric:tabular-nums">${p?p.toLocaleString('uk-UA'):'—'}</span>${_hrShowFact?`<span style="flex:1;text-align:center;padding:5px 8px;border-left:1px solid var(--line);font-size:11px;color:var(--slate);font-variant-numeric:tabular-nums">${f?f.toLocaleString('uk-UA'):'—'}</span>`:''}</div></td>`;
+      const emps=typeof dictEmps!=='undefined'?dictEmps:[];
       const empName=e=>[e.last_name,e.first_name,e.patronymic].filter(Boolean).join(' ');
 
+      // перевіряємо чи є HR-файл за рік для вузла або його нащадків
+      function hasHrFile(node){
+        if(_hrFiles.some(f=>f.unit_id===node.id&&f.year===year)) return true;
+        return (node.children||[]).some(c=>hasHrFile(c));
+      }
+
+      // підсумок по всіх нащадках вузла (рекурсивно)
+      function unitDeepSum(node,mi,month){
+        let p=0,f=0;
+        const unitEmps=emps.filter(e=>Number(e.primary_unit_id)===node.id);
+        unitEmps.forEach(emp=>{
+          const en=_hrEntries.find(x=>x.employee_id===emp.id&&x.month===month&&String(x.unit_id)===String(node.id));
+          p+=en?Number(en.amount_plan||0):0;
+          f+=en?Number(en.amount_fact||0):0;
+        });
+        (node.children||[]).forEach(c=>{const s=unitDeepSum(c,mi,month);p+=s.p;f+=s.f;});
+        return{p,f};
+      }
+
+      const cell=(p,f,bold=false)=>`<td style="padding:0"><div style="display:flex"><span style="flex:1;text-align:center;padding:5px 8px;${bold?'font-weight:700;':'font-weight:500;'}font-variant-numeric:tabular-nums">${p?p.toLocaleString('uk-UA'):'—'}</span>${_hrShowFact?`<span style="flex:1;text-align:center;padding:5px 8px;border-left:1px solid var(--line);font-size:11px;color:var(--slate);font-variant-numeric:tabular-nums">${f?f.toLocaleString('uk-UA'):'—'}</span>`:''}</div></td>`;
+
+      const grandByM=months.map(()=>({p:0,f:0}));
+      let grandP=0,grandF=0;
       let html='';
-      const cleanByM=months.map(()=>({p:0,f:0}));
-      let cleanP=0,cleanF=0;
+      if(!_hrCollapsed) window._hrCollapsed=new Set();
 
-      hrUnits.forEach(u=>{
-        // співробітники підрозділу з dictEmps
-        const emps=(typeof dictEmps!=='undefined'?dictEmps:[]).filter(e=>Number(e.primary_unit_id)===u.id);
+      function renderNode(node,depth){
+        if(filterUnitId&&String(node.id)!==filterUnitId&&!hasHrFile(node)) return;
+        if(!hasHrFile(node)) return;
+
+        const gid='hru_'+node.id;
+        const collapsed=_hrCollapsed.has(gid);
+        const pad=10+depth*18;
+
+        // підсумок підрозділу (включно з нащадками)
+        const byM=months.map((m)=>unitDeepSum(node,null,m));
         let uP=0,uF=0;
-        const uByM=months.map(()=>({p:0,f:0}));
-        emps.forEach(emp=>{
+        byM.forEach(v=>{uP+=v.p;uF+=v.f;});
+
+        // unit row
+        const arrow=`<span style="display:inline-block;transition:transform .2s;transform:rotate(${collapsed?'-90':'0'}deg);margin-right:6px;font-size:10px;color:var(--muted)">&#9660;</span>`;
+        html+=`<tr class="bud-unit" style="cursor:pointer" onclick="hrToggleUnit('${gid}')"><td style="padding:7px 12px 7px ${pad}px">${arrow}<b>${node.name}</b></td>${byM.map(v=>cell(v.p,v.f,true)).join('')}${cell(uP,uF,true)}</tr>`;
+
+        if(!collapsed){
+          // знаходимо керівника підрозділу
+          const headEmp=node.employee_id?emps.find(e=>e.id===node.employee_id):null;
+          // решта співробітників підрозділу (без керівника якщо він вже у списку)
+          const unitEmps=emps.filter(e=>Number(e.primary_unit_id)===node.id);
+          const regularEmps=unitEmps.filter(e=>!headEmp||e.id!==headEmp.id);
+
+          // керівник — якщо є
+          if(headEmp){
+            let eP=0,eF=0;
+            const eCells=months.map(m=>{
+              const en=_hrEntries.find(x=>x.employee_id===headEmp.id&&x.month===m&&String(x.unit_id)===String(node.id));
+              const p=en?Number(en.amount_plan||0):0; const f=en?Number(en.amount_fact||0):0;
+              eP+=p;eF+=f; return cell(p,f);
+            });
+            html+=`<tr data-hru="${gid}"><td style="padding:5px 12px 5px ${pad+18}px">
+              <span style="display:inline-flex;align-items:center;gap:6px">
+                <span style="font-size:10px;font-weight:700;letter-spacing:.04em;color:#fff;background:var(--brand);border-radius:4px;padding:1px 5px;flex-shrink:0">КЕР</span>
+                <span style="font-weight:600">${empName(headEmp)}</span>
+              </span>
+            </td>${eCells.join('')}${cell(eP,eF)}</tr>`;
+          }
+
+          // решта співробітників
+          regularEmps.forEach(emp=>{
+            let eP=0,eF=0;
+            const eCells=months.map(m=>{
+              const en=_hrEntries.find(x=>x.employee_id===emp.id&&x.month===m&&String(x.unit_id)===String(node.id));
+              const p=en?Number(en.amount_plan||0):0; const f=en?Number(en.amount_fact||0):0;
+              eP+=p;eF+=f; return cell(p,f);
+            });
+            html+=`<tr data-hru="${gid}"><td style="padding:4px 12px 4px ${pad+18}px;color:var(--ink)">${empName(emp)}</td>${eCells.join('')}${cell(eP,eF)}</tr>`;
+          });
+
+          if(!headEmp&&!unitEmps.length){
+            html+=`<tr data-hru="${gid}"><td colspan="${months.length+2}" style="padding:4px 12px 4px ${pad+18}px;color:var(--muted);font-size:12px;font-style:italic">Немає співробітників</td></tr>`;
+          }
+
+          // рекурсивно дочірні підрозділи
+          (node.children||[]).filter(c=>hasHrFile(c)).forEach(c=>renderNode(c,depth+1));
+        }
+
+        // накопичуємо тільки прямих співробітників у grand (щоб не дублювати через нащадків)
+        const directEmps=emps.filter(e=>Number(e.primary_unit_id)===node.id);
+        directEmps.forEach(emp=>{
           months.forEach((m,mi)=>{
-            const e=_hrEntries.find(x=>x.employee_id===emp.id&&x.month===m&&String(x.unit_id)===String(u.id));
-            const p=e?Number(e.amount_plan||0):0;
-            const f=e?Number(e.amount_fact||0):0;
-            uByM[mi].p+=p;uByM[mi].f+=f;
-            cleanByM[mi].p+=p;cleanByM[mi].f+=f;
-            cleanP+=p;cleanF+=f;
+            const en=_hrEntries.find(x=>x.employee_id===emp.id&&x.month===m&&String(x.unit_id)===String(node.id));
+            const p=en?Number(en.amount_plan||0):0; const f=en?Number(en.amount_fact||0):0;
+            grandByM[mi].p+=p; grandByM[mi].f+=f; grandP+=p; grandF+=f;
           });
         });
-        uByM.forEach(v=>{uP+=v.p;uF+=v.f;});
+      }
 
-        html+=`<tr class="bud-unit"><td style="padding:7px 10px 7px ${8+u.level*16}px"><b>${u.name}</b></td>${uByM.map(v=>cell(v.p,v.f)).join('')}${cell(uP,uF)}</tr>`;
+      // відфільтрований корінь
+      const roots=filterUnitId
+        ? (orgData.map?orgData:[...orgData]).filter(n=>String(n.id)===filterUnitId||hasHrFile(n))
+        : (orgData||[]);
+      roots.forEach(n=>renderNode(n,0));
 
-        emps.forEach(emp=>{
-          let eP=0,eF=0;
-          const eCells=months.map((m)=>{
-            const e=_hrEntries.find(x=>x.employee_id===emp.id&&x.month===m&&String(x.unit_id)===String(u.id));
-            const p=e?Number(e.amount_plan||0):0;
-            const f=e?Number(e.amount_fact||0):0;
-            eP+=p;eF+=f;
-            return cell(p,f);
-          });
-          html+=`<tr><td style="padding:5px 10px 5px 26px">${empName(emp)}</td>${eCells.join('')}${cell(eP,eF)}</tr>`;
-        });
-        if(!emps.length) html+=`<tr><td colspan="${months.length+2}" style="padding:6px 26px;color:var(--muted);font-size:12px">Немає співробітників у підрозділі</td></tr>`;
-      });
-
-      html+=`<tr class="bud-total"><td style="padding:6px 12px">РАЗОМ</td>${cleanByM.map(v=>cell(v.p,v.f)).join('')}${cell(cleanP,cleanF)}</tr>`;
-      body.innerHTML=html;
+      if(!html){bodyEl.innerHTML=`<tr><td colspan="${months.length+2}" class="empty">Немає HR-файлів за ${year} рік</td></tr>`;return;}
+      html+=`<tr class="bud-total"><td style="padding:6px 12px">РАЗОМ</td>${grandByM.map(v=>cell(v.p,v.f,true)).join('')}${cell(grandP,grandF,true)}</tr>`;
+      bodyEl.innerHTML=html;
     };
+
+    if(!window._hrCollapsed) window._hrCollapsed=new Set();
+    window.hrToggleUnit=function(gid){
+      if(_hrCollapsed.has(gid)) _hrCollapsed.delete(gid); else _hrCollapsed.add(gid);
+      const collapsed=_hrCollapsed.has(gid);
+      document.querySelectorAll(`tr[data-hru="${gid}"]`).forEach(r=>r.style.display=collapsed?'none':'');
+      const uRow=[...document.querySelectorAll('tr.bud-unit')].find(r=>r.getAttribute('onclick')===`hrToggleUnit('${gid}')`);
+      if(uRow){const arr=uRow.querySelector('span[style*="rotate"]');if(arr)arr.style.transform=`rotate(${collapsed?'-90':'0'}deg)`;}
+    };
+
 
     // ── HR-файли CRUD ──
     function hrFilesRender(){
