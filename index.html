@@ -6138,7 +6138,10 @@
       if(_budCollapsed.has(uid)) return; // unit collapsed — ignore
       if(_budCollapsed.has(cid)) _budCollapsed.delete(cid); else _budCollapsed.add(cid);
       const collapsed=_budCollapsed.has(cid);
-      document.querySelectorAll(`tr[data-catrow="${cid}"]`).forEach(r=>{r.style.display=collapsed?'none':'';});
+      document.querySelectorAll(`tr[data-catrow="${cid}"]`).forEach(r=>{
+        if(collapsed){r.style.display='none';return;}
+        r.style.display=(_budHideEmpty&&r.dataset.rowsum==='0')?'none':'';
+      });
       const cRow=document.querySelector(`tr.bud-group[data-catid="${cid}"]`);
       if(cRow){const arr=cRow.querySelector('span[style*="rotate"]');if(arr)arr.style.transform=`rotate(${collapsed?'-90':'0'}deg)`;}
     };
