@@ -1158,6 +1158,26 @@
     <div class="auth-hint"></div>
   </div>
 </div>
+<script>
+async function authSignIn(){
+  const err=document.getElementById('authErr');
+  const btn=document.getElementById('authBtn');
+  const email=document.getElementById('authEmail').value.trim();
+  const password=document.getElementById('authPass').value;
+  if(!email||!password){err.textContent='Введіть email і пароль.';return;}
+  err.textContent='';btn.disabled=true;btn.textContent='Вхід…';
+  try{
+    const db=supabase.createClient(
+      'https://jomergnpqsjufqpehvyk.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvbWVyZ25wcXNqdWZxcGVodnlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MTA3NjEsImV4cCI6MjA5NzI4Njc2MX0.uFCvBwl3osBS9AIbMDqefRH87PQH1Xqqff07-d2lsTM'
+    );
+    const {error}=await db.auth.signInWithPassword({email,password});
+    if(error){err.textContent='Невірний email або пароль.';btn.disabled=false;btn.textContent='Увійти';}
+    else{location.reload();}
+  }catch(e){err.textContent='Помилка: '+e.message;btn.disabled=false;btn.textContent='Увійти';}
+}
+document.getElementById('authPass').addEventListener('keydown',e=>{if(e.key==='Enter')authSignIn();});
+</script>
 
 <button class="sb-collapse-btn" id="sbCollapseBtn" title="Згорнути меню" onclick="toggleSidebar()" style="display:none">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18l-6-6 6-6"/></svg>
