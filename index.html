@@ -2762,24 +2762,6 @@
               </table>
             </div>
 
-            <!-- Співробітники -->
-            <div class="card">
-              <div class="card-head">
-                <span style="font-weight:600">Співробітники</span>
-                <button class="btn primary" style="margin-left:auto" onclick="hrEmpOpen(null)">+ Додати</button>
-              </div>
-              <table class="bud-table" id="hrEmpTable">
-                <thead><tr>
-                  <th style="text-align:left">ПІБ</th>
-                  <th style="text-align:left">Посада</th>
-                  <th style="text-align:left">Підрозділ</th>
-                  <th>Активний</th>
-                  <th></th>
-                </tr></thead>
-                <tbody id="hrEmpBody"><tr><td colspan="5" class="empty">Завантаження…</td></tr></tbody>
-              </table>
-            </div>
-
           </div>
         </div>
 
@@ -2804,30 +2786,6 @@
           </div>
         </div>
 
-        <!-- модалка: співробітник -->
-        <div class="modal-scrim" id="hrEmpScrim" style="display:none" onclick="if(event.target===this)hrEmpClose()">
-          <div class="modal" style="max-width:460px;max-height:90vh;display:flex;flex-direction:column">
-            <div class="modal-head">
-              <h3 id="hrEmpTitle">Новий співробітник</h3>
-              <button class="ico-btn" onclick="hrEmpClose()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
-            </div>
-            <div class="body" style="flex-direction:column;gap:14px;padding:20px">
-              <div><label>ПІБ <span style="color:var(--brand)">*</span></label><input id="hrEmpName" placeholder="Прізвище Ім'я По-батькові"></div>
-              <div><label>Підрозділ <span style="color:var(--brand)">*</span></label><select id="hrEmpUnit" class="modal-sel"></select></div>
-              <div><label>Посада</label><input id="hrEmpPosition" placeholder="Менеджер, бухгалтер..."></div>
-              <div><label>Порядок сортування</label><input id="hrEmpSort" type="number" placeholder="0"></div>
-              <div style="display:flex;align-items:center;gap:10px">
-                <input id="hrEmpActive" type="checkbox" checked style="width:16px;height:16px">
-                <label for="hrEmpActive" style="font-size:13px;color:var(--ink)">Активний</label>
-              </div>
-            </div>
-            <div class="foot">
-              <button class="btn ghost" id="hrEmpDelBtn" onclick="hrEmpDelete()" style="margin-right:auto;display:none">Видалити</button>
-              <button class="btn ghost" onclick="hrEmpClose()">Скасувати</button>
-              <button class="btn primary" onclick="hrEmpSave()">Зберегти</button>
-            </div>
-          </div>
-        </div>
 
         <!-- ── Налаштування ── -->
         <div id="budTab-settings" style="display:none;flex-direction:column;gap:20px">
@@ -6323,12 +6281,8 @@
     };
 
     // ── HR-board ──────────────────────────────────────────────────
-    let _hrShowFact=false, _hrFiles=[], _hrEmps=[], _hrEntries=[];
-    let _hrFileEdit=null, _hrEmpEdit=null;
-
-    window.budTab_hrLoad = async function(){
-      await hrLoad();
-    };
+    // ── HR-board ──────────────────────────────────────────────────
+    let _hrShowFact=false, _hrFiles=[], _hrEntries=[], _hrFileEdit=null;
 
     async function hrLoad(){
       const yr=document.getElementById('hrYear');
@@ -6336,12 +6290,8 @@
         const cur=new Date().getFullYear();
         for(let y=cur+1;y>=cur-3;y--){const o=document.createElement('option');o.value=y;o.textContent=y;if(y===cur)o.selected=true;yr.add(o);}
       }
-      const [rf,re]=await Promise.all([
-        db.from('hr_files').select('*').order('year',{ascending:false}),
-        db.from('employees').select('*').order('sort_order').order('name')
-      ]);
+      const rf=await db.from('hr_files').select('*').order('year',{ascending:false});
       _hrFiles=rf.data||[];
-      _hrEmps=re.data||[];
       hrFillUnit();
       await hrRender();
     }
@@ -6353,16 +6303,16 @@
       const flat=flatOrgUnits();
       const units=flat.filter(u=>_hrFiles.some(f=>f.unit_id===u.id));
       sel.innerHTML='<option value="">— Всі підрозділи —</option>'+
-        units.map(u=>`<option value="${u.id}"${'&nbsp;'.repeat(u.level*2)? '':''} >${'　'.repeat(u.level)}${u.name}</option>`).join('');
+        units.map(u=>`<option value="${u.id}">${'　'.repeat(u.level)}${u.name}</option>`).join('');
       if(prev) sel.value=prev;
     }
 
     window.hrTab=function(tab,btn){
-      document.getElementById('hrTab-board').style.display=tab==='board'?'':'none';
-      document.getElementById('hrTab-settings').style.display=tab==='settings'?'':'none';
+      document.getElementById('hrTab-board').style.display=tab==='board'?'flex':'none';
+      document.getElementById('hrTab-settings').style.display=tab==='settings'?'flex':'none';
       document.querySelectorAll('#hrSeg button').forEach(b=>b.classList.remove('on'));
       if(btn) btn.classList.add('on');
-      if(tab==='settings'){ hrFilesRender(); hrEmpRender(); hrFillEmpUnit(); }
+      if(tab==='settings') hrFilesRender();
     };
 
     window.hrToggleFact=function(){
@@ -6400,56 +6350,43 @@
       if(!hrUnits.length){body.innerHTML=`<tr><td colspan="${months.length+2}" class="empty">Немає HR-файлів за ${year} рік</td></tr>`;return;}
 
       const cell=(p,f)=>`<td style="padding:0"><div style="display:flex"><span style="flex:1;text-align:center;padding:5px 8px;font-weight:600;font-variant-numeric:tabular-nums">${p?p.toLocaleString('uk-UA'):'—'}</span>${_hrShowFact?`<span style="flex:1;text-align:center;padding:5px 8px;border-left:1px solid var(--line);font-size:11px;color:var(--slate);font-variant-numeric:tabular-nums">${f?f.toLocaleString('uk-UA'):'—'}</span>`:''}</div></td>`;
+      const empName=e=>[e.last_name,e.first_name,e.patronymic].filter(Boolean).join(' ');
 
       let html='';
-      const grandByM=months.map(()=>({p:0,f:0}));
-      let grandP=0,grandF=0;
+      const cleanByM=months.map(()=>({p:0,f:0}));
+      let cleanP=0,cleanF=0;
 
       hrUnits.forEach(u=>{
-        const emps=_hrEmps.filter(e=>String(e.unit_id)===String(u.id)&&e.is_active);
+        // співробітники підрозділу з dictEmps
+        const emps=(typeof dictEmps!=='undefined'?dictEmps:[]).filter(e=>Number(e.primary_unit_id)===u.id);
         let uP=0,uF=0;
         const uByM=months.map(()=>({p:0,f:0}));
         emps.forEach(emp=>{
           months.forEach((m,mi)=>{
             const e=_hrEntries.find(x=>x.employee_id===emp.id&&x.month===m&&String(x.unit_id)===String(u.id));
-            uByM[mi].p+=e?Number(e.amount_plan||0):0;
-            uByM[mi].f+=e?Number(e.amount_fact||0):0;
+            const p=e?Number(e.amount_plan||0):0;
+            const f=e?Number(e.amount_fact||0):0;
+            uByM[mi].p+=p;uByM[mi].f+=f;
+            cleanByM[mi].p+=p;cleanByM[mi].f+=f;
+            cleanP+=p;cleanF+=f;
           });
         });
-        uByM.forEach(v=>{uP+=v.p;uF+=v.f;grandByM[uByM.indexOf(v)].p+=v.p;grandByM[uByM.indexOf(v)].f+=v.f;});
-        uByM.forEach((v,i)=>{grandByM[i].p+=0;grandByM[i].f+=0;}); // already done above, reset double
-        grandP+=uP;grandF+=uF;
+        uByM.forEach(v=>{uP+=v.p;uF+=v.f;});
 
         html+=`<tr class="bud-unit"><td style="padding:7px 10px 7px ${8+u.level*16}px"><b>${u.name}</b></td>${uByM.map(v=>cell(v.p,v.f)).join('')}${cell(uP,uF)}</tr>`;
 
         emps.forEach(emp=>{
           let eP=0,eF=0;
-          const eCells=months.map((m,mi)=>{
+          const eCells=months.map((m)=>{
             const e=_hrEntries.find(x=>x.employee_id===emp.id&&x.month===m&&String(x.unit_id)===String(u.id));
             const p=e?Number(e.amount_plan||0):0;
             const f=e?Number(e.amount_fact||0):0;
             eP+=p;eF+=f;
             return cell(p,f);
           });
-          html+=`<tr><td style="padding:5px 10px 5px 26px">${emp.name}${emp.position?`<span style="font-size:11px;color:var(--muted);margin-left:6px">${emp.position}</span>`:''}</td>${eCells.join('')}${cell(eP,eF)}</tr>`;
+          html+=`<tr><td style="padding:5px 10px 5px 26px">${empName(emp)}</td>${eCells.join('')}${cell(eP,eF)}</tr>`;
         });
-        if(!emps.length) html+=`<tr><td colspan="${months.length+2}" style="padding:6px 26px;color:var(--muted);font-size:12px">Немає активних співробітників</td></tr>`;
-      });
-
-      // fix grandByM double-counting — recompute clean
-      const cleanByM=months.map(()=>({p:0,f:0}));
-      let cleanP=0,cleanF=0;
-      hrUnits.forEach(u=>{
-        const emps=_hrEmps.filter(e=>String(e.unit_id)===String(u.id)&&e.is_active);
-        emps.forEach(emp=>{
-          months.forEach((m,mi)=>{
-            const e=_hrEntries.find(x=>x.employee_id===emp.id&&x.month===m&&String(x.unit_id)===String(u.id));
-            const p=e?Number(e.amount_plan||0):0;
-            const f=e?Number(e.amount_fact||0):0;
-            cleanByM[mi].p+=p;cleanByM[mi].f+=f;
-            cleanP+=p;cleanF+=f;
-          });
-        });
+        if(!emps.length) html+=`<tr><td colspan="${months.length+2}" style="padding:6px 26px;color:var(--muted);font-size:12px">Немає співробітників у підрозділі</td></tr>`;
       });
 
       html+=`<tr class="bud-total"><td style="padding:6px 12px">РАЗОМ</td>${cleanByM.map(v=>cell(v.p,v.f)).join('')}${cell(cleanP,cleanF)}</tr>`;
@@ -6478,10 +6415,8 @@
       _hrFileEdit=id?_hrFiles.find(f=>f.id===id):null;
       document.getElementById('hrFileTitle').textContent=id?'Редагувати HR-файл':'Новий HR-файл';
       document.getElementById('hrFileDelBtn').style.display=id?'':'none';
-      // fill unit select
       const sel=document.getElementById('hrFileUnit');
-      const flat=flatOrgUnits();
-      sel.innerHTML=flat.map(u=>`<option value="${u.id}">${'　'.repeat(u.level)}${u.name}</option>`).join('');
+      sel.innerHTML=flatOrgUnits().map(u=>`<option value="${u.id}">${'　'.repeat(u.level)}${u.name}</option>`).join('');
       if(_hrFileEdit){ sel.value=_hrFileEdit.unit_id; document.getElementById('hrFileYear').value=_hrFileEdit.year; document.getElementById('hrFileStatus').value=_hrFileEdit.status; document.getElementById('hrFileNote').value=_hrFileEdit.note||''; }
       else { document.getElementById('hrFileYear').value=new Date().getFullYear(); document.getElementById('hrFileStatus').value='draft'; document.getElementById('hrFileNote').value=''; }
       document.getElementById('hrFileScrim').style.display='flex';
@@ -6511,70 +6446,6 @@
       const rf=await db.from('hr_files').select('*').order('year',{ascending:false});
       _hrFiles=rf.data||[];
       hrFilesRender(); hrFillUnit();
-    };
-
-    // ── Співробітники CRUD ──
-    function hrFillEmpUnit(){
-      ['hrFileUnit','hrEmpUnit'].forEach(id=>{
-        const sel=document.getElementById(id);
-        if(!sel||sel.options.length>0) return;
-        flatOrgUnits().forEach(u=>{const o=document.createElement('option');o.value=u.id;o.textContent='　'.repeat(u.level)+u.name;sel.add(o);});
-      });
-    }
-
-    function hrEmpRender(){
-      const tbody=document.getElementById('hrEmpBody');
-      if(!tbody) return;
-      if(!_hrEmps.length){tbody.innerHTML='<tr><td colspan="5" class="empty">Немає співробітників</td></tr>';return;}
-      const flat=flatOrgUnits();
-      tbody.innerHTML=_hrEmps.map(e=>{
-        const u=flat.find(x=>x.id===e.unit_id);
-        return `<tr>
-          <td style="font-weight:500">${e.name}</td>
-          <td style="color:var(--muted)">${e.position||'—'}</td>
-          <td>${u?u.name:'—'}</td>
-          <td style="text-align:center">${e.is_active?'✓':'—'}</td>
-          <td><div class="row-act"><button class="ico-btn" onclick="hrEmpOpen(${e.id})">${_eIco}</button></div></td>
-        </tr>`;
-      }).join('');
-    }
-
-    window.hrEmpOpen=function(id){
-      _hrEmpEdit=id?_hrEmps.find(e=>e.id===id):null;
-      document.getElementById('hrEmpTitle').textContent=id?'Редагувати співробітника':'Новий співробітник';
-      document.getElementById('hrEmpDelBtn').style.display=id?'':'none';
-      const sel=document.getElementById('hrEmpUnit');
-      sel.innerHTML='';
-      flatOrgUnits().forEach(u=>{const o=document.createElement('option');o.value=u.id;o.textContent='　'.repeat(u.level)+u.name;sel.add(o);});
-      if(_hrEmpEdit){ document.getElementById('hrEmpName').value=_hrEmpEdit.name; sel.value=_hrEmpEdit.unit_id; document.getElementById('hrEmpPosition').value=_hrEmpEdit.position||''; document.getElementById('hrEmpSort').value=_hrEmpEdit.sort_order||0; document.getElementById('hrEmpActive').checked=_hrEmpEdit.is_active!==false; }
-      else { document.getElementById('hrEmpName').value=''; document.getElementById('hrEmpPosition').value=''; document.getElementById('hrEmpSort').value=0; document.getElementById('hrEmpActive').checked=true; }
-      document.getElementById('hrEmpScrim').style.display='flex';
-    };
-    window.hrEmpClose=function(){ document.getElementById('hrEmpScrim').style.display='none'; };
-    window.hrEmpSave=async function(){
-      const name=document.getElementById('hrEmpName').value.trim();
-      const unitId=+document.getElementById('hrEmpUnit').value;
-      if(!name||!unitId){toast('Заповніть ПІБ та підрозділ','error');return;}
-      const row={name,unit_id:unitId,position:document.getElementById('hrEmpPosition').value.trim()||null,sort_order:+document.getElementById('hrEmpSort').value||0,is_active:document.getElementById('hrEmpActive').checked};
-      let err;
-      if(_hrEmpEdit){ ({error:err}=await db.from('employees').update(row).eq('id',_hrEmpEdit.id)); }
-      else { ({error:err}=await db.from('employees').insert(row)); }
-      if(err){toast('Помилка: '+err.message,'error');return;}
-      toast('Збережено','success');
-      hrEmpClose();
-      const re=await db.from('employees').select('*').order('sort_order').order('name');
-      _hrEmps=re.data||[];
-      hrEmpRender();
-    };
-    window.hrEmpDelete=async function(){
-      if(!_hrEmpEdit||!confirm('Видалити співробітника?')) return;
-      const {error}=await db.from('employees').delete().eq('id',_hrEmpEdit.id);
-      if(error){toast('Помилка: '+error.message,'error');return;}
-      toast('Видалено','success');
-      hrEmpClose();
-      const re=await db.from('employees').select('*').order('sort_order').order('name');
-      _hrEmps=re.data||[];
-      hrEmpRender();
     };
 
     // ── категорії CRUD ──
