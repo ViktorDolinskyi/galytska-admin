@@ -2657,6 +2657,7 @@
           </div>
           <div class="seg" id="budSeg">
             <button class="on" onclick="budTab('table',this)">Бюджет</button>
+            <button onclick="budTab('hrboard',this)">HR-board</button>
             <button onclick="budTab('settings',this)">Налаштування</button>
           </div>
         </div>
@@ -2697,6 +2698,35 @@
               <table class="bud-table" id="budTable">
                 <thead id="budHead"></thead>
                 <tbody id="budBody"><tr><td colspan="10" class="empty">Завантаження…</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── HR-board ── -->
+        <div id="budTab-hrboard" style="display:none;flex-direction:column;gap:20px">
+          <div class="card">
+            <div class="card-head">
+              <select id="hrYear" onchange="hrRender()"></select>
+              <select id="hrPeriod" onchange="hrRender()">
+                <option value="q1">Q1 (Січ–Бер)</option>
+                <option value="q2">Q2 (Кві–Чер)</option>
+                <option value="q3" selected>Q3 (Лип–Вер)</option>
+                <option value="q4">Q4 (Жов–Гру)</option>
+                <option value="year">Рік (всі місяці)</option>
+              </select>
+              <select id="hrCat" onchange="hrRender()" style="min-width:200px"><option value="">— Всі категорії —</option></select>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;font-size:13px;color:var(--ink);margin-left:auto" onclick="hrToggleFact()">
+                <span>Факт</span>
+                <span id="hrFactTrack" style="display:inline-flex;width:40px;height:22px;border-radius:11px;background:var(--line);position:relative;flex-shrink:0;transition:background .2s">
+                  <span id="hrFactThumb" style="position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)"></span>
+                </span>
+              </label>
+            </div>
+            <div class="bud-wrap">
+              <table class="bud-table" id="hrTable">
+                <thead id="hrHead"></thead>
+                <tbody id="hrBody"><tr><td colspan="5" class="empty">Завантаження…</td></tr></tbody>
               </table>
             </div>
           </div>
@@ -6181,17 +6211,102 @@
 
     // ── таб ──
     window.budTab=function(tab,btn){
-      ['table','settings'].forEach(t=>{
+      ['table','hrboard','settings'].forEach(t=>{
         const el=document.getElementById('budTab-'+t);
         if(el) el.style.display=t===tab?'':'none';
       });
       document.querySelectorAll('#budSeg button').forEach(b=>b.classList.remove('on'));
       if(btn) btn.classList.add('on');
       if(tab==='table') budFillUnits();
+      if(tab==='hrboard') hrLoad();
       if(tab==='settings'){
         budgetsLoadRefresh();
         budCatsLoadRefresh().then(()=>budItemsLoadRefresh());
       }
+    };
+
+    // ── HR-board ──────────────────────────────────────────────────
+    let _hrShowFact=false;
+
+    async function hrLoad(){
+      // заповнюємо роки
+      const yr=document.getElementById('hrYear');
+      if(yr&&!yr.options.length){
+        const cur=new Date().getFullYear();
+        for(let y=cur+1;y>=cur-3;y--) yr.add(new Object(Object.assign(document.createElement('option'),{value:y,textContent:y,selected:y===cur})));
+      }
+      // заповнюємо категорії
+      const cs=document.getElementById('hrCat');
+      if(cs&&cs.options.length===1){
+        _cats.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=c.name;cs.add(o);});
+      }
+      await hrRender();
+    }
+
+    window.hrToggleFact=function(){
+      _hrShowFact=!_hrShowFact;
+      const track=document.getElementById('hrFactTrack');
+      const thumb=document.getElementById('hrFactThumb');
+      if(track) track.style.background=_hrShowFact?'var(--brand)':'var(--line)';
+      if(thumb) thumb.style.left=_hrShowFact?'21px':'3px';
+      hrRender();
+    };
+
+    window.hrRender=async function(){
+      const year=+document.getElementById('hrYear').value||new Date().getFullYear();
+      const period=document.getElementById('hrPeriod').value;
+      const catId=document.getElementById('hrCat').value;
+      const months=QUARTERS[period];
+
+      const r=await db.from('budget_entries').select('*').eq('year',year);
+      const entries=r.data||[];
+
+      const flat=flatOrgUnits();
+      const budgetedUnits=flat.filter(u=>_budgets.some(b=>b.unit_id===u.id&&b.year===year));
+
+      // фільтруємо статті по категорії
+      const items=catId?_items.filter(it=>String(it.category_id)===String(catId)):_items;
+
+      const head=document.getElementById('hrHead');
+      const body=document.getElementById('hrBody');
+
+      const mw=_hrShowFact?'150':'110';
+      const subRow=`<div style="display:flex;font-size:10px;font-weight:400;color:var(--muted);border-top:1px solid var(--line)"><span style="flex:1;text-align:center;padding:2px 0">план</span>${_hrShowFact?'<span style="flex:1;text-align:center;padding:2px 0;border-left:1px solid var(--line)">факт</span>':''}</div>`;
+      head.innerHTML='<tr><th style="text-align:left;vertical-align:bottom">Підрозділ</th>'+
+        months.map(m=>`<th style="padding:0;text-align:center;min-width:${mw}px"><div style="padding:5px 10px 4px">${MONTHS[m-1]}</div>${subRow}</th>`).join('')+
+        `<th style="padding:0;text-align:center;min-width:${mw}px"><div style="padding:5px 10px 4px">${period==='year'?'Рік':period.toUpperCase()}</div>${subRow}</th></tr>`;
+
+      if(!budgetedUnits.length){body.innerHTML=`<tr><td colspan="${months.length+2}" class="empty">Немає бюджетних файлів за ${year} рік</td></tr>`;return;}
+
+      const cell=(p,f)=>`<td style="padding:0"><div style="display:flex"><span style="flex:1;text-align:center;padding:5px 8px;font-weight:600;font-variant-numeric:tabular-nums">${p?p.toLocaleString('uk-UA'):'—'}</span>${_hrShowFact?`<span style="flex:1;text-align:center;padding:5px 8px;border-left:1px solid var(--line);font-size:11px;color:var(--slate);font-variant-numeric:tabular-nums">${f?f.toLocaleString('uk-UA'):'—'}</span>`:''}</div></td>`;
+
+      let html='';
+      let grandP=0,grandF=0;
+      const grandByM=months.map(()=>({p:0,f:0}));
+
+      budgetedUnits.forEach(u=>{
+        let uP=0,uF=0;
+        const mCells=months.map((m,mi)=>{
+          let p=0,f=0;
+          items.forEach(it=>{
+            const e=entries.find(x=>x.expense_item_id===it.id&&x.month===m&&String(x.unit_id)===String(u.id));
+            p+=e?Number(e.amount_plan||0):0;
+            f+=e?Number(e.amount_fact||0):0;
+          });
+          uP+=p;uF+=f;grandByM[mi].p+=p;grandByM[mi].f+=f;
+          return cell(p,f);
+        });
+        grandP+=uP;grandF+=uF;
+        const pad=8+u.level*16;
+        const isBold=u.level===0;
+        html+=`<tr class="${isBold?'bud-unit':''}"><td style="padding:7px 10px 7px ${pad}px;${''}">
+          ${'&nbsp;'.repeat(u.level*2)}<span style="font-weight:${isBold?700:500}">${u.name}</span>
+          ${uP||uF?`<span style="font-size:11px;color:var(--muted);margin-left:8px">${uP?uP.toLocaleString('uk-UA'):''}</span>`:''}
+        </td>${mCells.join('')}${cell(uP,uF)}</tr>`;
+      });
+
+      html+=`<tr class="bud-total"><td style="padding:6px 12px">РАЗОМ</td>${grandByM.map(v=>cell(v.p,v.f)).join('')}${cell(grandP,grandF)}</tr>`;
+      body.innerHTML=html;
     };
 
     // ── категорії CRUD ──
