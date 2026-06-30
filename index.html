@@ -6458,28 +6458,76 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
 
 
     // ── HR-файли CRUD ──
+    if(!window._hrFilesCollapsed) window._hrFilesCollapsed=new Set();
+    window.hrFilesToggle=function(gid){
+      if(_hrFilesCollapsed.has(gid)) _hrFilesCollapsed.delete(gid); else _hrFilesCollapsed.add(gid);
+      const collapsed=_hrFilesCollapsed.has(gid);
+      document.querySelectorAll(`tr[data-hrfp="${gid}"]`).forEach(r=>r.style.display=collapsed?'none':'');
+      const hdr=document.querySelector(`tr[data-hrfg="${gid}"]`);
+      if(hdr){const arr=hdr.querySelector('.hrf-arr');if(arr)arr.style.transform=`rotate(${collapsed?'-90':'0'}deg)`;}
+    };
+
     function hrFilesRender(){
       const tbody=document.getElementById('hrFilesBody');
       if(!tbody) return;
       if(!_hrFiles.length){tbody.innerHTML='<tr><td colspan="5" class="empty">Немає HR-файлів</td></tr>';return;}
       const flat=flatOrgUnits();
-      // групуємо файли по роках, показуємо в порядку ієрархії
       const years=[...new Set(_hrFiles.map(f=>f.year))].sort((a,b)=>b-a);
       let rows='';
       years.forEach(year=>{
         const yearFiles=_hrFiles.filter(f=>f.year===year);
-        // відсортувати за ієрархічним порядком flatOrgUnits
-        const sorted=flat.filter(u=>yearFiles.some(f=>f.unit_id===u.id)).map(u=>({u,f:yearFiles.find(f=>f.unit_id===u.id)}));
+        const hrUnits=flat.filter(u=>yearFiles.some(f=>f.unit_id===u.id));
+
+        // визначаємо які з hrUnits мають дочірні у hrUnits
+        const hrIds=new Set(hrUnits.map(u=>u.id));
+        function hasHrChild(idx){
+          const lvl=hrUnits[idx].level;
+          for(let i=idx+1;i<hrUnits.length;i++){
+            if(hrUnits[i].level<=lvl) break;
+            if(hrIds.has(hrUnits[i].id)) return true;
+          }
+          return false;
+        }
+        // батько в списку hrUnits для кожного елемента
+        function parentGid(idx){
+          const lvl=hrUnits[idx].level;
+          for(let i=idx-1;i>=0;i--){
+            if(hrUnits[i].level<lvl) return 'hrf_'+year+'_'+hrUnits[i].id;
+          }
+          return null;
+        }
+
         if(years.length>1) rows+=`<tr><td colspan="5" style="padding:6px 12px 4px;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;border-top:1px solid var(--line)">${year}</td></tr>`;
-        sorted.forEach(({u,f})=>{
+
+        hrUnits.forEach((u,idx)=>{
+          const f=yearFiles.find(x=>x.unit_id===u.id);
+          const gid='hrf_'+year+'_'+u.id;
           const pad=12+u.level*18;
-          rows+=`<tr>
-            <td style="font-weight:500;padding-left:${pad}px">${u.name}</td>
-            <td style="text-align:center">${f.year}</td>
-            <td style="text-align:center"><span style="font-size:11px;padding:2px 8px;border-radius:20px;background:${f.status==='approved'?'#dcfce7':'var(--surface)'};color:${f.status==='approved'?'#15803d':'var(--muted)'}">${f.status==='approved'?'Затверджений':'Чернетка'}</span></td>
-            <td style="color:var(--muted);font-size:12px">${f.note||''}</td>
-            <td><div class="row-act"><button class="ico-btn" onclick="hrFileOpen('${f.id}')">${_eIco}</button></div></td>
-          </tr>`;
+          const isGroup=hasHrChild(idx);
+          const pgid=parentGid(idx);
+          const collapsed=_hrFilesCollapsed.has(gid);
+          const parentAttr=pgid?` data-hrfp="${pgid}"`:'';
+          const groupAttr=isGroup?` data-hrfg="${gid}"`:'';
+          const display=pgid&&_hrFilesCollapsed.has(pgid)?'none':'';
+
+          if(isGroup){
+            const arrow=`<span class="hrf-arr" style="display:inline-block;transition:transform .2s;transform:rotate(${collapsed?'-90':'0'}deg);margin-right:6px;font-size:10px;color:var(--muted);cursor:pointer">&#9660;</span>`;
+            rows+=`<tr class="bud-unit"${groupAttr}${parentAttr} style="cursor:pointer;display:${display}" onclick="hrFilesToggle('${gid}')">
+              <td style="padding:7px 12px 7px ${pad}px">${arrow}<b>${u.name}</b></td>
+              <td style="text-align:center">${f.year}</td>
+              <td style="text-align:center"><span style="font-size:11px;padding:2px 8px;border-radius:20px;background:${f.status==='approved'?'#dcfce7':'var(--surface)'};color:${f.status==='approved'?'#15803d':'var(--muted)'}">${f.status==='approved'?'Затверджений':'Чернетка'}</span></td>
+              <td style="color:var(--muted);font-size:12px">${f.note||''}</td>
+              <td><div class="row-act"><button class="ico-btn" onclick="event.stopPropagation();hrFileOpen('${f.id}')">${_eIco}</button></div></td>
+            </tr>`;
+          } else {
+            rows+=`<tr${parentAttr} style="display:${display}">
+              <td style="font-weight:500;padding-left:${pad}px">${u.name}</td>
+              <td style="text-align:center">${f.year}</td>
+              <td style="text-align:center"><span style="font-size:11px;padding:2px 8px;border-radius:20px;background:${f.status==='approved'?'#dcfce7':'var(--surface)'};color:${f.status==='approved'?'#15803d':'var(--muted)'}">${f.status==='approved'?'Затверджений':'Чернетка'}</span></td>
+              <td style="color:var(--muted);font-size:12px">${f.note||''}</td>
+              <td><div class="row-act"><button class="ico-btn" onclick="hrFileOpen('${f.id}')">${_eIco}</button></div></td>
+            </tr>`;
+          }
         });
       });
       tbody.innerHTML=rows;
