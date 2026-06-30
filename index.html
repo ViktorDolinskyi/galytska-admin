@@ -6120,9 +6120,14 @@
     window.budToggleGroup=function(uid){
       if(_budCollapsed.has(uid)) _budCollapsed.delete(uid); else _budCollapsed.add(uid);
       const collapsed=_budCollapsed.has(uid);
-      // всі дочірні рядки (категорії та статті)
       document.querySelectorAll(`tr[data-group="${uid}"]`).forEach(r=>{
-        r.style.display=collapsed?'none':'';
+        if(collapsed){r.style.display='none';return;}
+        if(r.classList.contains('bud-group')){
+          r.style.display=(_budHideEmpty&&r.dataset.grpsum==='0')?'none':'';return;
+        }
+        const cid=r.dataset.catrow;
+        if(cid&&_budCollapsed.has(cid)){r.style.display='none';return;}
+        r.style.display=(_budHideEmpty&&r.dataset.rowsum==='0')?'none':'';
       });
       // стрілка самого рядка підрозділу
       const uRow=document.querySelector(`tr.bud-unit[data-unitid="${uid}"]`);
