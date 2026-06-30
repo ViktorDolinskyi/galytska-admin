@@ -6463,16 +6463,26 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       if(!tbody) return;
       if(!_hrFiles.length){tbody.innerHTML='<tr><td colspan="5" class="empty">Немає HR-файлів</td></tr>';return;}
       const flat=flatOrgUnits();
-      tbody.innerHTML=_hrFiles.map(f=>{
-        const u=flat.find(x=>x.id===f.unit_id);
-        return `<tr>
-          <td style="font-weight:500">${u?u.name:'—'}</td>
-          <td style="text-align:center">${f.year}</td>
-          <td style="text-align:center"><span style="font-size:11px;padding:2px 8px;border-radius:20px;background:${f.status==='approved'?'#dcfce7':'var(--surface)'};color:${f.status==='approved'?'#15803d':'var(--muted)'}">${f.status==='approved'?'Затверджений':'Чернетка'}</span></td>
-          <td style="color:var(--muted);font-size:12px">${f.note||''}</td>
-          <td><div class="row-act"><button class="ico-btn" onclick="hrFileOpen('${f.id}')">${_eIco}</button></div></td>
-        </tr>`;
-      }).join('');
+      // групуємо файли по роках, показуємо в порядку ієрархії
+      const years=[...new Set(_hrFiles.map(f=>f.year))].sort((a,b)=>b-a);
+      let rows='';
+      years.forEach(year=>{
+        const yearFiles=_hrFiles.filter(f=>f.year===year);
+        // відсортувати за ієрархічним порядком flatOrgUnits
+        const sorted=flat.filter(u=>yearFiles.some(f=>f.unit_id===u.id)).map(u=>({u,f:yearFiles.find(f=>f.unit_id===u.id)}));
+        if(years.length>1) rows+=`<tr><td colspan="5" style="padding:6px 12px 4px;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;border-top:1px solid var(--line)">${year}</td></tr>`;
+        sorted.forEach(({u,f})=>{
+          const pad=12+u.level*18;
+          rows+=`<tr>
+            <td style="font-weight:500;padding-left:${pad}px">${u.name}</td>
+            <td style="text-align:center">${f.year}</td>
+            <td style="text-align:center"><span style="font-size:11px;padding:2px 8px;border-radius:20px;background:${f.status==='approved'?'#dcfce7':'var(--surface)'};color:${f.status==='approved'?'#15803d':'var(--muted)'}">${f.status==='approved'?'Затверджений':'Чернетка'}</span></td>
+            <td style="color:var(--muted);font-size:12px">${f.note||''}</td>
+            <td><div class="row-act"><button class="ico-btn" onclick="hrFileOpen('${f.id}')">${_eIco}</button></div></td>
+          </tr>`;
+        });
+      });
+      tbody.innerHTML=rows;
     }
 
     window.hrFileOpen=function(id){
