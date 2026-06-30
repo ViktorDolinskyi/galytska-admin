@@ -6026,7 +6026,8 @@
 
         const grpCells=months.map((_,i)=>`<td style="padding:0">${_sc(grpPlan[i],grpFact[i])}</td>`).join('');
 
-        html+=`<tr class="bud-group" style="cursor:pointer" onclick="budToggleGroup('${gid}')">
+        const grpEmpty=(grpSumP+grpSumF)===0;
+        html+=`<tr class="bud-group" data-grpsum="${grpSumP+grpSumF}" style="cursor:pointer;display:${grpEmpty&&_budHideEmpty?'none':''}" onclick="budToggleGroup('${gid}')">
           <td style="padding:6px 10px">
             <span style="display:inline-block;transition:transform .2s;transform:rotate(${collapsed?'-90':'0'}deg);margin-right:6px;font-size:10px">▼</span>${grp}
           </td>
@@ -6070,21 +6071,15 @@
       _budHideEmpty=!_budHideEmpty;
       const btn=document.getElementById('budHideEmptyBtn');
       if(btn){btn.textContent=_budHideEmpty?'Відобразити пусті':'Приховати пусті';btn.classList.toggle('primary',_budHideEmpty);btn.classList.toggle('ghost',!_budHideEmpty);}
-      // показуємо/ховаємо пусті рядки (якщо група не згорнута)
+      // ховаємо/показуємо пусті рядки статей (якщо група не згорнута)
       document.querySelectorAll('tr[data-rowsum="0"]').forEach(r=>{
         const gid=r.dataset.group;
-        if(_budCollapsed.has(gid)) return; // вже прихований групою
+        if(_budCollapsed.has(gid)) return;
         r.style.display=_budHideEmpty?'none':'';
       });
-      // ховаємо групу якщо всі її рядки приховані
-      document.querySelectorAll('tr.bud-group').forEach(grpRow=>{
-        const m=grpRow.getAttribute('onclick')&&grpRow.getAttribute('onclick').match(/budToggleGroup\('(.+?)'\)/);
-        if(!m) return;
-        const gid=m[1];
-        if(_budCollapsed.has(gid)) return;
-        const itemRows=[...document.querySelectorAll(`tr[data-group="${gid}"]`)];
-        const allHidden=itemRows.length>0&&itemRows.every(r=>r.style.display==='none');
-        grpRow.style.display=allHidden?'none':'';
+      // ховаємо/показуємо групові рядки з нульовим підсумком (незалежно від collapse)
+      document.querySelectorAll('tr.bud-group[data-grpsum="0"]').forEach(r=>{
+        r.style.display=_budHideEmpty?'none':'';
       });
     };
 
