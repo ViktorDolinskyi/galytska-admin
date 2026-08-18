@@ -1,0 +1,19 @@
+{
+  "name": "Галицька Свіжина",
+  "short_name": "ГС Адмін",
+  "description": "Адміністративна панель Галицька Свіжина",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0F1318",
+  "theme_color": "#D52B1E",
+  "lang": "uk",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
