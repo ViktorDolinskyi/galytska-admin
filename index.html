@@ -975,6 +975,20 @@
   .bud-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
   .bud-toolbar select{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--line);border-radius:10px;padding:7px 32px 7px 11px;color:var(--ink);background:var(--card);cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239B948E' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;outline:none}
   .bud-toolbar select:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-tint)}
+  /* ── Стандарт: шапка таблиці даних (bud-table, data-table, hr-entry-table) ──
+     Використовуй CSS-змінні — вони автоматично перемикаються між темами:
+     th: background:var(--surface) | color:var(--muted) | font-size:11px | font-weight:700
+         text-transform:uppercase | letter-spacing:.06em | padding:9px 12px
+         border-bottom:1px solid var(--line) | white-space:nowrap
+     td: padding:8px 12px | border-bottom:1px solid var(--line) | color:var(--ink)
+     hover: background:var(--hover-bg)  */
+  .data-table{width:100%;border-collapse:collapse;font-size:13px}
+  .data-table th{background:var(--surface);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:9px 12px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+  .data-table th:first-child{text-align:left}
+  .data-table td{padding:8px 12px;border-bottom:1px solid var(--line);text-align:right;vertical-align:middle;color:var(--ink)}
+  .data-table td:first-child{text-align:left}
+  .data-table tr:last-child td{border-bottom:none}
+  .data-table tr:hover td{background:var(--hover-bg)}
   .bud-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--line)}
   .bud-table{width:100%;border-collapse:collapse;font-size:13px}
   .bud-table th{background:var(--surface);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:9px 12px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
@@ -2840,7 +2854,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
               </div>
               <!-- Таблиця -->
               <div style="overflow-x:auto;flex:1">
-                <table id="hrEntryTable" style="width:100%;border-collapse:collapse">
+                <table id="hrEntryTable" class="data-table">
                   <thead id="hrEntryHead"></thead>
                   <tbody id="hrEntryRows"></tbody>
                 </table>
@@ -6606,12 +6620,12 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     function _hrRenderTable(){
       const ms=QTR[_hrFilePeriod];
       const thSub=`<div style="display:flex;font-size:10px;font-weight:400;color:var(--muted);border-top:1px solid var(--line)"><span style="flex:1;text-align:center;padding:2px 4px">план</span><span style="flex:1;text-align:center;padding:2px 4px;border-left:1px solid var(--line)">факт</span></div>`;
-      document.getElementById('hrEntryHead').innerHTML=`<tr style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">
-        <th style="text-align:left;padding:6px 8px;font-weight:700;min-width:150px">Людина</th>
-        <th style="text-align:left;padding:6px 8px;font-weight:700;min-width:130px">Посада</th>
+      document.getElementById('hrEntryHead').innerHTML=`<tr>
+        <th style="text-align:left;min-width:150px">Людина</th>
+        <th style="text-align:left;min-width:130px">Посада</th>
         ${ms.map(m=>`<th style="padding:0;text-align:center;min-width:100px"><div style="padding:5px 8px 4px">${MONTHS_UA[m-1]}</div>${thSub}</th>`).join('')}
         <th style="padding:0;text-align:center;min-width:100px"><div style="padding:5px 8px 4px">${_hrFilePeriod==='year'?'Рік':_hrFilePeriod.toUpperCase()}</div>${thSub}</th>
-        <th style="width:32px"></th></tr>`;
+        <th style="width:32px;padding:0"></th></tr>`;
       const empOpts=dictEmps.map(e=>`<option value="${e.id}">${e.last_name}${e.first_name?' '+e.first_name:''}</option>`).join('');
       const inp=(cls,val)=>`<input class="${cls} form-input" type="number" min="0" step="0.01" value="${val||''}" placeholder="0" style="flex:1;border:none;background:transparent;text-align:right;padding:4px 5px;font-size:13px;width:0;min-width:0;box-shadow:none">`;
       const tbody=document.getElementById('hrEntryRows');
