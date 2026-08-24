@@ -6660,7 +6660,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       [...document.getElementById('hrFilePeriodSeg').querySelectorAll('button')].forEach((b,i)=>b.classList.toggle('on',i===0));
       _hrFileRows=[];
       if(_hrFileEdit){
-        const {data}=await db.from('hr_entries').select('*').eq('unit_id',_hrFileEdit.unit_id).eq('year',_hrFileEdit.year).order('employee_id');
+        const {data}=await db.from('hr_entries').select('*').eq('hr_file_id',_hrFileEdit.id).order('employee_id');
         const map={};
         (data||[]).forEach(e=>{
           if(!e.employee_id||e.month<1||e.month>12) return;
@@ -6680,20 +6680,24 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       if(!unitId||!year){toast('Заповніть підрозділ та рік','error');return;}
       _hrFlush();
       const hdr={unit_id:unitId,year,status:document.getElementById('hrFileStatus').value,note:document.getElementById('hrFileNote').value.trim()||null};
-      let err;
-      if(_hrFileEdit){({error:err}=await db.from('hr_files').update(hdr).eq('id',_hrFileEdit.id));}
-      else{({error:err}=await db.from('hr_files').insert(hdr));}
+      let fileId, err;
+      if(_hrFileEdit){
+        ({error:err}=await db.from('hr_files').update(hdr).eq('id',_hrFileEdit.id));
+        fileId=_hrFileEdit.id;
+      } else {
+        const {data:ins,error:e1}=await db.from('hr_files').insert(hdr).select('id').single();
+        err=e1; if(ins) fileId=ins.id;
+      }
       if(err){toast('Помилка: '+err.message,'error');return;}
-      // delete all entries for unit+year, then insert
-      await db.from('hr_entries').delete().eq('unit_id',unitId).eq('year',year);
+      if(!fileId){toast('Не вдалось отримати id файлу','error');return;}
+      // delete old entries for this file, then insert new
+      await db.from('hr_entries').delete().eq('hr_file_id',fileId);
       const entries=[];
       _hrFileRows.forEach(row=>{
         if(!row.employee_id) return;
         for(let m=1;m<=12;m++){
           const d=row.data[m]||{p:0,f:0};
-          const e={unit_id:unitId,year,month:m,employee_id:row.employee_id,amount_plan:d.p||0,amount_fact:d.f||0};
-          if(row.position) e.position=row.position;
-          entries.push(e);
+          entries.push({hr_file_id:fileId,unit_id:unitId,year,month:m,employee_id:row.employee_id,position:row.position||null,amount_plan:d.p||0,amount_fact:d.f||0});
         }
       });
       if(entries.length){const {error:e2}=await db.from('hr_entries').insert(entries);if(e2){toast('Помилка записів: '+e2.message,'error');return;}}
