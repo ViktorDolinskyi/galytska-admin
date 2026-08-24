@@ -6689,7 +6689,12 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       const entries=[];
       _hrFileRows.forEach(row=>{
         if(!row.employee_id) return;
-        for(let m=1;m<=12;m++){const d=row.data[m];if(d&&(d.p||d.f)) entries.push({unit_id:unitId,year,month:m,employee_id:row.employee_id,position:row.position||null,amount_plan:d.p||0,amount_fact:d.f||0});}
+        for(let m=1;m<=12;m++){
+          const d=row.data[m]||{p:0,f:0};
+          const e={unit_id:unitId,year,month:m,employee_id:row.employee_id,amount_plan:d.p||0,amount_fact:d.f||0};
+          if(row.position) e.position=row.position;
+          entries.push(e);
+        }
       });
       if(entries.length){const {error:e2}=await db.from('hr_entries').insert(entries);if(e2){toast('Помилка записів: '+e2.message,'error');return;}}
       toast('Збережено','success');
