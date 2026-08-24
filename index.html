@@ -2824,23 +2824,27 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
                 <div><label>Статус</label><select id="hrFileStatus" class="modal-sel"><option value="draft">Чернетка</option><option value="approved">Затверджений</option></select></div>
                 <div style="grid-column:1/-1"><label>Примітка</label><textarea id="hrFileNote" rows="2" placeholder="Необов'язково"></textarea></div>
               </div>
-              <!-- Рядки -->
-              <div style="border-top:1px solid var(--line);padding:16px 20px;flex:1">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-                  <span style="font-size:13px;font-weight:700">Список посад</span>
-                  <button class="btn" onclick="hrEntryAddRow()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;margin-right:4px"><path d="M12 5v14M5 12h14"/></svg>Додати рядок</button>
+              <!-- Рядки: заголовок + вибір кварталу -->
+              <div style="border-top:1px solid var(--line);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px">
+                <span style="font-size:13px;font-weight:700;flex-shrink:0">Список посад</span>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div class="seg" id="hrFilePeriodSeg" style="font-size:12px">
+                    <button class="on" onclick="hrFileSetPeriod('q1')">Q1</button>
+                    <button onclick="hrFileSetPeriod('q2')">Q2</button>
+                    <button onclick="hrFileSetPeriod('q3')">Q3</button>
+                    <button onclick="hrFileSetPeriod('q4')">Q4</button>
+                    <button onclick="hrFileSetPeriod('year')">Рік</button>
+                  </div>
+                  <button class="btn" onclick="hrEntryAddRow()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:13px;height:13px;margin-right:4px"><path d="M12 5v14M5 12h14"/></svg>Додати</button>
                 </div>
-                <table style="width:100%;border-collapse:collapse">
-                  <thead><tr style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">
-                    <th style="text-align:left;padding:6px 8px;font-weight:700">Людина</th>
-                    <th style="text-align:left;padding:6px 8px;font-weight:700">Посада</th>
-                    <th style="text-align:right;padding:6px 8px;font-weight:700;width:90px">План</th>
-                    <th style="text-align:right;padding:6px 8px;font-weight:700;width:90px">Факт</th>
-                    <th style="width:32px"></th>
-                  </tr></thead>
+              </div>
+              <!-- Таблиця -->
+              <div style="overflow-x:auto;flex:1">
+                <table id="hrEntryTable" style="width:100%;border-collapse:collapse;min-width:400px">
+                  <thead id="hrEntryHead"></thead>
                   <tbody id="hrEntryRows"></tbody>
                 </table>
-                <div id="hrEntryEmpty" style="text-align:center;color:var(--muted);font-size:13px;padding:20px 0">Немає записів</div>
+                <div id="hrEntryEmpty" style="text-align:center;color:var(--muted);font-size:13px;padding:20px 0">Немає записів — натисніть «Додати»</div>
               </div>
             </div>
             <div class="foot">
@@ -6582,64 +6586,117 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       tbody.innerHTML=rows;
     }
 
-    function hrEntryRowsSync(){
-      const rows=document.getElementById('hrEntryRows');
-      document.getElementById('hrEntryEmpty').style.display=rows.children.length?'none':'block';
+    // ── HR-file entries (in-memory) ─────────────────────────────
+    const MONTHS_UA=['Січ','Лют','Бер','Кві','Тра','Чер','Лип','Сер','Вер','Жов','Лис','Гру'];
+    const QTR={q1:[1,2,3],q2:[4,5,6],q3:[7,8,9],q4:[10,11,12],year:[1,2,3,4,5,6,7,8,9,10,11,12]};
+    let _hrFileRows=[], _hrFilePeriod='q1';
+
+    function _hrFlush(){
+      const ms=QTR[_hrFilePeriod];
+      [...document.getElementById('hrEntryRows').querySelectorAll('tr[data-ri]')].forEach(tr=>{
+        const ri=+tr.dataset.ri, row=_hrFileRows[ri]; if(!row) return;
+        row.employee_id=+tr.querySelector('.hfe-emp').value||null;
+        row.position=tr.querySelector('.hfe-pos').value.trim();
+        ms.forEach(m=>{
+          row.data[m]={p:parseFloat(tr.querySelector('.hfp-'+m)?.value)||0,f:parseFloat(tr.querySelector('.hff-'+m)?.value)||0};
+        });
+      });
     }
-    window.hrEntryAddRow=function(e={}){
+
+    function _hrRenderTable(){
+      const ms=QTR[_hrFilePeriod];
+      const thSub=`<div style="display:flex;font-size:10px;font-weight:400;color:var(--muted);border-top:1px solid var(--line)"><span style="flex:1;text-align:center;padding:2px 4px">план</span><span style="flex:1;text-align:center;padding:2px 4px;border-left:1px solid var(--line)">факт</span></div>`;
+      document.getElementById('hrEntryHead').innerHTML=`<tr style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">
+        <th style="text-align:left;padding:6px 8px;font-weight:700;min-width:150px">Людина</th>
+        <th style="text-align:left;padding:6px 8px;font-weight:700;min-width:130px">Посада</th>
+        ${ms.map(m=>`<th style="padding:0;text-align:center;min-width:100px"><div style="padding:5px 8px 4px">${MONTHS_UA[m-1]}</div>${thSub}</th>`).join('')}
+        <th style="padding:0;text-align:center;min-width:100px"><div style="padding:5px 8px 4px">${_hrFilePeriod==='year'?'Рік':_hrFilePeriod.toUpperCase()}</div>${thSub}</th>
+        <th style="width:32px"></th></tr>`;
+      const empOpts=dictEmps.map(e=>`<option value="${e.id}">${e.last_name}${e.first_name?' '+e.first_name:''}</option>`).join('');
+      const inp=(cls,val)=>`<input class="${cls} form-input" type="number" min="0" step="0.01" value="${val||''}" placeholder="0" style="flex:1;border:none;background:transparent;text-align:right;padding:4px 5px;font-size:13px;width:0;min-width:0;box-shadow:none">`;
       const tbody=document.getElementById('hrEntryRows');
-      const empOpts=dictEmps.map(m=>`<option value="${m.id}"${m.id==e.employee_id?' selected':''}>${m.last_name}${m.first_name?' '+m.first_name:''}</option>`).join('');
-      const tr=document.createElement('tr');
-      tr.style.borderBottom='1px solid var(--line)';
-      tr.innerHTML=`
-        <td style="padding:6px 4px"><select class="modal-sel" style="width:100%;min-width:130px"><option value="">— оберіть —</option>${empOpts}</select></td>
-        <td style="padding:6px 4px"><input class="form-input" placeholder="Посада" value="${e.position||''}" style="width:100%;min-width:120px"></td>
-        <td style="padding:6px 4px"><input class="form-input" type="number" min="0" step="0.5" value="${e.amount_plan!=null?e.amount_plan:''}" placeholder="0" style="width:80px;text-align:right"></td>
-        <td style="padding:6px 4px"><input class="form-input" type="number" min="0" step="0.5" value="${e.amount_fact!=null?e.amount_fact:''}" placeholder="0" style="width:80px;text-align:right"></td>
-        <td style="padding:6px 4px;text-align:center"><button class="ico-btn" onclick="this.closest('tr').remove();hrEntryRowsSync()" title="Видалити"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button></td>`;
-      tbody.appendChild(tr);
-      hrEntryRowsSync();
+      tbody.innerHTML='';
+      _hrFileRows.forEach((row,ri)=>{
+        let totP=0,totF=0;
+        const cells=ms.map(m=>{const d=row.data[m]||{p:0,f:0};totP+=d.p;totF+=d.f;
+          return `<td style="padding:0;border-left:1px solid var(--line)"><div style="display:flex">${inp('hfp-'+m,d.p||'')}${inp('hff-'+m,d.f||'')}</div></td>`;
+        }).join('');
+        const sel=`<select class="hfe-emp modal-sel" style="width:100%"><option value="">— оберіть —</option>${empOpts}</select>`;
+        const tr=document.createElement('tr');
+        tr.dataset.ri=ri; tr.style.borderBottom='1px solid var(--line)';
+        tr.innerHTML=`<td style="padding:4px">${sel}</td>
+          <td style="padding:4px;border-left:1px solid var(--line)"><input class="hfe-pos form-input" placeholder="Посада" value="${row.position||''}" style="width:100%"></td>
+          ${cells}
+          <td style="padding:0;border-left:1px solid var(--line)"><div style="display:flex">
+            <span style="flex:1;padding:4px 5px;font-weight:700;text-align:right;font-size:13px">${totP||''}</span>
+            <span style="flex:1;padding:4px 5px;text-align:right;border-left:1px solid var(--line);font-size:13px">${totF||''}</span>
+          </div></td>
+          <td style="padding:4px;text-align:center"><button class="ico-btn" onclick="hrEntryDelRow(${ri})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button></td>`;
+        tr.querySelector('.hfe-emp').value=row.employee_id||'';
+        tbody.appendChild(tr);
+      });
+      document.getElementById('hrEntryEmpty').style.display=_hrFileRows.length?'none':'block';
+    }
+
+    window.hrFileSetPeriod=function(p){
+      _hrFlush(); _hrFilePeriod=p;
+      [...document.getElementById('hrFilePeriodSeg').querySelectorAll('button')].forEach(b=>{
+        b.classList.toggle('on',b.textContent.toLowerCase()===(p==='year'?'рік':p));
+      });
+      _hrRenderTable();
     };
+    window.hrEntryAddRow=function(){_hrFlush();_hrFileRows.push({employee_id:null,position:'',data:{}});_hrRenderTable();};
+    window.hrEntryDelRow=function(ri){_hrFlush();_hrFileRows.splice(ri,1);_hrRenderTable();};
+
     window.hrFileOpen=async function(id){
       _hrFileEdit=id?_hrFiles.find(f=>f.id===id):null;
       document.getElementById('hrFileTitle').textContent=id?'Редагувати HR-файл':'Новий HR-файл';
       document.getElementById('hrFileDelBtn').style.display=id?'':'none';
       const sel=document.getElementById('hrFileUnit');
       sel.innerHTML=flatOrgUnits().map(u=>`<option value="${u.id}">${'　'.repeat(u.level)}${u.name}</option>`).join('');
-      if(_hrFileEdit){ sel.value=_hrFileEdit.unit_id; document.getElementById('hrFileYear').value=_hrFileEdit.year; document.getElementById('hrFileStatus').value=_hrFileEdit.status; document.getElementById('hrFileNote').value=_hrFileEdit.note||''; }
-      else { document.getElementById('hrFileYear').value=new Date().getFullYear(); document.getElementById('hrFileStatus').value='draft'; document.getElementById('hrFileNote').value=''; }
-      // завантажуємо рядки (month=0 = річний рівень)
-      document.getElementById('hrEntryRows').innerHTML='';
+      if(_hrFileEdit){sel.value=_hrFileEdit.unit_id;document.getElementById('hrFileYear').value=_hrFileEdit.year;document.getElementById('hrFileStatus').value=_hrFileEdit.status;document.getElementById('hrFileNote').value=_hrFileEdit.note||'';}
+      else{document.getElementById('hrFileYear').value=new Date().getFullYear();document.getElementById('hrFileStatus').value='draft';document.getElementById('hrFileNote').value='';}
+      _hrFilePeriod='q1';
+      [...document.getElementById('hrFilePeriodSeg').querySelectorAll('button')].forEach((b,i)=>b.classList.toggle('on',i===0));
+      _hrFileRows=[];
       if(_hrFileEdit){
-        const {data}=await db.from('hr_entries').select('*').eq('unit_id',_hrFileEdit.unit_id).eq('year',_hrFileEdit.year).eq('month',0).order('id');
-        (data||[]).forEach(e=>hrEntryAddRow(e));
+        const {data}=await db.from('hr_entries').select('*').eq('unit_id',_hrFileEdit.unit_id).eq('year',_hrFileEdit.year).order('employee_id');
+        const map={};
+        (data||[]).forEach(e=>{
+          if(!e.employee_id||e.month<1||e.month>12) return;
+          if(!map[e.employee_id]) map[e.employee_id]={employee_id:e.employee_id,position:e.position||'',data:{}};
+          map[e.employee_id].data[e.month]={p:Number(e.amount_plan||0),f:Number(e.amount_fact||0)};
+          if(e.position) map[e.employee_id].position=e.position;
+        });
+        _hrFileRows=Object.values(map);
       }
-      hrEntryRowsSync();
+      _hrRenderTable();
       document.getElementById('hrFileScrim').style.display='flex';
     };
-    window.hrFileClose=function(){ document.getElementById('hrFileScrim').style.display='none'; };
+    window.hrFileClose=function(){document.getElementById('hrFileScrim').style.display='none';};
     window.hrFileSave=async function(){
       const unitId=+document.getElementById('hrFileUnit').value;
       const year=+document.getElementById('hrFileYear').value;
       if(!unitId||!year){toast('Заповніть підрозділ та рік','error');return;}
-      const row={unit_id:unitId,year,status:document.getElementById('hrFileStatus').value,note:document.getElementById('hrFileNote').value.trim()||null};
-      let err, savedUnitId=unitId, savedYear=year;
-      if(_hrFileEdit){ ({error:err}=await db.from('hr_files').update(row).eq('id',_hrFileEdit.id)); }
-      else { ({error:err}=await db.from('hr_files').insert(row)); }
+      _hrFlush();
+      const hdr={unit_id:unitId,year,status:document.getElementById('hrFileStatus').value,note:document.getElementById('hrFileNote').value.trim()||null};
+      let err;
+      if(_hrFileEdit){({error:err}=await db.from('hr_files').update(hdr).eq('id',_hrFileEdit.id));}
+      else{({error:err}=await db.from('hr_files').insert(hdr));}
       if(err){toast('Помилка: '+err.message,'error');return;}
-      // зберігаємо рядки посад (month=0)
-      const trs=[...document.getElementById('hrEntryRows').querySelectorAll('tr')];
-      const entries=trs.map(tr=>{
-        const [empSel,posInp,planInp,factInp]=tr.querySelectorAll('select,input');
-        return {unit_id:savedUnitId,year:savedYear,month:0,employee_id:+empSel.value||null,position:posInp.value.trim()||null,amount_plan:parseFloat(planInp.value)||0,amount_fact:parseFloat(factInp.value)||0};
-      }).filter(e=>e.employee_id);
-      await db.from('hr_entries').delete().eq('unit_id',savedUnitId).eq('year',savedYear).eq('month',0);
-      if(entries.length) await db.from('hr_entries').insert(entries);
+      // delete all entries for unit+year, then insert
+      await db.from('hr_entries').delete().eq('unit_id',unitId).eq('year',year);
+      const entries=[];
+      _hrFileRows.forEach(row=>{
+        if(!row.employee_id) return;
+        for(let m=1;m<=12;m++){const d=row.data[m];if(d&&(d.p||d.f)) entries.push({unit_id:unitId,year,month:m,employee_id:row.employee_id,position:row.position||null,amount_plan:d.p||0,amount_fact:d.f||0});}
+      });
+      if(entries.length){const {error:e2}=await db.from('hr_entries').insert(entries);if(e2){toast('Помилка записів: '+e2.message,'error');return;}}
       toast('Збережено','success');
       hrFileClose();
       const rf=await db.from('hr_files').select('*').order('year',{ascending:false});
       _hrFiles=rf.data||[];
-      hrFilesRender(); hrFillUnit();
+      hrFilesRender();hrFillUnit();
     };
     window.hrFileDelete=async function(){
       if(!_hrFileEdit||!confirm('Видалити HR-файл?')) return;
