@@ -2857,10 +2857,10 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
                   </span>
                 </label>
                 <!-- Fact toggle -->
-                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;font-size:13px;color:var(--ink)" onclick="hrToggleFact()">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;font-size:13px;color:var(--ink)" onclick="hrFileToggleFact()">
                   <span>Факт</span>
-                  <span id="hrFactTrack" style="display:inline-flex;width:40px;height:22px;border-radius:11px;background:var(--line);position:relative;flex-shrink:0;transition:background .2s">
-                    <span id="hrFactThumb" style="position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s"></span>
+                  <span id="hrFileFactTrack" style="display:inline-flex;width:40px;height:22px;border-radius:11px;background:var(--line);position:relative;flex-shrink:0;transition:background .2s">
+                    <span id="hrFileFactThumb" style="position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s"></span>
                   </span>
                 </label>
                 <button class="btn" onclick="hrEntryAddRow()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:13px;height:13px;margin-right:4px"><path d="M12 5v14M5 12h14"/></svg>Додати</button>
@@ -6616,15 +6616,15 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     // ── HR-file entries (in-memory) ─────────────────────────────
     const MONTHS_UA=['Січ','Лют','Бер','Кві','Тра','Чер','Лип','Сер','Вер','Жов','Лис','Гру'];
     const QTR={q1:[1,2,3],q2:[4,5,6],q3:[7,8,9],q4:[10,11,12],year:[1,2,3,4,5,6,7,8,9,10,11,12]};
-    let _hrFileRows=[], _hrFilePeriod='q1', _hrShowFact=false;
+    let _hrFileRows=[], _hrFilePeriod='q1', _hrFileShowFact=false;
 
-    window.hrToggleFact=function(){
-      _hrShowFact=!_hrShowFact;
-      const track=document.getElementById('hrFactTrack');
-      const thumb=document.getElementById('hrFactThumb');
-      if(track) track.style.background=_hrShowFact?'var(--brand)':'var(--line)';
-      if(thumb) thumb.style.left=_hrShowFact?'21px':'3px';
-      document.querySelectorAll('.hrf-fact-el').forEach(el=>{el.style.display=_hrShowFact?'':'none';});
+    window.hrFileToggleFact=function(){
+      _hrFileShowFact=!_hrFileShowFact;
+      const track=document.getElementById('hrFileFactTrack');
+      const thumb=document.getElementById('hrFileFactThumb');
+      if(track) track.style.background=_hrFileShowFact?'var(--brand)':'var(--line)';
+      if(thumb) thumb.style.left=_hrFileShowFact?'21px':'3px';
+      document.querySelectorAll('.hrf-fact-el').forEach(el=>{el.style.display=_hrFileShowFact?'':'none';});
     };
 
     function _hrFlush(){
@@ -6641,8 +6641,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
 
     function _hrRenderTable(){
       const ms=QTR[_hrFilePeriod];
-      const fd=_hrShowFact?'':'none';
-      const mw=_hrShowFact?'160':'90';
+      const fd=_hrFileShowFact?'':'none';
+      const mw=_hrFileShowFact?'160':'90';
       const thSub=`<div style="display:flex;font-size:10px;font-weight:400;color:var(--muted);border-top:1px solid var(--line)"><span style="flex:1;text-align:center;padding:2px 4px">план</span><span class="hrf-fact-el" style="flex:1;text-align:center;padding:2px 4px;border-left:1px solid var(--line);display:${fd}">факт</span></div>`;
       document.getElementById('hrEntryHead').innerHTML=`<tr>
         <th style="text-align:left;min-width:150px">Людина</th>
@@ -6695,8 +6695,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       sel.innerHTML=flatOrgUnits().map(u=>`<option value="${u.id}">${'　'.repeat(u.level)}${u.name}</option>`).join('');
       if(_hrFileEdit){sel.value=_hrFileEdit.unit_id;document.getElementById('hrFileYear').value=_hrFileEdit.year;document.getElementById('hrFileStatus').value=_hrFileEdit.status;document.getElementById('hrFileNote').value=_hrFileEdit.note||'';}
       else{document.getElementById('hrFileYear').value=new Date().getFullYear();document.getElementById('hrFileStatus').value='draft';document.getElementById('hrFileNote').value='';}
-      _hrFilePeriod='q1'; _hrShowFact=false;
-      const hrFT=document.getElementById('hrFactTrack'),hrFTh=document.getElementById('hrFactThumb');
+      _hrFilePeriod='q1'; _hrFileShowFact=false;
+      const hrFT=document.getElementById('hrFileFactTrack'),hrFTh=document.getElementById('hrFileFactThumb');
       if(hrFT) hrFT.style.background='var(--line)'; if(hrFTh) hrFTh.style.left='3px';
       [...document.getElementById('hrFilePeriodSeg').querySelectorAll('button')].forEach((b,i)=>b.classList.toggle('on',i===0));
       _hrFileRows=[];
