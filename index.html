@@ -2811,7 +2811,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
 
         <!-- модалка: HR-файл -->
         <div class="modal-scrim" id="hrFileScrim" style="display:none" onclick="if(event.target===this)hrFileClose()">
-          <div class="modal" style="max-width:720px;width:95vw;max-height:90vh;display:flex;flex-direction:column">
+          <div class="modal" style="width:min(95vw,1100px);max-width:none;max-height:90vh;display:flex;flex-direction:column">
             <div class="modal-head">
               <h3 id="hrFileTitle">Новий HR-файл</h3>
               <button class="ico-btn" onclick="hrFileClose()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
@@ -2840,7 +2840,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
               </div>
               <!-- Таблиця -->
               <div style="overflow-x:auto;flex:1">
-                <table id="hrEntryTable" style="width:100%;border-collapse:collapse;min-width:400px">
+                <table id="hrEntryTable" style="width:100%;border-collapse:collapse">
                   <thead id="hrEntryHead"></thead>
                   <tbody id="hrEntryRows"></tbody>
                 </table>
