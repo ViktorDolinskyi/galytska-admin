@@ -701,6 +701,41 @@
   .sett-dir-card-desc{font-size:11.5px;color:var(--muted);line-height:1.4}
   .sett-dir-card-arrow{width:15px;height:15px;color:var(--muted);flex:none;stroke-width:2;transition:transform .15s}
   .sett-dir-card:hover .sett-dir-card-arrow{transform:translateX(3px);color:var(--brand)}
+  /* ===== Користувачі та доступ ===== */
+  .acc-tools{display:flex;gap:8px;margin-left:auto;align-items:center;flex-wrap:wrap}
+  .acc-inp{font:inherit;font-size:13px;border:1px solid var(--line);border-radius:10px;padding:8px 12px;color:var(--ink);background:var(--card);outline:none;min-width:200px}
+  .acc-inp:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-tint)}
+  .acc-tools .acc-sel{width:auto;min-width:150px;font-size:13px;padding-top:8px;padding-bottom:8px}
+  .data-table.acc-table th,.data-table.acc-table td{text-align:left}
+  .data-table.acc-table th:last-child,.data-table.acc-table td:last-child{text-align:right;width:1%}
+  .acc-table small{display:block;font-size:11.5px;color:var(--muted);font-weight:500}
+  .acc-roles-wrap{display:grid;grid-template-columns:240px 1fr;gap:16px;align-items:start}
+  @media(max-width:880px){.acc-roles-wrap{grid-template-columns:1fr}.acc-inp{min-width:0;flex:1}}
+  .acc-role-item{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;color:var(--slate)}
+  .acc-role-item:hover{background:var(--hover-bg);color:var(--ink)}
+  .acc-role-item.active{background:var(--brand-tint);color:var(--brand)}
+  .acc-role-item .cnt{margin-left:auto;font-size:11px;font-weight:700;color:var(--muted)}
+  .acc-perm-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+  .acc-perm-row:last-child{border-bottom:none}
+  .acc-perm-row .nm{flex:1;font-size:13px;font-weight:600;color:var(--ink)}
+  .acc-perm-row .seg button{font-size:12px;padding:5px 9px}
+  .acc-perm-row select.modal-sel{width:auto;min-width:170px;font-size:13px;padding:6px 30px 6px 10px}
+  .acc-perm-row.ov .nm::after{content:" •";color:var(--brand)}
+  .modal label.acc-switch-row{display:flex;align-items:center;gap:12px;cursor:pointer;margin:0}
+  .acc-switch-row>span:first-child{flex:1;display:flex;flex-direction:column;font-size:13px;color:var(--ink)}
+  .acc-switch-row small{font-size:12px;color:var(--muted);font-weight:500}
+  .acc-details summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--ink)}
+  .acc-details summary small{color:var(--brand);font-weight:700}
+  .acc-hint{font-size:12px;color:var(--muted);margin:8px 0 4px}
+  .modal.acc-role-form{box-shadow:none;max-width:none;animation:none;background:none;border-radius:0}
+  .acc-role-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:560px){.acc-role-fields{grid-template-columns:1fr}.acc-perm-row{flex-wrap:wrap}}
+  .acc-legend{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.6}
+  /* обмеження за правами: розділ лише для перегляду / без видалення */
+  .view.perm-ro .page-head .btn.primary,.view.perm-ro .card-head .btn.primary,.view.perm-ro .row-act,
+  .view.perm-ro .modal .foot .btn.primary,.view.perm-ro [data-perm="edit"],
+  .view.perm-nodel [data-perm="delete"],.view.perm-nodel [title="Видалити"],.view.perm-nodel .modal .foot [id$="DelBtn"],
+  #settTab-access.acc-ro [data-acc="edit"],#settTab-access.acc-nodel [data-acc="delete"]{display:none!important}
   [data-theme="dark"] .sett-dir-card{background:var(--surface);border-color:var(--line)}
   [data-theme="dark"] .sett-dir-card:hover{border-color:var(--brand-tint-2);box-shadow:0 4px 16px rgba(0,0,0,.3)}
 
@@ -1246,11 +1281,6 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         <span class="nav-label-txt">Панель</span>
         <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </button>
-      <button class="nav-item" data-view="users" data-label="Користувачі" draggable="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>
-        <span class="nav-label-txt">Користувачі</span>
-        <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
-      </button>
       <button class="nav-item" data-view="proc" data-label="Процеси" draggable="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
         <span class="nav-label-txt">Процеси</span>
@@ -1312,7 +1342,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
 
     <div class="sb-foot">
       <div class="avatar sb-avatar">??</div>
-      <div class="who"><b class="js-user">—</b><span>Авторизований</span></div>
+      <div class="who"><b class="js-user">—</b><span class="js-role">Авторизований</span></div>
       <button class="ico-btn" title="Вийти" onclick="authSignOut()" style="margin-left:auto;flex:none">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
       </button>
@@ -1393,36 +1423,6 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
             </div>
             <div id="dashGoalsList"><div class="dash-skel-list"><div class="dash-skel-row"><div style="flex:1"><div class="skel" style="width:75%;height:11px;margin-bottom:6px"></div><div class="skel" style="width:50%;height:6px;border-radius:3px"></div></div><div class="skel" style="width:28px;height:9px;border-radius:4px"></div></div><div class="dash-skel-row"><div style="flex:1"><div class="skel" style="width:60%;height:11px;margin-bottom:6px"></div><div class="skel" style="width:50%;height:6px;border-radius:3px"></div></div><div class="skel" style="width:28px;height:9px;border-radius:4px"></div></div><div class="dash-skel-row" style="border-bottom:none"><div style="flex:1"><div class="skel" style="width:80%;height:11px;margin-bottom:6px"></div><div class="skel" style="width:50%;height:6px;border-radius:3px"></div></div><div class="skel" style="width:28px;height:9px;border-radius:4px"></div></div></div></div>
           </div>
-        </div>
-      </section>
-
-      <!-- ===== КОРИСТУВАЧІ ===== -->
-      <section class="view" id="view-users">
-        <div class="page-head">
-          <div>
-            <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span>Користувачі</h2>
-            <p>Оператори, бригадири та адміністратори з доступом до системи обліку.</p>
-          </div>
-          <button class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Додати користувача</button>
-        </div>
-        <div class="card">
-          <div class="card-head">
-            <h3>Усі користувачі</h3>
-            <div class="filters">
-              <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 3H2l8 9.5V19l4 2v-8.5z"/></svg>Фільтр</span>
-              <select><option>Усі ролі</option><option>Адміністратор</option><option>Бригадир</option><option>Оператор</option></select>
-            </div>
-          </div>
-          <table>
-            <thead><tr><th>Ім'я</th><th>Роль</th><th>Цех / процес</th><th>Стан</th><th></th></tr></thead>
-            <tbody>
-              <tr><td class="t-name">Нагорнюк Юрій<small>y.nahorniuk</small></td><td>Адміністратор</td><td>Усі</td><td><span class="badge ok">Активний</span></td><td><div class="row-act"><button class="ico-btn" title="Редагувати"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button></div></td></tr>
-              <tr><td class="t-name">Коваль Олег<small>o.koval</small></td><td>Бригадир</td><td>Приймання</td><td><span class="badge ok">Активний</span></td><td><div class="row-act"><button class="ico-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button></div></td></tr>
-              <tr><td class="t-name">Сорока Марія<small>m.soroka</small></td><td>Оператор</td><td>Ручний облік</td><td><span class="badge warn">Перерва</span></td><td><div class="row-act"><button class="ico-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button></div></td></tr>
-              <tr><td class="t-name">Гриценко Іван<small>i.hrytsenko</small></td><td>Оператор</td><td>Забій</td><td><span class="badge ok">Активний</span></td><td><div class="row-act"><button class="ico-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button></div></td></tr>
-              <tr><td class="t-name">Петрів Андрій<small>a.petriv</small></td><td>Оператор</td><td>Пакування</td><td><span class="badge off">Офлайн</span></td><td><div class="row-act"><button class="ico-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button></div></td></tr>
-            </tbody>
-          </table>
         </div>
       </section>
 
@@ -2534,6 +2534,10 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             Профіль
           </div>
+          <div class="sett-nav-item" data-sett="access" onclick="settTab('access',this)" style="white-space:nowrap;flex-shrink:0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Користувачі
+          </div>
           <div class="sett-nav-item" onclick="settTab('directories',this)" style="white-space:nowrap;flex-shrink:0">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
             Довідники
@@ -2558,6 +2562,10 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
             <div class="sett-nav-item" onclick="settTab('profile',this)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               Профіль
+            </div>
+            <div class="sett-nav-item" data-sett="access" onclick="settTab('access',this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Користувачі та доступ
             </div>
             <div class="sett-nav-item" onclick="settTab('directories',this)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
@@ -2614,7 +2622,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
                   <div class="avatar" style="width:52px;height:52px;font-size:18px;flex:none" id="settAvatar">??</div>
                   <div>
                     <div style="font-size:15px;font-weight:700;color:var(--ink)" id="settUserEmail">—</div>
-                    <div style="font-size:12px;color:var(--muted);margin-top:2px">Адміністратор системи</div>
+                    <div style="font-size:12px;color:var(--muted);margin-top:2px" class="js-role">—</div>
                   </div>
                 </div>
                 <div style="border-top:1px solid var(--line);padding-top:14px">
@@ -2637,6 +2645,49 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
               </div>
             </div>
 
+            <!-- Користувачі та доступ -->
+            <div id="settTab-access" style="display:none">
+              <div class="seg" id="accSeg" style="margin-bottom:16px">
+                <button class="on" onclick="accTab('users',this)">Користувачі</button>
+                <button onclick="accTab('roles',this)">Ролі та права</button>
+              </div>
+              <div id="accSetupNote" class="card" style="display:none;margin-bottom:16px;padding:16px 18px;font-size:13px;color:var(--slate)">
+                Таблиці доступу ще не створені. Виконайте скрипт <code>insert_access_tables.sql</code> у Supabase → SQL Editor і оновіть сторінку.
+              </div>
+
+              <!-- Користувачі -->
+              <div id="accPane-users">
+                <div class="card">
+                  <div class="card-head">
+                    <h3>Користувачі системи</h3>
+                    <span class="badge info" id="accUserCount">0</span>
+                    <div class="acc-tools">
+                      <input id="accSearch" class="acc-inp" placeholder="Пошук за ім'ям або email…" oninput="accUsersRender()">
+                      <select id="accRoleFilter" class="modal-sel acc-sel" onchange="accUsersRender()"></select>
+                      <button class="btn primary" data-acc="edit" onclick="accUserOpen()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Додати</button>
+                    </div>
+                  </div>
+                  <div style="overflow-x:auto">
+                    <table class="data-table acc-table">
+                      <thead><tr><th>Користувач</th><th>Співробітник</th><th>Роль</th><th>Стан</th><th>Останній вхід</th><th></th></tr></thead>
+                      <tbody id="accUsersBody"><tr><td colspan="6" class="empty">Завантаження…</td></tr></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Ролі та права -->
+              <div id="accPane-roles" style="display:none">
+                <div class="acc-roles-wrap">
+                  <div class="card" style="padding:8px">
+                    <div id="accRoleList"></div>
+                    <button class="btn ghost" data-acc="edit" style="width:100%;margin-top:6px;justify-content:center" onclick="accRoleNew()">+ Нова роль</button>
+                  </div>
+                  <div class="card" id="accRoleEditor"></div>
+                </div>
+              </div>
+            </div>
+
             <!-- Довідники -->
             <div id="settTab-directories" style="display:none">
               <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px">Довідники системи</div>
@@ -2653,7 +2704,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
                   <svg class="sett-dir-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18l6-6-6-6"/></svg>
                 </div>
 
-                <div class="sett-dir-card" onclick="navTo('users',null)">
+                <div class="sett-dir-card" onclick="navTo('company','settings')">
                   <div class="sett-dir-card-icon" style="background:#F0FDF4;color:#16A34A">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                   </div>
@@ -2702,11 +2753,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
               <div class="card">
                 <div class="card-head"><h3>Керування доступом</h3></div>
                 <div style="padding:16px 18px">
-                  <div style="font-size:13px;color:var(--muted);margin-bottom:12px">Додавання та керування користувачами системи відбувається через Supabase Authentication</div>
-                  <a href="https://supabase.com/dashboard" target="_blank" class="btn ghost" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                    Supabase → Authentication → Users
-                  </a>
+                  <div style="font-size:13px;color:var(--muted);margin-bottom:12px">Користувачі, ролі та права доступу до розділів налаштовуються в цій панелі</div>
+                  <button class="btn ghost" onclick="settTab('access',document.querySelector('.sett-nav-desktop [data-sett=access]'))">Користувачі та доступ</button>
                 </div>
               </div>
             </div>
@@ -2736,6 +2784,38 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       </section>
 
       <!-- ===== view-bot (Telegram-бот «Будь в темі») ===== -->
+      <!-- модалка: користувач -->
+      <div class="modal-scrim" id="accUserScrim" onclick="if(event.target===this)accUserClose()">
+        <div class="modal" style="max-width:560px;max-height:90vh;display:flex;flex-direction:column">
+          <div class="modal-head">
+            <h3 id="accUserTitle">Новий користувач</h3>
+            <button class="ico-btn" onclick="accUserClose()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+          </div>
+          <div class="body" style="flex-direction:column;gap:14px;padding:20px;overflow-y:auto">
+            <div><label>Email <span style="color:var(--brand)">*</span></label><input id="auEmail" type="email" placeholder="name@company.ua" autocomplete="off"></div>
+            <div id="auPassWrap"><label>Пароль <span style="color:var(--brand)">*</span></label><input id="auPass" type="password" placeholder="Мінімум 6 символів" autocomplete="new-password"></div>
+            <div><label>ПІБ</label><input id="auName" placeholder="Прізвище Ім'я"></div>
+            <div><label>Співробітник з довідника</label><select id="auEmp" class="modal-sel"></select></div>
+            <div><label>Роль <span style="color:var(--brand)">*</span></label><select id="auRole" class="modal-sel" onchange="accUserPermsRender()"></select></div>
+            <label class="acc-switch-row">
+              <span><b>Доступ до системи</b><small>Неактивний користувач не зможе увійти</small></span>
+              <span class="switch"><input type="checkbox" id="auActive" checked><span class="slider"></span></span>
+            </label>
+            <details class="acc-details">
+              <summary>Індивідуальні права <small id="auOvCount"></small></summary>
+              <div class="acc-hint">Перевизначають права ролі лише для цього користувача.</div>
+              <div id="auPerms"></div>
+            </details>
+          </div>
+          <div class="foot">
+            <button class="btn ghost" id="auDelBtn" onclick="accUserDelete()" style="margin-right:auto;display:none;color:#DC2626">Видалити</button>
+            <button class="btn ghost" id="auResetBtn" onclick="accUserResetPass()" style="display:none">Скинути пароль</button>
+            <button class="btn ghost" onclick="accUserClose()">Скасувати</button>
+            <button class="btn primary" id="auSaveBtn" onclick="accUserSave()">Зберегти</button>
+          </div>
+        </div>
+      </div>
+
       <section class="view" id="view-bot">
         <div class="page-head">
           <div>
@@ -3962,12 +4042,13 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
 
   /* ===== Settings ===== */
   window.settTab=function(tab,el){
-    ['appearance','profile','directories','system','about'].forEach(t=>{
+    if(tab==='access'&&window.accLevel&&accLevel('access')<1) tab='appearance';
+    ['appearance','profile','access','directories','system','about'].forEach(t=>{
       const d=document.getElementById('settTab-'+t);
       if(d)d.style.display=t===tab?'':'none';
     });
-    document.querySelectorAll('.sett-nav-item').forEach(b=>b.classList.remove('active'));
-    if(el)el.classList.add('active');
+    document.querySelectorAll('.sett-nav-item').forEach(b=>b.classList.toggle('active',b===el||(!el&&b.dataset.sett===tab)));
+    if(tab==='access'&&window.accLoad) accLoad();
     // fill profile data
     if(tab==='profile'){
       const email=document.querySelector('.js-user')?.textContent||'';
@@ -5380,6 +5461,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       document.querySelectorAll('.js-user').forEach(el=>el.textContent=session.user.email);
       const _initials=(session.user.user_metadata?.full_name||session.user.email||'').trim().split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2)||'??';
       document.querySelectorAll('.sb-avatar').forEach(el=>el.textContent=_initials);
+      accInit(session);
       orgLoad();
       mxLoad();
       loadAllDicts().then(()=>{goalsLoad();goalTypesLoad();goalPatternsLoad();setTimeout(dashLoad,300);});
@@ -5399,6 +5481,338 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     if(error){ authErr.textContent='Невірний email або пароль.'; }
   };
   window.authSignOut = async ()=>{ await db.auth.signOut(); };
+
+  /* ===== КОРИСТУВАЧІ ТА ДОСТУП ===== */
+  const ACC_SECTIONS=[
+    {k:'dash',l:'Панель'},{k:'proc',l:'Процеси'},{k:'matrix',l:'Матриці'},{k:'goals',l:'Цілі'},
+    {k:'company',l:'Компанія'},{k:'reports',l:'Звіти'},{k:'analytics',l:'Аналітика'},{k:'budget',l:'Бюджет'},
+    {k:'dev',l:'Розвиток'},{k:'bot',l:'Будь в темі'},{k:'settings',l:'Налаштування (довідники, система)'},
+    {k:'access',l:'Користувачі та доступ'},
+  ];
+  const ACC_LEVELS=['Немає','Перегляд','Редагування','Повний'];
+  const ACC={me:null,levels:null,ready:false,roles:[],perms:[],users:[],userPerms:[],roleSel:null,userEdit:null,ov:{}};
+
+  // рівень доступу поточного користувача: 0 немає, 1 перегляд, 2 редагування, 3 повний
+  window.accLevel=k=>ACC.levels?(ACC.levels[k]??0):3;
+
+  function accRolePerm(roleId,k){
+    const r=ACC.roles.find(x=>x.id===roleId);
+    if(!r) return 0;
+    if(r.is_admin) return 3;
+    return ACC.perms.find(p=>p.role_id===roleId&&p.section===k)?.level??0;
+  }
+
+  async function accInit(session){
+    const uid=session.user.id;
+    const [me,roles,perms,ov]=await Promise.all([
+      db.from('app_users').select('*').eq('id',uid).maybeSingle(),
+      db.from('app_roles').select('*').order('sort').order('name'),
+      db.from('app_role_perms').select('*'),
+      db.from('app_user_perms').select('*').eq('user_id',uid),
+    ]);
+    if(me.error||roles.error){ // таблиці доступу ще не створені — повний доступ, як раніше
+      ACC.ready=false; ACC.levels=null; accApply(); return;
+    }
+    ACC.ready=true; ACC.roles=roles.data||[]; ACC.perms=perms.data||[];
+    ACC.me=me.data;
+    if(!ACC.me||!ACC.me.is_active){
+      await db.auth.signOut();
+      authErr.textContent='Обліковий запис неактивний. Зверніться до адміністратора.';
+      return;
+    }
+    const isAdmin=!!ACC.roles.find(r=>r.id===ACC.me.role_id)?.is_admin;
+    ACC.levels={};
+    ACC_SECTIONS.forEach(s=>{
+      const o=(ov.data||[]).find(p=>p.section===s.k);
+      ACC.levels[s.k]=isAdmin?3:o?o.level:accRolePerm(ACC.me.role_id,s.k);
+    });
+    accApply();
+  }
+
+  function accApply(){
+    const roleName=ACC.me?(ACC.roles.find(r=>r.id===ACC.me.role_id)?.name||'Без ролі'):'Авторизований';
+    document.querySelectorAll('.js-role').forEach(el=>el.textContent=roleName);
+    // меню: приховати розділи без доступу
+    document.querySelectorAll('.nav-item[data-view]').forEach(btn=>{
+      const k=btn.dataset.view;
+      if(k==='settings'||btn.classList.contains('nav-sub')) return;
+      btn.style.display=accLevel(k)>0?'':'none';
+    });
+    ACC_SECTIONS.forEach(s=>{
+      const v=document.getElementById('view-'+s.k);
+      if(!v||s.k==='settings') return;               // у налаштуваннях вкладки приховуються цілком (див. нижче)
+      v.classList.toggle('perm-ro',accLevel(s.k)<2);
+      v.classList.toggle('perm-nodel',accLevel(s.k)<3);
+    });
+    // налаштування: довідники/система — за правом settings, користувачі — за правом access
+    document.querySelectorAll('.sett-nav-item[data-sett=access]').forEach(el=>el.style.display=accLevel('access')>0?'':'none');
+    document.querySelectorAll(".sett-nav-item[onclick*=\"'directories'\"],.sett-nav-item[onclick*=\"'system'\"]").forEach(el=>el.style.display=accLevel('settings')>0?'':'none');
+    const pane=document.getElementById('settTab-access');
+    pane.classList.toggle('acc-ro',accLevel('access')<2);
+    pane.classList.toggle('acc-nodel',accLevel('access')<3);
+    // якщо відкритий розділ став недоступним — перейти на перший доступний
+    const cur=document.querySelector('.nav-item.active');
+    if(cur&&cur.style.display==='none'){
+      const first=[...document.querySelectorAll('#navSortable .nav-item')].find(b=>b.style.display!=='none')||document.querySelector('.nav-item[data-view=settings]');
+      first.click();
+    }
+  }
+
+  window.accLoad=async function(){
+    document.getElementById('accSetupNote').style.display=ACC.ready?'none':'';
+    if(!ACC.ready) return;
+    const [users,roles,perms,ov]=await Promise.all([
+      db.from('app_users').select('*').order('full_name',{nullsFirst:false}).order('email'),
+      db.from('app_roles').select('*').order('sort').order('name'),
+      db.from('app_role_perms').select('*'),
+      db.from('app_user_perms').select('*'),
+    ]);
+    if(users.error){toast('Помилка завантаження користувачів: '+users.error.message,'error');return;}
+    ACC.users=users.data||[]; ACC.roles=roles.data||[]; ACC.perms=perms.data||[]; ACC.userPerms=ov.data||[];
+    const f=document.getElementById('accRoleFilter'), fv=f.value;
+    f.innerHTML='<option value="">Усі ролі</option>'+ACC.roles.map(r=>`<option value="${esc(r.id)}">${esc(r.name)}</option>`).join('');
+    f.value=fv;
+    accUsersRender(); accRolesRender();
+  };
+
+  window.accTab=function(tab,el){
+    document.querySelectorAll('#accSeg button').forEach(b=>b.classList.toggle('on',b===el));
+    document.getElementById('accPane-users').style.display=tab==='users'?'':'none';
+    document.getElementById('accPane-roles').style.display=tab==='roles'?'':'none';
+  };
+
+  function accEmpName(id){
+    if(id==null) return '';
+    const e=(typeof dictEmps!=='undefined'?dictEmps:[]).find(x=>String(x.id)===String(id));
+    return e?[e.last_name,e.first_name,e.patronymic].filter(Boolean).join(' '):'';
+  }
+  function accDate(d){
+    if(!d) return '<span style="color:var(--muted)">—</span>';
+    return new Date(d).toLocaleString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  }
+  const accMuted=t=>'<span style="color:var(--muted)">'+t+'</span>';
+
+  window.accUsersRender=function(){
+    const q=(document.getElementById('accSearch').value||'').trim().toLowerCase();
+    const rf=document.getElementById('accRoleFilter').value;
+    const list=ACC.users.filter(u=>(!rf||u.role_id===rf)&&(!q||[u.full_name,u.email,accEmpName(u.employee_id)].join(' ').toLowerCase().includes(q)));
+    document.getElementById('accUserCount').textContent=ACC.users.length;
+    const body=document.getElementById('accUsersBody');
+    if(!list.length){body.innerHTML='<tr><td colspan="6" class="empty">Користувачів не знайдено</td></tr>';return;}
+    const meId=ACC.me?.id;
+    const editTitle=accLevel('access')>=2?'Редагувати':'Переглянути';
+    body.innerHTML=list.map(u=>{
+      const role=ACC.roles.find(r=>r.id===u.role_id);
+      const ovn=ACC.userPerms.filter(p=>p.user_id===u.id).length;
+      const emp=accEmpName(u.employee_id);
+      const state=u.is_active?'<span class="badge ok">Активний</span>':'<span class="badge off">Неактивний</span>';
+      return '<tr>'+
+        '<td class="t-name">'+esc(u.full_name||u.email||'—')+(u.id===meId?' <span class="badge info">Ви</span>':'')+'<small>'+esc(u.full_name?u.email||'':'')+'</small></td>'+
+        '<td>'+(emp?esc(emp):accMuted('—'))+'</td>'+
+        '<td>'+(role?esc(role.name):accMuted('Без ролі'))+(ovn?'<small>+ індивідуальні права: '+ovn+'</small>':'')+'</td>'+
+        '<td>'+state+'</td>'+
+        '<td>'+accDate(u.last_sign_in_at)+'</td>'+
+        '<td><button class="ico-btn" title="'+editTitle+'" onclick="accUserOpen(\''+u.id+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button></td>'+
+      '</tr>';
+    }).join('');
+  };
+
+  /* ---- модалка користувача ---- */
+  window.accUserOpen=function(id){
+    const u=id?ACC.users.find(x=>x.id===id):null;
+    ACC.userEdit=u?u.id:null;
+    ACC.ov={};
+    if(u) ACC.userPerms.filter(p=>p.user_id===u.id).forEach(p=>ACC.ov[p.section]=p.level);
+    const canEdit=accLevel('access')>=2;
+    const self=!!u&&u.id===ACC.me?.id;
+    document.getElementById('accUserTitle').textContent=u?(canEdit?'Редагувати користувача':'Користувач'):'Новий користувач';
+    const em=document.getElementById('auEmail'); em.value=u?u.email||'':'';
+    document.getElementById('auPassWrap').style.display=u?'none':'';
+    document.getElementById('auPass').value='';
+    document.getElementById('auName').value=u?u.full_name||'':'';
+    const emps=(typeof dictEmps!=='undefined'?dictEmps:[]);
+    const es=document.getElementById('auEmp');
+    es.innerHTML='<option value="">— не прив\'язано —</option>'+emps.map(e=>'<option value="'+esc(String(e.id))+'">'+esc([e.last_name,e.first_name,e.patronymic].filter(Boolean).join(' '))+'</option>').join('');
+    es.value=u&&u.employee_id!=null?String(u.employee_id):'';
+    const rs=document.getElementById('auRole');
+    rs.innerHTML=ACC.roles.map(r=>'<option value="'+esc(r.id)+'">'+esc(r.name)+'</option>').join('');
+    rs.value=u?u.role_id||'':(ACC.roles.find(r=>r.id==='employee')?'employee':ACC.roles[0]?.id||'');
+    document.getElementById('auActive').checked=u?u.is_active:true;
+    document.querySelectorAll('#accUserScrim .body input,#accUserScrim .body select').forEach(el=>el.disabled=!canEdit);
+    em.disabled=!!u;
+    rs.disabled=!canEdit||self;                         // власну роль і доступ не змінюємо, щоб не заблокувати себе
+    document.getElementById('auActive').disabled=!canEdit||self;
+    document.getElementById('auSaveBtn').style.display=canEdit?'':'none';
+    document.getElementById('auResetBtn').style.display=u&&canEdit?'':'none';
+    document.getElementById('auDelBtn').style.display=u&&!self&&accLevel('access')>=3?'':'none';
+    document.querySelector('#accUserScrim .acc-details').open=Object.keys(ACC.ov).length>0;
+    accUserPermsRender();
+    document.getElementById('accUserScrim').classList.add('open');
+    (u?document.getElementById('auName'):em).focus();
+  };
+  window.accUserClose=()=>document.getElementById('accUserScrim').classList.remove('open');
+
+  window.accUserPermsRender=function(){
+    const roleId=document.getElementById('auRole').value;
+    const role=ACC.roles.find(r=>r.id===roleId);
+    const dis=accLevel('access')<2?'disabled':'';
+    const n=Object.keys(ACC.ov).length;
+    document.getElementById('auOvCount').textContent=n?'('+n+')':'';
+    const box=document.getElementById('auPerms');
+    if(role?.is_admin){
+      box.innerHTML='<div class="acc-hint">Роль «'+esc(role.name)+'» має повний доступ до всіх розділів — індивідуальні права не застосовуються.</div>';
+      return;
+    }
+    box.innerHTML=ACC_SECTIONS.map(s=>{
+      const base=accRolePerm(roleId,s.k), has=s.k in ACC.ov;
+      return '<div class="acc-perm-row'+(has?' ov':'')+'"><div class="nm">'+esc(s.l)+'</div>'+
+        '<select class="modal-sel" '+dis+' onchange="accUserOv(\''+s.k+'\',this.value)">'+
+          '<option value="">За роллю: '+ACC_LEVELS[base]+'</option>'+
+          ACC_LEVELS.map((l,i)=>'<option value="'+i+'"'+(has&&ACC.ov[s.k]===i?' selected':'')+'>'+l+'</option>').join('')+
+        '</select></div>';
+    }).join('');
+  };
+  window.accUserOv=function(k,v){
+    if(v==='') delete ACC.ov[k]; else ACC.ov[k]=+v;
+    accUserPermsRender();
+  };
+
+  window.accUserSave=async function(){
+    const email=document.getElementById('auEmail').value.trim().toLowerCase();
+    const full_name=document.getElementById('auName').value.trim()||null;
+    const ev=document.getElementById('auEmp').value;
+    const emp=(typeof dictEmps!=='undefined'?dictEmps:[]).find(e=>String(e.id)===ev);
+    const role_id=document.getElementById('auRole').value||null;
+    const is_active=document.getElementById('auActive').checked;
+    if(!role_id){toast('Оберіть роль','warn');return;}
+    const btn=document.getElementById('auSaveBtn'); btn.disabled=true;
+    try{
+      let id=ACC.userEdit;
+      if(!id){
+        const pass=document.getElementById('auPass').value;
+        if(!/^\S+@\S+\.\S+$/.test(email)){toast('Вкажіть коректний email','warn');return;}
+        if(pass.length<6){toast('Пароль має містити щонайменше 6 символів','warn');return;}
+        // окремий клієнт без збереження сесії, щоб реєстрація не замінила сесію адміністратора
+        const tmp=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:'gs_acc_signup'}});
+        const {data,error}=await tmp.auth.signUp({email,password:pass,options:{data:{full_name}}});
+        if(error){toast('Не вдалося створити користувача: '+esc(error.message),'error');return;}
+        if(!data.user||(data.user.identities&&!data.user.identities.length)){toast('Користувач з таким email уже існує','warn');return;}
+        id=data.user.id;
+      }
+      const row={id,full_name,employee_id:emp?emp.id:null,role_id,is_active};
+      if(!ACC.userEdit) row.email=email;
+      const {error}=await db.from('app_users').upsert(row);
+      if(error){toast('Помилка збереження: '+esc(error.message),'error');return;}
+      const del=await db.from('app_user_perms').delete().eq('user_id',id);
+      if(del.error){toast('Помилка збереження прав: '+esc(del.error.message),'error');return;}
+      const ovRows=Object.entries(ACC.ov).map(([section,level])=>({user_id:id,section,level}));
+      if(ovRows.length){
+        const ins=await db.from('app_user_perms').insert(ovRows);
+        if(ins.error){toast('Помилка збереження прав: '+esc(ins.error.message),'error');return;}
+      }
+      toast(ACC.userEdit?'Користувача збережено':'Користувача створено. Якщо в Supabase увімкнено підтвердження email — йому надійде лист.','success',5000);
+      const wasSelf=id===ACC.me?.id;
+      accUserClose(); await accLoad();
+      if(wasSelf){const {data:{session}}=await db.auth.getSession(); if(session) accInit(session);}
+    } finally { btn.disabled=false; }
+  };
+
+  window.accUserResetPass=async function(){
+    const u=ACC.users.find(x=>x.id===ACC.userEdit); if(!u?.email) return;
+    const {error}=await db.auth.resetPasswordForEmail(u.email,{redirectTo:location.origin+location.pathname});
+    if(error){toast('Не вдалося надіслати лист: '+esc(error.message),'error');return;}
+    toast('Лист для зміни пароля надіслано на '+esc(u.email),'success');
+  };
+
+  window.accUserDelete=async function(){
+    const u=ACC.users.find(x=>x.id===ACC.userEdit); if(!u) return;
+    if(!confirm('Видалити користувача '+(u.full_name||u.email)+'? Обліковий запис буде видалено без можливості відновлення.')) return;
+    const {error}=await db.rpc('app_delete_user',{p_user:u.id});
+    if(error){toast('Не вдалося видалити: '+esc(error.message),'error');return;}
+    toast('Користувача видалено','success');
+    accUserClose(); await accLoad();
+  };
+
+  /* ---- ролі та права ---- */
+  function accRolesRender(){
+    if(!ACC.roleSel||!ACC.roles.find(r=>r.id===ACC.roleSel)) ACC.roleSel=ACC.roles[0]?.id||null;
+    document.getElementById('accRoleList').innerHTML=ACC.roles.map(r=>{
+      const n=ACC.users.filter(u=>u.role_id===r.id).length;
+      return '<div class="acc-role-item'+(r.id===ACC.roleSel?' active':'')+'" onclick="accRoleSelect(\''+esc(r.id)+'\')">'+esc(r.name)+'<span class="cnt">'+n+'</span></div>';
+    }).join('')||'<div class="empty" style="padding:12px">Ролей немає</div>';
+    accRoleEditorRender();
+  }
+  window.accRoleSelect=id=>{ACC.roleSel=id;accRolesRender();};
+
+  function accRoleEditorRender(){
+    const box=document.getElementById('accRoleEditor');
+    const r=ACC.roles.find(x=>x.id===ACC.roleSel);
+    if(!r){box.innerHTML='<div class="empty" style="padding:24px">Оберіть роль</div>';return;}
+    const ro=accLevel('access')<2, dis=ro?'disabled':'';
+    const n=ACC.users.filter(u=>u.role_id===r.id).length;
+    const perms=r.is_admin
+      ?'<div class="acc-hint" style="margin:0">Адміністратор має повний доступ до всіх розділів. Права цієї ролі не змінюються.</div>'
+      :'<div><label>Доступ до розділів</label><div id="arPerms">'+ACC_SECTIONS.map(s=>{
+          const lv=accRolePerm(r.id,s.k);
+          return '<div class="acc-perm-row"><div class="nm">'+esc(s.l)+'</div><div class="seg" data-sec="'+s.k+'">'+
+            ACC_LEVELS.map((l,i)=>'<button type="button" class="'+(i===lv?'on':'')+'" '+dis+' data-lv="'+i+'" onclick="accSegPick(this)">'+l+'</button>').join('')+
+          '</div></div>';
+        }).join('')+'</div>'+
+        '<div class="acc-legend"><b>Немає</b> — розділ прихований у меню · <b>Перегляд</b> — лише читання · <b>Редагування</b> — додавання та зміна · <b>Повний</b> — також видалення</div></div>';
+    box.innerHTML=
+      '<div class="card-head"><h3>'+esc(r.name)+'</h3>'+(r.is_system?'<span class="badge off">Системна</span>':'')+'<span class="badge info">Користувачів: '+n+'</span></div>'+
+      '<div class="modal acc-role-form">'+
+        '<div class="body" style="flex-direction:column;gap:14px;padding:16px 18px">'+
+          '<div class="acc-role-fields">'+
+            '<div><label>Назва ролі</label><input id="arName" value="'+esc(r.name)+'" '+dis+'></div>'+
+            '<div><label>Опис</label><input id="arDesc" value="'+esc(r.description||'')+'" '+dis+'></div>'+
+          '</div>'+perms+
+        '</div>'+
+        (ro?'':'<div class="foot">'+
+          (r.is_system?'':'<button class="btn ghost" data-acc="delete" style="margin-right:auto;color:#DC2626" onclick="accRoleDelete()">Видалити роль</button>')+
+          '<button class="btn primary" onclick="accRoleSave()">Зберегти роль</button></div>')+
+      '</div>';
+  }
+  window.accSegPick=function(b){
+    b.parentElement.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+  };
+
+  window.accRoleNew=async function(){
+    const name=prompt('Назва нової ролі');
+    if(!name||!name.trim()) return;
+    const id='r_'+Date.now().toString(36);
+    const {error}=await db.from('app_roles').insert({id,name:name.trim(),sort:(ACC.roles.length+1)*10});
+    if(error){toast('Помилка: '+esc(error.message),'error');return;}
+    ACC.roleSel=id; await accLoad();
+    accTab('roles',document.querySelectorAll('#accSeg button')[1]);
+    toast('Роль створено — налаштуйте доступ до розділів','success');
+  };
+
+  window.accRoleSave=async function(){
+    const r=ACC.roles.find(x=>x.id===ACC.roleSel); if(!r) return;
+    const name=document.getElementById('arName').value.trim();
+    if(!name){toast('Вкажіть назву ролі','warn');return;}
+    const {error}=await db.from('app_roles').update({name,description:document.getElementById('arDesc').value.trim()||null}).eq('id',r.id);
+    if(error){toast('Помилка збереження: '+esc(error.message),'error');return;}
+    if(!r.is_admin){
+      const rows=[...document.querySelectorAll('#arPerms .seg')].map(seg=>({role_id:r.id,section:seg.dataset.sec,level:+(seg.querySelector('button.on')?.dataset.lv||0)}));
+      const up=await db.from('app_role_perms').upsert(rows);
+      if(up.error){toast('Помилка збереження прав: '+esc(up.error.message),'error');return;}
+    }
+    toast('Роль збережено','success');
+    await accLoad();
+    if(ACC.me?.role_id===r.id){const {data:{session}}=await db.auth.getSession(); if(session) accInit(session);}
+  };
+
+  window.accRoleDelete=async function(){
+    const r=ACC.roles.find(x=>x.id===ACC.roleSel); if(!r||r.is_system) return;
+    const n=ACC.users.filter(u=>u.role_id===r.id).length;
+    if(n){toast('Роль призначено користувачам ('+n+') — спершу змініть їм роль','warn');return;}
+    if(!confirm('Видалити роль «'+r.name+'»?')) return;
+    const {error}=await db.from('app_roles').delete().eq('id',r.id);
+    if(error){toast('Помилка видалення: '+esc(error.message),'error');return;}
+    ACC.roleSel=null; await accLoad();
+  };
   /* ===== TOAST ===== */
   const _toastIcons={
     success:'<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>',
