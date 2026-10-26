@@ -6573,6 +6573,13 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       hrRender();
     };
 
+    // сума по всіх рядках людини (одна людина може мати кілька посад у підрозділі)
+    function hrSumEntry(empId,m,unitId){
+      let p=0,f=0;
+      _hrEntries.forEach(x=>{if(x.employee_id===empId&&x.month===m&&String(x.unit_id)===String(unitId)){p+=Number(x.amount_plan||0);f+=Number(x.amount_fact||0);}});
+      return{p,f};
+    }
+
     window.hrRender=async function(){
       const yearEl=document.getElementById('hrYear');
       if(!yearEl) return;
@@ -6619,8 +6626,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         const byM=months.map(m=>{
           let p=0,f=0;
           unitEmps.forEach(emp=>{
-            const en=_hrEntries.find(x=>x.employee_id===emp.id&&x.month===m&&String(x.unit_id)===String(u.id));
-            p+=en?Number(en.amount_plan||0):0; f+=en?Number(en.amount_fact||0):0;
+            const en=hrSumEntry(emp.id,m,u.id);
+            p+=en.p; f+=en.f;
           });
           return{p,f};
         });
@@ -6636,8 +6643,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
           if(headEmp){
             let eP=0,eF=0;
             const eCells=months.map(m=>{
-              const en=_hrEntries.find(x=>x.employee_id===headEmp.id&&x.month===m&&String(x.unit_id)===String(u.id));
-              const p=en?Number(en.amount_plan||0):0; const f=en?Number(en.amount_fact||0):0;
+              const en=hrSumEntry(headEmp.id,m,u.id);
+              const p=en.p; const f=en.f;
               eP+=p;eF+=f; return cell(p,f);
             });
             const isActing=orgNode&&orgNode.status==='acting';
@@ -6654,8 +6661,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
           regularEmps.forEach(emp=>{
             let eP=0,eF=0;
             const eCells=months.map(m=>{
-              const en=_hrEntries.find(x=>x.employee_id===emp.id&&x.month===m&&String(x.unit_id)===String(u.id));
-              const p=en?Number(en.amount_plan||0):0; const f=en?Number(en.amount_fact||0):0;
+              const en=hrSumEntry(emp.id,m,u.id);
+              const p=en.p; const f=en.f;
               eP+=p;eF+=f; return cell(p,f);
             });
             html+=`<tr data-hru="${gid}"><td style="padding:4px 12px 4px ${pad+18}px;color:var(--ink)">${empName(emp)}</td>${eCells.join('')}${cell(eP,eF)}</tr>`;
@@ -6668,8 +6675,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
 
         unitEmps.forEach(emp=>{
           months.forEach((m,mi)=>{
-            const en=_hrEntries.find(x=>x.employee_id===emp.id&&x.month===m&&String(x.unit_id)===String(u.id));
-            const p=en?Number(en.amount_plan||0):0; const f=en?Number(en.amount_fact||0):0;
+            const en=hrSumEntry(emp.id,m,u.id);
+            const p=en.p; const f=en.f;
             grandByM[mi].p+=p; grandByM[mi].f+=f; grandP+=p; grandF+=f;
           });
         });
@@ -6854,15 +6861,20 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       [...document.getElementById('hrFilePeriodSeg').querySelectorAll('button')].forEach((b,i)=>b.classList.toggle('on',i===0));
       _hrFileRows=[];
       if(_hrFileEdit){
-        const {data}=await db.from('hr_entries').select('*').eq('hr_file_id',_hrFileEdit.id).order('employee_id');
-        const map={};
+        const {data,error}=await db.from('hr_entries').select('*').eq('hr_file_id',_hrFileEdit.id).order('row_no').order('employee_id');
+        // не відкривати порожню форму: збереження затерло б записи файлу
+        if(error){toast('Помилка завантаження записів: '+error.message,'error');return;}
+        // рядок = row_no (старі записи без row_no групуються по людині)
+        const map=new Map();
         (data||[]).forEach(e=>{
           if(!e.employee_id||e.month<1||e.month>12) return;
-          if(!map[e.employee_id]) map[e.employee_id]={employee_id:e.employee_id,position:e.position||'',data:{}};
-          map[e.employee_id].data[e.month]={p:Number(e.amount_plan||0),f:Number(e.amount_fact||0)};
-          if(e.position) map[e.employee_id].position=e.position;
+          const key=e.row_no!=null?'r'+e.row_no:'e'+e.employee_id;
+          if(!map.has(key)) map.set(key,{employee_id:e.employee_id,position:e.position||'',data:{}});
+          const row=map.get(key);
+          row.data[e.month]={p:Number(e.amount_plan||0),f:Number(e.amount_fact||0)};
+          if(e.position) row.position=e.position;
         });
-        _hrFileRows=Object.values(map);
+        _hrFileRows=[...map.values()];
       }
       _hrRenderTable();
       document.getElementById('hrFileScrim').style.display='flex';
@@ -6873,15 +6885,16 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       const year=+document.getElementById('hrFileYear').value;
       if(!unitId||!year){toast('Заповніть підрозділ та рік','error');return;}
       _hrFlush();
-      // одна людина — один рядок (унікальність employee_id+month+year+unit_id у hr_entries)
+      // людина може мати кілька посад (підвищення, переведення), але не ту саму посаду двічі
       const seen=new Set();
       for(const row of _hrFileRows){
         if(!row.employee_id) continue;
-        if(seen.has(row.employee_id)){
+        const k=row.employee_id+'|'+(row.position||'').toLowerCase();
+        if(seen.has(k)){
           const e=dictEmps.find(x=>x.id===row.employee_id);
-          toast(`${e?e.last_name+(e.first_name?' '+e.first_name:''):'Людина'} — вказано двічі, залиште один рядок`,'error');return;
+          toast(`${e?e.last_name+(e.first_name?' '+e.first_name:''):'Людина'} — посада «${row.position||'без посади'}» вказана двічі`,'error');return;
         }
-        seen.add(row.employee_id);
+        seen.add(k);
       }
       const hdr={unit_id:unitId,year,status:document.getElementById('hrFileStatus').value,note:document.getElementById('hrFileNote').value.trim()||null};
       let fileId, err;
@@ -6899,11 +6912,10 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       const {error:eDel}=await db.from('hr_entries').delete().eq('hr_file_id',fileId);
       if(eDel){toast('Помилка записів: '+eDel.message,'error');return;}
       const entries=[];
-      _hrFileRows.forEach(row=>{
-        if(!row.employee_id) return;
+      _hrFileRows.filter(row=>row.employee_id).forEach((row,ri)=>{
         for(let m=1;m<=12;m++){
           const d=row.data[m]||{p:0,f:0};
-          entries.push({hr_file_id:fileId,unit_id:unitId,year,month:m,employee_id:row.employee_id,position:row.position||null,amount_plan:d.p||0,amount_fact:d.f||0});
+          entries.push({hr_file_id:fileId,row_no:ri,unit_id:unitId,year,month:m,employee_id:row.employee_id,position:row.position||null,amount_plan:d.p||0,amount_fact:d.f||0});
         }
       });
       if(entries.length){
