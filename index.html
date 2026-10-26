@@ -335,6 +335,13 @@
   .bot-check input{width:18px !important;height:18px;margin:0;accent-color:var(--brand);flex:none}
   .bot-field-note{font-size:12px;color:var(--muted);margin-top:6px}
   @media (max-width:760px){.bot-kpis{grid-template-columns:repeat(2,1fr) !important}}
+  .bot-health{display:flex;align-items:center;gap:12px;padding:12px 16px;margin-bottom:16px}
+  .bot-health-dot{width:10px;height:10px;border-radius:50%;flex:none;background:var(--muted)}
+  .bot-health.ok .bot-health-dot{background:#16A34A;box-shadow:0 0 0 3px rgba(22,163,74,.2)}
+  .bot-health.warn .bot-health-dot{background:#CA8A04;box-shadow:0 0 0 3px rgba(202,138,4,.2)}
+  .bot-health.down .bot-health-dot{background:#DC2626;box-shadow:0 0 0 3px rgba(220,38,38,.2)}
+  .bot-health-txt{display:flex;flex-direction:column;font-size:13px;color:var(--ink);min-width:0}
+  .bot-health-txt small{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
   .bot-mod{display:flex;align-items:flex-start;gap:12px;padding:16px 18px}
   .bot-mod-ic{width:36px;height:36px;border-radius:10px;flex:none;display:grid;place-items:center;background:var(--brand-tint);color:var(--brand)}
   .bot-mod-ic svg{width:18px;height:18px;stroke-width:1.9}
@@ -2826,6 +2833,11 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
             <button class="btn ghost" onclick="botLoad()" title="Оновити дані">Оновити</button>
             <a class="btn ghost" style="text-decoration:none" href="https://t.me/galytska_svizhyna_bot" target="_blank" rel="noopener">Відкрити бота</a>
           </div>
+        </div>
+
+        <div class="card bot-health" id="botHealth">
+          <span class="bot-health-dot"></span>
+          <div class="bot-health-txt"><b id="botHealthTitle">Стан бота…</b><small id="botHealthSub"></small></div>
         </div>
 
         <div class="kpis bot-kpis" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px">
@@ -7860,6 +7872,31 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       $('botKpiNews').textContent=news;$('botKpiEmps').textContent=emps;
     }
 
+    // стан бота за «пульсом», який він щохвилини пише в bot_status
+    async function loadHealth(){
+      const box=$('botHealth'), title=$('botHealthTitle'), sub=$('botHealthSub');
+      const {data,error}=await db.from('bot_status').select('*').eq('id',1).maybeSingle();
+      box.classList.remove('ok','warn','down');
+      if(error||!data||!data.last_seen_at){
+        title.textContent='Стан бота невідомий';
+        sub.textContent=error?'Таблиця bot_status ще не створена — виконайте database/monitoring.sql бота':'Бот ще не надсилав пульс';
+        return;
+      }
+      const fmt=d=>new Date(d).toLocaleString('uk-UA',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+      const ago=Math.round((Date.now()-new Date(data.last_seen_at))/60000);
+      const recentErr=data.last_error_at&&(Date.now()-new Date(data.last_error_at))<864e5;
+      const down=ago>=3;
+      box.classList.add(down?'down':recentErr?'warn':'ok');
+      title.textContent=down?`Бот не відповідає ${ago} хв`:'Бот працює';
+      sub.textContent=[
+        down?'останній сигнал '+fmt(data.last_seen_at):'сигнал '+(ago<1?'щойно':ago+' хв тому'),
+        data.started_at?'запущено '+fmt(data.started_at):'',
+        data.version?'версія '+data.version:'',
+        recentErr?'остання помилка '+fmt(data.last_error_at)+': '+data.last_error:'',
+      ].filter(Boolean).join(' · ');
+      sub.title=data.last_error||'';
+    }
+
     window.botRender=async function(){
       const c=cfg(); if(!c) return;
       $('botTabTitle').textContent=c.title;
@@ -7893,7 +7930,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       $('botDeptList').innerHTML=[...set].sort().map(d=>`<option value="${esc(d)}">`).join('');
     }
 
-    window.botLoad=async function(){ await Promise.all([loadKpi(), _tab==='soon'?null:botRender()]); };
+    window.botLoad=async function(){ await Promise.all([loadKpi(), loadHealth(), _tab==='soon'?null:botRender()]); };
 
     window.botOpen=function(id){
       const c=cfg(), k=keyOf(c);
