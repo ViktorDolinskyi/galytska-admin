@@ -6873,6 +6873,16 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       const year=+document.getElementById('hrFileYear').value;
       if(!unitId||!year){toast('Заповніть підрозділ та рік','error');return;}
       _hrFlush();
+      // одна людина — один рядок (унікальність employee_id+month+year+unit_id у hr_entries)
+      const seen=new Set();
+      for(const row of _hrFileRows){
+        if(!row.employee_id) continue;
+        if(seen.has(row.employee_id)){
+          const e=dictEmps.find(x=>x.id===row.employee_id);
+          toast(`${e?e.last_name+(e.first_name?' '+e.first_name:''):'Людина'} — вказано двічі, залиште один рядок`,'error');return;
+        }
+        seen.add(row.employee_id);
+      }
       const hdr={unit_id:unitId,year,status:document.getElementById('hrFileStatus').value,note:document.getElementById('hrFileNote').value.trim()||null};
       let fileId, err;
       if(_hrFileEdit){
@@ -6882,10 +6892,12 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         const {data:ins,error:e1}=await db.from('hr_files').insert(hdr).select('id').single();
         err=e1; if(ins) fileId=ins.id;
       }
-      if(err){toast('Помилка: '+err.message,'error');return;}
+      if(err){toast(err.code==='23505'?'HR-файл для цього підрозділу на цей рік вже існує':'Помилка: '+err.message,'error');return;}
       if(!fileId){toast('Не вдалось отримати id файлу','error');return;}
-      // delete old entries for this file, then insert new
-      await db.from('hr_entries').delete().eq('hr_file_id',fileId);
+      // delete old entries for this file, then insert new (old ones are restored if the insert fails)
+      const {data:prevEntries}=await db.from('hr_entries').select('*').eq('hr_file_id',fileId);
+      const {error:eDel}=await db.from('hr_entries').delete().eq('hr_file_id',fileId);
+      if(eDel){toast('Помилка записів: '+eDel.message,'error');return;}
       const entries=[];
       _hrFileRows.forEach(row=>{
         if(!row.employee_id) return;
@@ -6894,7 +6906,13 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
           entries.push({hr_file_id:fileId,unit_id:unitId,year,month:m,employee_id:row.employee_id,position:row.position||null,amount_plan:d.p||0,amount_fact:d.f||0});
         }
       });
-      if(entries.length){const {error:e2}=await db.from('hr_entries').insert(entries);if(e2){toast('Помилка записів: '+e2.message,'error');return;}}
+      if(entries.length){
+        const {error:e2}=await db.from('hr_entries').insert(entries);
+        if(e2){
+          if(prevEntries&&prevEntries.length) await db.from('hr_entries').insert(prevEntries);
+          toast('Помилка записів: '+e2.message+'. Попередні дані збережено','error');return;
+        }
+      }
       toast('Збережено','success');
       hrFileClose();
       const rf=await db.from('hr_files').select('*').order('year',{ascending:false});
