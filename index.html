@@ -1924,8 +1924,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
               </div>
             </div>
             <table>
-              <thead><tr><th>ПІБ</th><th style="width:120px">Дата народження</th><th style="width:80px"></th></tr></thead>
-              <tbody id="empBody"><tr><td colspan="2" class="empty">Немає записів</td></tr></tbody>
+              <thead><tr><th>ПІБ</th><th style="width:200px">Телефон</th><th style="width:150px">Дата народження</th><th style="width:80px"></th></tr></thead>
+              <tbody id="empBody"><tr><td colspan="4" class="empty">Немає записів</td></tr></tbody>
             </table>
           </div>
           <!-- Типи структурних одиниць -->
@@ -2002,6 +2002,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
             <div><label>По батькові</label><input id="empPatronymic" placeholder="Напр., Іванович" /></div>
             <div><label>Дата народження</label><input id="empBirthdate" type="date" class="modal-sel" /></div>
             <div><label>Основний підрозділ</label><select id="empPrimaryUnit" class="modal-sel"><option value="">— не вибрано —</option></select></div>
+            <div><label>Телефон</label><input id="empPhone" type="tel" placeholder="+380 93 123 45 67" /></div>
+            <div><label class="bot-check"><input type="checkbox" id="empBotAccess">Доступ до бота «Будь в темі»</label><div class="bot-field-note">Увійти в бот можна лише з цим номером телефону.</div></div>
             <div id="empOrgSection" style="display:none;border-top:1px solid var(--line);padding-top:14px;margin-top:2px">
               <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px">Структурні одиниці (керівник)</div>
               <div id="empOrgLinks"></div>
@@ -2041,6 +2043,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
                     <th class="imp-th imp-th-num">#</th>
                     <th class="imp-th">ПІБ</th>
                     <th class="imp-th imp-th-date">Дата народження</th>
+                    <th class="imp-th">Телефон</th>
                     <th class="imp-th imp-th-status">Статус</th>
                   </tr>
                 </thead>
@@ -4966,16 +4969,20 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
 
   /* --- Співробітники --- */
   function empFull(r){return[r.last_name,r.first_name,r.patronymic].filter(Boolean).join(' ');}
+  // Телефон зберігається лише цифрами у форматі 380XXXXXXXXX — так його шукає Telegram-бот
+  function empNormPhone(p){let d=String(p||'').replace(/\D/g,'');if(d.length===10&&d[0]==='0')d='38'+d;return d;}
+  function empFmtPhone(p){return /^380\d{9}$/.test(p||'')?`+${p.slice(0,3)} ${p.slice(3,5)} ${p.slice(5,8)} ${p.slice(8,10)} ${p.slice(10)}`:orgEsc(p||'');}
   function renderEmps(){
     const tbody=document.getElementById('empBody');if(!tbody)return;
     document.getElementById('empCount').textContent=dictEmps.length;
     tbody.innerHTML=dictEmps.map(r=>`<tr>
       <td class="t-name">${orgEsc(empFull(r))}</td>
+      <td style="color:var(--slate);font-size:13px;white-space:nowrap">${r.phone?empFmtPhone(r.phone):'—'}${r.bot_access?' <span class="badge ok" title="Доступ до бота">Бот</span>':''}</td>
       <td style="color:var(--slate);font-size:13px">${r.birthdate?new Date(r.birthdate).toLocaleDateString('uk-UA'):'—'}</td>
       <td><div class="row-act" id="empAct-${r.id}">
         <button class="ico-btn" onclick="empEditOpen(${r.id},${qs(r.last_name||'')},${qs(r.first_name||'')},${qs(r.patronymic||'')})">${_eIco}</button>
         <button class="ico-btn del" onclick="empAskDel(${r.id})">${_dIco}</button>
-      </div></td></tr>`).join('')||'<tr><td colspan="3" class="empty">Немає записів</td></tr>';
+      </div></td></tr>`).join('')||'<tr><td colspan="4" class="empty">Немає записів</td></tr>';
   }
   window.empAskDel=id=>{
     const el=document.getElementById('empAct-'+id);
@@ -4987,7 +4994,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     sel.innerHTML='<option value="">— не вибрано —</option>'+
       flat.map(({n,lvl})=>`<option value="${n.id}"${String(n.id)===String(selectedId)?' selected':''}>${'  '.repeat(lvl)}${orgEsc(n.name)}</option>`).join('');
   }
-  window.empAdd=()=>{empEdit=null;$('empModalTitle').textContent='Новий співробітник';$('empLastName').value='';$('empFirstName').value='';$('empPatronymic').value='';$('empBirthdate').value='';empFillUnitSelect(null);$('empModal').classList.add('open');$('empLastName').focus();};
+  window.empAdd=()=>{empEdit=null;$('empModalTitle').textContent='Новий співробітник';$('empLastName').value='';$('empFirstName').value='';$('empPatronymic').value='';$('empBirthdate').value='';$('empPhone').value='';$('empBotAccess').checked=false;empFillUnitSelect(null);$('empModal').classList.add('open');$('empLastName').focus();};
   window.empEditOpen=(id,ln,fn,pat)=>{
     empEdit=id;$('empModalTitle').textContent='Редагувати';
     $('empLastName').value=ln;$('empFirstName').value=fn;$('empPatronymic').value=pat;
@@ -4995,6 +5002,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     const bd=r&&r.birthdate?r.birthdate:'';
     if(window._fpBirth){_fpBirth.setDate(bd,false);}else{$('empBirthdate').value=bd;}
     empFillUnitSelect(r&&r.primary_unit_id);
+    $('empPhone').value=r&&r.phone?empFmtPhone(r.phone):'';
+    $('empBotAccess').checked=!!(r&&r.bot_access);
     // Структурні одиниці де цей співробітник є керівником
     const linked=(orgData&&orgData.length?orgFlatAll():[]).filter(({n})=>n.employee_id===id).map(({n})=>n);
     const sec=$('empOrgSection'),lnks=$('empOrgLinks');
@@ -5042,11 +5051,17 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     const patronymic=$('empPatronymic').value.trim();
     const birthdate=$('empBirthdate').value||null;
     const primary_unit_id=$('empPrimaryUnit').value||null;
+    const phoneRaw=$('empPhone').value.trim();
+    const phone=phoneRaw?empNormPhone(phoneRaw):null;
+    const bot_access=$('empBotAccess').checked;
     if(!last_name){$('empLastName').focus();return;}
+    if(phone&&!/^380\d{9}$/.test(phone)){toast('Невірний номер телефону','warn');$('empPhone').focus();return;}
+    if(bot_access&&!phone){toast('Для доступу до бота потрібен телефон','warn');$('empPhone').focus();return;}
+    const payload={last_name,first_name,patronymic,birthdate,primary_unit_id,phone,bot_access};
     const res=empEdit!==null
-      ?await db.from('dict_employees').update({last_name,first_name,patronymic,birthdate,primary_unit_id}).eq('id',empEdit)
-      :await db.from('dict_employees').insert({last_name,first_name,patronymic,birthdate,primary_unit_id});
-    if(res.error){toast('Помилка: '+res.error.message,'error');return;}
+      ?await db.from('dict_employees').update(payload).eq('id',empEdit)
+      :await db.from('dict_employees').insert(payload);
+    if(res.error){toast(/duplicate key/.test(res.error.message)?'Цей телефон уже вказано в іншого співробітника':'Помилка: '+res.error.message,'error');return;}
     empCloseModal();await loadAllDicts();
   };
   window.empDel=async(id)=>{
@@ -5058,8 +5073,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     const BOM='﻿';
     const SEP=';';
     const q=v=>'"'+String(v||'').replace(/"/g,'""')+'"';
-    const header='ПІБ'+SEP+'Дата народження';
-    const rows=dictEmps.map(r=>q(empFull(r))+SEP+q(r.birthdate||''));
+    const header='ПІБ'+SEP+'Дата народження'+SEP+'Телефон';
+    const rows=dictEmps.map(r=>q(empFull(r))+SEP+q(r.birthdate||'')+SEP+q(r.phone?'+'+r.phone:''));
     const csv=BOM+[header,...rows].join('\r\n');
     const a=document.createElement('a');
     a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
@@ -5121,14 +5136,17 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         // Колонка 2: Дата народження
         const rawDate=(f[1]||'').trim();
         const birthdate=parseDate(rawDate);
-        const err=!last_name?'Відсутнє ПІБ':'';
+        // Колонка 3 (необов'язкова): Телефон
+        const rawPhone=(f[2]||'').trim();
+        const phone=rawPhone?empNormPhone(rawPhone):null;
+        const err=!last_name?'Відсутнє ПІБ':(phone&&!/^380\d{9}$/.test(phone))?'Невірний телефон':'';
         // Перевірка на дублікат в існуючих записах
         const existing=(dictEmps||[]).find(e=>{
           const eName=normName([e.last_name,e.first_name,e.patronymic].filter(Boolean).join(' '));
           return eName===normName(pib);
         })||null;
         // Перевірка на дубль всередині файлу (за індексом, щоб перший рядок — оригінал)
-        return {pib,last_name,first_name,patronymic,birthdate,rawDate,err,existing,_row:idx+1};
+        return {pib,last_name,first_name,patronymic,birthdate,rawDate,phone,err,existing,_row:idx+1};
       }).filter(r=>r.pib);
 
       // Помітити дублі всередині файлу (однакове ПІБ двічі)
@@ -5174,6 +5192,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         <td class="imp-td-num">${r._row}</td>
         <td class="imp-td imp-td-name">${orgEsc(r.pib||'—')}</td>
         <td class="imp-td imp-td-date">${r.birthdate||orgEsc(r.rawDate)||'—'}</td>
+        <td class="imp-td">${r.phone?empFmtPhone(r.phone):'—'}</td>
         <td class="imp-td">${_statusCell(r)}</td>
       </tr>`).join('');
 
@@ -5222,8 +5241,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     const btn=$('empImportConfirmBtn');
     btn.disabled=true; btn.textContent='Зберігаємо…';
 
-    const toInsert=valid.filter(r=>!r.existing).map(({last_name,first_name,patronymic,birthdate})=>
-      ({last_name,first_name:first_name||null,patronymic:patronymic||null,birthdate:birthdate||null}));
+    const toInsert=valid.filter(r=>!r.existing).map(({last_name,first_name,patronymic,birthdate,phone})=>
+      ({last_name,first_name:first_name||null,patronymic:patronymic||null,birthdate:birthdate||null,...(phone?{phone}:{})}));
     const toUpdate=valid.filter(r=>r.existing);
 
     const errors=[];
@@ -5233,7 +5252,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     }
     for(const r of toUpdate){
       const {error}=await db.from('dict_employees').update({
-        birthdate:r.birthdate||null
+        birthdate:r.birthdate||null,
+        ...(r.phone?{phone:r.phone}:{})
       }).eq('id',r.existing.id);
       if(error) errors.push(`Оновлення ${r.pib}: `+error.message);
     }
@@ -7346,14 +7366,14 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
                 ['is_published','Опубліковано (видно в боті)','check'],
                 ['notify','Надіслати всім підписникам','check']],
         defaults:{is_published:true,notify:false}},
-      employees:{table:'bot_employees',title:'Доступ до бота',single:'працівника',order:[['full_name',true]],
-        hint:'Увійти в бот можуть лише працівники з цього списку (за номером телефону).',
-        cols:[['ПІБ',r=>`<b>${esc(r.full_name)}</b>`],['Телефон',r=>fmtPhone(r.phone)],['Відділ',r=>esc(r.department||'—')],
-              ['Звертання',r=>esc(r.first_name||'—')],['Доступ',r=>yesNo(r.is_active,'Дозволено','Вимкнено')]],
-        fields:[['full_name','ПІБ','text',true],['phone','Телефон','tel',true,'Будь-який формат: +380 93 123 45 67 або 0931234567'],
-                ['first_name','Звертання в привітанні','text',false,'Наприклад: «Вікторе» → «Привіт, Вікторе!»'],
-                ['department','Відділ','dept'],['is_active','Доступ дозволено','check']],
-        defaults:{is_active:true}},
+      employees:{table:'dict_employees',title:'Доступ до бота',single:'доступ',order:[['bot_access',false],['last_name',true]],noAdd:true,noDel:true,
+        hint:'Співробітники з довідника «Компанія». Увійти в бот можуть ті, кому дозволено доступ і вказано телефон.',
+        cols:[['ПІБ',r=>`<b>${esc([r.last_name,r.first_name,r.patronymic].filter(Boolean).join(' '))}</b>`],
+              ['Підрозділ',r=>esc(_units[r.primary_unit_id]||'—')],['Телефон',r=>r.phone?fmtPhone(r.phone):'—'],
+              ['Доступ',r=>yesNo(r.bot_access,'Дозволено','Немає')]],
+        fields:[['phone','Телефон','tel',false,'Будь-який формат: +380 93 123 45 67 або 0931234567'],['bot_access','Доступ до бота дозволено','check']],
+        validate:p=>p.bot_access&&!p.phone?'Для доступу до бота потрібен телефон':'',
+        afterSave:()=>{ if(typeof loadAllDicts==='function') loadAllDicts(); }},
       users:{table:'bot_users',key:'telegram_id',title:'Підписники',single:'підписника',order:[['last_seen_at',false]],noAdd:true,
         hint:'Хто вже авторизувався в боті. Вимкни доступ, щоб закрити бот для людини.',
         cols:[['ПІБ',r=>`<b>${esc(r.full_name||'—')}</b>${r.username?`<div class="bot-clip">@${esc(r.username)}</div>`:''}`],
@@ -7380,7 +7400,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         defaults:{is_active:true}},
     };
 
-    let _tab='news', _rows=[], _edit=null;
+    let _tab='news', _rows=[], _edit=null, _units={};
     const cfg=()=>TABS[_tab];
     const keyOf=c=>c.key||'id';
     const $=id=>document.getElementById(id);
@@ -7401,7 +7421,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         cnt(db.from('bot_users').select('*',{count:'exact',head:true}).eq('is_authorized',true)),
         cnt(db.from('bot_users').select('*',{count:'exact',head:true}).eq('is_authorized',true).gte('last_seen_at',today.toISOString())),
         cnt(db.from('bot_news').select('*',{count:'exact',head:true}).eq('is_published',true)),
-        cnt(db.from('bot_employees').select('*',{count:'exact',head:true}).eq('is_active',true)),
+        cnt(db.from('dict_employees').select('*',{count:'exact',head:true}).eq('bot_access',true)),
       ]);
       $('botKpiSubs').textContent=subs;$('botKpiActive').textContent=active;
       $('botKpiNews').textContent=news;$('botKpiEmps').textContent=emps;
@@ -7417,6 +7437,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       body.innerHTML=`<tr><td colspan="${span}" class="empty">Завантаження…</td></tr>`;
       let q=db.from(c.table).select('*');
       c.order.forEach(([col,asc])=>{q=q.order(col,{ascending:asc});});
+      if(c===TABS.employees){ const u=await db.from('company_units').select('id,name'); _units=Object.fromEntries((u.data||[]).map(x=>[x.id,x.name])); }
       const {data,error}=await q;
       if(_tab!==Object.keys(TABS).find(k=>TABS[k]===c)) return; // користувач уже перейшов на іншу вкладку
       if(error){
@@ -7426,16 +7447,16 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       }
       _rows=data||[];
       $('botCount').textContent=_rows.length;
-      if(c===TABS.contacts||c===TABS.employees) fillDepts();
+      if(c===TABS.contacts) fillDepts();
       if(!_rows.length){body.innerHTML=`<tr><td colspan="${span}" class="empty">Поки що порожньо</td></tr>`;return;}
       const k=keyOf(c);
       body.innerHTML=_rows.map(r=>`<tr>${c.cols.map(x=>`<td>${x[1](r)}</td>`).join('')}
-        <td class="bot-acts"><button class="ico-btn" title="Редагувати" onclick="botOpen('${r[k]}')">${_eIco}</button><button class="ico-btn del" title="Видалити" onclick="askRowDel(this,'Видалити?','botDel','${r[k]}','botRender')">${_dIco}</button></td></tr>`).join('');
+        <td class="bot-acts"><button class="ico-btn" title="Редагувати" onclick="botOpen('${r[k]}')">${_eIco}</button>${c.noDel?'':`<button class="ico-btn del" title="Видалити" onclick="askRowDel(this,'Видалити?','botDel','${r[k]}','botRender')">${_dIco}</button>`}</td></tr>`).join('');
     };
 
     async function fillDepts(){
-      const [a,b]=await Promise.all([db.from('bot_contacts').select('department'),db.from('bot_employees').select('department')]);
-      const set=new Set([...(a.data||[]),...(b.data||[])].map(r=>r.department).filter(Boolean));
+      const {data}=await db.from('bot_contacts').select('department');
+      const set=new Set((data||[]).map(r=>r.department).filter(Boolean));
       $('botDeptList').innerHTML=[...set].sort().map(d=>`<option value="${esc(d)}">`).join('');
     }
 
@@ -7472,9 +7493,11 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         let val=el.value.trim();
         if(req&&!val){toast('Заповни поле «'+label+'»','warn');el.focus();return;}
         if(type==='number') val=val===''?0:parseInt(val,10)||0;
-        if(type==='tel'){ val=normPhone(val); if(!/^380\d{9}$/.test(val)){toast('Невірний номер телефону','warn');el.focus();return;} }
+        if(type==='tel'&&val){ val=normPhone(val); if(!/^380\d{9}$/.test(val)){toast('Невірний номер телефону','warn');el.focus();return;} }
         payload[name]=val===''?null:val;
       }
+      const invalid=c.validate&&c.validate(payload);
+      if(invalid){toast(invalid,'warn');return;}
       if(c===TABS.news&&!_edit) {const u=(document.querySelector('.js-user')?.textContent||'').trim();payload.author=u&&u!=='—'?u:null;}
       const btn=$('botSaveBtn'); btn.disabled=true;
       const res=_edit
@@ -7482,11 +7505,11 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         : await db.from(c.table).insert(payload);
       btn.disabled=false;
       if(res.error){
-        toast(/duplicate key/.test(res.error.message)?'Такий запис уже існує (наприклад, цей телефон уже в списку)':'Помилка: '+esc(res.error.message),'error');
+        toast(/duplicate key/.test(res.error.message)?'Такий запис уже існує (наприклад, цей телефон уже вказано в іншого співробітника)':'Помилка: '+esc(res.error.message),'error');
         return;
       }
       toast(c===TABS.news&&payload.notify&&!(_edit&&_edit.notified_at)?'Збережено. Бот розішле новину протягом хвилини':'Збережено','success');
-      botClose(); botLoad();
+      botClose(); botLoad(); if(c.afterSave) c.afterSave();
     };
 
     window.botDel=async function(id){
