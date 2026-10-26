@@ -6622,64 +6622,53 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         const collapsed=_hrCollapsed.has(gid);
         const pad=10+u.level*18;
 
-        const unitEmps=emps.filter(e=>Number(e.primary_unit_id)===u.id);
+        // люди підрозділу: з записів HR-файлу + з довідника (основний підрозділ) + керівник
+        const unitEntries=_hrEntries.filter(x=>String(x.unit_id)===String(u.id));
+        const headId=orgNode&&orgNode.employee_id?orgNode.employee_id:null;
+        const ids=new Set(emps.filter(e=>Number(e.primary_unit_id)===u.id).map(e=>e.id));
+        unitEntries.forEach(x=>ids.add(x.employee_id));
+        if(headId) ids.add(headId);
+        const people=[...ids].map(id=>emps.find(e=>e.id===id)||{id,last_name:'Співробітник #'+id})
+          .sort((a,b)=>(b.id===headId)-(a.id===headId)||empName(a).localeCompare(empName(b),'uk'));
+        const posOf=id=>[...new Set(unitEntries.filter(x=>x.employee_id===id&&x.position).sort((a,b)=>(a.row_no??0)-(b.row_no??0)).map(x=>x.position))].join(' → ');
+
         const byM=months.map(m=>{
           let p=0,f=0;
-          unitEmps.forEach(emp=>{
-            const en=hrSumEntry(emp.id,m,u.id);
-            p+=en.p; f+=en.f;
-          });
+          people.forEach(emp=>{const en=hrSumEntry(emp.id,m,u.id);p+=en.p;f+=en.f;});
           return{p,f};
         });
-        let uP=0,uF=0; byM.forEach(v=>{uP+=v.p;uF+=v.f;});
+        let uP=0,uF=0; byM.forEach((v,mi)=>{uP+=v.p;uF+=v.f;grandByM[mi].p+=v.p;grandByM[mi].f+=v.f;});
+        grandP+=uP; grandF+=uF;
 
         const arrow=`<span style="display:inline-block;transition:transform .2s;transform:rotate(${collapsed?'-90':'0'}deg);margin-right:6px;font-size:10px;color:var(--muted)">&#9660;</span>`;
         html+=`<tr class="bud-unit" style="cursor:pointer" onclick="hrToggleUnit('${gid}')"><td style="padding:7px 12px 7px ${pad}px">${arrow}<b>${u.name}</b></td>${byM.map(v=>cell(v.p,v.f,true)).join('')}${cell(uP,uF,true)}</tr>`;
 
         if(!collapsed){
-          const headEmp=orgNode&&orgNode.employee_id?emps.find(e=>e.id===orgNode.employee_id):null;
-          const regularEmps=unitEmps.filter(e=>!headEmp||e.id!==headEmp.id);
-
-          if(headEmp){
-            let eP=0,eF=0;
-            const eCells=months.map(m=>{
-              const en=hrSumEntry(headEmp.id,m,u.id);
-              const p=en.p; const f=en.f;
-              eP+=p;eF+=f; return cell(p,f);
-            });
-            const isActing=orgNode&&orgNode.status==='acting';
-            const badgeLabel=isActing?'В.О.':'КЕР';
-            const badgeBg=isActing?'#EA580C':'var(--brand)';
-            html+=`<tr data-hru="${gid}"><td style="padding:5px 12px 5px ${pad+18}px">
-              <span style="display:inline-flex;align-items:center;gap:6px">
-                <span style="font-size:10px;font-weight:700;letter-spacing:.04em;color:#fff;background:${badgeBg};border-radius:4px;padding:1px 5px;flex-shrink:0">${badgeLabel}</span>
-                <span style="font-weight:600">${empName(headEmp)}</span>
-              </span>
-            </td>${eCells.join('')}${cell(eP,eF)}</tr>`;
-          }
-
-          regularEmps.forEach(emp=>{
+          const isActing=orgNode&&orgNode.status==='acting';
+          people.forEach(emp=>{
             let eP=0,eF=0;
             const eCells=months.map(m=>{
               const en=hrSumEntry(emp.id,m,u.id);
-              const p=en.p; const f=en.f;
-              eP+=p;eF+=f; return cell(p,f);
+              eP+=en.p;eF+=en.f; return cell(en.p,en.f);
             });
-            html+=`<tr data-hru="${gid}"><td style="padding:4px 12px 4px ${pad+18}px;color:var(--ink)">${empName(emp)}</td>${eCells.join('')}${cell(eP,eF)}</tr>`;
+            const pos=posOf(emp.id);
+            const posHtml=pos?`<span style="font-size:11px;color:var(--muted);margin-left:6px">${pos}</span>`:'';
+            if(emp.id===headId){
+              html+=`<tr data-hru="${gid}"><td style="padding:5px 12px 5px ${pad+18}px">
+                <span style="display:inline-flex;align-items:center;gap:6px">
+                  <span style="font-size:10px;font-weight:700;letter-spacing:.04em;color:#fff;background:${isActing?'#EA580C':'var(--brand)'};border-radius:4px;padding:1px 5px;flex-shrink:0">${isActing?'В.О.':'КЕР'}</span>
+                  <span style="font-weight:600">${empName(emp)}</span>${posHtml}
+                </span>
+              </td>${eCells.join('')}${cell(eP,eF)}</tr>`;
+            } else {
+              html+=`<tr data-hru="${gid}"><td style="padding:4px 12px 4px ${pad+18}px;color:var(--ink)">${empName(emp)}${posHtml}</td>${eCells.join('')}${cell(eP,eF)}</tr>`;
+            }
           });
 
-          if(!headEmp&&!unitEmps.length){
+          if(!people.length){
             html+=`<tr data-hru="${gid}"><td colspan="${months.length+2}" style="padding:4px 12px 4px ${pad+18}px;color:var(--muted);font-size:12px;font-style:italic">Немає співробітників</td></tr>`;
           }
         }
-
-        unitEmps.forEach(emp=>{
-          months.forEach((m,mi)=>{
-            const en=hrSumEntry(emp.id,m,u.id);
-            const p=en.p; const f=en.f;
-            grandByM[mi].p+=p; grandByM[mi].f+=f; grandP+=p; grandF+=f;
-          });
-        });
       });
 
       if(!html){bodyEl.innerHTML=`<tr><td colspan="${months.length+2}" class="empty">Немає HR-файлів за ${year} рік</td></tr>`;return;}
