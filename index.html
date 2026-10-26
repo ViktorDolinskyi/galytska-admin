@@ -321,6 +321,14 @@
   .card + .card{margin-top:18px}
   .card-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
   .card-head h3{font-size:14.5px;font-weight:800}
+  .bot-mods{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+  .bot-mods>.card{margin:0}
+  .bot-mod{display:flex;align-items:flex-start;gap:12px;padding:16px 18px}
+  .bot-mod-ic{width:36px;height:36px;border-radius:10px;flex:none;display:grid;place-items:center;background:var(--brand-tint);color:var(--brand)}
+  .bot-mod-ic svg{width:18px;height:18px;stroke-width:1.9}
+  .bot-mod-txt{flex:1;min-width:0}
+  .bot-mod-txt h3{font-size:14px;font-weight:800;margin:0 0 4px}
+  .bot-mod-txt p{font-size:12.5px;color:var(--muted);margin:0;line-height:1.45}
   .filters{display:flex;gap:10px;align-items:center;margin-left:auto;flex-wrap:wrap}
   .pill{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
   .pill svg{width:15px;height:15px;stroke-width:2}
@@ -1269,6 +1277,12 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       <button class="nav-item" data-view="dev" data-label="Розвиток" draggable="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/><path d="M18 2v4h4"/><path d="M22 2l-4 4"/></svg>
         <span class="nav-label-txt">Розвиток</span>
+        <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
+      </button>
+
+      <button class="nav-item" data-view="bot" data-label="Будь в темі" draggable="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>
+        <span class="nav-label-txt">Будь в темі</span>
         <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </button>
 
@@ -2706,6 +2720,84 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         </div>
       </section>
 
+      <!-- ===== view-bot (Telegram-бот «Будь в темі») ===== -->
+      <section class="view" id="view-bot">
+        <div class="page-head">
+          <div>
+            <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg></span>Будь в темі</h2>
+            <p>Керування Telegram-ботом для працівників: розсилки, навчання, тести та довідкова інформація.</p>
+          </div>
+          <a class="btn ghost" style="text-decoration:none" href="https://t.me/galytska_svizhyna_bot" target="_blank" rel="noopener">Відкрити бота</a>
+        </div>
+
+        <div class="kpis" style="grid-template-columns:repeat(4,1fr);margin-bottom:24px">
+          <div class="kpi" style="--kpi-accent:#2563EB;--kpi-ic-bg:#EFF6FF;--kpi-ic-color:#2563EB">
+            <div class="k-top">Підписників<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span></div>
+            <div class="k-val" id="botSubs">—</div><div class="k-sub">авторизованих у боті</div>
+          </div>
+          <div class="kpi" style="--kpi-accent:#16A34A;--kpi-ic-bg:#F0FDF4;--kpi-ic-color:#16A34A">
+            <div class="k-top">Активних сьогодні<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span></div>
+            <div class="k-val" id="botActive">—</div><div class="k-sub">за останню добу</div>
+          </div>
+          <div class="kpi" style="--kpi-accent:#D52B1E;--kpi-ic-bg:#FBEAEB;--kpi-ic-color:#D52B1E">
+            <div class="k-top">Новин<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8"/></svg></span></div>
+            <div class="k-val" id="botNews">—</div><div class="k-sub">опубліковано</div>
+          </div>
+          <div class="kpi" style="--kpi-accent:#CA8A04;--kpi-ic-bg:#FEFCE8;--kpi-ic-color:#CA8A04">
+            <div class="k-top">Тестів<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3 8-8"/></svg></span></div>
+            <div class="k-val" id="botTests">—</div><div class="k-sub">активних</div>
+          </div>
+        </div>
+
+        <div class="bot-mods">
+            <div class="card bot-mod">
+              <div class="bot-mod-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div>
+              <div class="bot-mod-txt"><h3>Розсилки</h3><p>Новини з фото/відео, вибір відділу або всіх, надіслати чи запланувати</p></div>
+              <span class="badge off">Скоро</span>
+            </div>
+            <div class="card bot-mod">
+              <div class="bot-mod-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 7l10-4 10 4-10 4-10-4z"/><path d="M6 9v5c3 2 9 2 12 0V9"/></svg></div>
+              <div class="bot-mod-txt"><h3>Навчання</h3><p>Матеріали, відео, презентації з призначенням відділам</p></div>
+              <span class="badge off">Скоро</span>
+            </div>
+            <div class="card bot-mod">
+              <div class="bot-mod-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg></div>
+              <div class="bot-mod-txt"><h3>Тести</h3><p>Питання, прохідний бал і дедлайн</p></div>
+              <span class="badge off">Скоро</span>
+            </div>
+            <div class="card bot-mod">
+              <div class="bot-mod-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></div>
+              <div class="bot-mod-txt"><h3>Результати тестів</h3><p>Хто пройшов / не пройшов, бали, дати</p></div>
+              <span class="badge off">Скоро</span>
+            </div>
+            <div class="card bot-mod">
+              <div class="bot-mod-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></div>
+              <div class="bot-mod-txt"><h3>Контакти</h3><p>Контактна інформація відділів</p></div>
+              <span class="badge off">Скоро</span>
+            </div>
+            <div class="card bot-mod">
+              <div class="bot-mod-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></div>
+              <div class="bot-mod-txt"><h3>FAQ</h3><p>Питання та відповіді для працівників</p></div>
+              <span class="badge off">Скоро</span>
+            </div>
+            <div class="card bot-mod">
+              <div class="bot-mod-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
+              <div class="bot-mod-txt"><h3>Вакансії</h3><p>Додати або закрити вакансію</p></div>
+              <span class="badge off">Скоро</span>
+            </div>
+            <div class="card bot-mod">
+              <div class="bot-mod-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></div>
+              <div class="bot-mod-txt"><h3>Рефералки</h3><p>Заявки від працівників</p></div>
+              <span class="badge off">Скоро</span>
+            </div>
+            <div class="card bot-mod">
+              <div class="bot-mod-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 20V10M12 20V4M6 20v-6"/></svg></div>
+              <div class="bot-mod-txt"><h3>Статистика</h3><p>Підписники, активні / неактивні, активність по розділах</p></div>
+              <span class="badge off">Скоро</span>
+            </div>
+        </div>
+      </section>
+
       <!-- ===== view-budget ===== -->
       <section class="view" id="view-budget">
         <div class="page-head">
@@ -3063,6 +3155,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     settings:'Налаштування системи',
     dev:'Управління персоналом',
     budget:'Фінансове планування',
+    bot:'Внутрішні комунікації',
     reports:'Аналітика та звітність',
     analytics:'Аналітика та звітність',
   };
@@ -3105,6 +3198,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
           const el = container.querySelector(`.nav-item[data-view="${view}"]`);
           if(el) container.appendChild(el);
         });
+        // нові розділи, яких ще немає у збереженому порядку, — в кінець
+        getNavItems().forEach(el=>{ if(!order.includes(el.dataset.view)) container.appendChild(el); });
       } catch(e){}
     }
 
