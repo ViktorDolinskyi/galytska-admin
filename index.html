@@ -323,6 +323,18 @@
   .card-head h3{font-size:14.5px;font-weight:800}
   .bot-mods{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
   .bot-mods>.card{margin:0}
+  .bot-seg-wrap{overflow-x:auto;margin-bottom:14px;scrollbar-width:none}
+  .bot-seg-wrap::-webkit-scrollbar{display:none}
+  .bot-seg-wrap .seg button{white-space:nowrap}
+  .bot-hint{font-size:12.5px;color:var(--muted)}
+  .bot-tbl td{vertical-align:top}
+  .bot-tbl .bot-clip{max-width:420px;color:var(--slate);font-size:12.5px;white-space:pre-line;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .bot-tbl .bot-acts{white-space:nowrap;text-align:right;width:1%}
+  .bot-tbl .bot-acts .ico-btn{display:inline-grid;place-items:center;margin-left:4px}
+  .bot-check{display:flex !important;align-items:center;gap:10px;cursor:pointer;font-size:13.5px !important;font-weight:600 !important;color:var(--ink) !important;margin:0 !important}
+  .bot-check input{width:18px !important;height:18px;margin:0;accent-color:var(--brand);flex:none}
+  .bot-field-note{font-size:12px;color:var(--muted);margin-top:6px}
+  @media (max-width:760px){.bot-kpis{grid-template-columns:repeat(2,1fr) !important}}
   .bot-mod{display:flex;align-items:flex-start;gap:12px;padding:16px 18px}
   .bot-mod-ic{width:36px;height:36px;border-radius:10px;flex:none;display:grid;place-items:center;background:var(--brand-tint);color:var(--brand)}
   .bot-mod-ic svg{width:18px;height:18px;stroke-width:1.9}
@@ -2725,36 +2737,61 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         <div class="page-head">
           <div>
             <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg></span>Будь в темі</h2>
-            <p>Керування Telegram-ботом для працівників: розсилки, навчання, тести та довідкова інформація.</p>
+            <p>Керування Telegram-ботом для працівників. Усе, що змінено тут, бот бачить одразу.</p>
           </div>
-          <a class="btn ghost" style="text-decoration:none" href="https://t.me/galytska_svizhyna_bot" target="_blank" rel="noopener">Відкрити бота</a>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn ghost" onclick="botLoad()" title="Оновити дані">Оновити</button>
+            <a class="btn ghost" style="text-decoration:none" href="https://t.me/galytska_svizhyna_bot" target="_blank" rel="noopener">Відкрити бота</a>
+          </div>
         </div>
 
-        <div class="kpis" style="grid-template-columns:repeat(4,1fr);margin-bottom:24px">
+        <div class="kpis bot-kpis" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px">
           <div class="kpi" style="--kpi-accent:#2563EB;--kpi-ic-bg:#EFF6FF;--kpi-ic-color:#2563EB">
             <div class="k-top">Підписників<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span></div>
-            <div class="k-val" id="botSubs">—</div><div class="k-sub">авторизованих у боті</div>
+            <div class="k-val" id="botKpiSubs">—</div><div class="k-sub">авторизованих у боті</div>
           </div>
           <div class="kpi" style="--kpi-accent:#16A34A;--kpi-ic-bg:#F0FDF4;--kpi-ic-color:#16A34A">
             <div class="k-top">Активних сьогодні<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span></div>
-            <div class="k-val" id="botActive">—</div><div class="k-sub">за останню добу</div>
+            <div class="k-val" id="botKpiActive">—</div><div class="k-sub">заходили в бот</div>
           </div>
           <div class="kpi" style="--kpi-accent:#D52B1E;--kpi-ic-bg:#FBEAEB;--kpi-ic-color:#D52B1E">
             <div class="k-top">Новин<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8"/></svg></span></div>
-            <div class="k-val" id="botNews">—</div><div class="k-sub">опубліковано</div>
+            <div class="k-val" id="botKpiNews">—</div><div class="k-sub">опубліковано</div>
           </div>
           <div class="kpi" style="--kpi-accent:#CA8A04;--kpi-ic-bg:#FEFCE8;--kpi-ic-color:#CA8A04">
-            <div class="k-top">Тестів<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3 8-8"/></svg></span></div>
-            <div class="k-val" id="botTests">—</div><div class="k-sub">активних</div>
+            <div class="k-top">Доступ дозволено<span class="k-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span></div>
+            <div class="k-val" id="botKpiEmps">—</div><div class="k-sub">працівникам у списку</div>
           </div>
         </div>
 
-        <div class="bot-mods">
-            <div class="card bot-mod">
-              <div class="bot-mod-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div>
-              <div class="bot-mod-txt"><h3>Розсилки</h3><p>Новини з фото/відео, вибір відділу або всіх, надіслати чи запланувати</p></div>
-              <span class="badge off">Скоро</span>
-            </div>
+        <div class="bot-seg-wrap">
+          <div class="seg" id="botSeg">
+            <button class="on" data-bot-tab="news" onclick="botTab('news')">Новини</button>
+            <button data-bot-tab="employees" onclick="botTab('employees')">Доступ</button>
+            <button data-bot-tab="users" onclick="botTab('users')">Підписники</button>
+            <button data-bot-tab="faq" onclick="botTab('faq')">FAQ</button>
+            <button data-bot-tab="contacts" onclick="botTab('contacts')">Контакти</button>
+            <button data-bot-tab="documents" onclick="botTab('documents')">Документи</button>
+            <button data-bot-tab="soon" onclick="botTab('soon')">Інше</button>
+          </div>
+        </div>
+
+        <div class="card" id="botTableCard">
+          <div class="card-head">
+            <h3 id="botTabTitle">Новини</h3>
+            <span class="badge info" id="botCount">0</span>
+            <span class="bot-hint" id="botHint"></span>
+            <button class="btn primary" id="botAddBtn" onclick="botOpen()" style="margin-left:auto">+ Додати</button>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="tbl bot-tbl">
+              <thead id="botHead"></thead>
+              <tbody id="botBody"><tr><td class="empty">Завантаження…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="bot-mods" id="botSoon" style="display:none">
             <div class="card bot-mod">
               <div class="bot-mod-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 7l10-4 10 4-10 4-10-4z"/><path d="M6 9v5c3 2 9 2 12 0V9"/></svg></div>
               <div class="bot-mod-txt"><h3>Навчання</h3><p>Матеріали, відео, презентації з призначенням відділам</p></div>
@@ -2771,16 +2808,6 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
               <span class="badge off">Скоро</span>
             </div>
             <div class="card bot-mod">
-              <div class="bot-mod-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></div>
-              <div class="bot-mod-txt"><h3>Контакти</h3><p>Контактна інформація відділів</p></div>
-              <span class="badge off">Скоро</span>
-            </div>
-            <div class="card bot-mod">
-              <div class="bot-mod-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></div>
-              <div class="bot-mod-txt"><h3>FAQ</h3><p>Питання та відповіді для працівників</p></div>
-              <span class="badge off">Скоро</span>
-            </div>
-            <div class="card bot-mod">
               <div class="bot-mod-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
               <div class="bot-mod-txt"><h3>Вакансії</h3><p>Додати або закрити вакансію</p></div>
               <span class="badge off">Скоро</span>
@@ -2790,13 +2817,23 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
               <div class="bot-mod-txt"><h3>Рефералки</h3><p>Заявки від працівників</p></div>
               <span class="badge off">Скоро</span>
             </div>
-            <div class="card bot-mod">
-              <div class="bot-mod-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 20V10M12 20V4M6 20v-6"/></svg></div>
-              <div class="bot-mod-txt"><h3>Статистика</h3><p>Підписники, активні / неактивні, активність по розділах</p></div>
-              <span class="badge off">Скоро</span>
-            </div>
         </div>
       </section>
+
+      <div class="modal-scrim" id="botScrim" onclick="if(event.target===this)botClose()">
+        <div class="modal" style="max-width:560px;max-height:92vh;display:flex;flex-direction:column">
+          <div class="modal-head">
+            <h3 id="botModalTitle">Новий запис</h3>
+            <button class="ico-btn" onclick="botClose()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+          </div>
+          <div class="body" id="botForm"></div>
+          <div class="foot">
+            <button class="btn ghost" onclick="botClose()">Скасувати</button>
+            <button class="btn primary" id="botSaveBtn" onclick="botSave()">Зберегти</button>
+          </div>
+        </div>
+      </div>
+      <datalist id="botDeptList"></datalist>
 
       <!-- ===== view-budget ===== -->
       <section class="view" id="view-budget">
@@ -3171,6 +3208,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       else if(id==='company') companyTab('structure');
       if(id==='dev' && window.devRender) { setTimeout(()=>{ if(window.devTab) window.devTab('plans'); else window.devRender(); },0); }
       if(id==='budget' && window.budgetLoad) { setTimeout(budgetLoad, 100); }
+      if(id==='bot' && window.botLoad) { setTimeout(botLoad, 100); }
       if(id==='dash' && window.dashLoad) { setTimeout(dashLoad, 100); }
       closeNav();
       document.querySelector('.content').scrollTo({top:0,behavior:'smooth'});
@@ -7285,6 +7323,179 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       await window.budgetsLoadRefresh();
     };
 
+  })();
+
+  /* ===== БУДЬ В ТЕМІ (Telegram-бот) ===== */
+  (function(){
+    const esc=s=>String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+    const fmtDate=d=>d?new Date(d).toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'}):'—';
+    const fmtDT=d=>d?new Date(d).toLocaleString('uk-UA',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';
+    const yesNo=(v,on,off)=>v?`<span class="badge ok">${on}</span>`:`<span class="badge off">${off}</span>`;
+    const clip=s=>`<div class="bot-clip">${esc(s)}</div>`;
+    // Телефон зберігаємо лише цифрами у форматі 380XXXXXXXXX — так само нормалізує бот
+    const normPhone=p=>{let d=String(p||'').replace(/\D/g,'');if(d.length===10&&d[0]==='0')d='38'+d;return d;};
+    const fmtPhone=p=>/^380\d{9}$/.test(p||'')?`+${p.slice(0,3)} ${p.slice(3,5)} ${p.slice(5,8)} ${p.slice(8,10)} ${p.slice(10)}`:esc(p);
+
+    const TABS={
+      news:{table:'bot_news',title:'Новини',single:'новину',order:[['created_at',false]],
+        hint:'Новина з «Надіслати всім» приходить підписникам протягом хвилини.',
+        cols:[['Дата',r=>fmtDate(r.created_at)],['Заголовок',r=>`<b>${esc(r.title)}</b>${clip(r.body)}`],
+              ['Статус',r=>yesNo(r.is_published,'Опубліковано','Чернетка')],
+              ['Розсилка',r=>r.notified_at?`<span class="badge ok">Надіслано ${fmtDT(r.notified_at)}</span>`:r.notify?'<span class="badge warn">Очікує</span>':'—']],
+        fields:[['title','Заголовок','text',true],['body','Текст','textarea',true],
+                ['is_published','Опубліковано (видно в боті)','check'],
+                ['notify','Надіслати всім підписникам','check']],
+        defaults:{is_published:true,notify:false}},
+      employees:{table:'bot_employees',title:'Доступ до бота',single:'працівника',order:[['full_name',true]],
+        hint:'Увійти в бот можуть лише працівники з цього списку (за номером телефону).',
+        cols:[['ПІБ',r=>`<b>${esc(r.full_name)}</b>`],['Телефон',r=>fmtPhone(r.phone)],['Відділ',r=>esc(r.department||'—')],
+              ['Звертання',r=>esc(r.first_name||'—')],['Доступ',r=>yesNo(r.is_active,'Дозволено','Вимкнено')]],
+        fields:[['full_name','ПІБ','text',true],['phone','Телефон','tel',true,'Будь-який формат: +380 93 123 45 67 або 0931234567'],
+                ['first_name','Звертання в привітанні','text',false,'Наприклад: «Вікторе» → «Привіт, Вікторе!»'],
+                ['department','Відділ','dept'],['is_active','Доступ дозволено','check']],
+        defaults:{is_active:true}},
+      users:{table:'bot_users',key:'telegram_id',title:'Підписники',single:'підписника',order:[['last_seen_at',false]],noAdd:true,
+        hint:'Хто вже авторизувався в боті. Вимкни доступ, щоб закрити бот для людини.',
+        cols:[['ПІБ',r=>`<b>${esc(r.full_name||'—')}</b>${r.username?`<div class="bot-clip">@${esc(r.username)}</div>`:''}`],
+              ['Відділ',r=>esc(r.department||'—')],['Телефон',r=>fmtPhone(r.phone)],
+              ['Підписаний',r=>fmtDate(r.created_at)],['Остання активність',r=>fmtDT(r.last_seen_at)],
+              ['Доступ',r=>yesNo(r.is_authorized,'Активний','Вимкнено')]],
+        fields:[['is_authorized','Доступ до бота активний','check']]},
+      faq:{table:'bot_faq',title:'FAQ',single:'питання',order:[['sort_order',true],['id',true]],
+        cols:[['№',r=>r.sort_order],['Питання',r=>`<b>${esc(r.question)}</b>${clip(r.answer)}`],['Показ',r=>yesNo(r.is_active,'Так','Приховано')]],
+        fields:[['question','Питання (текст кнопки)','text',true],['answer','Відповідь','textarea',true],
+                ['sort_order','Порядок','number'],['is_active','Показувати в боті','check']],
+        defaults:{is_active:true}},
+      contacts:{table:'bot_contacts',title:'Контакти',single:'контакт',order:[['sort_order',true],['id',true]],
+        hint:'У боті контакти групуються за відділом.',
+        cols:[['№',r=>r.sort_order],['Відділ',r=>esc(r.department)],['ПІБ',r=>`<b>${esc(r.full_name)}</b>${r.position?clip(r.position):''}`],
+              ['Телефон',r=>esc(r.phone)],['Показ',r=>yesNo(r.is_active,'Так','Приховано')]],
+        fields:[['department','Відділ (кнопка в боті)','dept',true],['full_name','ПІБ','text',true],['position','Посада','text'],
+                ['phone','Телефон','text',true],['sort_order','Порядок','number'],['is_active','Показувати в боті','check']],
+        defaults:{is_active:true}},
+      documents:{table:'bot_documents',title:'Документи та інструкції',single:'інструкцію',order:[['sort_order',true],['id',true]],
+        cols:[['№',r=>r.sort_order],['Назва',r=>`<b>${esc(r.title)}</b>${clip(r.body)}`],['Показ',r=>yesNo(r.is_active,'Так','Приховано')]],
+        fields:[['title','Назва (текст кнопки)','text',true],['body','Текст інструкції','textarea',true],
+                ['sort_order','Порядок','number'],['is_active','Показувати в боті','check']],
+        defaults:{is_active:true}},
+    };
+
+    let _tab='news', _rows=[], _edit=null;
+    const cfg=()=>TABS[_tab];
+    const keyOf=c=>c.key||'id';
+    const $=id=>document.getElementById(id);
+
+    window.botTab=function(tab){
+      _tab=tab;
+      document.querySelectorAll('#botSeg button').forEach(b=>b.classList.toggle('on',b.dataset.botTab===tab));
+      const soon=tab==='soon';
+      $('botTableCard').style.display=soon?'none':'';
+      $('botSoon').style.display=soon?'':'none';
+      if(!soon) botRender();
+    };
+
+    async function loadKpi(){
+      const today=new Date();today.setHours(0,0,0,0);
+      const cnt=q=>q.then(r=>r.error||r.count==null?'—':r.count);
+      const [subs,active,news,emps]=await Promise.all([
+        cnt(db.from('bot_users').select('*',{count:'exact',head:true}).eq('is_authorized',true)),
+        cnt(db.from('bot_users').select('*',{count:'exact',head:true}).eq('is_authorized',true).gte('last_seen_at',today.toISOString())),
+        cnt(db.from('bot_news').select('*',{count:'exact',head:true}).eq('is_published',true)),
+        cnt(db.from('bot_employees').select('*',{count:'exact',head:true}).eq('is_active',true)),
+      ]);
+      $('botKpiSubs').textContent=subs;$('botKpiActive').textContent=active;
+      $('botKpiNews').textContent=news;$('botKpiEmps').textContent=emps;
+    }
+
+    window.botRender=async function(){
+      const c=cfg(); if(!c) return;
+      $('botTabTitle').textContent=c.title;
+      $('botHint').textContent=c.hint||'';
+      $('botAddBtn').style.display=c.noAdd?'none':'';
+      $('botHead').innerHTML='<tr>'+c.cols.map(x=>`<th>${x[0]}</th>`).join('')+'<th></th></tr>';
+      const span=c.cols.length+1, body=$('botBody');
+      body.innerHTML=`<tr><td colspan="${span}" class="empty">Завантаження…</td></tr>`;
+      let q=db.from(c.table).select('*');
+      c.order.forEach(([col,asc])=>{q=q.order(col,{ascending:asc});});
+      const {data,error}=await q;
+      if(_tab!==Object.keys(TABS).find(k=>TABS[k]===c)) return; // користувач уже перейшов на іншу вкладку
+      if(error){
+        const missing=/does not exist|schema cache/i.test(error.message);
+        body.innerHTML=`<tr><td colspan="${span}" class="empty">${missing?'Таблиці бота ще не створені. Виконай database/schema.sql і seed.sql у Supabase → SQL Editor.':'Помилка: '+esc(error.message)}</td></tr>`;
+        $('botCount').textContent='0';return;
+      }
+      _rows=data||[];
+      $('botCount').textContent=_rows.length;
+      if(c===TABS.contacts||c===TABS.employees) fillDepts();
+      if(!_rows.length){body.innerHTML=`<tr><td colspan="${span}" class="empty">Поки що порожньо</td></tr>`;return;}
+      const k=keyOf(c);
+      body.innerHTML=_rows.map(r=>`<tr>${c.cols.map(x=>`<td>${x[1](r)}</td>`).join('')}
+        <td class="bot-acts"><button class="ico-btn" title="Редагувати" onclick="botOpen('${r[k]}')">${_eIco}</button><button class="ico-btn del" title="Видалити" onclick="askRowDel(this,'Видалити?','botDel','${r[k]}','botRender')">${_dIco}</button></td></tr>`).join('');
+    };
+
+    async function fillDepts(){
+      const [a,b]=await Promise.all([db.from('bot_contacts').select('department'),db.from('bot_employees').select('department')]);
+      const set=new Set([...(a.data||[]),...(b.data||[])].map(r=>r.department).filter(Boolean));
+      $('botDeptList').innerHTML=[...set].sort().map(d=>`<option value="${esc(d)}">`).join('');
+    }
+
+    window.botLoad=async function(){ await Promise.all([loadKpi(), _tab==='soon'?null:botRender()]); };
+
+    window.botOpen=function(id){
+      const c=cfg(), k=keyOf(c);
+      _edit=id!=null?_rows.find(r=>String(r[k])===String(id)):null;
+      const v=_edit||{...(c.defaults||{}),sort_order:c.fields.some(f=>f[0]==='sort_order')?((_rows.reduce((m,r)=>Math.max(m,r.sort_order||0),-1))+1):undefined};
+      $('botModalTitle').textContent=(_edit?'Редагувати ':'Додати ')+c.single;
+      $('botForm').innerHTML=c.fields.map(([name,label,type,req,note])=>{
+        const val=v[name];
+        const star=req?' <span style="color:var(--brand)">*</span>':'';
+        const n=note?`<div class="bot-field-note">${esc(note)}</div>`:'';
+        if(type==='check'){
+          const sent=name==='notify'&&_edit&&_edit.notified_at;
+          return `<div><label class="bot-check"><input type="checkbox" id="botF_${name}" ${val?'checked':''} ${sent?'disabled':''}>${label}</label>${sent?`<div class="bot-field-note">Уже надіслано ${fmtDT(_edit.notified_at)}</div>`:''}</div>`;
+        }
+        if(type==='textarea') return `<div><label>${label}${star}</label><textarea id="botF_${name}" rows="7">${esc(val)}</textarea>${n}</div>`;
+        const t=type==='number'?'number':type==='tel'?'tel':'text';
+        const shown=type==='tel'&&val?fmtPhone(val):esc(val);
+        return `<div><label>${label}${star}</label><input id="botF_${name}" type="${t}" value="${shown}" ${type==='dept'?'list="botDeptList"':''}>${n}</div>`;
+      }).join('');
+      $('botScrim').classList.add('open');
+      setTimeout(()=>$('botForm').querySelector('input:not([type=checkbox]),textarea')?.focus(),50);
+    };
+    window.botClose=function(){ $('botScrim').classList.remove('open'); _edit=null; };
+
+    window.botSave=async function(){
+      const c=cfg(), k=keyOf(c), payload={};
+      for(const [name,label,type,req] of c.fields){
+        const el=$('botF_'+name);
+        if(type==='check'){ if(!el.disabled) payload[name]=el.checked; continue; }
+        let val=el.value.trim();
+        if(req&&!val){toast('Заповни поле «'+label+'»','warn');el.focus();return;}
+        if(type==='number') val=val===''?0:parseInt(val,10)||0;
+        if(type==='tel'){ val=normPhone(val); if(!/^380\d{9}$/.test(val)){toast('Невірний номер телефону','warn');el.focus();return;} }
+        payload[name]=val===''?null:val;
+      }
+      if(c===TABS.news&&!_edit) {const u=(document.querySelector('.js-user')?.textContent||'').trim();payload.author=u&&u!=='—'?u:null;}
+      const btn=$('botSaveBtn'); btn.disabled=true;
+      const res=_edit
+        ? await db.from(c.table).update(payload).eq(k,_edit[k])
+        : await db.from(c.table).insert(payload);
+      btn.disabled=false;
+      if(res.error){
+        toast(/duplicate key/.test(res.error.message)?'Такий запис уже існує (наприклад, цей телефон уже в списку)':'Помилка: '+esc(res.error.message),'error');
+        return;
+      }
+      toast(c===TABS.news&&payload.notify&&!(_edit&&_edit.notified_at)?'Збережено. Бот розішле новину протягом хвилини':'Збережено','success');
+      botClose(); botLoad();
+    };
+
+    window.botDel=async function(id){
+      const c=cfg();
+      const {error}=await db.from(c.table).delete().eq(keyOf(c),id);
+      if(error){toast('Помилка: '+esc(error.message),'error');}
+      else toast('Видалено','success');
+      botLoad();
+    };
   })();
 
   </script>
