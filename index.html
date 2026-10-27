@@ -2791,6 +2791,25 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       </section>
 
       <!-- ===== view-bot (Telegram-бот «Будь в темі») ===== -->
+      <!-- модалка: новий пароль (після запрошення або скидання пароля) -->
+      <div class="modal-scrim" id="accPassScrim">
+        <div class="modal" style="max-width:420px;max-height:90vh;display:flex;flex-direction:column">
+          <div class="modal-head">
+            <h3>Задайте пароль</h3>
+            <button class="ico-btn" onclick="accPassClose()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+          </div>
+          <div class="body" style="flex-direction:column;gap:14px;padding:20px">
+            <div class="acc-hint" style="margin:0">Ви увійшли за посиланням з листа. Задайте пароль, щоб надалі входити з ним.</div>
+            <div><label>Новий пароль <span style="color:var(--brand)">*</span></label><input id="apPass1" type="password" placeholder="Мінімум 8 символів" autocomplete="new-password"></div>
+            <div><label>Повторіть пароль <span style="color:var(--brand)">*</span></label><input id="apPass2" type="password" autocomplete="new-password"></div>
+          </div>
+          <div class="foot">
+            <button class="btn ghost" onclick="accPassClose()">Пізніше</button>
+            <button class="btn primary" id="apSaveBtn" onclick="accPassSave()">Зберегти пароль</button>
+          </div>
+        </div>
+      </div>
+
       <!-- модалка: користувач -->
       <div class="modal-scrim" id="accUserScrim" onclick="if(event.target===this)accUserClose()">
         <div class="modal" style="max-width:560px;max-height:90vh;display:flex;flex-direction:column">
@@ -2800,7 +2819,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
           </div>
           <div class="body" style="flex-direction:column;gap:14px;padding:20px;overflow-y:auto">
             <div><label>Email <span style="color:var(--brand)">*</span></label><input id="auEmail" type="email" placeholder="name@company.ua" autocomplete="off"></div>
-            <div id="auPassWrap"><label>Пароль <span style="color:var(--brand)">*</span></label><input id="auPass" type="password" placeholder="Мінімум 6 символів" autocomplete="new-password"></div>
+            <div id="auPassWrap"><label>Пароль</label><input id="auPass" type="password" placeholder="Мінімум 8 символів" autocomplete="new-password"><div class="acc-hint" style="margin:6px 0 0">Залиште порожнім — на email прийде запрошення, і пароль людина задасть сама (безпечніше).</div></div>
             <div><label>ПІБ</label><input id="auName" placeholder="Прізвище Ім'я"></div>
             <div><label>Співробітник з довідника</label><select id="auEmp" class="modal-sel"></select></div>
             <div><label>Роль <span style="color:var(--brand)">*</span></label><select id="auRole" class="modal-sel" onchange="accUserPermsRender()"></select></div>
@@ -5427,6 +5446,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
   /* ====== Supabase + вхід (Варіант Б) ====== */
   const SUPABASE_URL = 'https://jomergnpqsjufqpehvyk.supabase.co';   // ← встав свій Project URL
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvbWVyZ25wcXNqdWZxcGVodnlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MTA3NjEsImV4cCI6MjA5NzI4Njc2MX0.uFCvBwl3osBS9AIbMDqefRH87PQH1Xqqff07-d2lsTM';              // ← встав свій anon/public key
+  // посилання з листа (запрошення / скидання пароля): після входу треба задати пароль; читаємо до того, як клієнт очистить адресу
+  const _authLinkType=new URLSearchParams(location.hash.slice(1)).get('type');
   const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   // Завантаження структури з бази та побудова дерева
@@ -5474,6 +5495,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       const _initials=(session.user.user_metadata?.full_name||session.user.email||'').trim().split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2)||'??';
       document.querySelectorAll('.sb-avatar').forEach(el=>el.textContent=_initials);
       accInit(session);
+      if(_authLinkType==='invite'||_authLinkType==='recovery') accPassOpen();
       orgLoad();
       mxLoad();
       loadAllDicts().then(()=>{goalsLoad();goalTypesLoad();goalPatternsLoad();setTimeout(dashLoad,300);});
@@ -5703,13 +5725,18 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       if(!id){
         const pass=document.getElementById('auPass').value;
         if(!/^\S+@\S+\.\S+$/.test(email)){toast('Вкажіть коректний email','warn');return;}
-        if(pass.length<6){toast('Пароль має містити щонайменше 6 символів','warn');return;}
-        // окремий клієнт без збереження сесії, щоб реєстрація не замінила сесію адміністратора
-        const tmp=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:'gs_acc_signup'}});
-        const {data,error}=await tmp.auth.signUp({email,password:pass,options:{data:{full_name}}});
-        if(error){toast('Не вдалося створити користувача: '+esc(error.message),'error');return;}
-        if(!data.user||(data.user.identities&&!data.user.identities.length)){toast('Користувач з таким email уже існує','warn');return;}
-        id=data.user.id;
+        if(pass&&pass.length<8){toast('Пароль має містити щонайменше 8 символів','warn');return;}
+        // публічна реєстрація вимкнена — створює Edge Function admin-create-user (service_role на сервері, перевірка прав)
+        const {data,error}=await db.functions.invoke('admin-create-user',{body:{
+          email,password:pass||undefined,full_name,role_id,employee_id:emp?emp.id:null,is_active,
+          redirect_to:location.origin+location.pathname}});
+        if(error){
+          let msg=error.message;
+          try{ msg=(await error.context.json()).error||msg; }catch(e){}
+          if(/Failed to send|NetworkError|not found|404/i.test(msg)) msg='Функцію admin-create-user не знайдено — її треба один раз розгорнути в Supabase (див. docs/ACCESS.md)';
+          toast('Не вдалося створити користувача: '+esc(msg),'error',7000);return;
+        }
+        id=data.id; ACC.invited=data.invited;
       }
       const row={id,full_name,employee_id:emp?emp.id:null,role_id,is_active};
       if(!ACC.userEdit) row.email=email;
@@ -5722,7 +5749,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         const ins=await db.from('app_user_perms').insert(ovRows);
         if(ins.error){toast('Помилка збереження прав: '+esc(ins.error.message),'error');return;}
       }
-      toast(ACC.userEdit?'Користувача збережено':'Користувача створено. Якщо в Supabase увімкнено підтвердження email — йому надійде лист.','success',5000);
+      toast(ACC.userEdit?'Користувача збережено':(ACC.invited?'Запрошення надіслано на '+esc(email)+' — пароль людина задасть сама':'Користувача створено — він може входити з цим паролем'),'success',6000);
       const wasSelf=id===ACC.me?.id;
       accUserClose(); await accLoad();
       if(wasSelf){const {data:{session}}=await db.auth.getSession(); if(session) accInit(session);}
@@ -5743,6 +5770,26 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     if(error){toast('Не вдалося видалити: '+esc(error.message),'error');return;}
     toast('Користувача видалено','success');
     accUserClose(); await accLoad();
+  };
+
+  /* ---- власний пароль після запрошення / скидання ---- */
+  window.accPassOpen=function(){
+    const sc=document.getElementById('accPassScrim');
+    if(sc.classList.contains('open')) return;
+    document.getElementById('apPass1').value=''; document.getElementById('apPass2').value='';
+    sc.classList.add('open');
+    setTimeout(()=>document.getElementById('apPass1').focus(),50);
+  };
+  window.accPassClose=()=>document.getElementById('accPassScrim').classList.remove('open');
+  window.accPassSave=async function(){
+    const p1=document.getElementById('apPass1').value, p2=document.getElementById('apPass2').value;
+    if(p1.length<8){toast('Пароль має містити щонайменше 8 символів','warn');return;}
+    if(p1!==p2){toast('Паролі не збігаються','warn');return;}
+    const btn=document.getElementById('apSaveBtn'); btn.disabled=true;
+    const {error}=await db.auth.updateUser({password:p1});
+    btn.disabled=false;
+    if(error){toast('Не вдалося змінити пароль: '+esc(error.message),'error');return;}
+    accPassClose(); toast('Пароль збережено','success');
   };
 
   /* ---- ролі та права ---- */
@@ -5943,7 +5990,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     } catch(e){ console.error('dashLoad',e); }
     if(btn) btn.disabled=false;
   };
-  db.auth.onAuthStateChange((_e,session)=>setAuth(session));
+  db.auth.onAuthStateChange((_e,session)=>{ setAuth(session); if(_e==='PASSWORD_RECOVERY') accPassOpen(); });
   document.getElementById('authPass').addEventListener('keydown',e=>{ if(e.key==='Enter') authSignIn(); });
   (async()=>{ const { data:{ session } } = await db.auth.getSession(); setAuth(session); })();
 
