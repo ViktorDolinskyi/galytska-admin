@@ -2800,7 +2800,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
           </div>
           <div class="body" style="flex-direction:column;gap:14px;padding:20px;overflow-y:auto">
             <div><label>Email <span style="color:var(--brand)">*</span></label><input id="auEmail" type="email" placeholder="name@company.ua" autocomplete="off"></div>
-            <div id="auPassWrap"><label>Пароль <span style="color:var(--brand)">*</span></label><input id="auPass" type="password" placeholder="Мінімум 8 символів" autocomplete="new-password"></div>
+            <div id="auPassWrap"><label>Пароль <span style="color:var(--brand)">*</span></label><input id="auPass" type="password" placeholder="Мінімум 6 символів" autocomplete="new-password"></div>
             <div><label>ПІБ</label><input id="auName" placeholder="Прізвище Ім'я"></div>
             <div><label>Співробітник з довідника</label><select id="auEmp" class="modal-sel"></select></div>
             <div><label>Роль <span style="color:var(--brand)">*</span></label><select id="auRole" class="modal-sel" onchange="accUserPermsRender()"></select></div>
@@ -5703,17 +5703,13 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       if(!id){
         const pass=document.getElementById('auPass').value;
         if(!/^\S+@\S+\.\S+$/.test(email)){toast('Вкажіть коректний email','warn');return;}
-        if(pass.length<8){toast('Пароль має містити щонайменше 8 символів','warn');return;}
-        // самореєстрацію вимкнено: створює серверна функція, яка перевіряє право «Користувачі та доступ»
-        const {data,error}=await db.functions.invoke('admin-create-user',{body:{email,password:pass,full_name}});
-        if(error){
-          let msg=error.message;
-          try{const b=await error.context.json(); if(b&&b.error) msg=b.error;}catch(_){}
-          if(error.context&&error.context.status===404) msg='Функцію admin-create-user не розгорнуто в Supabase';
-          toast('Не вдалося створити користувача: '+esc(msg),'error');return;
-        }
-        if(!data||!data.id){toast('Не вдалося створити користувача','error');return;}
-        id=data.id;
+        if(pass.length<6){toast('Пароль має містити щонайменше 6 символів','warn');return;}
+        // окремий клієнт без збереження сесії, щоб реєстрація не замінила сесію адміністратора
+        const tmp=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:'gs_acc_signup'}});
+        const {data,error}=await tmp.auth.signUp({email,password:pass,options:{data:{full_name}}});
+        if(error){toast('Не вдалося створити користувача: '+esc(error.message),'error');return;}
+        if(!data.user||(data.user.identities&&!data.user.identities.length)){toast('Користувач з таким email уже існує','warn');return;}
+        id=data.user.id;
       }
       const row={id,full_name,employee_id:emp?emp.id:null,role_id,is_active};
       if(!ACC.userEdit) row.email=email;
@@ -5726,7 +5722,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         const ins=await db.from('app_user_perms').insert(ovRows);
         if(ins.error){toast('Помилка збереження прав: '+esc(ins.error.message),'error');return;}
       }
-      toast(ACC.userEdit?'Користувача збережено':'Користувача створено, він може входити з цим паролем','success',5000);
+      toast(ACC.userEdit?'Користувача збережено':'Користувача створено. Якщо в Supabase увімкнено підтвердження email — йому надійде лист.','success',5000);
       const wasSelf=id===ACC.me?.id;
       accUserClose(); await accLoad();
       if(wasSelf){const {data:{session}}=await db.auth.getSession(); if(session) accInit(session);}
