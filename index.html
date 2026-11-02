@@ -1178,6 +1178,7 @@
   .imp-status.s-upd{color:#CA8A04}
   .imp-status.s-dup{color:#9CA3AF}
   .imp-status.s-err{color:#DC2626}
+  .imp-status.s-err{white-space:normal}
   [data-theme="dark"] .imp-status.s-new{color:#4ADE80}
   [data-theme="dark"] .imp-status.s-upd{color:#FCD34D}
   .imp-error{margin:10px 0;padding:10px 14px;background:#FEE2E2;border-radius:8px;color:#DC2626;font-size:13px}
@@ -1930,19 +1931,22 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
               <h3>Співробітники</h3>
               <span class="badge info" id="empCount">0</span>
               <div style="display:flex;gap:8px;margin-left:auto;align-items:center">
-                <button class="btn" onclick="empExportCsv()" title="Вивантажити CSV">
+                <button class="btn" onclick="empTemplateXlsx()" title="Порожній шаблон Excel для заповнення">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;margin-right:4px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Шаблон
+                </button>
+                <button class="btn" onclick="empExportXlsx()" title="Вивантажити в Excel (той самий формат, що й шаблон)">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;margin-right:4px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Експорт
                 </button>
-                <button class="btn" onclick="document.getElementById('empCsvInput').click()" title="Завантажити CSV">
+                <button class="btn" onclick="document.getElementById('empCsvInput').click()" title="Завантажити Excel або CSV">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;margin-right:4px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Імпорт
                 </button>
-                <input type="file" id="empCsvInput" accept=".csv" style="display:none" onchange="empImportCsv(this)">
+                <input type="file" id="empCsvInput" accept=".xlsx,.xls,.csv" style="display:none" onchange="empImportFile(this)">
                 <button class="btn primary" onclick="empAdd()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;margin-right:4px"><path d="M12 5v14M5 12h14"/></svg>Додати</button>
               </div>
             </div>
             <table>
-              <thead><tr><th>ПІБ</th><th style="width:200px">Телефон</th><th style="width:150px">Дата народження</th><th style="width:80px"></th></tr></thead>
-              <tbody id="empBody"><tr><td colspan="4" class="empty">Немає записів</td></tr></tbody>
+              <thead><tr><th>ПІБ</th><th>Посада</th><th style="width:190px">Телефон</th><th style="width:130px">Дата народження</th><th style="width:130px">Дата прийому</th><th style="width:80px"></th></tr></thead>
+              <tbody id="empBody"><tr><td colspan="6" class="empty">Немає записів</td></tr></tbody>
             </table>
           </div>
           <!-- Типи структурних одиниць -->
@@ -2019,6 +2023,11 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
             <div><label>По батькові</label><input id="empPatronymic" placeholder="Напр., Іванович" /></div>
             <div><label>Дата народження</label><input id="empBirthdate" type="date" class="modal-sel" /></div>
             <div><label>Основний підрозділ</label><select id="empPrimaryUnit" class="modal-sel"><option value="">— не вибрано —</option></select></div>
+            <div><label>Посада</label><input id="empPosition" placeholder="Напр., Продавець" /></div>
+            <div style="display:flex;gap:12px">
+              <div style="flex:1"><label>Дата прийому</label><input id="empHireDate" type="date" class="modal-sel" /></div>
+              <div style="flex:1"><label>Дата звільнення</label><input id="empDismissDate" type="date" class="modal-sel" /></div>
+            </div>
             <div><label>Телефон</label><input id="empPhone" type="tel" placeholder="+380 93 123 45 67" /></div>
             <div><label class="bot-check"><input type="checkbox" id="empBotAccess">Доступ до бота «Будь в темі»</label><div class="bot-field-note">Увійти в бот можна лише з цим номером телефону.</div></div>
             <div id="empOrgSection" style="display:none;border-top:1px solid var(--line);padding-top:14px;margin-top:2px">
@@ -2035,7 +2044,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
 
       <!-- модалка: імпорт співробітників -->
       <div class="modal-scrim" id="empImportModal" onclick="if(event.target===this)empImportClose()">
-        <div class="modal imp-modal" style="max-width:820px;max-height:90vh;display:flex;flex-direction:column">
+        <div class="modal imp-modal" style="max-width:1080px;max-height:90vh;display:flex;flex-direction:column">
           <div class="modal-head">
             <h3>Імпорт співробітників</h3>
             <button class="ico-btn" onclick="empImportClose()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
@@ -2059,7 +2068,9 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
                     <th class="imp-th imp-th-chk"></th>
                     <th class="imp-th imp-th-num">#</th>
                     <th class="imp-th">ПІБ</th>
+                    <th class="imp-th">Посада · підрозділ</th>
                     <th class="imp-th imp-th-date">Дата народження</th>
+                    <th class="imp-th imp-th-date">Прийом – звільнення</th>
                     <th class="imp-th">Телефон</th>
                     <th class="imp-th imp-th-status">Статус</th>
                   </tr>
@@ -2073,7 +2084,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
           <!-- Футер -->
           <div class="imp-footer">
             <div class="imp-hint">
-              Формат CSV: <code>ПІБ;Дата народження</code>
+              <label class="bot-check" style="font-size:12px;margin-bottom:4px"><input type="checkbox" id="empImportBot" checked>Надати доступ до бота всім, у кого є телефон (звільненим — ні)</label>
+              Колонки шукаються за назвою, порядок не важливий. Дати: <code>ДД.ММ.РРРР</code>, телефон: <code>380XXXXXXXXX</code>
             </div>
             <div style="display:flex;gap:8px;align-items:center">
               <button class="btn" onclick="empImportClose()">Скасувати</button>
@@ -5060,7 +5072,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
   document.getElementById('kindModal').addEventListener('click',e=>{if(e.target.id==='kindModal')kindCloseModal();});
   document.getElementById('orgName').addEventListener('keydown',e=>{if(e.key==='Enter')orgSave();});
   [$('empLastName'),$('empFirstName'),$('empPatronymic')].forEach(el=>el.addEventListener('keydown',e=>{if(e.key==='Enter')empSave();}));
-  window._fpBirth = flatpickr($('empBirthdate'),{locale:flatpickr.l10ns.uk,dateFormat:'Y-m-d',altInput:true,altFormat:'d.m.Y',allowInput:true,disableMobile:true,
+  const _empMkFp=id=>flatpickr($(id),{locale:flatpickr.l10ns.uk,dateFormat:'Y-m-d',altInput:true,altFormat:'d.m.Y',allowInput:true,disableMobile:true,
     onOpen:function(_,__,fp){
       var cal=fp.calendarContainer;
       if(!cal)return;
@@ -5070,6 +5082,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       });
     }
   });
+  window._fpBirth = _empMkFp('empBirthdate');
+  window._fpEmpDates = {empHireDate:_empMkFp('empHireDate'), empDismissDate:_empMkFp('empDismissDate')};
   document.getElementById('typeName').addEventListener('keydown',e=>{if(e.key==='Enter')typeSave();});
   document.getElementById('kindName').addEventListener('keydown',e=>{if(e.key==='Enter')kindSave();});
 
@@ -5094,18 +5108,25 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
   function empFull(r){return[r.last_name,r.first_name,r.patronymic].filter(Boolean).join(' ');}
   // Телефон зберігається лише цифрами у форматі 380XXXXXXXXX — так його шукає Telegram-бот
   function empNormPhone(p){let d=String(p||'').replace(/\D/g,'');if(d.length===10&&d[0]==='0')d='38'+d;return d;}
+  // Дата yyyy-mm-dd → ДД.ММ.РРРР (без зсуву часового поясу)
+  function empFmtDate(d){const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(d||'');return m?`${m[3]}.${m[2]}.${m[1]}`:'—';}
+  function empToday(){const t=new Date();return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;}
+  function empSetDate(id,v){const fp=window._fpEmpDates&&_fpEmpDates[id];if(fp){if(v)fp.setDate(v,false);else fp.clear();}else $(id).value=v||'';}
+  function empIsDismissed(r){return !!(r.dismissal_date&&r.dismissal_date<=empToday());}
   function empFmtPhone(p){return /^380\d{9}$/.test(p||'')?`+${p.slice(0,3)} ${p.slice(3,5)} ${p.slice(5,8)} ${p.slice(8,10)} ${p.slice(10)}`:orgEsc(p||'');}
   function renderEmps(){
     const tbody=document.getElementById('empBody');if(!tbody)return;
     document.getElementById('empCount').textContent=dictEmps.length;
-    tbody.innerHTML=dictEmps.map(r=>`<tr>
-      <td class="t-name">${orgEsc(empFull(r))}</td>
+    tbody.innerHTML=dictEmps.map(r=>{const gone=empIsDismissed(r);return `<tr${gone?' style="opacity:.55"':''}>
+      <td class="t-name">${orgEsc(empFull(r))}${gone?' <span class="badge warn" title="Звільнено '+empFmtDate(r.dismissal_date)+'">Звільнено</span>':''}</td>
+      <td style="color:var(--slate);font-size:13px">${orgEsc(r.position||'—')}</td>
       <td style="color:var(--slate);font-size:13px;white-space:nowrap">${r.phone?empFmtPhone(r.phone):'—'}${r.bot_access?' <span class="badge ok" title="Доступ до бота">Бот</span>':''}</td>
-      <td style="color:var(--slate);font-size:13px">${r.birthdate?new Date(r.birthdate).toLocaleDateString('uk-UA'):'—'}</td>
+      <td style="color:var(--slate);font-size:13px">${empFmtDate(r.birthdate)}</td>
+      <td style="color:var(--slate);font-size:13px">${empFmtDate(r.hire_date)}</td>
       <td><div class="row-act" id="empAct-${r.id}">
         <button class="ico-btn" onclick="empEditOpen(${r.id},${qs(r.last_name||'')},${qs(r.first_name||'')},${qs(r.patronymic||'')})">${_eIco}</button>
         <button class="ico-btn del" onclick="empAskDel(${r.id})">${_dIco}</button>
-      </div></td></tr>`).join('')||'<tr><td colspan="4" class="empty">Немає записів</td></tr>';
+      </div></td></tr>`;}).join('')||'<tr><td colspan="6" class="empty">Немає записів</td></tr>';
   }
   window.empAskDel=id=>{
     const el=document.getElementById('empAct-'+id);
@@ -5117,7 +5138,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     sel.innerHTML='<option value="">— не вибрано —</option>'+
       flat.map(({n,lvl})=>`<option value="${n.id}"${String(n.id)===String(selectedId)?' selected':''}>${'  '.repeat(lvl)}${orgEsc(n.name)}</option>`).join('');
   }
-  window.empAdd=()=>{empEdit=null;$('empModalTitle').textContent='Новий співробітник';$('empLastName').value='';$('empFirstName').value='';$('empPatronymic').value='';$('empBirthdate').value='';$('empPhone').value='';$('empBotAccess').checked=false;empFillUnitSelect(null);$('empModal').classList.add('open');$('empLastName').focus();};
+  window.empAdd=()=>{empEdit=null;$('empModalTitle').textContent='Новий співробітник';$('empLastName').value='';$('empFirstName').value='';$('empPatronymic').value='';$('empBirthdate').value='';if(window._fpBirth)_fpBirth.clear();$('empPosition').value='';empSetDate('empHireDate','');empSetDate('empDismissDate','');$('empPhone').value='';$('empBotAccess').checked=false;empFillUnitSelect(null);$('empModal').classList.add('open');$('empLastName').focus();};
   window.empEditOpen=(id,ln,fn,pat)=>{
     empEdit=id;$('empModalTitle').textContent='Редагувати';
     $('empLastName').value=ln;$('empFirstName').value=fn;$('empPatronymic').value=pat;
@@ -5125,6 +5146,9 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     const bd=r&&r.birthdate?r.birthdate:'';
     if(window._fpBirth){_fpBirth.setDate(bd,false);}else{$('empBirthdate').value=bd;}
     empFillUnitSelect(r&&r.primary_unit_id);
+    $('empPosition').value=r&&r.position||'';
+    empSetDate('empHireDate',r&&r.hire_date||'');
+    empSetDate('empDismissDate',r&&r.dismissal_date||'');
     $('empPhone').value=r&&r.phone?empFmtPhone(r.phone):'';
     $('empBotAccess').checked=!!(r&&r.bot_access);
     // Структурні одиниці де цей співробітник є керівником
@@ -5176,11 +5200,15 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     const primary_unit_id=$('empPrimaryUnit').value||null;
     const phoneRaw=$('empPhone').value.trim();
     const phone=phoneRaw?empNormPhone(phoneRaw):null;
+    const position=$('empPosition').value.trim()||null;
+    const hire_date=$('empHireDate').value||null;
+    const dismissal_date=$('empDismissDate').value||null;
     const bot_access=$('empBotAccess').checked;
     if(!last_name){$('empLastName').focus();return;}
+    if(hire_date&&dismissal_date&&dismissal_date<hire_date){toast('Дата звільнення раніша за дату прийому','warn');return;}
     if(phone&&!/^380\d{9}$/.test(phone)){toast('Невірний номер телефону','warn');$('empPhone').focus();return;}
     if(bot_access&&!phone){toast('Для доступу до бота потрібен телефон','warn');$('empPhone').focus();return;}
-    const payload={last_name,first_name,patronymic,birthdate,primary_unit_id,phone,bot_access};
+    const payload={last_name,first_name,patronymic,birthdate,primary_unit_id,position,hire_date,dismissal_date,phone,bot_access};
     const res=empEdit!==null
       ?await db.from('dict_employees').update(payload).eq('id',empEdit)
       :await db.from('dict_employees').insert(payload);
@@ -5191,204 +5219,306 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     await db.from('dict_employees').delete().eq('id',id);await loadAllDicts();
   };
 
-  /* --- Імпорт / Експорт співробітників --- */
-  window.empExportCsv=function(){
-    const BOM='﻿';
-    const SEP=';';
-    const q=v=>'"'+String(v||'').replace(/"/g,'""')+'"';
-    const header='ПІБ'+SEP+'Дата народження'+SEP+'Телефон';
-    const rows=dictEmps.map(r=>q(empFull(r))+SEP+q(r.birthdate||'')+SEP+q(r.phone?'+'+r.phone:''));
-    const csv=BOM+[header,...rows].join('\r\n');
-    const a=document.createElement('a');
-    a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
-    a.download='employees_'+new Date().toISOString().slice(0,10)+'.csv';
-    a.click(); URL.revokeObjectURL(a.href);
+  /* --- Імпорт / Експорт співробітників (Excel або CSV) --- */
+  // Колонки шаблону. Порядок у файлі не важливий: при імпорті колонки шукаються за назвою.
+  const EMP_COLS=['Прізвище',"Ім'я",'По батькові','Дата народження','Підрозділ','Посада','Дата прийому','Дата звільнення','Телефон'];
+
+  function empUnitName(id){
+    if(!id)return '';
+    const f=(orgData&&orgData.length?orgFlatAll():[]).find(({n})=>String(n.id)===String(id));
+    return f?f.n.name:'';
+  }
+  function _empSheetDate(d){ // yyyy-mm-dd → ДД.ММ.РРРР для Excel
+    const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(d||'');return m?`${m[3]}.${m[2]}.${m[1]}`:'';
+  }
+  function _empDownload(rows,name){
+    const ws=XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols']=[{wch:18},{wch:14},{wch:16},{wch:16},{wch:28},{wch:22},{wch:14},{wch:16},{wch:15}];
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,'Співробітники');
+    XLSX.writeFile(wb,name);
+  }
+  window.empTemplateXlsx=function(){
+    _empDownload([EMP_COLS,['Петренко','Олена','Іванівна','14.03.1990','Магазин №5','Продавець','01.06.2021','','380671234567']],'Шаблон_співробітники.xlsx');
   };
+  window.empExportXlsx=function(){
+    const rows=dictEmps.map(r=>[r.last_name||'',r.first_name||'',r.patronymic||'',_empSheetDate(r.birthdate),empUnitName(r.primary_unit_id),
+      r.position||'',_empSheetDate(r.hire_date),_empSheetDate(r.dismissal_date),r.phone||'']);
+    _empDownload([EMP_COLS,...rows],'Співробітники_'+empToday()+'.xlsx');
+  };
+  window.empExportCsv=window.empExportXlsx; // стара назва кнопки
+
+  // Назва колонки → поле
+  function _empColKey(h){
+    const t=String(h||'').toLowerCase().replace(/[’ʼ`']/g,'').replace(/[^a-zа-яіїєґ]/g,'');
+    if(!t)return null;
+    if(t.includes('прізвище')&&t.includes('батьков'))return 'pib';
+    if(t==='піб'||t==='пиб'||t==='фіо'||t==='фио'||t.includes('працівник')||t.includes('співробітник')||t==='fullname')return 'pib';
+    if(t.includes('звільн'))return 'dismiss';
+    if(t.includes('прийом')||t.includes('прийнят')||t.includes('початокроботи')||t.includes('працевлашт'))return 'hire';
+    if(t.includes('період')||t.includes('стаж'))return 'period';
+    if(t.includes('народж')||t==='дн'||t==='др')return 'birth';
+    if(t.includes('телефон')||t.startsWith('тел')||t.includes('моб')||t==='phone')return 'phone';
+    if(t.includes('посад'))return 'position';
+    if(t.includes('підрозділ')||t.includes('відділ')||t.includes('магазин')||t.includes('структур')||t.includes('цех'))return 'unit';
+    if(t.includes('батьков'))return 'patr';
+    if(t.startsWith('прізвище')||t==='lastname')return 'last';
+    if(t==='імя'||t==='имя'||t==='firstname')return 'first';
+    return null;
+  }
+
+  // Будь-яке значення дати з Excel/CSV → yyyy-mm-dd або null
+  function _empParseDate(v){
+    if(v===null||v===undefined||v==='')return null;
+    let y,m,d;
+    if(typeof v==='number'&&v>1000&&v<80000){ // серійний номер дати Excel
+      const dt=new Date(Math.round((v-25569)*86400000));
+      y=dt.getUTCFullYear();m=dt.getUTCMonth()+1;d=dt.getUTCDate();
+    }else{
+      const s=String(v).trim();
+      let r;
+      if((r=/^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(s))){y=+r[1];m=+r[2];d=+r[3];}
+      else if((r=/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{2}|\d{4})$/.exec(s))){
+        d=+r[1];m=+r[2];y=+r[3];
+        if(r[3].length===2)y+=(y>new Date().getFullYear()%100?1900:2000);
+      }else return null;
+    }
+    const dt=new Date(Date.UTC(y,m-1,d));
+    if(y<1900||y>2100||dt.getUTCMonth()!==m-1||dt.getUTCDate()!==d)return null;
+    return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  }
+  function _empPeriod(v){ // «01.06.2021 – 15.03.2024», «з 01.06.2021 по т.ч.»
+    const ds=String(v||'').match(/\d{1,2}[.\/-]\d{1,2}[.\/-](?:\d{4}|\d{2})|\d{4}-\d{1,2}-\d{1,2}/g)||[];
+    return {hire:_empParseDate(ds[0]),dismiss:_empParseDate(ds[1])};
+  }
+  function _empNormName(s){return String(s||'').toLowerCase().replace(/[’ʼ`]/g,"'").replace(/\s+/g,' ').trim();}
+
+  function _empCsvRows(text){
+    const lines=text.replace(/^﻿/,'').split(/\r?\n/).filter(l=>l.trim());
+    const sep=lines.length&&lines[0].includes(';')?';':(lines.length&&lines[0].includes('\t')?'\t':',');
+    return lines.map(line=>{
+      const f=[];let cur='',inQ=false;
+      for(let i=0;i<line.length;i++){
+        const c=line[i];
+        if(c==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}
+        else if(c===sep&&!inQ){f.push(cur.trim());cur='';}
+        else cur+=c;
+      }
+      f.push(cur.trim());return f;
+    });
+  }
 
   let _empImportRows=[];
 
-  window.empImportCsv=function(input){
-    const file=input.files[0]; if(!file)return;
+  window.empImportFile=function(input){
+    const file=input.files[0];if(!file)return;
     input.value='';
+    const isCsv=/\.csv$/i.test(file.name);
     const reader=new FileReader();
     reader.onload=e=>{
-      const text=e.target.result.replace(/^﻿/,'');
-      const lines=text.split(/\r?\n/).filter(l=>l.trim());
-      if(!lines.length){ _showImportError('Файл порожній'); return; }
-
-      const firstLow=lines[0].toLowerCase();
-      const hasHeader=/піб|пиб|прізвище|last_name|full_name|name/.test(firstLow);
-      const dataLines=hasHeader?lines.slice(1):lines;
-      if(!dataLines.length){ _showImportError('Немає рядків з даними'); return; }
-
-      // Автовизначення роздільника: ; або ,
-      const sep=lines[0].includes(';')?';':',';
-
-      function parseCsvLine(line){
-        const fields=[]; let cur='', inQ=false;
-        for(let i=0;i<line.length;i++){
-          const c=line[i];
-          if(c==='"'){ if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ; }
-          else if(c===sep&&!inQ){ fields.push(cur.trim());cur=''; }
-          else cur+=c;
+      let rows;
+      try{
+        if(isCsv)rows=_empCsvRows(e.target.result);
+        else{
+          const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
+          rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:'',raw:true});
         }
-        fields.push(cur.trim());
-        return fields;
-      }
-
-      function parseDate(raw){
-        if(!raw)return null;
-        const ym=/^(\d{4})-(\d{2})-(\d{2})$/.exec(raw);
-        if(ym)return raw;
-        const dm=/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})$/.exec(raw);
-        if(dm)return `${dm[3]}-${dm[2].padStart(2,'0')}-${dm[1].padStart(2,'0')}`;
-        return null;
-      }
-
-      // Нормалізація ПІБ для пошуку дублів
-      function normName(s){ return (s||'').toLowerCase().replace(/\s+/g,' ').trim(); }
-
-      _empImportRows=dataLines.map((line,idx)=>{
-        const f=parseCsvLine(line);
-        // Колонка 1: ПІБ — розбиваємо на частини
-        const pib=(f[0]||'').trim();
-        const parts=pib.split(/\s+/).filter(Boolean);
-        const last_name=parts[0]||'';
-        const first_name=parts[1]||'';
-        const patronymic=parts.slice(2).join(' ');
-        // Колонка 2: Дата народження
-        const rawDate=(f[1]||'').trim();
-        const birthdate=parseDate(rawDate);
-        // Колонка 3 (необов'язкова): Телефон
-        const rawPhone=(f[2]||'').trim();
-        const phone=rawPhone?empNormPhone(rawPhone):null;
-        const err=!last_name?'Відсутнє ПІБ':(phone&&!/^380\d{9}$/.test(phone))?'Невірний телефон':'';
-        // Перевірка на дублікат в існуючих записах
-        const existing=(dictEmps||[]).find(e=>{
-          const eName=normName([e.last_name,e.first_name,e.patronymic].filter(Boolean).join(' '));
-          return eName===normName(pib);
-        })||null;
-        // Перевірка на дубль всередині файлу (за індексом, щоб перший рядок — оригінал)
-        return {pib,last_name,first_name,patronymic,birthdate,rawDate,phone,err,existing,_row:idx+1};
-      }).filter(r=>r.pib);
-
-      // Помітити дублі всередині файлу (однакове ПІБ двічі)
-      const seenInFile={};
-      _empImportRows.forEach(r=>{
-        const k=normName(r.pib);
-        if(seenInFile[k]===undefined) seenInFile[k]=r._row;
-        else r.dupInFile=seenInFile[k];
-      });
-
-      if(!_empImportRows.length){ _showImportError('Не знайдено жодного запису'); return; }
-
-      const errCount=_empImportRows.filter(r=>r.err).length;
-      const dupDbCount=_empImportRows.filter(r=>r.existing&&!r.err).length;
-      const dupFileCount=_empImportRows.filter(r=>r.dupInFile&&!r.err).length;
-      const newCount=_empImportRows.filter(r=>!r.err&&!r.existing&&!r.dupInFile).length;
-      const _b=(cls,ico,label,n)=>n?`<span class="imp-badge ${cls}">${ico} ${label}: ${n}</span>`:'';
-      $('empImportInfo').innerHTML=
-        _b('total','📄','Всього',_empImportRows.length)+
-        _b('new','✓','Нових',newCount)+
-        _b('upd','✎','Оновити',dupDbCount)+
-        _b('dup','↩','Дублів у файлі',dupFileCount)+
-        _b('err','⚠','Помилок',errCount);
-
-      function _statusCell(r){
-        if(r.err)      return `<span class="imp-status s-err">⚠ ${orgEsc(r.err)}</span>`;
-        if(r.dupInFile)return `<span class="imp-status s-dup">↩ Дубль рядка ${r.dupInFile}</span>`;
-        if(r.existing) return `<span class="imp-status s-upd">✎ Оновити</span>`;
-        return `<span class="imp-status s-new">✓ Новий запис</span>`;
-      }
-      function _rowCls(r){
-        if(r.err)      return 'imp-tr is-err';
-        if(r.dupInFile)return 'imp-tr is-dup';
-        if(r.existing) return 'imp-tr is-upd';
-        return 'imp-tr is-new';
-      }
-      const canSelect=r=>!r.err&&!r.dupInFile;
-
-      $('empImportBody').innerHTML=_empImportRows.map(r=>`<tr class="${_rowCls(r)}" data-row="${r._row}">
-        <td class="imp-td-chk">
-          ${canSelect(r)?`<input type="checkbox" data-imp-chk="${r._row}" checked onchange="empImportUpdateSel()">`:''}
-        </td>
-        <td class="imp-td-num">${r._row}</td>
-        <td class="imp-td imp-td-name">${orgEsc(r.pib||'—')}</td>
-        <td class="imp-td imp-td-date">${r.birthdate||orgEsc(r.rawDate)||'—'}</td>
-        <td class="imp-td">${r.phone?empFmtPhone(r.phone):'—'}</td>
-        <td class="imp-td">${_statusCell(r)}</td>
-      </tr>`).join('');
-
-      $('empImportError').style.display='none';
-      const hasActionable=_empImportRows.some(canSelect);
-      $('empImportToolbar').style.display=hasActionable?'flex':'none';
-      empImportUpdateSel();
-      $('empImportModal').classList.add('open');
+      }catch(err){_showImportError('Не вдалося прочитати файл: '+err.message);return;}
+      empImportRows(rows||[]);
     };
-    reader.readAsText(file,'UTF-8');
+    if(isCsv)reader.readAsText(file,'UTF-8');else reader.readAsArrayBuffer(file);
+  };
+  window.empImportCsv=window.empImportFile;
+
+  // rows — масив рядків (масивів клітинок) з файлу
+  window.empImportRows=function(rows){
+    rows=rows.filter(r=>r&&r.some(c=>String(c??'').trim()!==''));
+    if(!rows.length){_showImportError('Файл порожній');return;}
+
+    // Рядок заголовка — перший серед перших 10, де впізнано ≥2 колонки
+    let hdrIdx=-1,map={};
+    for(let i=0;i<Math.min(rows.length,10);i++){
+      const m={};rows[i].forEach((h,ci)=>{const k=_empColKey(h);if(k&&m[k]===undefined)m[k]=ci;});
+      if(Object.keys(m).length>=2){hdrIdx=i;map=m;break;}
+    }
+    if(hdrIdx<0)map={pib:0,birth:1,phone:2}; // без заголовка: ПІБ; Дата народження; Телефон
+    if(map.pib===undefined&&map.last===undefined){_showImportError('Не знайдено колонку з ПІБ або прізвищем');return;}
+    const dataRows=hdrIdx<0?rows:rows.slice(hdrIdx+1);
+    if(!dataRows.length){_showImportError('Немає рядків з даними');return;}
+
+    const units=(orgData&&orgData.length?orgFlatAll():[]).map(({n})=>n);
+    const unitByName={};units.forEach(n=>{unitByName[_empNormName(n.name)]=n;});
+    const byPhone={},byName={};
+    (dictEmps||[]).forEach(e=>{
+      if(e.phone)byPhone[e.phone]=e;
+      const k=_empNormName(empFull(e));(byName[k]=byName[k]||[]).push(e);
+    });
+    const cell=(r,k)=>map[k]===undefined?'':(r[map[k]]??'');
+    const txt=(r,k)=>String(cell(r,k)).replace(/\s+/g,' ').trim();
+
+    _empImportRows=dataRows.map((r,idx)=>{
+      let last_name,first_name,patronymic;
+      if(map.last!==undefined){last_name=txt(r,'last');first_name=txt(r,'first');patronymic=txt(r,'patr');}
+      else{const p=txt(r,'pib').split(' ').filter(Boolean);last_name=p[0]||'';first_name=p[1]||'';patronymic=p.slice(2).join(' ');}
+      const pib=[last_name,first_name,patronymic].filter(Boolean).join(' ');
+      const errs=[],warns=[];
+      const dateOf=(k,label)=>{const raw=cell(r,k);if(raw===''||raw===null)return null;const d=_empParseDate(raw);if(!d)errs.push(label+': «'+String(raw).trim()+'»');return d;};
+      const birthdate=dateOf('birth','Дата народження');
+      let hire_date=dateOf('hire','Дата прийому');
+      let dismissal_date=dateOf('dismiss','Дата звільнення');
+      if(map.period!==undefined&&txt(r,'period')){
+        const pr=_empPeriod(txt(r,'period'));
+        if(!pr.hire)errs.push('Період роботи: «'+txt(r,'period')+'»');
+        hire_date=hire_date||pr.hire;dismissal_date=dismissal_date||pr.dismiss;
+      }
+      if(hire_date&&dismissal_date&&dismissal_date<hire_date)errs.push('Звільнення раніше прийому');
+      const position=txt(r,'position')||null;
+      const unitRaw=txt(r,'unit');
+      let primary_unit_id=null,unitName='';
+      if(unitRaw){const u=unitByName[_empNormName(unitRaw)];if(u){primary_unit_id=u.id;unitName=u.name;}else{unitName=unitRaw;warns.push('Підрозділ «'+unitRaw+'» не знайдено в структурі');}}
+      const rawPhone=txt(r,'phone');
+      const phone=rawPhone?empNormPhone(rawPhone):null;
+      if(phone&&!/^380\d{9}$/.test(phone))errs.push('Телефон: «'+rawPhone+'»');
+      if(!last_name)errs.push('Відсутнє прізвище');
+
+      // Пошук у базі: спершу за телефоном, потім за ПІБ
+      let existing=null;
+      const nk=_empNormName(pib);
+      if(phone&&byPhone[phone]){
+        existing=byPhone[phone];
+        if(_empNormName(empFull(existing))!==nk)errs.push('Телефон уже вказано в: '+empFull(existing));
+      }else{
+        const same=byName[nk]||[];
+        if(same.length===1){
+          existing=same[0];
+          if(phone&&existing.phone&&existing.phone!==phone)warns.push('Телефон зміниться з +'+existing.phone);
+        }else if(same.length>1)errs.push('У базі кілька людей з таким ПІБ — додайте телефон');
+      }
+      return {pib,last_name,first_name,patronymic,birthdate,hire_date,dismissal_date,position,primary_unit_id,unitName,phone,
+        err:errs.join('; '),warn:warns.join('; '),existing,_row:(hdrIdx<0?0:hdrIdx+1)+idx+1};
+    }).filter(r=>r.pib||r.err&&r.err!=='Відсутнє прізвище');
+
+    // Дублі всередині файлу: той самий телефон або (без телефону) той самий ПІБ
+    const seen={};
+    _empImportRows.forEach(r=>{
+      const k=r.phone?'t'+r.phone:'n'+_empNormName(r.pib);
+      if(seen[k]===undefined)seen[k]=r._row;else r.dupInFile=seen[k];
+    });
+
+    if(!_empImportRows.length){_showImportError('Не знайдено жодного запису');return;}
+
+    const errCount=_empImportRows.filter(r=>r.err).length;
+    const dupDbCount=_empImportRows.filter(r=>r.existing&&!r.err&&!r.dupInFile).length;
+    const dupFileCount=_empImportRows.filter(r=>r.dupInFile&&!r.err).length;
+    const newCount=_empImportRows.filter(r=>!r.err&&!r.existing&&!r.dupInFile).length;
+    const warnCount=_empImportRows.filter(r=>r.warn&&!r.err).length;
+    const _b=(cls,ico,label,n)=>n?`<span class="imp-badge ${cls}">${ico} ${label}: ${n}</span>`:'';
+    $('empImportInfo').innerHTML=
+      _b('total','📄','Всього',_empImportRows.length)+
+      _b('new','✓','Нових',newCount)+
+      _b('upd','✎','Оновити',dupDbCount)+
+      _b('dup','↩','Дублів у файлі',dupFileCount)+
+      _b('upd','!','Попереджень',warnCount)+
+      _b('err','⚠','Помилок',errCount);
+
+    const canSelect=r=>!r.err&&!r.dupInFile;
+    const statusCell=r=>{
+      let h;
+      if(r.err)h=`<span class="imp-status s-err">⚠ ${orgEsc(r.err)}</span>`;
+      else if(r.dupInFile)h=`<span class="imp-status s-dup">↩ Дубль рядка ${r.dupInFile}</span>`;
+      else if(r.existing)h=`<span class="imp-status s-upd">✎ Оновити</span>`;
+      else h=`<span class="imp-status s-new">✓ Новий запис</span>`;
+      if(r.warn&&!r.err)h+=`<div style="font-size:11px;color:var(--warn);margin-top:2px">${orgEsc(r.warn)}</div>`;
+      return h;
+    };
+    const rowCls=r=>r.err?'imp-tr is-err':r.dupInFile?'imp-tr is-dup':r.existing?'imp-tr is-upd':'imp-tr is-new';
+    const fd=d=>d?empFmtDate(d):'';
+
+    $('empImportBody').innerHTML=_empImportRows.map(r=>`<tr class="${rowCls(r)}" data-row="${r._row}">
+      <td class="imp-td-chk">${canSelect(r)?`<input type="checkbox" data-imp-chk="${r._row}" checked onchange="empImportUpdateSel()">`:''}</td>
+      <td class="imp-td-num">${r._row}</td>
+      <td class="imp-td imp-td-name">${orgEsc(r.pib||'—')}</td>
+      <td class="imp-td" style="font-size:12px">${orgEsc(r.position||'—')}${r.unitName?`<div style="color:var(--muted)">${orgEsc(r.unitName)}</div>`:''}</td>
+      <td class="imp-td imp-td-date">${fd(r.birthdate)||'—'}</td>
+      <td class="imp-td imp-td-date">${r.hire_date||r.dismissal_date?fd(r.hire_date)+' – '+(fd(r.dismissal_date)||'…'):'—'}</td>
+      <td class="imp-td" style="white-space:nowrap">${r.phone?empFmtPhone(r.phone):'—'}</td>
+      <td class="imp-td" style="min-width:180px;max-width:300px">${statusCell(r)}</td>
+    </tr>`).join('');
+
+    $('empImportError').style.display='none';
+    $('empImportToolbar').style.display=_empImportRows.some(canSelect)?'flex':'none';
+    empImportUpdateSel();
+    $('empImportModal').classList.add('open');
   };
 
   function _showImportError(msg){
-    $('empImportError').textContent=msg; $('empImportError').style.display='';
-    $('empImportModal').classList.add('open'); $('empImportBody').innerHTML=''; $('empImportInfo').innerHTML='';
+    $('empImportError').textContent=msg;$('empImportError').style.display='';
+    $('empImportModal').classList.add('open');$('empImportBody').innerHTML='';$('empImportInfo').innerHTML='';
+    $('empImportToolbar').style.display='none';
   }
 
   window.empImportUpdateSel=function(){
     const checks=[...document.querySelectorAll('[data-imp-chk]')];
-    const total=checks.length;
-    const sel=checks.filter(c=>c.checked).length;
+    const total=checks.length,sel=checks.filter(c=>c.checked).length;
     const selCount=$('empImportSelCount');
-    if(selCount) selCount.textContent=sel>0?`Обрано: ${sel} з ${total}`:'';
+    if(selCount)selCount.textContent=sel>0?`Обрано: ${sel} з ${total}`:'';
     const toggleBtn=$('empImportToggleBtn');
-    if(toggleBtn) toggleBtn.textContent=sel===total?'Зняти всі':'Обрати всі';
+    if(toggleBtn)toggleBtn.textContent=sel===total?'Зняти всі':'Обрати всі';
     const btn=$('empImportConfirmBtn');
-    if(btn) btn.disabled=sel===0;
+    if(btn)btn.disabled=sel===0;
   };
-
   window.empImportToggleAll=function(state){
     document.querySelectorAll('[data-imp-chk]').forEach(c=>c.checked=state);
     empImportUpdateSel();
   };
-
   window.empImportToggleBtnClick=function(){
     const checks=[...document.querySelectorAll('[data-imp-chk]')];
-    const allChecked=checks.every(c=>c.checked);
-    empImportToggleAll(!allChecked);
+    empImportToggleAll(!checks.every(c=>c.checked));
   };
 
   window.empImportConfirm=async function(){
-    // Беремо лише вибрані чекбоксами рядки
     const selectedRows=new Set([...document.querySelectorAll('[data-imp-chk]:checked')].map(c=>+c.dataset.impChk));
     const valid=_empImportRows.filter(r=>!r.err&&!r.dupInFile&&selectedRows.has(r._row));
     if(!valid.length)return;
+    const giveBot=$('empImportBot').checked;
+    const today=empToday();
     const btn=$('empImportConfirmBtn');
-    btn.disabled=true; btn.textContent='Зберігаємо…';
+    btn.disabled=true;btn.textContent='Зберігаємо…';
 
-    const toInsert=valid.filter(r=>!r.existing).map(({last_name,first_name,patronymic,birthdate,phone})=>
-      ({last_name,first_name:first_name||null,patronymic:patronymic||null,birthdate:birthdate||null,...(phone?{phone}:{})}));
-    const toUpdate=valid.filter(r=>r.existing);
+    // Повний запис: для існуючих порожні клітинки файлу не стирають наявні дані
+    const FIELDS=['last_name','first_name','patronymic','birthdate','primary_unit_id','position','hire_date','dismissal_date','phone'];
+    const build=r=>{
+      const base=r.existing||{};
+      const o={};
+      FIELDS.forEach(f=>{const v=r[f];o[f]=(v!==null&&v!==undefined&&v!=='')?v:(base[f]??null);});
+      const gone=!!(o.dismissal_date&&o.dismissal_date<=today);
+      o.bot_access=gone?false:(giveBot&&o.phone?true:!!base.bot_access);
+      if(r.existing)o.id=r.existing.id;
+      return o;
+    };
+    const toInsert=valid.filter(r=>!r.existing).map(build);
+    const toUpdate=valid.filter(r=>r.existing).map(build);
 
     const errors=[];
-    if(toInsert.length){
-      const {error}=await db.from('dict_employees').insert(toInsert);
-      if(error) errors.push('Додавання: '+error.message);
+    const CH=300;
+    for(let i=0;i<toInsert.length;i+=CH){
+      const {error}=await db.from('dict_employees').insert(toInsert.slice(i,i+CH));
+      if(error)errors.push('Додавання (рядки '+(i+1)+'–'+Math.min(i+CH,toInsert.length)+'): '+(/duplicate key/.test(error.message)?'такий телефон уже є в базі':error.message));
     }
-    for(const r of toUpdate){
-      const {error}=await db.from('dict_employees').update({
-        birthdate:r.birthdate||null,
-        ...(r.phone?{phone:r.phone}:{})
-      }).eq('id',r.existing.id);
-      if(error) errors.push(`Оновлення ${r.pib}: `+error.message);
+    for(let i=0;i<toUpdate.length;i+=CH){
+      const {error}=await db.from('dict_employees').upsert(toUpdate.slice(i,i+CH),{onConflict:'id'});
+      if(error)errors.push('Оновлення: '+(/duplicate key/.test(error.message)?'такий телефон уже є в базі':error.message));
     }
 
-    btn.disabled=false; btn.textContent='Імпортувати';
-    if(errors.length){ $('empImportError').textContent=errors.join('; '); $('empImportError').style.display=''; return; }
-    empImportClose(); await loadAllDicts();
+    btn.disabled=false;btn.textContent='Імпортувати';
+    if(errors.length){$('empImportError').textContent=errors.join('; ');$('empImportError').style.display='';await loadAllDicts();return;}
+    toast(`Імпортовано: нових ${toInsert.length}, оновлено ${toUpdate.length}`,'success');
+    empImportClose();await loadAllDicts();
   };
 
   window.empImportClose=function(){
-    $('empImportModal').classList.remove('open'); _empImportRows=[];
-    $('empImportBody').innerHTML=''; $('empImportInfo').innerHTML=''; $('empImportError').style.display='none';
+    $('empImportModal').classList.remove('open');_empImportRows=[];
+    $('empImportBody').innerHTML='';$('empImportInfo').innerHTML='';$('empImportError').style.display='none';
   };
 
   /* --- Типи структурних одиниць --- */
