@@ -330,6 +330,16 @@
   .bot-tbl td{vertical-align:top}
   .bot-tbl .bot-clip{max-width:420px;color:var(--slate);font-size:12.5px;white-space:pre-line;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .bot-tbl .bot-acts{white-space:nowrap;text-align:right;width:1%}
+  .sch-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .sch-wd{display:flex;flex-wrap:wrap;gap:6px}
+  .sch-chip{position:relative;cursor:pointer}
+  .sch-chip input{position:absolute;opacity:0;pointer-events:none}
+  .sch-chip span{display:inline-grid;place-items:center;min-width:42px;height:32px;padding:0 10px;border:1px solid var(--line);border-radius:8px;font-size:13px;color:var(--ink)}
+  .sch-chip input:checked+span{background:var(--brand-tint);border-color:var(--brand);color:var(--brand);font-weight:600}
+  .sch-chip input:focus-visible+span{outline:2px solid var(--brand);outline-offset:2px}
+  .sch-target{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:8px}
+  .sch-units{max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:8px;padding:6px 10px;display:flex;flex-direction:column;gap:2px}
+  .sch-hist{font-size:12.5px;color:var(--muted);display:flex;flex-direction:column;gap:4px;max-height:160px;overflow:auto}
   .bot-tbl .bot-acts .ico-btn{display:inline-grid;place-items:center;margin-left:4px}
   .bot-check{display:flex !important;align-items:center;gap:10px;cursor:pointer;font-size:13.5px !important;font-weight:600 !important;color:var(--ink) !important;margin:0 !important}
   .bot-check input{width:18px !important;height:18px;margin:0;accent-color:var(--brand);flex:none}
@@ -2881,6 +2891,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         <div class="bot-seg-wrap">
           <div class="seg" id="botSeg">
             <button class="on" data-bot-tab="news" onclick="botTab('news')">Новини</button>
+            <button data-bot-tab="schedules" onclick="botTab('schedules')">Розсилки</button>
             <button data-bot-tab="employees" onclick="botTab('employees')">Доступ</button>
             <button data-bot-tab="users" onclick="botTab('users')">Підписники</button>
             <button data-bot-tab="faq" onclick="botTab('faq')">FAQ</button>
@@ -7892,6 +7903,125 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         defaults:{is_active:true}},
     };
 
+    // ---- Автоматичні розсилки (bot_schedules; розклад рахує база, надсилає бот) ----
+    const KINDS={once:'Один раз',daily:'Щодня',weekly:'Щотижня',monthly:'Щомісяця',yearly:'Щороку'};
+    const WD=['Пн','Вт','Ср','Чт','Пт','Сб','Нд'];
+    const dmy=d=>d?String(d).slice(0,10).split('-').reverse().join('.'):'';
+    const hm=t=>String(t||'').slice(0,5);
+    const _sIco='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>';
+    let _unitList=[], _unitName={}, _lastLog={};
+    function schedText(r){
+      const at=' о '+hm(r.send_time); let t;
+      if(r.kind==='once') t=dmy(r.send_date)+at;
+      else if(r.kind==='daily') t='Щодня'+at;
+      else if(r.kind==='weekly') t='Щотижня: '+(r.weekdays||[]).slice().sort((a,b)=>a-b).map(d=>WD[d-1]).join(', ')+at;
+      else if(r.kind==='monthly') t='Щомісяця '+r.month_day+'-го'+at;
+      else t='Щороку '+dmy(r.send_date).slice(0,5)+at;
+      if(['daily','weekly','monthly'].includes(r.kind)&&r.send_date) t+=', з '+dmy(r.send_date);
+      if(r.kind!=='once'&&r.ends_on) t+=', до '+dmy(r.ends_on);
+      return t;
+    }
+    function schedTarget(r){
+      const ids=r.target_units||[]; if(!ids.length) return 'Усім підписникам';
+      const names=ids.map(id=>_unitName[id]||('#'+id));
+      return names.slice(0,3).join(', ')+(names.length>3?` і ще ${names.length-3}`:'');
+    }
+    function schedLast(r){
+      const x=(_lastLog[r.id]||[])[0]; if(!x) return '—';
+      if(x.status==='sent') return `${fmtDT(x.sent_at)}<div class="bot-clip">доставлено ${x.delivered} з ${x.recipients}</div>`;
+      return `<span class="badge warn">${x.status==='skipped'?'Пропущено':'Помилка'} ${fmtDT(x.sent_at)}</span>`;
+    }
+    async function schedPrepare(){
+      const [u,l]=await Promise.all([
+        db.from('company_units').select('id,name,parent_id'),
+        db.from('bot_schedule_log').select('*').order('sent_at',{ascending:false}).limit(1000),
+      ]);
+      const units=u.data||[], ids=new Set(units.map(x=>x.id)), kids={}, seen=new Set();
+      const byName=(a,b)=>String(a.name).localeCompare(String(b.name),'uk');
+      units.forEach(x=>{const k=x.parent_id!=null&&ids.has(x.parent_id)?x.parent_id:'root';(kids[k]=kids[k]||[]).push(x);});
+      _unitList=[];
+      const walk=(x,depth)=>{ if(seen.has(x.id)) return; seen.add(x.id); _unitList.push({id:x.id,name:x.name,depth}); (kids[x.id]||[]).sort(byName).forEach(c=>walk(c,depth+1)); };
+      (kids.root||[]).sort(byName).forEach(x=>walk(x,0));
+      _unitName=Object.fromEntries(units.map(x=>[x.id,x.name]));
+      _lastLog={}; (l.data||[]).forEach(x=>{(_lastLog[x.schedule_id]=_lastLog[x.schedule_id]||[]).push(x);});
+    }
+    function schedForm(v){
+      const kind=v.kind||'once', wd=new Set(v.weekdays||[]), tu=new Set((v.target_units||[]).map(String));
+      const star=' <span style="color:var(--brand)">*</span>';
+      const hist=_edit?(_lastLog[_edit.id]||[]).slice(0,10):[];
+      return `
+        <div><label>Назва${star}</label><input id="sF_title" type="text" value="${esc(v.title)}" placeholder="Напр.: Нагадування про табель"><div class="bot-field-note">Бачите лише ви в адмінці.</div></div>
+        <div><label>Текст повідомлення${star}</label><textarea id="sF_body" rows="6" maxlength="4000">${esc(v.body)}</textarea><div class="bot-field-note">Саме цей текст отримають підписники в Telegram.</div></div>
+        <div class="sch-row">
+          <div><label>Повторення</label><select id="sF_kind" class="modal-sel" onchange="schedKind()">${Object.entries(KINDS).map(([k,l])=>`<option value="${k}" ${k===kind?'selected':''}>${l}</option>`).join('')}</select></div>
+          <div><label>Час (за Києвом)</label><input id="sF_time" type="time" value="${hm(v.send_time)||'09:00'}"></div>
+        </div>
+        <div id="sF_dateWrap"><label id="sF_dateLbl">Дата</label><input id="sF_date" type="date" value="${v.send_date||''}"></div>
+        <div id="sF_wdWrap"><label>Дні тижня${star}</label><div class="sch-wd">${WD.map((d,i)=>`<label class="sch-chip"><input type="checkbox" value="${i+1}" ${wd.has(i+1)?'checked':''}><span>${d}</span></label>`).join('')}</div></div>
+        <div id="sF_mdWrap"><label>Число місяця${star}</label><input id="sF_md" type="number" min="1" max="31" value="${v.month_day||''}"><div class="bot-field-note">Якщо в місяці немає такого числа (наприклад, 31-го), розсилка піде в останній день місяця.</div></div>
+        <div id="sF_endWrap"><label>Останній день розсилки (необов'язково)</label><input id="sF_end" type="date" value="${v.ends_on||''}"></div>
+        <div><label>Кому</label>
+          <div class="sch-target">
+            <label class="bot-check"><input type="radio" name="sF_to" value="all" ${tu.size?'':'checked'} onchange="schedTo()">Усім підписникам</label>
+            <label class="bot-check"><input type="radio" name="sF_to" value="units" ${tu.size?'checked':''} onchange="schedTo()">Окремим підрозділам</label>
+          </div>
+          <div id="sF_unitsWrap">
+            <div id="sF_units" class="sch-units">${_unitList.map(u=>`<label class="bot-check" style="padding-left:${u.depth*18}px"><input type="checkbox" value="${u.id}" ${tu.has(String(u.id))?'checked':''}>${esc(u.name)}</label>`).join('')||'<div class="bot-field-note">У «Компанії» ще немає підрозділів</div>'}</div>
+            <div class="bot-field-note">Разом із вкладеними підрозділами. Отримають підписники, у яких цей підрозділ указано основним у довіднику працівників.</div>
+          </div>
+        </div>
+        <div><label class="bot-check"><input type="checkbox" id="sF_active" ${v.is_active!==false?'checked':''}>Розсилка активна</label></div>
+        ${hist.length?`<div><label>Останні відправки</label><div class="sch-hist">${hist.map(h=>`<div>${fmtDT(h.sent_at)} · ${h.status==='sent'?`доставлено ${h.delivered} з ${h.recipients}`:h.status==='skipped'?'пропущено':'помилка'}${h.planned_at?'':' · вручну'}${h.note?' · '+esc(h.note):''}</div>`).join('')}</div></div>`:''}`;
+    }
+    window.schedKind=function(){
+      const k=$('sF_kind').value;
+      $('sF_dateLbl').innerHTML=k==='once'?'Дата <span style="color:var(--brand)">*</span>':k==='yearly'?'Дата (день і місяць) <span style="color:var(--brand)">*</span>':'Починаючи з (необов\'язково)';
+      $('sF_wdWrap').style.display=k==='weekly'?'':'none';
+      $('sF_mdWrap').style.display=k==='monthly'?'':'none';
+      $('sF_endWrap').style.display=k==='once'?'none':'';
+    };
+    window.schedTo=function(){
+      $('sF_unitsWrap').style.display=document.querySelector('input[name=sF_to]:checked').value==='units'?'':'none';
+    };
+    function schedRead(){
+      const g=id=>$(id).value.trim();
+      const p={title:g('sF_title'),body:g('sF_body'),kind:g('sF_kind'),send_time:g('sF_time'),send_date:g('sF_date')||null,
+               weekdays:null,month_day:null,ends_on:null,target_units:null,is_active:$('sF_active').checked};
+      if(!p.title) return {err:'Вкажи назву розсилки',el:'sF_title'};
+      if(!p.body) return {err:'Напиши текст повідомлення',el:'sF_body'};
+      if(!/^\d{2}:\d{2}/.test(p.send_time)) return {err:'Вкажи час відправки',el:'sF_time'};
+      if((p.kind==='once'||p.kind==='yearly')&&!p.send_date) return {err:'Вкажи дату',el:'sF_date'};
+      if(p.kind==='weekly'){ p.weekdays=[...document.querySelectorAll('#sF_wdWrap input:checked')].map(x=>+x.value); if(!p.weekdays.length) return {err:'Обери хоча б один день тижня'}; }
+      if(p.kind==='monthly'){ const m=parseInt(g('sF_md'),10); if(!(m>=1&&m<=31)) return {err:'Вкажи число місяця від 1 до 31',el:'sF_md'}; p.month_day=m; }
+      if(p.kind!=='once') p.ends_on=g('sF_end')||null;
+      if(p.ends_on&&p.send_date&&p.kind!=='yearly'&&p.ends_on<p.send_date) return {err:'Останній день раніше за дату початку',el:'sF_end'};
+      if(document.querySelector('input[name=sF_to]:checked').value==='units'){
+        p.target_units=[...document.querySelectorAll('#sF_units input:checked')].map(x=>+x.value);
+        if(!p.target_units.length) return {err:'Обери хоча б один підрозділ'};
+      }
+      return p;
+    }
+    TABS.schedules={table:'bot_schedules',title:'Автоматичні розсилки',single:'розсилку',order:[['is_active',false],['next_run_at',true]],
+      hint:'Бот сам надсилає повідомлення за розкладом (час київський). «Надіслати зараз» — разова відправка поза розкладом.',
+      missing:'Таблиці розсилок ще не створені. Виконай database/schedules.sql бота в Supabase → SQL Editor.',
+      prepare:schedPrepare, form:schedForm, read:schedRead, returnRow:true,
+      afterOpen:()=>{schedKind();schedTo();},
+      cols:[['Розсилка',r=>`<b>${esc(r.title)}</b>${clip(r.body)}`],['Розклад',r=>esc(schedText(r))],['Кому',r=>esc(schedTarget(r))],
+            ['Наступна',r=>r.send_now?'<span class="badge warn">Надсилається…</span>':r.next_run_at?fmtDT(r.next_run_at):r.is_active?'<span class="badge off">Завершено</span>':'—'],
+            ['Остання',r=>schedLast(r)],['Статус',r=>yesNo(r.is_active,'Активна','Вимкнена')]],
+      extraActs:r=>`<button class="ico-btn" title="Надіслати зараз" onclick="askRowDel(this,'Надіслати зараз?','botSendNow','${r.id}','botRender')">${_sIco}</button>`,
+      defaults:{kind:'once',send_time:'09:00',is_active:true},
+      saved:row=>!row?'Збережено':row.is_active&&!row.next_run_at
+        ?['Збережено, але цей час уже минув — розсилка не відбудеться. Зміни дату або час.','warn']
+        :row.is_active?'Збережено. Наступна відправка: '+fmtDT(row.next_run_at):'Збережено (розсилку вимкнено)'};
+
+    window.botSendNow=async function(id){
+      const {error}=await db.from('bot_schedules').update({send_now:true}).eq('id',id);
+      if(error){toast('Помилка: '+esc(error.message),'error');}
+      else toast('Бот надішле розсилку протягом хвилини','success');
+      botRender();
+    };
+
     let _tab='news', _rows=[], _edit=null, _units={};
     const cfg=()=>TABS[_tab];
     const keyOf=c=>c.key||'id';
@@ -7955,11 +8085,12 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       let q=db.from(c.table).select('*');
       c.order.forEach(([col,asc])=>{q=q.order(col,{ascending:asc});});
       if(c===TABS.employees){ const u=await db.from('company_units').select('id,name'); _units=Object.fromEntries((u.data||[]).map(x=>[x.id,x.name])); }
+      if(c.prepare) await c.prepare();
       const {data,error}=await q;
       if(_tab!==Object.keys(TABS).find(k=>TABS[k]===c)) return; // користувач уже перейшов на іншу вкладку
       if(error){
         const missing=/does not exist|schema cache/i.test(error.message);
-        body.innerHTML=`<tr><td colspan="${span}" class="empty">${missing?'Таблиці бота ще не створені. Виконай database/schema.sql і seed.sql у Supabase → SQL Editor.':'Помилка: '+esc(error.message)}</td></tr>`;
+        body.innerHTML=`<tr><td colspan="${span}" class="empty">${missing?(c.missing||'Таблиці бота ще не створені. Виконай database/schema.sql і seed.sql у Supabase → SQL Editor.'):'Помилка: '+esc(error.message)}</td></tr>`;
         $('botCount').textContent='0';return;
       }
       _rows=data||[];
@@ -7968,7 +8099,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       if(!_rows.length){body.innerHTML=`<tr><td colspan="${span}" class="empty">Поки що порожньо</td></tr>`;return;}
       const k=keyOf(c);
       body.innerHTML=_rows.map(r=>`<tr>${c.cols.map(x=>`<td>${x[1](r)}</td>`).join('')}
-        <td class="bot-acts"><button class="ico-btn" title="Редагувати" onclick="botOpen('${r[k]}')">${_eIco}</button>${c.noDel?'':`<button class="ico-btn del" title="Видалити" onclick="askRowDel(this,'Видалити?','botDel','${r[k]}','botRender')">${_dIco}</button>`}</td></tr>`).join('');
+        <td class="bot-acts">${c.extraActs?c.extraActs(r):''}<button class="ico-btn" title="Редагувати" onclick="botOpen('${r[k]}')">${_eIco}</button>${c.noDel?'':`<button class="ico-btn del" title="Видалити" onclick="askRowDel(this,'Видалити?','botDel','${r[k]}','botRender')">${_dIco}</button>`}</td></tr>`).join('');
     };
 
     async function fillDepts(){
@@ -7982,9 +8113,9 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     window.botOpen=function(id){
       const c=cfg(), k=keyOf(c);
       _edit=id!=null?_rows.find(r=>String(r[k])===String(id)):null;
-      const v=_edit||{...(c.defaults||{}),sort_order:c.fields.some(f=>f[0]==='sort_order')?((_rows.reduce((m,r)=>Math.max(m,r.sort_order||0),-1))+1):undefined};
+      const v=_edit||{...(c.defaults||{}),sort_order:(c.fields||[]).some(f=>f[0]==='sort_order')?((_rows.reduce((m,r)=>Math.max(m,r.sort_order||0),-1))+1):undefined};
       $('botModalTitle').textContent=(_edit?'Редагувати ':'Додати ')+c.single;
-      $('botForm').innerHTML=c.fields.map(([name,label,type,req,note])=>{
+      $('botForm').innerHTML=c.form?c.form(v):c.fields.map(([name,label,type,req,note])=>{
         const val=v[name];
         const star=req?' <span style="color:var(--brand)">*</span>':'';
         const n=note?`<div class="bot-field-note">${esc(note)}</div>`:'';
@@ -7997,14 +8128,20 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         const shown=type==='tel'&&val?fmtPhone(val):esc(val);
         return `<div><label>${label}${star}</label><input id="botF_${name}" type="${t}" value="${shown}" ${type==='dept'?'list="botDeptList"':''}>${n}</div>`;
       }).join('');
+      if(c.afterOpen) c.afterOpen();
       $('botScrim').classList.add('open');
       setTimeout(()=>$('botForm').querySelector('input:not([type=checkbox]),textarea')?.focus(),50);
     };
     window.botClose=function(){ $('botScrim').classList.remove('open'); _edit=null; };
 
     window.botSave=async function(){
-      const c=cfg(), k=keyOf(c), payload={};
-      for(const [name,label,type,req] of c.fields){
+      const c=cfg(), k=keyOf(c);
+      let payload={};
+      if(c.read){
+        const r=c.read();
+        if(r.err){toast(r.err,'warn'); if(r.el) $(r.el).focus(); return;}
+        payload=r;
+      } else for(const [name,label,type,req] of c.fields){
         const el=$('botF_'+name);
         if(type==='check'){ if(!el.disabled) payload[name]=el.checked; continue; }
         let val=el.value.trim();
@@ -8015,17 +8152,20 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       }
       const invalid=c.validate&&c.validate(payload);
       if(invalid){toast(invalid,'warn');return;}
-      if(c===TABS.news&&!_edit) {const u=(document.querySelector('.js-user')?.textContent||'').trim();payload.author=u&&u!=='—'?u:null;}
+      if((c===TABS.news||c===TABS.schedules)&&!_edit) {const u=(document.querySelector('.js-user')?.textContent||'').trim();payload[c===TABS.news?'author':'created_by']=u&&u!=='—'?u:null;}
       const btn=$('botSaveBtn'); btn.disabled=true;
-      const res=_edit
-        ? await db.from(c.table).update(payload).eq(k,_edit[k])
-        : await db.from(c.table).insert(payload);
+      let q=_edit
+        ? db.from(c.table).update(payload).eq(k,_edit[k])
+        : db.from(c.table).insert(payload);
+      if(c.returnRow) q=q.select();
+      const res=await q;
       btn.disabled=false;
       if(res.error){
         toast(/duplicate key/.test(res.error.message)?'Такий запис уже існує (наприклад, цей телефон уже вказано в іншого співробітника)':'Помилка: '+esc(res.error.message),'error');
         return;
       }
-      toast(c===TABS.news&&payload.notify&&!(_edit&&_edit.notified_at)?'Збережено. Бот розішле новину протягом хвилини':'Збережено','success');
+      if(c.saved){ const m=c.saved((res.data||[])[0]); Array.isArray(m)?toast(m[0],m[1],6000):toast(m,'success',5000); }
+      else toast(c===TABS.news&&payload.notify&&!(_edit&&_edit.notified_at)?'Збережено. Бот розішле новину протягом хвилини':'Збережено','success');
       botClose(); botLoad(); if(c.afterSave) c.afterSave();
     };
 
