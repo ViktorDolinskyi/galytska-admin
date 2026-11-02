@@ -344,6 +344,11 @@
   .bot-check{display:flex !important;align-items:center;gap:10px;cursor:pointer;font-size:13.5px !important;font-weight:600 !important;color:var(--ink) !important;margin:0 !important}
   .bot-check input{width:18px !important;height:18px;margin:0;accent-color:var(--brand);flex:none}
   .bot-field-note{font-size:12px;color:var(--muted);margin-top:6px}
+  .bot-file-cur{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;margin-bottom:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--page)}
+  .bot-file-cur a{color:var(--brand);font-weight:600;cursor:pointer;word-break:break-all}
+  .bot-tag{display:inline-block;font-size:11px;font-weight:600;color:var(--slate);background:var(--page);border:1px solid var(--line);border-radius:6px;padding:1px 6px;margin:4px 4px 0 0}
+  .bot-cat-child{padding-left:22px;position:relative}
+  .bot-cat-child::before{content:'└';position:absolute;left:6px;color:var(--muted)}
   @media (max-width:760px){.bot-kpis{grid-template-columns:repeat(2,1fr) !important}}
   .bot-health{display:flex;align-items:center;gap:12px;padding:12px 16px;margin-bottom:16px}
   .bot-health-dot{width:10px;height:10px;border-radius:50%;flex:none;background:var(--muted)}
@@ -2906,9 +2911,10 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
             <button data-bot-tab="schedules" onclick="botTab('schedules')">Розсилки</button>
             <button data-bot-tab="employees" onclick="botTab('employees')">Доступ</button>
             <button data-bot-tab="users" onclick="botTab('users')">Підписники</button>
-            <button data-bot-tab="faq" onclick="botTab('faq')">FAQ</button>
             <button data-bot-tab="contacts" onclick="botTab('contacts')">Контакти</button>
             <button data-bot-tab="documents" onclick="botTab('documents')">Документи</button>
+            <button data-bot-tab="faq" onclick="botTab('faq')">Запитання</button>
+            <button data-bot-tab="categories" onclick="botTab('categories')">Підрозділи</button>
             <button data-bot-tab="soon" onclick="botTab('soon')">Інше</button>
           </div>
         </div>
@@ -7989,6 +7995,71 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     const normPhone=p=>{let d=String(p||'').replace(/\D/g,'');if(d.length===10&&d[0]==='0')d='38'+d;return d;};
     const fmtPhone=p=>/^380\d{9}$/.test(p||'')?`+${p.slice(0,3)} ${p.slice(3,5)} ${p.slice(5,8)} ${p.slice(8,10)} ${p.slice(10)}`:esc(p);
 
+    // ---- Підрозділи (bot_categories) і файли (сховище bot-files) ----
+    const CAT_SECTIONS={docs:'Документи',faq:'Запитання та відповіді',learning:'Навчання'};
+    const MISSING_CATS='Підрозділи ще не створені. Виконай database/categories_files.sql бота у Supabase → SQL Editor.';
+    let _cats=[], _catCounts={};
+    async function loadCats(){
+      const [c,d,f]=await Promise.all([
+        db.from('bot_categories').select('*').order('sort_order').order('id'),
+        db.from('bot_documents').select('category_id'),
+        db.from('bot_faq').select('category_id'),
+      ]);
+      _cats=c.data||[];
+      _catCounts={};
+      [...(d.data||[]),...(f.data||[])].forEach(x=>{if(x.category_id)_catCounts[x.category_id]=(_catCounts[x.category_id]||0)+1;});
+    }
+    function catPath(id){
+      if(!id) return '<span style="color:var(--muted)">—</span>';
+      const c=_cats.find(x=>x.id===id); if(!c) return '—';
+      const p=c.parent_id?_cats.find(x=>x.id===c.parent_id):null;
+      return esc((p?p.title+' › ':'')+c.title)+(c.is_active?'':' <span class="badge off">прих.</span>');
+    }
+    // дерево підрозділів розділу: [[id, 'Назва' | '— Назва']]
+    function catOpts(section){
+      const top=_cats.filter(c=>c.section===section&&!c.parent_id);
+      const out=[];
+      top.forEach(t=>{out.push([t.id,t.title]);_cats.filter(c=>c.parent_id===t.id).forEach(ch=>out.push([ch.id,'   — '+ch.title]));});
+      return out;
+    }
+    function parentOpts(section,selfId){
+      return _cats.filter(c=>c.section===section&&!c.parent_id&&String(c.id)!==String(selfId)).map(c=>[c.id,c.title]);
+    }
+    const selOpts=(opts,val,empty)=>(empty!==undefined?`<option value="">${esc(empty)}</option>`:'')+opts.map(([v,l])=>`<option value="${esc(v)}"${String(v)===String(val??'')?' selected':''}>${esc(l)}</option>`).join('');
+    function arrangeCats(rows){
+      const out=[];
+      Object.keys(CAT_SECTIONS).forEach(sec=>{
+        rows.filter(r=>r.section===sec&&!r.parent_id).forEach(t=>{out.push(t);rows.filter(r=>r.parent_id===t.id).forEach(ch=>out.push(ch));});
+      });
+      rows.forEach(r=>{if(!out.includes(r))out.push(r);});
+      return out;
+    }
+    function attachTags(r){
+      const t=[];
+      if(r.file_path) t.push(`<span class="bot-tag">${{photo:'🖼',video:'🎬'}[r.file_kind]||'📎'} ${esc(r.file_name||'файл')}</span>`);
+      if(r.link_url) t.push(`<span class="bot-tag">🔗 ${esc(r.link_title||'посилання')}</span>`);
+      return t.length?`<div>${t.join('')}</div>`:'';
+    }
+    const validateItem=bodyCol=>p=>{
+      if(p.link_url&&!/^https?:\/\/\S+$/i.test(p.link_url)) return 'Посилання має починатися з http:// або https://';
+      const hasFile=p.file_path||(p.file_path===undefined&&_edit&&_edit.file_path);
+      if(!p[bodyCol]&&!hasFile&&!p.link_url) return 'Додай текст, файл або посилання';
+      return '';
+    };
+    const fileKind=f=>/^image\/(jpeg|png|webp)$/.test(f.type)?'photo':/^video\/mp4$/.test(f.type)?'video':'document';
+    async function uploadBotFile(file,folder){
+      const ext=(file.name.match(/\.([a-z0-9]{1,8})$/i)||[])[1]||'bin';
+      const path=`${folder}/${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext.toLowerCase()}`;
+      const {error}=await db.storage.from('bot-files').upload(path,file,{contentType:file.type||'application/octet-stream',upsert:false});
+      if(error) throw error;
+      return path;
+    }
+    window.botFileOpen=async function(path){
+      const {data,error}=await db.storage.from('bot-files').createSignedUrl(path,300);
+      if(error){toast('Не вдалося відкрити файл: '+esc(error.message),'error');return;}
+      window.open(data.signedUrl,'_blank','noopener');
+    };
+
     const TABS={
       news:{table:'bot_news',title:'Новини',single:'новину',order:[['created_at',false]],
         hint:'Новина з «Надіслати всім» приходить підписникам протягом хвилини.',
@@ -8014,10 +8085,15 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
               ['Підписаний',r=>fmtDate(r.created_at)],['Остання активність',r=>fmtDT(r.last_seen_at)],
               ['Доступ',r=>yesNo(r.is_authorized,'Активний','Вимкнено')]],
         fields:[['is_authorized','Доступ до бота активний','check']]},
-      faq:{table:'bot_faq',title:'FAQ',single:'питання',order:[['sort_order',true],['id',true]],
-        cols:[['№',r=>r.sort_order],['Питання',r=>`<b>${esc(r.question)}</b>${clip(r.answer)}`],['Показ',r=>yesNo(r.is_active,'Так','Приховано')]],
-        fields:[['question','Питання (текст кнопки)','text',true],['answer','Відповідь','textarea',true],
+      faq:{table:'bot_faq',title:'Запитання та відповіді',single:'питання',order:[['sort_order',true],['id',true]],section:'faq',
+        hint:'Питання можна згрупувати за темами у вкладці «Підрозділи». До відповіді можна додати файл або посилання.',
+        prepare:loadCats, missing:MISSING_CATS,
+        cols:[['№',r=>r.sort_order],['Питання',r=>`<b>${esc(r.question)}</b>${clip(r.answer)}${attachTags(r)}`],['Підрозділ',r=>catPath(r.category_id)],['Показ',r=>yesNo(r.is_active,'Так','Приховано')]],
+        fields:[['question','Питання (текст кнопки)','text',true],['category_id','Підрозділ','cat'],['answer','Відповідь','textarea'],
+                ['file','Файл (PDF, фото, відео — до 50 МБ)','file'],
+                ['link_url','Посилання (напр., на курс або відео)','text'],['link_title','Текст кнопки посилання','text',false,'Якщо не вказати — «Відкрити»'],
                 ['sort_order','Порядок','number'],['is_active','Показувати в боті','check']],
+        validate:validateItem('answer'),
         defaults:{is_active:true}},
       contacts:{table:'bot_contacts',title:'Контакти',single:'контакт',order:[['sort_order',true],['id',true]],
         hint:'У боті всі контакти показуються одним списком, згруповані за відділом; біля кожного номера є кнопка «Скопіювати». ПІБ можна не вказувати.',
@@ -8026,11 +8102,29 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         fields:[['department','Відділ (кнопка в боті)','dept',true],['full_name','ПІБ (необов\'язково)','text'],['position','Посада','text'],
                 ['phone','Телефон','text',true],['sort_order','Порядок','number'],['is_active','Показувати в боті','check']],
         defaults:{is_active:true}},
-      documents:{table:'bot_documents',title:'Документи та інструкції',single:'інструкцію',order:[['sort_order',true],['id',true]],
-        cols:[['№',r=>r.sort_order],['Назва',r=>`<b>${esc(r.title)}</b>${clip(r.body)}`],['Показ',r=>yesNo(r.is_active,'Так','Приховано')]],
-        fields:[['title','Назва (текст кнопки)','text',true],['body','Текст інструкції','textarea',true],
+      documents:{table:'bot_documents',title:'Документи',single:'документ',order:[['sort_order',true],['id',true]],section:'docs',
+        hint:'Документи групуються за підрозділами з вкладки «Підрозділи». Можна додати текст, файл (PDF, фото, відео) і посилання.',
+        prepare:loadCats, missing:MISSING_CATS,
+        cols:[['№',r=>r.sort_order],['Назва',r=>`<b>${esc(r.title)}</b>${clip(r.body)}${attachTags(r)}`],['Підрозділ',r=>catPath(r.category_id)],['Показ',r=>yesNo(r.is_active,'Так','Приховано')]],
+        fields:[['title','Назва (текст кнопки)','text',true],['category_id','Підрозділ','cat'],['body','Текст','textarea'],
+                ['file','Файл (PDF, фото, відео — до 50 МБ)','file'],
+                ['link_url','Посилання','text'],['link_title','Текст кнопки посилання','text',false,'Якщо не вказати — «Відкрити»'],
                 ['sort_order','Порядок','number'],['is_active','Показувати в боті','check']],
+        validate:validateItem('body'),
         defaults:{is_active:true}},
+      categories:{table:'bot_categories',title:'Підрозділи',single:'підрозділ',order:[['section',true],['sort_order',true],['id',true]],
+        hint:'Підрозділи для Документів, Запитань і Навчання. Можна вкласти один рівень: напр., «Санітарія» → «Виробництво» / «Магазини». Видалення підрозділу видаляє вкладені підрозділи, а матеріали з нього переходять у корінь розділу.',
+        missing:MISSING_CATS, prepare:loadCats, arrange:arrangeCats,
+        cols:[['Розділ бота',r=>esc(CAT_SECTIONS[r.section]||r.section)],
+              ['Назва',r=>`<div class="${r.parent_id?'bot-cat-child':''}"><b>${esc(r.title)}</b>${r.intro?clip(r.intro):''}</div>`],
+              ['Матеріалів',r=>_catCounts[r.id]||'—'],['№',r=>r.sort_order],['Показ',r=>yesNo(r.is_active,'Так','Приховано')]],
+        fields:[['section','Розділ бота','select',true,null,()=>Object.entries(CAT_SECTIONS)],
+                ['parent_id','Вкладений у','select',false,'Порожньо — підрозділ першого рівня',v=>parentOpts(v.section||'docs',v.id)],
+                ['title','Назва (текст кнопки)','text',true],['intro','Текст над списком у боті','textarea',false,'Необов\'язково'],
+                ['sort_order','Порядок','number'],['is_active','Показувати в боті','check']],
+        afterOpen:()=>{ const sec=$('botF_section'); if(sec) sec.onchange=()=>{ const cur=_edit; $('botF_parent_id').innerHTML=selOpts(parentOpts(sec.value,cur&&cur.id),'','— не вибрано —'); }; },
+        validate:p=>p.parent_id&&_edit&&String(p.parent_id)===String(_edit.id)?'Підрозділ не може бути вкладеним сам у себе':'',
+        defaults:{is_active:true,section:'docs'}},
     };
 
     // ---- Автоматичні розсилки (bot_schedules; розклад рахує база, надсилає бот) ----
@@ -8152,7 +8246,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       botRender();
     };
 
-    let _tab='news', _rows=[], _edit=null, _units={};
+    let _tab='news', _rows=[], _edit=null, _units={}, _pendingFile=null;
     const cfg=()=>TABS[_tab];
     const keyOf=c=>c.key||'id';
     const $=id=>document.getElementById(id);
@@ -8223,7 +8317,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         body.innerHTML=`<tr><td colspan="${span}" class="empty">${missing?(c.missing||'Таблиці бота ще не створені. Виконай database/schema.sql і seed.sql у Supabase → SQL Editor.'):'Помилка: '+esc(error.message)}</td></tr>`;
         $('botCount').textContent='0';return;
       }
-      _rows=data||[];
+      _rows=c.arrange?c.arrange(data||[]):(data||[]);
       $('botCount').textContent=_rows.length;
       if(c===TABS.contacts) fillDepts();
       if(!_rows.length){body.innerHTML=`<tr><td colspan="${span}" class="empty">Поки що порожньо</td></tr>`;return;}
@@ -8245,7 +8339,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       _edit=id!=null?_rows.find(r=>String(r[k])===String(id)):null;
       const v=_edit||{...(c.defaults||{}),sort_order:(c.fields||[]).some(f=>f[0]==='sort_order')?((_rows.reduce((m,r)=>Math.max(m,r.sort_order||0),-1))+1):undefined};
       $('botModalTitle').textContent=(_edit?'Редагувати ':'Додати ')+c.single;
-      $('botForm').innerHTML=c.form?c.form(v):c.fields.map(([name,label,type,req,note])=>{
+      $('botForm').innerHTML=c.form?c.form(v):c.fields.map(([name,label,type,req,note,opts])=>{
         const val=v[name];
         const star=req?' <span style="color:var(--brand)">*</span>':'';
         const n=note?`<div class="bot-field-note">${esc(note)}</div>`:'';
@@ -8254,6 +8348,15 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
           return `<div><label class="bot-check"><input type="checkbox" id="botF_${name}" ${val?'checked':''} ${sent?'disabled':''}>${label}</label>${sent?`<div class="bot-field-note">Уже надіслано ${fmtDT(_edit.notified_at)}</div>`:''}</div>`;
         }
         if(type==='textarea') return `<div><label>${label}${star}</label><textarea id="botF_${name}" rows="7">${esc(val)}</textarea>${n}</div>`;
+        if(type==='select') return `<div><label>${label}${star}</label><select id="botF_${name}">${selOpts(opts(v),val,req?undefined:'— не вибрано —')}</select>${n}</div>`;
+        if(type==='cat'){
+          const o=catOpts(c.section);
+          return `<div><label>${label}</label><select id="botF_${name}">${selOpts(o,val,'— без підрозділу (у корені розділу) —')}</select>${o.length?'':'<div class="bot-field-note">Підрозділів ще немає — створи їх у вкладці «Підрозділи».</div>'}${n}</div>`;
+        }
+        if(type==='file'){
+          const cur=v.file_path?`<div class="bot-file-cur">${{photo:'🖼',video:'🎬'}[v.file_kind]||'📎'} <a onclick="botFileOpen(${esc(JSON.stringify(v.file_path))})">${esc(v.file_name||'файл')}</a><label class="bot-check" style="margin-left:auto !important;font-weight:500 !important"><input type="checkbox" id="botF_file_remove">Прибрати</label></div>`:'';
+          return `<div><label>${label}</label>${cur}<input type="file" id="botF_${name}" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,image/jpeg,image/png,image/webp,video/mp4">${cur?'<div class="bot-field-note">Новий файл замінить поточний.</div>':''}${n}</div>`;
+        }
         const t=type==='number'?'number':type==='tel'?'tel':'text';
         const shown=type==='tel'&&val?fmtPhone(val):esc(val);
         return `<div><label>${label}${star}</label><input id="botF_${name}" type="${t}" value="${shown}" ${type==='dept'?'list="botDeptList"':''}>${n}</div>`;
@@ -8274,14 +8377,33 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       } else for(const [name,label,type,req] of c.fields){
         const el=$('botF_'+name);
         if(type==='check'){ if(!el.disabled) payload[name]=el.checked; continue; }
+        if(type==='cat'||(type==='select'&&/_id$/.test(name))){ payload[name]=el.value?parseInt(el.value,10):null; continue; }
+        if(type==='file'){
+          const f=el.files&&el.files[0];
+          if(f){
+            if(f.size>50*1024*1024){toast('Файл більший за 50 МБ — Telegram такий не прийме','warn');return;}
+            payload.file_path=null; _pendingFile=f; // шлях з'явиться після завантаження
+            payload.file_name=f.name; payload.file_kind=fileKind(f);
+          } else if($('botF_file_remove')?.checked){ payload.file_path=null; payload.file_name=null; payload.file_kind=null; payload.tg_file_id=null; }
+          continue;
+        }
         let val=el.value.trim();
         if(req&&!val){toast('Заповни поле «'+label+'»','warn');el.focus();return;}
         if(type==='number') val=val===''?0:parseInt(val,10)||0;
         if(type==='tel'&&val){ val=normPhone(val); if(!/^380\d{9}$/.test(val)){toast('Невірний номер телефону','warn');el.focus();return;} }
         payload[name]=val===''?null:val;
       }
+      if(_pendingFile) payload.file_path='(pending)';
       const invalid=c.validate&&c.validate(payload);
-      if(invalid){toast(invalid,'warn');return;}
+      if(invalid){toast(invalid,'warn');_pendingFile=null;return;}
+      const oldFile=_edit&&_edit.file_path;
+      if(_pendingFile){
+        const btn0=$('botSaveBtn'); btn0.disabled=true; btn0.textContent='Завантажую файл…';
+        try{ payload.file_path=await uploadBotFile(_pendingFile,c.section||'misc'); payload.tg_file_id=null; }
+        catch(e){ toast('Не вдалося завантажити файл: '+esc(e.message||e),'error'); btn0.disabled=false; btn0.textContent='Зберегти'; _pendingFile=null; return; }
+        finally{ btn0.textContent='Зберегти'; }
+        _pendingFile=null;
+      }
       if((c===TABS.news||c===TABS.schedules)&&!_edit) {const u=(document.querySelector('.js-user')?.textContent||'').trim();payload[c===TABS.news?'author':'created_by']=u&&u!=='—'?u:null;}
       const btn=$('botSaveBtn'); btn.disabled=true;
       let q=_edit
@@ -8290,6 +8412,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       if(c.returnRow) q=q.select();
       const res=await q;
       btn.disabled=false;
+      if(res.error&&payload.file_path&&payload.file_path!==oldFile) db.storage.from('bot-files').remove([payload.file_path]);
+      if(!res.error&&oldFile&&'file_path' in payload&&payload.file_path!==oldFile) db.storage.from('bot-files').remove([oldFile]);
       if(res.error){
         toast(/duplicate key/.test(res.error.message)?'Такий запис уже існує (наприклад, цей телефон уже вказано в іншого співробітника)':'Помилка: '+esc(res.error.message),'error');
         return;
@@ -8301,9 +8425,10 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
 
     window.botDel=async function(id){
       const c=cfg();
+      const row=_rows.find(r=>String(r[keyOf(c)])===String(id));
       const {error}=await db.from(c.table).delete().eq(keyOf(c),id);
       if(error){toast('Помилка: '+esc(error.message),'error');}
-      else toast('Видалено','success');
+      else{ toast('Видалено','success'); if(row&&row.file_path) db.storage.from('bot-files').remove([row.file_path]); }
       botLoad();
     };
   })();
