@@ -8113,7 +8113,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         validate:validateItem('body'),
         defaults:{is_active:true}},
       categories:{table:'bot_categories',title:'Підрозділи',single:'підрозділ',order:[['section',true],['sort_order',true],['id',true]],
-        hint:'Підрозділи для Документів, Запитань і Навчання. Можна вкласти один рівень: напр., «Санітарія» → «Виробництво» / «Магазини». Видалення підрозділу видаляє вкладені підрозділи, а матеріали з нього переходять у корінь розділу.',
+        hint:'Підрозділи для Документів, Запитань і Навчання. Можна вкласти один рівень: напр., «Санітарія» → «Виробництво» / «Магазини». Порожні підрозділи бот не показує — вони з\'являться, щойно в них додати документ чи відповідь. Видалення підрозділу видаляє вкладені підрозділи, а матеріали з нього переходять у корінь розділу.',
         missing:MISSING_CATS, prepare:loadCats, arrange:arrangeCats,
         cols:[['Розділ бота',r=>esc(CAT_SECTIONS[r.section]||r.section)],
               ['Назва',r=>`<div class="${r.parent_id?'bot-cat-child':''}"><b>${esc(r.title)}</b>${r.intro?clip(r.intro):''}</div>`],
