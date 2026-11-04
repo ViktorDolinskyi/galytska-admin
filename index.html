@@ -344,6 +344,9 @@
   .bot-check{display:flex !important;align-items:center;gap:10px;cursor:pointer;font-size:13.5px !important;font-weight:600 !important;color:var(--ink) !important;margin:0 !important}
   .bot-check input{width:18px !important;height:18px;margin:0;accent-color:var(--brand);flex:none}
   .bot-field-note{font-size:12px;color:var(--muted);margin-top:6px}
+  .bday-form{display:flex;flex-direction:column;gap:14px;padding:4px 24px 22px}
+  .bday-form label:not(.bot-check){display:block;font-size:12px;font-weight:700;color:var(--slate);margin-bottom:6px}
+  .bday-form textarea,.bday-form input:not([type=checkbox]){width:100%;font:inherit;font-size:14px;border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:var(--surface);color:var(--ink);box-sizing:border-box}
   .bot-file-cur{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;margin-bottom:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--page)}
   .bot-file-cur a{color:var(--brand);font-weight:600;cursor:pointer;word-break:break-all}
   .bot-tag{display:inline-block;font-size:11px;font-weight:600;color:var(--slate);background:var(--page);border:1px solid var(--line);border-radius:6px;padding:1px 6px;margin:4px 4px 0 0}
@@ -2909,6 +2912,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
           <div class="seg" id="botSeg">
             <button class="on" data-bot-tab="news" onclick="botTab('news')">Новини</button>
             <button data-bot-tab="schedules" onclick="botTab('schedules')">Розсилки</button>
+            <button data-bot-tab="vacancies" onclick="botTab('vacancies')">Вакансії</button>
+            <button data-bot-tab="birthdays" onclick="botTab('birthdays')">Дні народження</button>
             <button data-bot-tab="employees" onclick="botTab('employees')">Доступ</button>
             <button data-bot-tab="users" onclick="botTab('users')">Підписники</button>
             <button data-bot-tab="contacts" onclick="botTab('contacts')">Контакти</button>
@@ -2934,6 +2939,27 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
           </div>
         </div>
 
+        <div id="botBday" style="display:none">
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-head"><h3>Привітання з днем народження</h3></div>
+            <div class="bot-hint" style="padding:0 24px 14px">Бот щодня в заданий час вітає іменинників. Дати народження беруться з довідника співробітників (Компанія → Налаштування → Співробітники); рік народження в боті не показується.</div>
+            <div class="bday-form">
+              <label class="bot-check"><input type="checkbox" id="bdPersonal">Надсилати особисте привітання іменинникові</label>
+              <div><label>Текст особистого привітання</label><textarea id="bdPersonalText" rows="3"></textarea>
+                <div class="bot-field-note">{ім'я} і {прізвище} підставляються автоматично.</div></div>
+              <label class="bot-check"><input type="checkbox" id="bdDigest">Повідомляти всіх підписників, хто сьогодні святкує</label>
+              <div><label>Заголовок повідомлення для всіх</label><input id="bdDigestText"></div>
+              <div style="max-width:180px"><label>Час надсилання (Київ)</label><input id="bdTime" type="time" step="300"></div>
+              <div><button class="btn primary" id="bdSaveBtn" onclick="bdSave()">Зберегти</button> <span class="bot-field-note" id="bdLast"></span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Найближчі дні народження</h3><span class="badge info" id="bdCount">0</span></div>
+            <div class="bot-hint" style="padding:0 24px 14px">Наступні 30 днів. Так само іменинників бачать працівники в боті: Новини → Дні народження.</div>
+            <table class="bot-tbl"><thead><tr><th>Дата</th><th>Співробітник</th><th>Підрозділ</th><th>Чи підписаний на бот</th></tr></thead><tbody id="bdBody"></tbody></table>
+          </div>
+        </div>
+
         <div class="bot-mods" id="botSoon" style="display:none">
             <div class="card bot-mod">
               <div class="bot-mod-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 7l10-4 10 4-10 4-10-4z"/><path d="M6 9v5c3 2 9 2 12 0V9"/></svg></div>
@@ -2948,11 +2974,6 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
             <div class="card bot-mod">
               <div class="bot-mod-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></div>
               <div class="bot-mod-txt"><h3>Результати тестів</h3><p>Хто пройшов / не пройшов, бали, дати</p></div>
-              <span class="badge off">Скоро</span>
-            </div>
-            <div class="card bot-mod">
-              <div class="bot-mod-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
-              <div class="bot-mod-txt"><h3>Вакансії</h3><p>Додати або закрити вакансію</p></div>
               <span class="badge off">Скоро</span>
             </div>
             <div class="card bot-mod">
@@ -8061,15 +8082,27 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     };
 
     const TABS={
-      news:{table:'bot_news',title:'Новини',single:'новину',order:[['created_at',false]],
+      news:{table:'bot_news',title:'Новини компанії',single:'новину',order:[['created_at',false]],section:'news',
         hint:'Новина з «Надіслати всім» приходить підписникам протягом хвилини.',
-        cols:[['Дата',r=>fmtDate(r.created_at)],['Заголовок',r=>`<b>${esc(r.title)}</b>${clip(r.body)}`],
+        cols:[['Дата',r=>fmtDate(r.created_at)],['Заголовок',r=>`<b>${esc(r.title)}</b>${clip(r.body)}${attachTags(r)}`],
               ['Статус',r=>yesNo(r.is_published,'Опубліковано','Чернетка')],
               ['Розсилка',r=>r.notified_at?`<span class="badge ok">Надіслано ${fmtDT(r.notified_at)}</span>`:r.notify?'<span class="badge warn">Очікує</span>':'—']],
         fields:[['title','Заголовок','text',true],['body','Текст','textarea',true],
+                ['file','Фото або файл (необов\'язково)','file',false,'Фото з коротким текстом (до 1000 символів) прийде одним повідомленням з підписом.'],
                 ['is_published','Опубліковано (видно в боті)','check'],
                 ['notify','Надіслати всім підписникам','check']],
         defaults:{is_published:true,notify:false}},
+      vacancies:{table:'bot_vacancies',title:'Вакансії',single:'вакансію',order:[['sort_order',true],['created_at',false]],
+        hint:'У боті: Новини → Вакансії. Закрита вакансія (зніми «Показувати») зникає з бота, але лишається тут.',
+        missing:'Таблиця вакансій ще не створена. Виконай database/news_birthdays.sql бота у Supabase → SQL Editor.',
+        cols:[['№',r=>r.sort_order],['Посада',r=>`<b>${esc(r.title)}</b>${r.description?clip(r.description):''}`],['Де',r=>esc(r.location||'—')],
+              ['Тип',r=>r.is_internal?'<span class="badge info">Внутрішній перехід</span>':'—'],['Показ',r=>yesNo(r.is_active,'Відкрита','Закрита')]],
+        fields:[['title','Посада','text',true],['location','Підрозділ / магазин / місто','text'],['salary','Оплата','text',false,'Напр., від 18 000 грн'],
+                ['description','Обов\'язки, вимоги, умови','textarea'],['contact','До кого звертатись','text',false,'Напр., HR-відділ 067 667 78 19'],
+                ['link_url','Посилання на анкету','text'],['is_internal','Можливий внутрішній перехід','check'],
+                ['sort_order','Порядок','number'],['is_active','Показувати в боті (вакансія відкрита)','check']],
+        validate:p=>p.link_url&&!/^https?:\/\/\S+$/i.test(p.link_url)?'Посилання має починатися з http:// або https://':'',
+        defaults:{is_active:true}},
       employees:{table:'dict_employees',title:'Доступ до бота',single:'доступ',order:[['bot_access',false],['last_name',true]],noAdd:true,noDel:true,
         hint:'Співробітники з довідника «Компанія». Увійти в бот можуть ті, кому дозволено доступ і вказано телефон.',
         cols:[['ПІБ',r=>`<b>${esc([r.last_name,r.first_name,r.patronymic].filter(Boolean).join(' '))}</b>`],
@@ -8254,10 +8287,11 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     window.botTab=function(tab){
       _tab=tab;
       document.querySelectorAll('#botSeg button').forEach(b=>b.classList.toggle('on',b.dataset.botTab===tab));
-      const soon=tab==='soon';
-      $('botTableCard').style.display=soon?'none':'';
+      const soon=tab==='soon', bday=tab==='birthdays';
+      $('botTableCard').style.display=soon||bday?'none':'';
       $('botSoon').style.display=soon?'':'none';
-      if(!soon) botRender();
+      $('botBday').style.display=bday?'':'none';
+      if(bday) bdLoad(); else if(!soon) botRender();
     };
 
     async function loadKpi(){
@@ -8332,7 +8366,56 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       $('botDeptList').innerHTML=[...set].sort().map(d=>`<option value="${esc(d)}">`).join('');
     }
 
-    window.botLoad=async function(){ await Promise.all([loadKpi(), loadHealth(), _tab==='soon'?null:botRender()]); };
+    window.botLoad=async function(){ await Promise.all([loadKpi(), loadHealth(), _tab==='soon'?null:_tab==='birthdays'?bdLoad():botRender()]); };
+
+    // ---- Дні народження: налаштування (bot_settings.birthday) і найближчі 30 днів ----
+    const BD_DEF={personal_enabled:false,personal_text:"З днем народження, {ім'я}! 🎉",digest_enabled:false,digest_text:'🎂 Сьогодні день народження святкують:',send_time:'09:00'};
+    const MON=['січня','лютого','березня','квітня','травня','червня','липня','серпня','вересня','жовтня','листопада','грудня'];
+    window.bdLoad=async function(){
+      const [st,last,emps,units,users]=await Promise.all([
+        db.from('bot_settings').select('value').eq('key','birthday').maybeSingle(),
+        db.from('bot_settings').select('value').eq('key','birthday_last_run').maybeSingle(),
+        db.from('dict_employees').select('id,last_name,first_name,birthdate,primary_unit_id,dismissal_date').not('birthdate','is',null),
+        db.from('company_units').select('id,name'),
+        db.from('bot_users').select('employee_id').eq('is_authorized',true),
+      ]);
+      if(st.error){
+        $('bdBody').innerHTML=`<tr><td colspan="4" class="empty">${/does not exist|schema cache/i.test(st.error.message)?'Налаштування ще не створені. Виконай database/news_birthdays.sql бота у Supabase → SQL Editor.':'Помилка: '+esc(st.error.message)}</td></tr>`;
+        return;
+      }
+      const v={...BD_DEF,...((st.data&&st.data.value)||{})};
+      $('bdPersonal').checked=!!v.personal_enabled; $('bdPersonalText').value=v.personal_text||'';
+      $('bdDigest').checked=!!v.digest_enabled; $('bdDigestText').value=v.digest_text||'';
+      $('bdTime').value=v.send_time||'09:00';
+      $('bdLast').textContent=last.data&&last.data.value?'Останній раз бот вітав за '+String(last.data.value).split('-').reverse().join('.'):'';
+      const uName=Object.fromEntries((units.data||[]).map(u=>[u.id,u.name]));
+      const subs=new Set((users.data||[]).map(u=>u.employee_id));
+      const t0=new Date(); t0.setHours(0,0,0,0);
+      const todayIso=`${t0.getFullYear()}-${String(t0.getMonth()+1).padStart(2,'0')}-${String(t0.getDate()).padStart(2,'0')}`;
+      const next=(emps.data||[]).filter(e=>!e.dismissal_date||e.dismissal_date>todayIso).map(e=>{
+        const m=+e.birthdate.slice(5,7), d=+e.birthdate.slice(8,10);
+        let dt=new Date(t0.getFullYear(),m-1,d);
+        if(m===2&&d===29&&dt.getMonth()!==1) dt=new Date(t0.getFullYear(),1,28);
+        if(dt<t0){ dt=new Date(t0.getFullYear()+1,m-1,d); if(m===2&&d===29&&dt.getMonth()!==1) dt=new Date(t0.getFullYear()+1,1,28); }
+        return {...e,dt,days:Math.round((dt-t0)/864e5)};
+      }).filter(e=>e.days<=30).sort((a,b)=>a.days-b.days||(a.last_name||'').localeCompare(b.last_name||''));
+      $('bdCount').textContent=next.length;
+      $('bdBody').innerHTML=next.length?next.map(e=>`<tr><td style="white-space:nowrap">${e.days===0?'<span class="badge ok">Сьогодні</span>':e.days===1?'Завтра':''} ${e.dt.getDate()} ${MON[e.dt.getMonth()]}</td>
+        <td><b>${esc([e.last_name,e.first_name].filter(Boolean).join(' '))}</b></td><td>${esc(uName[e.primary_unit_id]||'—')}</td>
+        <td>${subs.has(e.id)?'<span class="badge ok">Так</span>':'<span class="badge off">Ні</span>'}</td></tr>`).join('')
+        :'<tr><td colspan="4" class="empty">У найближчі 30 днів днів народження немає</td></tr>';
+    };
+    window.bdSave=async function(){
+      const time=$('bdTime').value||'09:00';
+      if(!/^\d{2}:\d{2}$/.test(time)){toast('Невірний час','warn');return;}
+      const value={personal_enabled:$('bdPersonal').checked,personal_text:$('bdPersonalText').value.trim()||BD_DEF.personal_text,
+        digest_enabled:$('bdDigest').checked,digest_text:$('bdDigestText').value.trim()||BD_DEF.digest_text,send_time:time.slice(0,5)};
+      const btn=$('bdSaveBtn'); btn.disabled=true;
+      const {error}=await db.from('bot_settings').upsert({key:'birthday',value,updated_at:new Date().toISOString()});
+      btn.disabled=false;
+      if(error){toast('Помилка: '+esc(error.message),'error');return;}
+      toast(value.personal_enabled||value.digest_enabled?`Збережено. Бот вітатиме щодня о ${value.send_time}`:'Збережено. Привітання вимкнено','success');
+    };
 
     window.botOpen=function(id){
       const c=cfg(), k=keyOf(c);
