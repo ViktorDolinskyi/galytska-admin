@@ -325,6 +325,7 @@
   .bot-mods>.card{margin:0}
   .bot-seg-wrap{overflow-x:auto;margin-bottom:14px;scrollbar-width:none}
   .bot-seg-wrap::-webkit-scrollbar{display:none}
+  .bot-seg-wrap .seg{flex-wrap:wrap}
   .bot-seg-wrap .seg button{white-space:nowrap}
   .bot-hint{font-size:12.5px;color:var(--muted)}
   .bot-tbl td{vertical-align:top}
@@ -2919,6 +2920,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
             <button data-bot-tab="contacts" onclick="botTab('contacts')">Контакти</button>
             <button data-bot-tab="documents" onclick="botTab('documents')">Документи</button>
             <button data-bot-tab="faq" onclick="botTab('faq')">Запитання</button>
+            <button data-bot-tab="learning" onclick="botTab('learning')">Навчання</button>
             <button data-bot-tab="categories" onclick="botTab('categories')">Підрозділи</button>
             <button data-bot-tab="soon" onclick="botTab('soon')">Інше</button>
           </div>
@@ -2961,11 +2963,6 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         </div>
 
         <div class="bot-mods" id="botSoon" style="display:none">
-            <div class="card bot-mod">
-              <div class="bot-mod-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 7l10-4 10 4-10 4-10-4z"/><path d="M6 9v5c3 2 9 2 12 0V9"/></svg></div>
-              <div class="bot-mod-txt"><h3>Навчання</h3><p>Матеріали, відео, презентації з призначенням відділам</p></div>
-              <span class="badge off">Скоро</span>
-            </div>
             <div class="card bot-mod">
               <div class="bot-mod-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg></div>
               <div class="bot-mod-txt"><h3>Тести</h3><p>Питання, прохідний бал і дедлайн</p></div>
@@ -8021,14 +8018,15 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     const MISSING_CATS='Підрозділи ще не створені. Виконай database/categories_files.sql бота у Supabase → SQL Editor.';
     let _cats=[], _catCounts={};
     async function loadCats(){
-      const [c,d,f]=await Promise.all([
+      const [c,d,f,l]=await Promise.all([
         db.from('bot_categories').select('*').order('sort_order').order('id'),
         db.from('bot_documents').select('category_id'),
         db.from('bot_faq').select('category_id'),
+        db.from('bot_learning').select('category_id'),  // до learning.sql таблиці немає — просто без лічильника
       ]);
       _cats=c.data||[];
       _catCounts={};
-      [...(d.data||[]),...(f.data||[])].forEach(x=>{if(x.category_id)_catCounts[x.category_id]=(_catCounts[x.category_id]||0)+1;});
+      [...(d.data||[]),...(f.data||[]),...(l.data||[])].forEach(x=>{if(x.category_id)_catCounts[x.category_id]=(_catCounts[x.category_id]||0)+1;});
     }
     function catPath(id){
       if(!id) return '<span style="color:var(--muted)">—</span>';
@@ -8142,6 +8140,17 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         fields:[['title','Назва (текст кнопки)','text',true],['category_id','Підрозділ','cat'],['body','Текст','textarea'],
                 ['file','Файл (PDF, фото, відео — до 50 МБ)','file'],
                 ['link_url','Посилання','text'],['link_title','Текст кнопки посилання','text',false,'Якщо не вказати — «Відкрити»'],
+                ['sort_order','Порядок','number'],['is_active','Показувати в боті','check']],
+        validate:validateItem('body'),
+        defaults:{is_active:true}},
+      learning:{table:'bot_learning',title:'Навчання',single:'матеріал',order:[['sort_order',true],['id',true]],section:'learning',
+        hint:'У боті: 🎓 Навчання. Матеріали групуються за підрозділами (новачки, за посадою, тести, корисні матеріали). Якщо курс чи тест уже є в Collaborator, достатньо вказати посилання: у боті кнопка одразу відкриє курс, без дублювання змісту.',
+        missing:'Таблиця навчання ще не створена. Виконай database/learning.sql бота у Supabase → SQL Editor.',
+        prepare:loadCats,
+        cols:[['№',r=>r.sort_order],['Назва',r=>`<b>${esc(r.title)}</b>${clip(r.body)}${attachTags(r)}`],['Підрозділ',r=>catPath(r.category_id)],['Показ',r=>yesNo(r.is_active,'Так','Приховано')]],
+        fields:[['title','Назва (текст кнопки)','text',true],['category_id','Підрозділ','cat'],['body','Опис або інструкція','textarea',false,'Необов\'язково, якщо є посилання чи файл'],
+                ['file','Файл (PDF, презентація, фото, відео — до 50 МБ)','file'],
+                ['link_url','Посилання (курс або тест у Collaborator, відео)','text'],['link_title','Текст кнопки посилання','text',false,'Якщо не вказати — «Відкрити»'],
                 ['sort_order','Порядок','number'],['is_active','Показувати в боті','check']],
         validate:validateItem('body'),
         defaults:{is_active:true}},
