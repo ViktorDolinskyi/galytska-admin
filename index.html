@@ -347,6 +347,13 @@
   .bot-field-note{font-size:12px;color:var(--muted);margin-top:6px}
   .bday-form{display:flex;flex-direction:column;gap:14px;padding:4px 24px 22px}
   .bday-form label:not(.bot-check){display:block;font-size:12px;font-weight:700;color:var(--slate);margin-bottom:6px}
+  .bd-gal{display:flex;flex-wrap:wrap;gap:10px}
+  .bd-img{position:relative;width:96px;height:96px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--page)}
+  .bd-img img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in}
+  .bd-img button{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;border:none;background:rgba(0,0,0,.6);color:#fff;font-size:15px;line-height:24px;padding:0;cursor:pointer}
+  .bd-add{width:96px;height:96px;border-radius:10px;border:2px dashed var(--line);display:flex !important;align-items:center;justify-content:center;flex-direction:column;gap:2px;color:var(--muted);font-size:12px !important;font-weight:600;cursor:pointer;margin:0 !important;text-align:center}
+  .bd-add b{font-size:24px;line-height:1;color:var(--slate)}
+  .bd-add.busy{opacity:.5;pointer-events:none}
   .bday-form textarea,.bday-form input:not([type=checkbox]){width:100%;font:inherit;font-size:14px;border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:var(--surface);color:var(--ink);box-sizing:border-box}
   .bot-file-cur{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;margin-bottom:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--page)}
   .bot-file-cur a{color:var(--brand);font-weight:600;cursor:pointer;word-break:break-all}
@@ -2949,8 +2956,12 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
               <label class="bot-check"><input type="checkbox" id="bdPersonal">Надсилати особисте привітання іменинникові</label>
               <div><label>Текст особистого привітання</label><textarea id="bdPersonalText" rows="3"></textarea>
                 <div class="bot-field-note">{ім'я} і {прізвище} підставляються автоматично.</div></div>
+              <div><label>Картинки до особистого привітання</label><div class="bd-gal" id="bdGal_personal_images"></div>
+                <div class="bot-field-note">До кожного привітання бот бере випадкову картинку, не ту, що минулого разу. JPG, PNG або WEBP до 10 МБ; можна вибрати кілька одразу. Без картинок привітання прийде текстом.</div></div>
               <label class="bot-check"><input type="checkbox" id="bdDigest">Повідомляти всіх підписників, хто сьогодні святкує</label>
               <div><label>Заголовок повідомлення для всіх</label><input id="bdDigestText"></div>
+              <div><label>Картинки до повідомлення для всіх</label><div class="bd-gal" id="bdGal_digest_images"></div>
+                <div class="bot-field-note">Щодня бот бере випадкову картинку (не вчорашню), однакову для всіх підписників.</div></div>
               <div style="max-width:180px"><label>Час надсилання (Київ)</label><input id="bdTime" type="time" step="300"></div>
               <div><button class="btn primary" id="bdSaveBtn" onclick="bdSave()">Зберегти</button> <span class="bot-field-note" id="bdLast"></span></div>
             </div>
@@ -8396,6 +8407,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       $('bdPersonal').checked=!!v.personal_enabled; $('bdPersonalText').value=v.personal_text||'';
       $('bdDigest').checked=!!v.digest_enabled; $('bdDigestText').value=v.digest_text||'';
       $('bdTime').value=v.send_time||'09:00';
+      BD_IMG_KEYS.forEach(k=>{_bdImg[k]=Array.isArray(v[k])?v[k].filter(i=>i&&i.path):[];});
+      bdGalleries();
       $('bdLast').textContent=last.data&&last.data.value?'Останній раз бот вітав за '+String(last.data.value).split('-').reverse().join('.'):'';
       const uName=Object.fromEntries((units.data||[]).map(u=>[u.id,u.name]));
       const subs=new Set((users.data||[]).map(u=>u.employee_id));
@@ -8414,11 +8427,63 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         <td>${subs.has(e.id)?'<span class="badge ok">Так</span>':'<span class="badge off">Ні</span>'}</td></tr>`).join('')
         :'<tr><td colspan="4" class="empty">У найближчі 30 днів днів народження немає</td></tr>';
     };
+    // Галереї картинок: зберігаються одразу після додавання / видалення (лише картинки, без решти форми)
+    const BD_IMG_KEYS=['personal_images','digest_images'];
+    const _bdImg={personal_images:[],digest_images:[]}, _bdUrl={};
+    async function bdGalleries(){
+      const need=BD_IMG_KEYS.flatMap(k=>_bdImg[k].map(i=>i.path)).filter(p=>!_bdUrl[p]);
+      BD_IMG_KEYS.forEach(bdGallery);
+      if(!need.length) return;
+      const {data}=await db.storage.from('bot-files').createSignedUrls(need,3600);
+      (data||[]).forEach(x=>{if(x.signedUrl)_bdUrl[x.path]=x.signedUrl;});
+      BD_IMG_KEYS.forEach(bdGallery);
+    }
+    function bdGallery(key){
+      const el=$('bdGal_'+key); if(!el) return;
+      el.innerHTML=_bdImg[key].map((i,n)=>`<div class="bd-img" title="${esc(i.name||'')}">${_bdUrl[i.path]?`<img src="${esc(_bdUrl[i.path])}" alt="" onclick="botFileOpen(${esc(JSON.stringify(i.path))})">`:''}<button type="button" title="Видалити" onclick="bdRemoveImage('${key}',${n})">×</button></div>`).join('')
+        +`<label class="bd-add" id="bdAdd_${key}"><b>+</b>Додати<input type="file" accept="image/jpeg,image/png,image/webp" multiple hidden onchange="bdAddImages('${key}',this)"></label>`;
+    }
+    async function bdPersistImages(){
+      const {data,error}=await db.from('bot_settings').select('value').eq('key','birthday').maybeSingle();
+      if(error) throw error;
+      const value={...BD_DEF,...((data&&data.value)||{})};
+      BD_IMG_KEYS.forEach(k=>{value[k]=_bdImg[k];});
+      const r=await db.from('bot_settings').upsert({key:'birthday',value,updated_at:new Date().toISOString()});
+      if(r.error) throw r.error;
+    }
+    window.bdAddImages=async function(key,input){
+      const files=[...input.files]; input.value='';
+      const ok=files.filter(f=>/^image\/(jpeg|png|webp)$/.test(f.type)&&f.size<=10*1024*1024);
+      if(ok.length<files.length) toast(`Пропущено ${files.length-ok.length}: потрібні JPG, PNG або WEBP до 10 МБ`,'warn');
+      if(!ok.length) return;
+      $('bdAdd_'+key)?.classList.add('busy');
+      let added=0;
+      for(const f of ok){
+        try{ const path=await uploadBotFile(f,'birthday'); _bdImg[key].push({path,name:f.name}); added++; }
+        catch(e){ toast('Не вдалося завантажити '+esc(f.name)+': '+esc(e.message||e),'error'); }
+      }
+      if(added){
+        try{ await bdPersistImages(); toast(added===1?'Картинку додано':`Додано картинок: ${added}`,'success'); }
+        catch(e){ toast('Картинки завантажено, але не збережено: '+esc(e.message||e),'error'); }
+      }
+      bdGalleries();
+    };
+    window.bdRemoveImage=async function(key,n){
+      const img=_bdImg[key][n]; if(!img||!confirm('Видалити цю картинку?')) return;
+      _bdImg[key].splice(n,1);
+      try{ await bdPersistImages(); }
+      catch(e){ _bdImg[key].splice(n,0,img); bdGalleries(); toast('Помилка: '+esc(e.message||e),'error'); return; }
+      const used=BD_IMG_KEYS.some(k=>_bdImg[k].some(i=>i.path===img.path));
+      if(!used) await db.storage.from('bot-files').remove([img.path]);
+      bdGalleries(); toast('Картинку видалено','success');
+    };
+
     window.bdSave=async function(){
       const time=$('bdTime').value||'09:00';
       if(!/^\d{2}:\d{2}$/.test(time)){toast('Невірний час','warn');return;}
       const value={personal_enabled:$('bdPersonal').checked,personal_text:$('bdPersonalText').value.trim()||BD_DEF.personal_text,
-        digest_enabled:$('bdDigest').checked,digest_text:$('bdDigestText').value.trim()||BD_DEF.digest_text,send_time:time.slice(0,5)};
+        digest_enabled:$('bdDigest').checked,digest_text:$('bdDigestText').value.trim()||BD_DEF.digest_text,send_time:time.slice(0,5),
+        personal_images:_bdImg.personal_images,digest_images:_bdImg.digest_images};
       const btn=$('bdSaveBtn'); btn.disabled=true;
       const {error}=await db.from('bot_settings').upsert({key:'birthday',value,updated_at:new Date().toISOString()});
       btn.disabled=false;
