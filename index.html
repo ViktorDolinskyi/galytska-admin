@@ -323,11 +323,25 @@
   .card-head h3{font-size:14.5px;font-weight:800}
   .bot-mods{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
   .bot-mods>.card{margin:0}
-  .bot-seg-wrap{overflow-x:auto;margin-bottom:14px;scrollbar-width:none}
-  .bot-seg-wrap::-webkit-scrollbar{display:none}
-  .bot-seg-wrap .seg{flex-wrap:wrap}
-  .bot-seg-wrap .seg button{white-space:nowrap}
+  [data-theme="dark"] th{background:var(--page)}
+  .bot-nav{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+  .bot-main{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .bot-main button{display:inline-flex;align-items:center;gap:7px;font:inherit;font-size:13.5px;font-weight:700;color:var(--slate);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 13px;cursor:pointer;white-space:nowrap;transition:background .12s,color .12s,border-color .12s}
+  .bot-main button:hover{background:var(--hover-bg);color:var(--ink)}
+  .bot-main button.on{background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(213,43,30,.25)}
+  .bot-main button:focus-visible,.bot-sub button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .bot-main .bot-ico{font-size:15px;line-height:1}
+  .bot-main .bot-sep{width:1px;align-self:stretch;background:var(--line);margin:4px 6px}
+  .bot-main .bot-group-lbl{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:2px}
+  .bot-sub{display:flex;flex-wrap:wrap;gap:4px;border-bottom:1px solid var(--line)}
+  .bot-sub:empty{display:none}
+  .bot-sub button{font:inherit;font-size:13px;font-weight:600;color:var(--slate);background:none;border:none;border-bottom:2px solid transparent;padding:8px 12px 9px;margin-bottom:-1px;cursor:pointer;white-space:nowrap}
+  .bot-sub button:hover{color:var(--ink)}
+  .bot-sub button.on{color:var(--brand);border-bottom-color:var(--brand)}
+  .bot-sub button small{font-weight:500;color:var(--muted);margin-left:4px}
   .bot-hint{font-size:12.5px;color:var(--muted)}
+  .bot-hint-row{padding:10px 18px;font-size:12.5px;line-height:1.5;color:var(--slate);background:var(--page);border-bottom:1px solid var(--line)}
+  .bot-hint-row:empty{display:none}
   .bot-tbl td{vertical-align:top}
   .bot-tbl .bot-clip{max-width:420px;color:var(--slate);font-size:12.5px;white-space:pre-line;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .bot-tbl .bot-acts{white-space:nowrap;text-align:right;width:1%}
@@ -2916,30 +2930,18 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
           </div>
         </div>
 
-        <div class="bot-seg-wrap">
-          <div class="seg" id="botSeg">
-            <button class="on" data-bot-tab="news" onclick="botTab('news')">Новини</button>
-            <button data-bot-tab="schedules" onclick="botTab('schedules')">Розсилки</button>
-            <button data-bot-tab="vacancies" onclick="botTab('vacancies')">Вакансії</button>
-            <button data-bot-tab="birthdays" onclick="botTab('birthdays')">Дні народження</button>
-            <button data-bot-tab="employees" onclick="botTab('employees')">Доступ</button>
-            <button data-bot-tab="users" onclick="botTab('users')">Підписники</button>
-            <button data-bot-tab="contacts" onclick="botTab('contacts')">Контакти</button>
-            <button data-bot-tab="documents" onclick="botTab('documents')">Документи</button>
-            <button data-bot-tab="faq" onclick="botTab('faq')">Запитання</button>
-            <button data-bot-tab="learning" onclick="botTab('learning')">Навчання</button>
-            <button data-bot-tab="categories" onclick="botTab('categories')">Підрозділи</button>
-            <button data-bot-tab="soon" onclick="botTab('soon')">Інше</button>
-          </div>
-        </div>
+        <nav class="bot-nav" aria-label="Розділи бота">
+          <div class="bot-main" id="botMain"></div>
+          <div class="bot-sub" id="botSub"></div>
+        </nav>
 
         <div class="card" id="botTableCard">
           <div class="card-head">
             <h3 id="botTabTitle">Новини</h3>
             <span class="badge info" id="botCount">0</span>
-            <span class="bot-hint" id="botHint"></span>
             <button class="btn primary" id="botAddBtn" onclick="botOpen()" style="margin-left:auto">+ Додати</button>
           </div>
+          <div class="bot-hint-row" id="botHint"></div>
           <div style="overflow-x:auto">
             <table class="tbl bot-tbl">
               <thead id="botHead"></thead>
@@ -8306,15 +8308,45 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     const keyOf=c=>c.key||'id';
     const $=id=>document.getElementById(id);
 
+    // Навігація: розділи — як у меню бота, всередині — вкладки (матеріали / підрозділи тощо)
+    const BOT_NAV=[
+      {id:'news',ico:'📰',label:'Новини',subs:[['news','Новини компанії'],['birthdays','Дні народження'],['vacancies','Вакансії']]},
+      {id:'docs',ico:'📋',label:'Документи',subs:[['documents','Документи'],['cat:docs','Підрозділи']]},
+      {id:'contacts',ico:'📞',label:'Контакти',subs:[['contacts','Контакти']]},
+      {id:'faq',ico:'❓',label:'Запитання',subs:[['faq','Запитання'],['cat:faq','Теми']]},
+      {id:'learning',ico:'🎓',label:'Навчання',subs:[['learning','Матеріали'],['cat:learning','Підрозділи']]},
+      'sep',
+      {id:'mail',ico:'📣',label:'Розсилки',subs:[['schedules','Автоматичні розсилки']]},
+      {id:'people',ico:'👥',label:'Працівники',subs:[['users','Підписники'],['employees','Доступ до бота']]},
+      {id:'soon',ico:'✨',label:'Скоро',subs:[['soon','Скоро']]},
+    ];
+    let _catSection=null;
+    const BOT_TAB_KEY='gs_bot_tab';
+    const navOf=t=>BOT_NAV.find(g=>g!=='sep'&&g.subs.some(x=>x[0]===t));
+    function botNavRender(cur){
+      const g=navOf(cur)||BOT_NAV[0];
+      $('botMain').innerHTML=BOT_NAV.map(n=>n==='sep'?'<span class="bot-sep" aria-hidden="true"></span>'
+        :`<button type="button" class="${n===g?'on':''}" aria-pressed="${n===g}" onclick="botTab('${n.subs[0][0]}')"><span class="bot-ico" aria-hidden="true">${n.ico}</span>${esc(n.label)}</button>`).join('');
+      $('botSub').innerHTML=g.subs.length>1?g.subs.map(([t,l])=>`<button type="button" class="${t===cur?'on':''}" onclick="botTab('${t}')">${esc(l)}</button>`).join(''):'';
+    }
     window.botTab=function(tab){
+      if(tab==='categories') tab='cat:docs';
+      if(!navOf(tab)) tab='news';
+      try{ localStorage.setItem(BOT_TAB_KEY,tab); }catch(e){}
+      botNavRender(tab);
+      _catSection=tab.startsWith('cat:')?tab.slice(4):null;
+      if(_catSection) tab='categories';
       _tab=tab;
-      document.querySelectorAll('#botSeg button').forEach(b=>b.classList.toggle('on',b.dataset.botTab===tab));
       const soon=tab==='soon', bday=tab==='birthdays';
       $('botTableCard').style.display=soon||bday?'none':'';
       $('botSoon').style.display=soon?'':'none';
       $('botBday').style.display=bday?'':'none';
       if(bday) bdLoad(); else if(!soon) botRender();
     };
+
+    (function(){ let t=null; try{ t=localStorage.getItem(BOT_TAB_KEY); }catch(e){} t=navOf(t)?t:'news';
+      botNavRender(t); _catSection=t.startsWith('cat:')?t.slice(4):null; _tab=_catSection?'categories':t;
+      if(_tab==='soon'||_tab==='birthdays'){ $('botTableCard').style.display='none'; $(_tab==='soon'?'botSoon':'botBday').style.display=''; } })();
 
     async function loadKpi(){
       const today=new Date();today.setHours(0,0,0,0);
@@ -8356,11 +8388,14 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
 
     window.botRender=async function(){
       const c=cfg(); if(!c) return;
-      $('botTabTitle').textContent=c.title;
-      $('botHint').textContent=c.hint||'';
+      const catOnly=c===TABS.categories&&_catSection;
+      $('botTabTitle').textContent=catOnly?`Підрозділи розділу «${CAT_SECTIONS[_catSection]}»`:c.title;
+      $('botHint').textContent=catOnly?'Можна вкласти один рівень: напр., «Санітарія» → «Виробництво» / «Магазини». Порожні підрозділи бот не показує: вони з\'являться, щойно в них додати матеріал. Видалення підрозділу видаляє вкладені підрозділи, а матеріали з нього переходять у корінь розділу.':(c.hint||'');
+      $('botAddBtn').textContent=catOnly?'+ Додати підрозділ':'+ Додати';
       $('botAddBtn').style.display=c.noAdd?'none':'';
-      $('botHead').innerHTML='<tr>'+c.cols.map(x=>`<th>${x[0]}</th>`).join('')+'<th></th></tr>';
-      const span=c.cols.length+1, body=$('botBody');
+      const cols=catOnly?c.cols.slice(1):c.cols;
+      $('botHead').innerHTML='<tr>'+cols.map(x=>`<th>${x[0]}</th>`).join('')+'<th></th></tr>';
+      const span=cols.length+1, body=$('botBody');
       body.innerHTML=`<tr><td colspan="${span}" class="empty">Завантаження…</td></tr>`;
       let q=db.from(c.table).select('*');
       c.order.forEach(([col,asc])=>{q=q.order(col,{ascending:asc});});
@@ -8373,12 +8408,14 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         body.innerHTML=`<tr><td colspan="${span}" class="empty">${missing?(c.missing||'Таблиці бота ще не створені. Виконай database/schema.sql і seed.sql у Supabase → SQL Editor.'):'Помилка: '+esc(error.message)}</td></tr>`;
         $('botCount').textContent='0';return;
       }
-      _rows=c.arrange?c.arrange(data||[]):(data||[]);
+      let rows=data||[];
+      if(c===TABS.categories&&_catSection) rows=rows.filter(r=>r.section===_catSection);
+      _rows=c.arrange?c.arrange(rows):rows;
       $('botCount').textContent=_rows.length;
       if(c===TABS.contacts) fillDepts();
-      if(!_rows.length){body.innerHTML=`<tr><td colspan="${span}" class="empty">Поки що порожньо</td></tr>`;return;}
+      if(!_rows.length){body.innerHTML=`<tr><td colspan="${span}" class="empty">Поки що порожньо${c.noAdd?'':'. Натисни «'+esc($('botAddBtn').textContent)+'», щоб додати перше.'}</td></tr>`;return;}
       const k=keyOf(c);
-      body.innerHTML=_rows.map(r=>`<tr>${c.cols.map(x=>`<td>${x[1](r)}</td>`).join('')}
+      body.innerHTML=_rows.map(r=>`<tr>${cols.map(x=>`<td>${x[1](r)}</td>`).join('')}
         <td class="bot-acts">${c.extraActs?c.extraActs(r):''}<button class="ico-btn" title="Редагувати" onclick="botOpen('${r[k]}')">${_eIco}</button>${c.noDel?'':`<button class="ico-btn del" title="Видалити" onclick="askRowDel(this,'Видалити?','botDel','${r[k]}','botRender')">${_dIco}</button>`}</td></tr>`).join('');
     };
 
@@ -8496,7 +8533,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     window.botOpen=function(id){
       const c=cfg(), k=keyOf(c);
       _edit=id!=null?_rows.find(r=>String(r[k])===String(id)):null;
-      const v=_edit||{...(c.defaults||{}),sort_order:(c.fields||[]).some(f=>f[0]==='sort_order')?((_rows.reduce((m,r)=>Math.max(m,r.sort_order||0),-1))+1):undefined};
+      const v=_edit||{...(c.defaults||{}),...(c===TABS.categories&&_catSection?{section:_catSection}:{}),sort_order:(c.fields||[]).some(f=>f[0]==='sort_order')?((_rows.reduce((m,r)=>Math.max(m,r.sort_order||0),-1))+1):undefined};
       $('botModalTitle').textContent=(_edit?'Редагувати ':'Додати ')+c.single;
       $('botForm').innerHTML=c.form?c.form(v):c.fields.map(([name,label,type,req,note,opts])=>{
         const val=v[name];
