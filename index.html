@@ -2959,7 +2959,9 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
               <div><label>Картинки до особистого привітання</label><div class="bd-gal" id="bdGal_personal_images"></div>
                 <div class="bot-field-note">До кожного привітання бот бере випадкову картинку, не ту, що минулого разу. JPG, PNG або WEBP до 10 МБ; можна вибрати кілька одразу. Без картинок привітання прийде текстом.</div></div>
               <label class="bot-check"><input type="checkbox" id="bdDigest">Повідомляти всіх підписників, хто сьогодні святкує</label>
-              <div><label>Заголовок повідомлення для всіх</label><input id="bdDigestText"></div>
+              <div><label>Заголовок, коли іменинників кілька</label><input id="bdDigestText"></div>
+              <div><label>Заголовок, коли іменинник один</label><input id="bdDigestTextOne">
+                <div class="bot-field-note">Якщо лишити порожнім, бот візьме заголовок для кількох. Підпис унизу («Привітай колегу» / «Привітай колег») бот змінює сам.</div></div>
               <div><label>Картинки до повідомлення для всіх</label><div class="bd-gal" id="bdGal_digest_images"></div>
                 <div class="bot-field-note">Щодня бот бере випадкову картинку (не вчорашню), однакову для всіх підписників.</div></div>
               <div style="max-width:180px"><label>Час надсилання (Київ)</label><input id="bdTime" type="time" step="300"></div>
@@ -8389,7 +8391,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     window.botLoad=async function(){ await Promise.all([loadKpi(), loadHealth(), _tab==='soon'?null:_tab==='birthdays'?bdLoad():botRender()]); };
 
     // ---- Дні народження: налаштування (bot_settings.birthday) і найближчі 30 днів ----
-    const BD_DEF={personal_enabled:false,personal_text:"З днем народження, {ім'я}! 🎉",digest_enabled:false,digest_text:'🎂 Сьогодні день народження святкують:',send_time:'09:00'};
+    const BD_DEF={personal_enabled:false,personal_text:"З днем народження, {ім'я}! 🎉",digest_enabled:false,digest_text:'🎂 Сьогодні день народження святкують:',digest_text_one:'🎂 Сьогодні день народження святкує:',send_time:'09:00'};
     const MON=['січня','лютого','березня','квітня','травня','червня','липня','серпня','вересня','жовтня','листопада','грудня'];
     window.bdLoad=async function(){
       const [st,last,emps,units,users]=await Promise.all([
@@ -8405,7 +8407,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       }
       const v={...BD_DEF,...((st.data&&st.data.value)||{})};
       $('bdPersonal').checked=!!v.personal_enabled; $('bdPersonalText').value=v.personal_text||'';
-      $('bdDigest').checked=!!v.digest_enabled; $('bdDigestText').value=v.digest_text||'';
+      $('bdDigest').checked=!!v.digest_enabled; $('bdDigestText').value=v.digest_text||''; $('bdDigestTextOne').value=v.digest_text_one??'';
       $('bdTime').value=v.send_time||'09:00';
       BD_IMG_KEYS.forEach(k=>{_bdImg[k]=Array.isArray(v[k])?v[k].filter(i=>i&&i.path):[];});
       bdGalleries();
@@ -8482,7 +8484,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       const time=$('bdTime').value||'09:00';
       if(!/^\d{2}:\d{2}$/.test(time)){toast('Невірний час','warn');return;}
       const value={personal_enabled:$('bdPersonal').checked,personal_text:$('bdPersonalText').value.trim()||BD_DEF.personal_text,
-        digest_enabled:$('bdDigest').checked,digest_text:$('bdDigestText').value.trim()||BD_DEF.digest_text,send_time:time.slice(0,5),
+        digest_enabled:$('bdDigest').checked,digest_text:$('bdDigestText').value.trim()||BD_DEF.digest_text,digest_text_one:$('bdDigestTextOne').value.trim(),send_time:time.slice(0,5),
         personal_images:_bdImg.personal_images,digest_images:_bdImg.digest_images};
       const btn=$('bdSaveBtn'); btn.disabled=true;
       const {error}=await db.from('bot_settings').upsert({key:'birthday',value,updated_at:new Date().toISOString()});
