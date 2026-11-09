@@ -1237,6 +1237,19 @@
   .flatpickr-day.selected,.flatpickr-day.selected:hover{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:700}
   .flatpickr-day.prevMonthDay,.flatpickr-day.nextMonthDay{color:var(--muted);opacity:.5}
   .flatpickr-innerContainer{border:none}
+  input.fp-date,input.fp-time,input.fp-date+input{cursor:pointer;background-repeat:no-repeat!important;background-position:right 12px center!important;background-size:17px!important;padding-right:38px!important}
+  input.fp-date+input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A746E' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cpath d='M16 2v4M8 2v4M3 10h18'/%3E%3C/svg%3E")!important}
+  input.fp-time{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A746E' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 6v6l4 2'/%3E%3C/svg%3E")!important}
+  .flatpickr-calendar.noCalendar{width:200px!important;padding:8px}
+  .flatpickr-time{height:auto!important;max-height:none!important;line-height:1;border:none!important;display:flex;align-items:center;gap:4px}
+  .flatpickr-time .numInputWrapper{height:52px;border-radius:10px;background:var(--page)}
+  .flatpickr-time input.flatpickr-hour,.flatpickr-time input.flatpickr-minute{font-family:'Unbounded',sans-serif;font-size:22px;font-weight:700;color:var(--ink);background:transparent!important;border-radius:10px}
+  .flatpickr-time input:hover,.flatpickr-time input:focus{background:var(--brand-tint)!important;color:var(--brand)}
+  .flatpickr-time .flatpickr-time-separator{font-size:22px;font-weight:700;color:var(--muted);height:auto;line-height:52px}
+  .flatpickr-time .numInputWrapper span.arrowUp:after{border-bottom-color:var(--muted)}
+  .flatpickr-time .numInputWrapper span.arrowDown:after{border-top-color:var(--muted)}
+  .flatpickr-time .numInputWrapper span{border:none;width:18px;opacity:.6}
+  .flatpickr-time .numInputWrapper span:hover{background:var(--brand-tint)}
   .modal-sel:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-tint)}
   .modal input:focus{border-color:var(--brand)}
   .modal select{width:100%;font:inherit;font-size:14px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--ink);outline:none;background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%236B6560' stroke-width='2.2' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;-webkit-appearance:none;appearance:none;padding-right:32px}
@@ -2966,7 +2979,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
                 <div class="bot-field-note">Якщо лишити порожнім, бот візьме заголовок для кількох. Підпис унизу («Привітай колегу» / «Привітай колег») бот змінює сам.</div></div>
               <div><label>Картинки до повідомлення для всіх</label><div class="bd-gal" id="bdGal_digest_images"></div>
                 <div class="bot-field-note">Щодня бот бере випадкову картинку (не вчорашню), однакову для всіх підписників.</div></div>
-              <div style="max-width:180px"><label>Час надсилання (Київ)</label><input id="bdTime" type="time" step="300"></div>
+              <div style="max-width:180px"><label>Час надсилання (Київ)</label><input id="bdTime" class="fp-time" readonly></div>
               <div><button class="btn primary" id="bdSaveBtn" onclick="bdSave()">Зберегти</button> <span class="bot-field-note" id="bdLast"></span></div>
             </div>
           </div>
@@ -8235,12 +8248,12 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         <div><label>Текст повідомлення${star}</label><textarea id="sF_body" rows="6" maxlength="4000">${esc(v.body)}</textarea><div class="bot-field-note">Саме цей текст отримають підписники в Telegram.</div></div>
         <div class="sch-row">
           <div><label>Повторення</label><select id="sF_kind" class="modal-sel" onchange="schedKind()">${Object.entries(KINDS).map(([k,l])=>`<option value="${k}" ${k===kind?'selected':''}>${l}</option>`).join('')}</select></div>
-          <div><label>Час (за Києвом)</label><input id="sF_time" type="time" value="${hm(v.send_time)||'09:00'}"></div>
+          <div><label>Час (за Києвом)</label><input id="sF_time" class="fp-time" value="${hm(v.send_time)||'09:00'}" readonly></div>
         </div>
-        <div id="sF_dateWrap"><label id="sF_dateLbl">Дата</label><input id="sF_date" type="date" value="${v.send_date||''}"></div>
+        <div id="sF_dateWrap"><label id="sF_dateLbl">Дата</label><input id="sF_date" class="fp-date" value="${v.send_date||''}" placeholder="Обери дату"></div>
         <div id="sF_wdWrap"><label>Дні тижня${star}</label><div class="sch-wd">${WD.map((d,i)=>`<label class="sch-chip"><input type="checkbox" value="${i+1}" ${wd.has(i+1)?'checked':''}><span>${d}</span></label>`).join('')}</div></div>
         <div id="sF_mdWrap"><label>Число місяця${star}</label><input id="sF_md" type="number" min="1" max="31" value="${v.month_day||''}"><div class="bot-field-note">Якщо в місяці немає такого числа (наприклад, 31-го), розсилка піде в останній день місяця.</div></div>
-        <div id="sF_endWrap"><label>Останній день розсилки (необов'язково)</label><input id="sF_end" type="date" value="${v.ends_on||''}"></div>
+        <div id="sF_endWrap"><label>Останній день розсилки (необов'язково)</label><input id="sF_end" class="fp-date" value="${v.ends_on||''}" placeholder="Без обмеження"></div>
         <div><label>Кому</label>
           <div class="sch-target">
             <label class="bot-check"><input type="radio" name="sF_to" value="all" ${tu.size?'':'checked'} onchange="schedTo()">Усім підписникам</label>
@@ -8286,7 +8299,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       hint:'Бот сам надсилає повідомлення за розкладом (час київський). «Надіслати зараз» — разова відправка поза розкладом.',
       missing:'Таблиці розсилок ще не створені. Виконай database/schedules.sql бота в Supabase → SQL Editor.',
       prepare:schedPrepare, form:schedForm, read:schedRead, returnRow:true,
-      afterOpen:()=>{schedKind();schedTo();},
+      afterOpen:()=>{schedKind();schedTo();botPickers($('botForm'));},
       cols:[['Розсилка',r=>`<b>${esc(r.title)}</b>${clip(r.body)}`],['Розклад',r=>esc(schedText(r))],['Кому',r=>esc(schedTarget(r))],
             ['Наступна',r=>r.send_now?'<span class="badge warn">Надсилається…</span>':r.next_run_at?fmtDT(r.next_run_at):r.is_active?'<span class="badge off">Завершено</span>':'—'],
             ['Остання',r=>schedLast(r)],['Статус',r=>yesNo(r.is_active,'Активна','Вимкнена')]],
@@ -8307,6 +8320,14 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     const cfg=()=>TABS[_tab];
     const keyOf=c=>c.key||'id';
     const $=id=>document.getElementById(id);
+
+    // Вибір дати й часу — flatpickr у стилі адмінки (рідні поля браузера в модалках не відкривались)
+    const fpBase={locale:flatpickr.l10ns.uk,disableMobile:true};
+    function botPickers(root){
+      root.querySelectorAll('input.fp-date').forEach(el=>{ if(!el._flatpickr) flatpickr(el,{...fpBase,dateFormat:'Y-m-d',altInput:true,altFormat:'d.m.Y',allowInput:true}); });
+      root.querySelectorAll('input.fp-time').forEach(el=>{ if(!el._flatpickr) flatpickr(el,{...fpBase,enableTime:true,noCalendar:true,time_24hr:true,dateFormat:'H:i',minuteIncrement:5,defaultDate:el.value||'09:00'}); });
+    }
+    function fpTimeSet(el,v){ if(!el) return; if(!el._flatpickr) botPickers(el.parentNode); el._flatpickr.setDate(v,false); }
 
     // Навігація: розділи — як у меню бота, всередині — вкладки (матеріали / підрозділи тощо)
     const BOT_NAV=[
@@ -8445,7 +8466,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       const v={...BD_DEF,...((st.data&&st.data.value)||{})};
       $('bdPersonal').checked=!!v.personal_enabled; $('bdPersonalText').value=v.personal_text||'';
       $('bdDigest').checked=!!v.digest_enabled; $('bdDigestText').value=v.digest_text||''; $('bdDigestTextOne').value=v.digest_text_one??'';
-      $('bdTime').value=v.send_time||'09:00';
+      fpTimeSet($('bdTime'),v.send_time||'09:00');
       BD_IMG_KEYS.forEach(k=>{_bdImg[k]=Array.isArray(v[k])?v[k].filter(i=>i&&i.path):[];});
       bdGalleries();
       $('bdLast').textContent=last.data&&last.data.value?'Останній раз бот вітав за '+String(last.data.value).split('-').reverse().join('.'):'';
@@ -8568,7 +8589,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       let payload={};
       if(c.read){
         const r=c.read();
-        if(r.err){toast(r.err,'warn'); if(r.el) $(r.el).focus(); return;}
+        if(r.err){toast(r.err,'warn'); const el=r.el&&$(r.el); if(el) ((el._flatpickr&&el._flatpickr.altInput)||el).focus(); return;}
         payload=r;
       } else for(const [name,label,type,req] of c.fields){
         const el=$('botF_'+name);
