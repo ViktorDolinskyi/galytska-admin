@@ -340,6 +340,15 @@
   .bot-sub button.on{color:var(--brand);border-bottom-color:var(--brand)}
   .bot-sub button small{font-weight:500;color:var(--muted);margin-left:4px}
   .bot-hint{font-size:12.5px;color:var(--muted)}
+  .bot-filt{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 18px;border-bottom:1px solid var(--line)}
+  .bot-filt .seg-f{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--slate);border:1px solid var(--line);border-radius:20px;padding:6px 12px;background:var(--surface)}
+  .bot-filt .seg-f:hover{border-color:var(--brand-tint-2);color:var(--ink)}
+  .bot-filt .seg-f[aria-pressed="true"]{background:var(--brand-tint);border-color:var(--brand);color:var(--brand)}
+  .bot-filt .seg-f:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .bot-filt .seg-f i{font-style:normal;font-size:11.5px;background:var(--page);border-radius:10px;padding:1px 7px;color:var(--slate)}
+  .bot-filt .seg-f[aria-pressed="true"] i{background:var(--surface);color:var(--brand)}
+  .bot-filt input{margin-left:auto;width:240px;max-width:100%;font:inherit;font-size:13px;border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--card);color:var(--ink);outline:none}
+  .bot-filt input:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-tint)}
   .bot-hint-row{padding:10px 18px;font-size:12.5px;line-height:1.5;color:var(--slate);background:var(--page);border-bottom:1px solid var(--line)}
   .bot-hint-row:empty{display:none}
   .bot-tbl td{vertical-align:top}
@@ -3205,6 +3214,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
             <button class="btn primary" id="botAddBtn" onclick="botOpen()" style="margin-left:auto">+ Додати</button>
           </div>
           <div class="bot-hint-row" id="botHint"></div>
+          <div class="bot-filt" id="botFilt" style="display:none"></div>
           <div style="overflow-x:auto">
             <table class="tbl bot-tbl">
               <thead id="botHead"></thead>
@@ -9218,21 +9228,16 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
                 ['sort_order','Порядок','number'],['is_active','Показувати в боті (вакансія відкрита)','check']],
         validate:p=>p.link_url&&!/^https?:\/\/\S+$/i.test(p.link_url)?'Посилання має починатися з http:// або https://':'',
         defaults:{is_active:true}},
-      employees:{table:'dict_employees',title:'Доступ до бота',single:'доступ',order:[['bot_access',false],['last_name',true]],noAdd:true,noDel:true,
-        hint:'Співробітники з довідника «Компанія». Увійти в бот можуть ті, кому дозволено доступ і вказано телефон. Якщо забрати доступ (або вказати дату звільнення), бот закриється для людини одразу, а поверненням доступу він знову запрацює без повторного входу.',
-        cols:[['ПІБ',r=>`<b>${esc([r.last_name,r.first_name,r.patronymic].filter(Boolean).join(' '))}</b>`],
+      employees:{table:'dict_employees',title:'Працівники і доступ до бота',single:'доступ',order:[['last_name',true]],noAdd:true,noDel:true,
+        hint:'Усі співробітники з довідника «Компанія» і їхній стан у боті. Увійти можуть ті, кому дозволено доступ і вказано телефон. Якщо забрати доступ (або вказати дату звільнення), бот закриється для людини одразу; повернення доступу знову відкриває бот без повторного входу.',
+        load:empBotLoad, arrange:empBotArrange,
+        cols:[['ПІБ',r=>`<b>${esc([r.last_name,r.first_name,r.patronymic].filter(Boolean).join(' '))}</b>${r._bu&&r._bu.username?`<div class="bot-clip">@${esc(r._bu.username)}</div>`:''}`],
               ['Підрозділ',r=>esc(_units[r.primary_unit_id]||'—')],['Телефон',r=>r.phone?fmtPhone(r.phone):'—'],
-              ['Доступ',r=>yesNo(r.bot_access,'Дозволено','Немає')]],
+              ['Стан у боті',r=>EMPB_ST[r._st].badge],
+              ['Остання активність',r=>r._bu&&r._st==='in'?empBotSeen(r._bu.last_seen_at):'—']],
         fields:[['phone','Телефон','tel',false,'Будь-який формат: +380 93 123 45 67 або 0931234567'],['bot_access','Доступ до бота дозволено','check']],
         validate:p=>p.bot_access&&!p.phone?'Для доступу до бота потрібен телефон':'',
         afterSave:()=>{ if(typeof loadAllDicts==='function') loadAllDicts(); }},
-      users:{table:'bot_users',key:'telegram_id',title:'Підписники',single:'підписника',order:[['last_seen_at',false]],noAdd:true,
-        hint:'Хто вже авторизувався в боті. Вимкни доступ, щоб закрити бот для людини: тоді й у вкладці «Доступ» його буде забрано, і повторно увійти не вийде.',
-        cols:[['ПІБ',r=>`<b>${esc(r.full_name||'—')}</b>${r.username?`<div class="bot-clip">@${esc(r.username)}</div>`:''}`],
-              ['Відділ',r=>esc(r.department||'—')],['Телефон',r=>fmtPhone(r.phone)],
-              ['Підписаний',r=>fmtDate(r.created_at)],['Остання активність',r=>fmtDT(r.last_seen_at)],
-              ['Доступ',r=>yesNo(r.is_authorized,'Активний','Вимкнено')]],
-        fields:[['is_authorized','Доступ до бота активний','check']]},
       faq:{table:'bot_faq',title:'Запитання та відповіді',single:'питання',order:[['sort_order',true],['id',true]],section:'faq',
         hint:'Питання можна згрупувати за темами у вкладці «Підрозділи». До відповіді можна додати файл або посилання.',
         prepare:loadCats, missing:MISSING_CATS,
@@ -9427,7 +9432,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       {id:'learning',ico:'<path d="M2 8l10-4 10 4-10 4-10-4z"/><path d="M6 10v5c3 2 9 2 12 0v-5"/><path d="M22 8v6"/>',label:'Навчання',subs:[['learning','Матеріали'],['cat:learning','Підрозділи']]},
       'sep',
       {id:'mail',ico:'<path d="M3 11v2a1 1 0 0 0 1 1h3l5 4V6L7 10H4a1 1 0 0 0-1 1z"/><path d="M16 9a3 3 0 0 1 0 6"/><path d="M19 6a7 7 0 0 1 0 12"/>',label:'Розсилки',subs:[['schedules','Автоматичні розсилки']]},
-      {id:'people',ico:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/>',label:'Працівники',subs:[['users','Підписники'],['employees','Доступ до бота']]},
+      {id:'people',ico:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/>',label:'Працівники',subs:[['employees','Працівники']]},
       {id:'soon',ico:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',label:'Скоро',subs:[['soon','Скоро']]},
     ];
     let _catSection=null;
@@ -9441,6 +9446,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     }
     window.botTab=function(tab){
       if(tab==='categories') tab='cat:docs';
+      if(tab==='users') tab='employees';   // «Підписники» об'єднано з «Доступом до бота»
       if(!navOf(tab)) tab='news';
       try{ localStorage.setItem(BOT_TAB_KEY,tab); }catch(e){}
       botNavRender(tab);
@@ -9454,7 +9460,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       if(bday) bdLoad(); else if(!soon) botRender();
     };
 
-    (function(){ let t=null; try{ t=localStorage.getItem(BOT_TAB_KEY); }catch(e){} t=navOf(t)?t:'news';
+    (function(){ let t=null; try{ t=localStorage.getItem(BOT_TAB_KEY); }catch(e){} if(t==='users')t='employees'; t=navOf(t)?t:'news';
       botNavRender(t); _catSection=t.startsWith('cat:')?t.slice(4):null; _tab=_catSection?'categories':t;
       if(_tab==='soon'||_tab==='birthdays'){ $('botTableCard').style.display='none'; $(_tab==='soon'?'botSoon':'botBday').style.display=''; } })();
 
@@ -9496,6 +9502,66 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       sub.title=data.last_error||'';
     }
 
+    // ---- Працівники: довідник + підписники бота в одній таблиці ----
+    const EMPB_ST={
+      in:{label:'У боті',badge:'<span class="badge ok">У боті</span>'},
+      wait:{label:'Ще не увійшли',badge:'<span class="badge warn">Доступ є, ще не увійшов</span>'},
+      nophone:{label:'Без телефону',badge:'<span class="badge warn">Доступ є, немає телефону</span>'},
+      none:{label:'Без доступу',badge:'<span class="badge off">Немає доступу</span>'},
+      gone:{label:'Звільнені',badge:'<span class="badge off">Звільнено</span>'},
+    };
+    const _empB={f:'all',q:'',cache:null,useCache:false};
+    async function botAll(make){      // усі рядки, а не лише перші 1000
+      const out=[];
+      for(let from=0;;from+=1000){
+        const {data,error}=await make().range(from,from+999);
+        if(error) return {data:null,error};
+        out.push(...(data||[])); if(!data||data.length<1000) break;
+      }
+      return {data:out,error:null};
+    }
+    async function empBotLoad(){
+      if(_empB.useCache&&_empB.cache){ _empB.useCache=false; return {data:_empB.cache,error:null}; }
+      _empB.useCache=false;
+      const [e,u]=await Promise.all([
+        botAll(()=>db.from('dict_employees').select('*').order('last_name').order('id')),
+        botAll(()=>db.from('bot_users').select('telegram_id,employee_id,username,is_authorized,created_at,last_seen_at').order('telegram_id')),
+      ]);
+      if(e.error) return e;
+      const bu={};
+      (u.data||[]).forEach(x=>{ if(x.employee_id==null) return; const p=bu[x.employee_id];
+        if(!p||(x.is_authorized&&!p.is_authorized)||(x.is_authorized===p.is_authorized&&x.last_seen_at>p.last_seen_at)) bu[x.employee_id]=x; });
+      const today=new Date().toISOString().slice(0,10);
+      e.data.forEach(r=>{
+        r._bu=bu[r.id]||null;
+        r._st=r.dismissal_date&&r.dismissal_date<=today?'gone':r._bu&&r._bu.is_authorized?'in':!r.bot_access?'none':!r.phone?'nophone':'wait';
+      });
+      _empB.cache=e.data;
+      return e;
+    }
+    function empBotSeen(ts){
+      if(!ts) return '—';
+      const d=new Date(ts), t=new Date(); const days=Math.round((new Date(t.getFullYear(),t.getMonth(),t.getDate())-new Date(d.getFullYear(),d.getMonth(),d.getDate()))/864e5);
+      return days<=0?'<span style="color:var(--ok);font-weight:700">сьогодні</span>':days===1?'вчора':days<30?days+' дн. тому':fmtDate(ts);
+    }
+    function empBotArrange(rows){
+      const cnt={all:0,in:0,wait:0,none:0,gone:0};
+      rows.forEach(r=>{ if(r._st!=='gone') cnt.all++; cnt[r._st==='nophone'?'wait':r._st]++; });
+      const F=[['all','Усі працюючі'],['in','У боті'],['wait','Ще не увійшли'],['none','Без доступу'],['gone','Звільнені']];
+      $('botFilt').innerHTML=F.map(([k,l])=>`<button type="button" class="seg-f" aria-pressed="${_empB.f===k}" onclick="empBotFilter('${k}')">${l}<i>${cnt[k]}</i></button>`).join('')
+        +`<input type="search" id="empBotQ" placeholder="Пошук: ПІБ, телефон, підрозділ" aria-label="Пошук працівника" value="${esc(_empB.q)}" oninput="empBotSearch(this.value)">`;
+      const order={in:0,wait:1,nophone:1,none:2,gone:3};
+      const w=_empB.q.toLowerCase().replace(/[^0-9a-zа-яіїєґ' ]/gi,' ').split(/\s+/).filter(Boolean);
+      return rows.filter(r=>_empB.f==='all'?r._st!=='gone':_empB.f==='wait'?(r._st==='wait'||r._st==='nophone'):r._st===_empB.f)
+        .filter(r=>{ if(!w.length) return true;
+          const hay=[r.last_name,r.first_name,r.patronymic,r.phone,_units[r.primary_unit_id],r._bu&&r._bu.username].filter(Boolean).join(' ').toLowerCase();
+          return w.every(x=>hay.includes(x)); })
+        .sort((a,b)=>_empB.f==='all'?(order[a._st]-order[b._st])||0:0);
+    }
+    window.empBotFilter=k=>{ _empB.f=k; _empB.useCache=true; botRender(); };
+    let _empBT=null;
+    window.empBotSearch=v=>{ _empB.q=v; clearTimeout(_empBT); _empBT=setTimeout(()=>{ _empB.useCache=true; botRender().then(()=>{ const i=$('empBotQ'); if(i){ i.focus(); i.setSelectionRange(i.value.length,i.value.length); } }); },200); };
+
     window.botRender=async function(){
       const c=cfg(); if(!c) return;
       const catOnly=c===TABS.categories&&_catSection;
@@ -9509,9 +9575,10 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       body.innerHTML=`<tr><td colspan="${span}" class="empty">Завантаження…</td></tr>`;
       let q=db.from(c.table).select('*');
       c.order.forEach(([col,asc])=>{q=q.order(col,{ascending:asc});});
-      if(c===TABS.employees){ const u=await db.from('company_units').select('id,name'); _units=Object.fromEntries((u.data||[]).map(x=>[x.id,x.name])); }
+      if(c===TABS.employees&&!_empB.useCache){ const u=await db.from('company_units').select('id,name'); _units=Object.fromEntries((u.data||[]).map(x=>[x.id,x.name])); }
+      $('botFilt').style.display=c===TABS.employees?'':'none';
       if(c.prepare) await c.prepare();
-      const {data,error}=await q;
+      const {data,error}=c.load?await c.load():await q;
       if(_tab!==Object.keys(TABS).find(k=>TABS[k]===c)) return; // користувач уже перейшов на іншу вкладку
       if(error){
         const missing=/does not exist|schema cache/i.test(error.message);
