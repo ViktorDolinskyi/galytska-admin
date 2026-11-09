@@ -367,6 +367,10 @@
   .bd-img button{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;border:none;background:rgba(0,0,0,.6);color:#fff;font-size:15px;line-height:24px;padding:0;cursor:pointer}
   .bd-add{width:96px;height:96px;border-radius:10px;border:2px dashed var(--line);display:flex !important;align-items:center;justify-content:center;flex-direction:column;gap:2px;color:var(--muted);font-size:12px !important;font-weight:600;cursor:pointer;margin:0 !important;text-align:center}
   .bd-add b{font-size:24px;line-height:1;color:var(--slate)}
+  .bd-add{transition:border-color .15s,background .15s,color .15s}
+  .bd-add:hover,.bd-add.drag{border-color:var(--brand);border-style:solid;background:var(--brand-tint);color:var(--brand)}
+  .bd-add:hover b,.bd-add.drag b{color:var(--brand)}
+  .bd-add.drag{transform:scale(1.03)}
   .bd-add.busy{opacity:.5;pointer-events:none}
   .bday-form textarea,.bday-form input:not([type=checkbox]){width:100%;font:inherit;font-size:14px;border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:var(--surface);color:var(--ink);box-sizing:border-box}
   .bot-file-cur{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;margin-bottom:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--page)}
@@ -9596,6 +9600,15 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       const r=await db.from('bot_settings').upsert({key:'birthday',value,updated_at:new Date().toISOString()});
       if(r.error) throw r.error;
     }
+    // картинки можна просто перетягнути на плитку «+ Додати»
+    ['dragenter','dragover'].forEach(t=>document.addEventListener(t,e=>{const z=e.target.closest&&e.target.closest('.bd-add');if(!z)return;e.preventDefault();z.classList.add('drag');}));
+    document.addEventListener('dragleave',e=>{const z=e.target.closest&&e.target.closest('.bd-add');if(z&&!z.contains(e.relatedTarget))z.classList.remove('drag');});
+    document.addEventListener('drop',e=>{
+      const z=e.target.closest&&e.target.closest('.bd-add');if(!z)return;
+      e.preventDefault();z.classList.remove('drag');
+      const fs=e.dataTransfer&&e.dataTransfer.files;if(!fs||!fs.length||z.classList.contains('busy'))return;
+      bdAddImages(z.id.replace(/^bdAdd_/,''),{files:fs,value:''});
+    });
     window.bdAddImages=async function(key,input){
       const files=[...input.files]; input.value='';
       const ok=files.filter(f=>/^image\/(jpeg|png|webp)$/.test(f.type)&&f.size<=10*1024*1024);
