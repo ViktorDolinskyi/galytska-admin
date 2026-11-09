@@ -349,6 +349,18 @@
   .bot-filt .seg-f[aria-pressed="true"] i{background:var(--surface);color:var(--brand)}
   .bot-filt input{margin-left:auto;width:240px;max-width:100%;font:inherit;font-size:13px;border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--card);color:var(--ink);outline:none}
   .bot-filt input:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-tint)}
+  .bot-row-click{cursor:pointer}
+  .ebi-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+  .ebi-name{font-family:Unbounded,sans-serif;font-size:16px;font-weight:700;color:var(--ink);line-height:1.35}
+  .ebi-sub{font-size:13px;color:var(--slate);margin-top:3px}
+  .ebi-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px;background:var(--page);border-radius:12px;padding:14px 16px}
+  .ebi-row{display:flex;flex-direction:column;gap:3px;min-width:0}
+  .ebi-row>span{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .ebi-row b{font-size:13.5px;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ebi-row a{color:var(--brand)}
+  .ebi-acc{border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .ebi-card{align-self:flex-start}
+  @media (max-width:520px){.ebi-grid{grid-template-columns:1fr}}
   .bot-hint-row{padding:10px 18px;font-size:12.5px;line-height:1.5;color:var(--slate);background:var(--page);border-bottom:1px solid var(--line)}
   .bot-hint-row:empty{display:none}
   .bot-tbl td{vertical-align:top}
@@ -9235,8 +9247,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
               ['Підрозділ',r=>esc(_units[r.primary_unit_id]||'—')],['Телефон',r=>r.phone?fmtPhone(r.phone):'—'],
               ['Стан у боті',r=>EMPB_ST[r._st].badge],
               ['Остання активність',r=>r._bu&&r._st==='in'?empBotSeen(r._bu.last_seen_at):'—']],
-        fields:[['phone','Телефон','tel',false,'Будь-який формат: +380 93 123 45 67 або 0931234567'],['bot_access','Доступ до бота дозволено','check']],
-        validate:p=>p.bot_access&&!p.phone?'Для доступу до бота потрібен телефон':'',
+        rowClick:true, modalTitle:'Працівник', form:empBotForm,
+        read:()=>{ const on=$('botF_bot_access').checked; return on&&!(_edit&&_edit.phone)?{err:'Для доступу до бота потрібен телефон — вкажи його в картці працівника'}:{bot_access:on}; },
         afterSave:()=>{ if(typeof loadAllDicts==='function') loadAllDicts(); }},
       faq:{table:'bot_faq',title:'Запитання та відповіді',single:'питання',order:[['sort_order',true],['id',true]],section:'faq',
         hint:'Питання можна згрупувати за темами у вкладці «Підрозділи». До відповіді можна додати файл або посилання.',
@@ -9539,6 +9551,25 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       _empB.cache=e.data;
       return e;
     }
+    function empBotForm(r){
+      const bu=r._bu, fio=[r.last_name,r.first_name,r.patronymic].filter(Boolean).join(' ');
+      const fd=d=>d?String(d).slice(0,10).split('-').reverse().join('.'):'—';
+      const row=(l,v)=>`<div class="ebi-row"><span>${l}</span><b>${v}</b></div>`;
+      const canCard=typeof window.empCardOpen==='function'&&accLevel('company')>=1;
+      const noPhone=!r.phone&&!r.bot_access;
+      return `<div class="ebi-head"><div><div class="ebi-name">${esc(fio)}</div><div class="ebi-sub">${esc([r.position,_units[r.primary_unit_id]].filter(Boolean).join(' · ')||'Посаду не вказано')}</div></div>${EMPB_ST[r._st].badge}</div>
+        <div class="ebi-grid">
+          ${row('Телефон',r.phone?fmtPhone(r.phone):'не вказано')}
+          ${row('Telegram',bu&&bu.username?`<a href="https://t.me/${encodeURIComponent(bu.username)}" target="_blank" rel="noopener">@${esc(bu.username)}</a>`:'—')}
+          ${row('У боті з',bu&&bu.created_at?fd(bu.created_at):'—')}
+          ${row('Остання активність',bu&&r._st==='in'?empBotSeen(bu.last_seen_at):'—')}
+          ${row('Дата прийому',fd(r.hire_date))}
+          ${row('Дата звільнення',r.dismissal_date?fd(r.dismissal_date):'—')}
+        </div>
+        <div class="ebi-acc"><label class="bot-check"><input type="checkbox" id="botF_bot_access" ${r.bot_access?'checked':''} ${noPhone?'disabled':''}>Доступ до бота дозволено</label>
+          <div class="bot-field-note">${noPhone?'Щоб дати доступ, спершу вкажи телефон у картці працівника: бот впускає лише за цим номером.':r.bot_access?'Якщо вимкнути, бот закриється для людини одразу.':'Після збереження людина зможе увійти в бот зі своїм номером телефону.'}</div></div>
+        ${canCard?`<button type="button" class="btn ghost ebi-card" onclick="botClose();empCardOpen(${r.id})">Відкрити картку працівника</button>`:''}`;
+    }
     function empBotSeen(ts){
       if(!ts) return '—';
       const d=new Date(ts), t=new Date(); const days=Math.round((new Date(t.getFullYear(),t.getMonth(),t.getDate())-new Date(d.getFullYear(),d.getMonth(),d.getDate()))/864e5);
@@ -9592,7 +9623,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       if(c===TABS.contacts) fillDepts();
       if(!_rows.length){body.innerHTML=`<tr><td colspan="${span}" class="empty">Поки що порожньо${c.noAdd?'':'. Натисни «'+esc($('botAddBtn').textContent)+'», щоб додати перше.'}</td></tr>`;return;}
       const k=keyOf(c);
-      body.innerHTML=_rows.map(r=>`<tr>${cols.map(x=>`<td>${x[1](r)}</td>`).join('')}
+      body.innerHTML=_rows.map(r=>`<tr${c.rowClick?` class="bot-row-click" onclick="if(!event.target.closest('button'))botOpen('${r[k]}')"`:''}>${cols.map(x=>`<td>${x[1](r)}</td>`).join('')}
         <td class="bot-acts">${c.extraActs?c.extraActs(r):''}<button class="ico-btn" title="Редагувати" onclick="botOpen('${r[k]}')">${_eIco}</button>${c.noDel?'':`<button class="ico-btn del" title="Видалити" onclick="askRowDel(this,'Видалити?','botDel','${r[k]}','botRender')">${_dIco}</button>`}</td></tr>`).join('');
     };
 
@@ -9720,7 +9751,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       const c=cfg(), k=keyOf(c);
       _edit=id!=null?_rows.find(r=>String(r[k])===String(id)):null;
       const v=_edit||{...(c.defaults||{}),...(c===TABS.categories&&_catSection?{section:_catSection}:{}),sort_order:(c.fields||[]).some(f=>f[0]==='sort_order')?((_rows.reduce((m,r)=>Math.max(m,r.sort_order||0),-1))+1):undefined};
-      $('botModalTitle').textContent=(_edit?'Редагувати ':'Додати ')+c.single;
+      $('botModalTitle').textContent=c.modalTitle||((_edit?'Редагувати ':'Додати ')+c.single);
       $('botForm').innerHTML=c.form?c.form(v):c.fields.map(([name,label,type,req,note,opts])=>{
         const val=v[name];
         const star=req?' <span style="color:var(--brand)">*</span>':'';
