@@ -1279,6 +1279,142 @@
   .auth-err{color:var(--brand);font-size:12.5px;font-weight:600;min-height:18px;margin-top:10px}
   .auth-hint{color:var(--muted);font-size:11.5px;margin-top:16px;text-align:center;line-height:1.4}
 
+
+  /* ===== Картка співробітника «Досьє» ===== */
+  .ec-link{all:unset;cursor:pointer;font-weight:700;color:var(--ink);border-radius:4px}
+  .ec-link:hover{color:var(--brand);text-decoration:underline;text-underline-offset:3px}
+  .ec-link:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .ec-modal{background:var(--page);border-radius:18px;width:100%;max-width:1180px;height:min(860px,calc(100vh - 40px));display:flex;overflow:hidden;box-shadow:0 24px 60px rgba(27,23,20,.3);animation:fade .18s ease}
+  .ec-side{width:320px;flex:none;background:var(--surface);border-right:1px solid var(--line);overflow-y:auto;padding:24px 22px;display:flex;flex-direction:column;gap:18px;scrollbar-width:thin}
+  .ec-main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .ec-top{display:flex;align-items:center;gap:8px;padding:12px 18px 0 22px;border-bottom:1px solid var(--line);background:var(--surface)}
+  .ec-tabs{display:flex;gap:2px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
+  .ec-tab{all:unset;cursor:pointer;padding:10px 9px 12px;font-size:13px;font-weight:700;color:var(--slate);border-bottom:2px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:6px}
+  .ec-tab:hover{color:var(--ink)}
+  .ec-tab[aria-selected="true"]{color:var(--brand);border-bottom-color:var(--brand)}
+  .ec-tab:focus-visible{outline:2px solid var(--brand);outline-offset:-2px;border-radius:6px}
+  .ec-tab .n{font-size:11px;background:var(--page);color:var(--slate);border-radius:10px;padding:1px 7px}
+  .ec-tab .n.hot{background:var(--warn-bg);color:var(--warn)}
+  .ec-topbtns{display:flex;gap:4px;padding-bottom:8px}
+  .ec-body{flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:18px;scrollbar-width:thin}
+  .ec-photo{width:96px;height:96px;border-radius:50%;background:var(--brand-tint);color:var(--brand);display:grid;place-items:center;font-family:Unbounded,sans-serif;font-weight:700;font-size:28px;position:relative;flex:none;overflow:hidden}
+  .ec-photo img{width:100%;height:100%;object-fit:cover}
+  .ec-photo-btn{all:unset;position:absolute;inset:0;cursor:pointer;display:grid;place-items:center;background:rgba(27,23,20,.5);color:#fff;font:700 11.5px Manrope,sans-serif;opacity:0;transition:.15s;border-radius:50%}
+  .ec-photo:hover .ec-photo-btn,.ec-photo-btn:focus-visible{opacity:1}
+  .ec-head{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
+  .ec-head h2{margin:0;font-family:Unbounded,sans-serif;font-size:17px;font-weight:700;color:var(--ink);line-height:1.35}
+  .ec-sub{font-size:13px;color:var(--slate)}
+  .ec-badges{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+  .ec-acts{display:flex;gap:8px}
+  .ec-act{flex:1;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:flex;align-items:center;justify-content:center;gap:7px;font:700 13px Manrope,sans-serif;text-decoration:none;cursor:pointer}
+  .ec-act svg{width:16px;height:16px}
+  .ec-act:hover{border-color:var(--brand-tint-2);background:var(--brand-tint);color:var(--brand)}
+  .ec-act.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+  .ec-act.primary:hover{background:var(--brand-dark);color:#fff}
+  .ec-act.dis{opacity:.45;pointer-events:none}
+  .ec-act.sq{flex:none;width:40px}
+  .ec-props{display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--line);padding-top:16px}
+  .ec-prop{display:flex;flex-direction:column;gap:3px;font-size:13.5px;color:var(--ink)}
+  .ec-lbl{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .ec-prop a{color:var(--ink)} .ec-prop a:hover{color:var(--brand)}
+  .ec-tags{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .ec-tag{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;background:var(--info-bg);color:var(--info);border-radius:20px;padding:4px 10px}
+  .ec-tag button{all:unset;cursor:pointer;opacity:.6;font-size:14px;line-height:1;padding:0 2px}
+  .ec-tag button:hover{opacity:1}
+  .ec-tag-in{font:inherit;font-size:12px;border:1px dashed var(--line);border-radius:20px;padding:4px 10px;width:110px;background:transparent;color:var(--ink);outline:none}
+  .ec-tag-in:focus{border-color:var(--brand);border-style:solid}
+  .ec-tenure{background:var(--page);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px}
+  .ec-tenure b{font-size:18px;color:var(--ink)}
+  .ec-bar{height:6px;border-radius:4px;background:var(--line);overflow:hidden}
+  .ec-bar i{display:block;height:100%;background:var(--brand);border-radius:4px}
+  .ec-note-s{font-size:12px;color:var(--slate);line-height:1.45}
+  .ec-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px}
+  .ec-card h3{margin:0;font-size:14px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:8px}
+  .ec-card h3 .sp{flex:1}
+  .ec-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
+  .ec-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+  .ec-kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:4px;min-width:0}
+  .ec-kpi b{font-size:20px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ec-kpi span:last-child{font-size:12px;color:var(--slate)}
+  .ec-att{display:flex;flex-direction:column;gap:8px}
+  .ec-att-i{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--ink);background:var(--surface)}
+  .ec-att-i::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--info);flex:none}
+  .ec-att-i.warn{background:var(--warn-bg);border-color:transparent} .ec-att-i.warn::before{background:var(--warn)}
+  .ec-att-i.bad{background:var(--brand-tint);border-color:transparent} .ec-att-i.bad::before{background:var(--brand)}
+  .ec-att-i.ok::before{background:var(--ok)}
+  .ec-att-i button{all:unset;margin-left:auto;font-size:12px;font-weight:700;color:var(--brand);cursor:pointer}
+  .ec-list{display:flex;flex-direction:column}
+  .ec-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line);font-size:13.5px;color:var(--ink);min-height:24px}
+  .ec-row:first-child{border-top:none;padding-top:0}
+  .ec-row .grow{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .ec-row .meta{font-size:12px;color:var(--slate)}
+  .ec-row .when{font-size:12.5px;color:var(--slate);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .ec-empty{font-size:13px;color:var(--muted);padding:4px 0}
+  .ec-chips{display:flex;flex-wrap:wrap;gap:6px}
+  .ec-chip{all:unset;cursor:pointer;font-size:12.5px;font-weight:600;border:1px solid var(--line);border-radius:20px;padding:5px 11px;color:var(--ink);background:var(--surface)}
+  .ec-chip:hover,.ec-chip:focus-visible{border-color:var(--brand);color:var(--brand)}
+  .ec-tl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+  .ec-tl li{display:flex;gap:14px;position:relative;padding-bottom:18px}
+  .ec-tl li:last-child{padding-bottom:0}
+  .ec-tl li::before{content:"";position:absolute;left:5px;top:16px;bottom:-2px;width:2px;background:var(--line)}
+  .ec-tl li:last-child::before{display:none}
+  .ec-tl .dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--brand);background:var(--surface);flex:none;margin-top:3px;box-sizing:border-box}
+  .ec-tl li.cur .dot{background:var(--brand)}
+  .ec-tl li.ev .dot{border-color:var(--muted)}
+  .ec-tl b{font-size:14px;color:var(--ink);display:block}
+  .ec-tl span{font-size:12.5px;color:var(--slate)}
+  .ec-form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:end;background:var(--page);border-radius:12px;padding:14px}
+  .ec-form .w2{grid-column:span 2} .ec-form .w4{grid-column:1/-1}
+  .ec-form label{font-size:11.5px;font-weight:700;color:var(--slate);display:block;margin-bottom:5px}
+  .ec-form input,.ec-form select,.ec-form textarea,.ec-inp{width:100%;box-sizing:border-box;font:inherit;font-size:13.5px;border:1px solid var(--line);border-radius:10px;padding:9px 11px;color:var(--ink);background:var(--card);outline:none}
+  .ec-form select,.ec-sel{appearance:none;-webkit-appearance:none;background:var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%239B948E' stroke-width='2.2' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;padding-right:28px;cursor:pointer}
+  .ec-sel{font:inherit;font-size:12.5px;font-weight:700;border:1px solid var(--line);border-radius:8px;padding:5px 26px 5px 9px;color:var(--ink)}
+  .ec-form textarea{resize:vertical;min-height:70px}
+  .ec-form input:focus,.ec-form select:focus,.ec-form textarea:focus,.ec-inp:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-tint)}
+  .ec-form .acts{display:flex;gap:8px;justify-content:flex-end;grid-column:1/-1}
+  .ec-file{font-size:12.5px;color:var(--slate);display:flex;align-items:center;gap:8px;min-height:38px}
+  .ec-file label{all:unset;cursor:pointer;color:var(--brand);font-weight:700;font-size:12.5px}
+  .ec-banner{background:var(--warn-bg);color:var(--ink);border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.5}
+  .ec-banner code{font-size:12px}
+  .ec-chart{width:100%;height:auto;display:block;overflow:visible}
+  .ec-chart text{font:600 11px Manrope,sans-serif;fill:var(--muted)}
+  .ec-chart .gl{stroke:var(--line);stroke-width:1}
+  body:has(.modal-scrim.open) .sb-collapse-btn{visibility:hidden}
+  .ec-modal{--ec-plan:#D6CFC8}
+  [data-theme="dark"] .ec-modal{--ec-plan:#5C5650}
+  @media (prefers-color-scheme: dark){[data-theme="system"] .ec-modal{--ec-plan:#5C5650}}
+  .ec-chart .bp{fill:var(--ec-plan)}
+  .ec-chart .bf{fill:var(--brand)}
+  .ec-chart .hit{fill:transparent;cursor:default}
+  .ec-chart g.m:hover .hit{fill:var(--hover-bg-2)}
+  .ec-legend{display:flex;gap:16px;font-size:12.5px;color:var(--slate);align-items:center}
+  .ec-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+  .ec-tbl{width:100%;border-collapse:collapse;font-size:13px}
+  .ec-tbl th{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-align:right;padding:8px 10px;border-bottom:1px solid var(--line);background:transparent}
+  .ec-tbl th:first-child,.ec-tbl td:first-child{text-align:left}
+  .ec-tbl td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+  .ec-tbl tr:last-child td{border-bottom:none;font-weight:800}
+  .ec-tip{position:fixed;z-index:200;pointer-events:none;background:var(--ink);color:var(--surface);font-size:12px;border-radius:8px;padding:7px 10px;line-height:1.5;box-shadow:0 6px 20px rgba(0,0,0,.2);display:none}
+  .ec-vac{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .ec-mini-del{all:unset;cursor:pointer;color:var(--muted);display:grid;place-items:center;width:28px;height:28px;border-radius:7px;flex:none}
+  .ec-mini-del:hover{color:var(--brand);background:var(--brand-tint)}
+  .ec-mini-del svg{width:15px;height:15px}
+  .ec-note{display:flex;flex-direction:column;gap:6px;padding:12px 0;border-top:1px solid var(--line)}
+  .ec-note:first-child{border-top:none;padding-top:0}
+  .ec-note p{margin:0;font-size:13.5px;color:var(--ink);line-height:1.55;white-space:pre-wrap}
+  .ec-note .meta{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}
+  .ec-loading{font-size:13px;color:var(--muted);padding:30px;text-align:center}
+  @media (max-width:900px){
+    .ec-modal{flex-direction:column;height:calc(100vh - 24px);overflow-y:auto}
+    .ec-side{width:auto;border-right:none;border-bottom:1px solid var(--line);overflow:visible}
+    .ec-main{min-height:70vh}
+    .ec-body{overflow:visible}
+    .ec-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .ec-grid2,.ec-vac{grid-template-columns:1fr}
+    .ec-form{grid-template-columns:1fr 1fr}
+  }
+  #ecModal{padding:20px}
+  @media (max-width:900px){#ecModal{padding:12px}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -2054,6 +2190,28 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       </div>
 
       <!-- модалка: співробітник -->
+      <!-- картка співробітника «Досьє» (перед empModal, щоб редагування відкривалось поверх) -->
+      <div class="modal-scrim" id="ecModal" onclick="if(event.target===this)ecClose()">
+        <div class="ec-modal" role="dialog" aria-modal="true" aria-labelledby="ecName">
+          <aside class="ec-side" id="ecSide" aria-label="Профіль"></aside>
+          <div class="ec-main">
+            <div class="ec-top">
+              <nav class="ec-tabs" id="ecTabs" role="tablist" aria-label="Розділи картки"></nav>
+              <div class="ec-topbtns">
+                <button class="ico-btn" type="button" onclick="ecStep(-1)" aria-label="Попередній співробітник" title="Попередній"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg></button>
+                <button class="ico-btn" type="button" onclick="ecStep(1)" aria-label="Наступний співробітник" title="Наступний"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></button>
+                <button class="ico-btn" type="button" onclick="ecClose()" aria-label="Закрити"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+              </div>
+            </div>
+            <div class="ec-body" id="ecBody"></div>
+          </div>
+        </div>
+        <input type="file" id="ecPhotoIn" accept="image/*" style="display:none" onchange="ecPhotoUpload(this)">
+        <datalist id="ecDocTitles"><option>Медична книжка</option><option>Санітарний мінімум</option><option>Трудовий договір</option><option>Договір про матеріальну відповідальність</option><option>Інструктаж з охорони праці</option><option>Посвідчення з пожежної безпеки</option><option>Паспорт (копія)</option><option>ІПН (копія)</option></datalist>
+        <datalist id="ecTagList"></datalist>
+      </div>
+      <div class="ec-tip" id="ecTip" role="tooltip"></div>
+
       <div class="modal-scrim" id="empModal" onclick="if(event.target===this)empCloseModal()">
         <div class="modal" style="max-width:440px;max-height:90vh;display:flex;flex-direction:column">
           <div class="modal-head">
@@ -5152,6 +5310,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     ]);
     dictEmps=e.data||[];dictTypes=t.data||[];dictKinds=k.data||[];
     renderEmps();renderTypes();renderKinds();
+    if(window.ecRefresh)ecRefresh();
     fillOrgModalSelects();orgFillFilterSelects();
     orgRender();
   }
@@ -5170,7 +5329,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     const tbody=document.getElementById('empBody');if(!tbody)return;
     document.getElementById('empCount').textContent=dictEmps.length;
     tbody.innerHTML=dictEmps.map(r=>{const gone=empIsDismissed(r);return `<tr${gone?' style="opacity:.55"':''}>
-      <td class="t-name">${orgEsc(empFull(r))}${gone?' <span class="badge warn" title="Звільнено '+empFmtDate(r.dismissal_date)+'">Звільнено</span>':''}</td>
+      <td class="t-name"><button class="ec-link" type="button" onclick="empCardOpen(${r.id})" title="Відкрити картку">${orgEsc(empFull(r))}</button>${gone?' <span class="badge warn" title="Звільнено '+empFmtDate(r.dismissal_date)+'">Звільнено</span>':''}</td>
       <td style="color:var(--slate);font-size:13px">${orgEsc(r.position||'—')}</td>
       <td style="color:var(--slate);font-size:13px;white-space:nowrap">${r.phone?empFmtPhone(r.phone):'—'}${r.bot_access?' <span class="badge ok" title="Доступ до бота">Бот</span>':''}</td>
       <td style="color:var(--slate);font-size:13px">${empFmtDate(r.birthdate)}</td>
@@ -5269,6 +5428,564 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
   };
   window.empDel=async(id)=>{
     await db.from('dict_employees').delete().eq('id',id);await loadAllDicts();
+  };
+
+  /* --- Картка співробітника «Досьє»: профіль зліва, вкладки справа --- */
+  const EC_MON=['січня','лютого','березня','квітня','травня','червня','липня','серпня','вересня','жовтня','листопада','грудня'];
+  const EC_MON_S=['Січ','Лют','Бер','Кві','Тра','Чер','Лип','Сер','Вер','Жов','Лис','Гру'];
+  const EC_MON_N=['січень','лютий','березень','квітень','травень','червень','липень','серпень','вересень','жовтень','листопад','грудень'];
+  const EC_MILESTONES=[1,3,5,10,15,20,25,30,35,40];
+  const EC_TR={planned:'Заплановано',in_progress:'Проходить',done:'Пройдено',failed:'Не склав'};
+  const EC_TR_B={planned:'off',in_progress:'info',done:'ok',failed:'warn'};
+  const EC_VK={annual:'Щорічна',unpaid:'Без збереження',sick:'Лікарняний',other:'Інше'};
+  const EC_SQL='employee_card.sql';
+  let ecId=null, ecTab='overview', ecD=null, ecReq=0, ecForm=null;
+  const ecPhotoCache={};
+
+  const ecPl=(n,a,b,c)=>{const m=Math.abs(n)%100,k=m%10;return m>10&&m<20?c:k===1?a:k>=2&&k<=4?b:c;};
+  const ecYears=n=>n+' '+ecPl(n,'рік','роки','років');
+  const ecDays=n=>n+' '+ecPl(n,'день','дні','днів');
+  const ecD8=s=>{const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(s||'');return m?new Date(+m[1],+m[2]-1,+m[3]):null;};
+  const ecIso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const ecToday=()=>ecD8(empToday());
+  const ecDiff=(a,b)=>Math.round((b-a)/864e5);          // днів від a до b
+  const ecLong=d=>d?`${d.getDate()} ${EC_MON[d.getMonth()]} ${d.getFullYear()}`:'—';
+  const ecShort=d=>d?`${d.getDate()} ${EC_MON[d.getMonth()]}`:'—';
+  const ecMoney=v=>Math.round(v||0).toLocaleString('uk-UA')+' ₴';
+  const ecInit=r=>((r.last_name||'')[0]||'')+((r.first_name||'')[0]||'');
+  const ecLevel=()=>accLevel('company');
+  function ecYM(from,to){            // повні роки й місяці між датами
+    let m=(to.getFullYear()-from.getFullYear())*12+(to.getMonth()-from.getMonth());
+    if(to.getDate()<from.getDate())m--;
+    m=Math.max(0,m);return {y:Math.floor(m/12),m:m%12,total:m};
+  }
+  function ecYMtxt(o){
+    if(!o.y&&!o.m)return 'менше місяця';
+    return [o.y?o.y+' р.':'',o.m?o.m+' міс.':''].filter(Boolean).join(' ');
+  }
+  function ecAddYears(d,n){const x=new Date(d.getFullYear()+n,d.getMonth(),d.getDate());if(x.getMonth()!==d.getMonth())x.setDate(0);return x;}
+  function ecNextBirthday(bd,today){
+    if(!bd)return null;
+    let x=ecAddYears(bd,today.getFullYear()-bd.getFullYear());
+    if(x<today)x=ecAddYears(bd,today.getFullYear()-bd.getFullYear()+1);
+    return x;
+  }
+  // Стаж, наступний ювілей і прогрес до нього
+  function ecTenure(r){
+    const hire=ecD8(r.hire_date);if(!hire)return null;
+    const gone=empIsDismissed(r), today=ecToday();
+    const end=gone?ecD8(r.dismissal_date):today;
+    const ym=ecYM(hire,end);
+    const out={hire,ym,gone};
+    if(!gone){
+      const next=EC_MILESTONES.find(y=>ecAddYears(hire,y)>today);
+      if(next){
+        const prev=[...EC_MILESTONES].reverse().find(y=>y<next)||0;
+        const a=ecAddYears(hire,prev),b=ecAddYears(hire,next);
+        out.next=next;out.nextDate=b;out.left=ecYM(today,b);out.daysLeft=ecDiff(today,b);
+        out.pct=Math.min(100,Math.max(2,Math.round((today-a)/(b-a)*100)));
+      }
+    }
+    return out;
+  }
+  // Оргструктура: батьки, шлях, керівник
+  function ecOrg(){
+    const par={},node={};
+    (function walk(list,p){(list||[]).forEach(n=>{node[n.id]=n;par[n.id]=p;walk(n.children,n);});})(orgData,null);
+    return {par,node};
+  }
+  function ecUnitPath(unitId){
+    const {par,node}=ecOrg();let n=node[unitId];const out=[];
+    while(n){out.unshift(n.name);n=par[n.id];}
+    return out;
+  }
+  function ecManager(r){
+    const {par,node}=ecOrg();let n=node[r.primary_unit_id];
+    while(n){
+      if(n.employee_id&&n.employee_id!==r.id){const m=dictEmps.find(e=>e.id===n.employee_id);if(m)return {emp:m,unit:n};}
+      n=par[n.id];
+    }
+    return null;
+  }
+  const ecUnitName=id=>{const {node}=ecOrg();return node[id]?node[id].name:'';};
+  // Кар'єра з HR-файлу: суміжні місяці з тією самою посадою й підрозділом — один період
+  function ecCareer(hr){
+    const rows=(hr||[]).slice().sort((a,b)=>a.year-b.year||a.month-b.month);
+    const per=[];
+    rows.forEach(e=>{
+      const key=(e.position||'')+'|'+e.unit_id, idx=e.year*12+e.month-1;
+      let p=per.find(x=>x.key===key&&x.to>=idx-1&&x.to<=idx);
+      if(p){p.to=idx;}else per.push({key,position:e.position||'',unit_id:e.unit_id,from:idx,to:idx});
+    });
+    return per.sort((a,b)=>b.from-a.from||b.to-a.to);
+  }
+  const ecIdxTxt=i=>`${String(i%12+1).padStart(2,'0')}.${Math.floor(i/12)}`;
+  // ФОП за 12 місяців, що закінчуються поточним
+  function ecPayroll(hr){
+    const t=ecToday(), end=t.getFullYear()*12+t.getMonth(), out=[];
+    for(let i=end-11;i<=end;i++){
+      const y=Math.floor(i/12),m=i%12+1;
+      const rows=(hr||[]).filter(e=>e.year===y&&e.month===m);
+      out.push({y,m,plan:rows.reduce((s,e)=>s+(+e.amount_plan||0),0),fact:rows.reduce((s,e)=>s+(+e.amount_fact||0),0)});
+    }
+    return out;
+  }
+  function ecDocState(d,today){
+    if(!d.expires_on)return {cls:'off',txt:'Безстроковий',days:null};
+    const days=ecDiff(today,ecD8(d.expires_on));
+    if(days<0)return {cls:'bad',txt:'Прострочено '+empFmtDate(d.expires_on),days};
+    if(days<=30)return {cls:'warn',txt:days===0?'Закінчується сьогодні':'Закінчується через '+ecDays(days),days};
+    return {cls:'ok',txt:'Дійсний до '+empFmtDate(d.expires_on),days};
+  }
+  // Відпустки: днів щорічної відпустки в поточному році
+  function ecVacUsed(vac,year){
+    const a=new Date(year,0,1),b=new Date(year,11,31);
+    return (vac||[]).filter(v=>v.kind==='annual').reduce((s,v)=>{
+      const f=ecD8(v.date_from),t=ecD8(v.date_to);
+      const x=f<a?a:f,y=t>b?b:t;
+      return s+(y>=x?ecDiff(x,y)+1:0);
+    },0);
+  }
+
+  window.empCardOpen=async(id)=>{
+    if(!$('ecModal').classList.contains('open'))ecTab='overview';
+    ecId=id;ecForm=null;ecD=null;
+    $('ecModal').classList.add('open');
+    ecRender();
+    await ecLoad();
+  };
+  window.ecClose=()=>{$('ecModal').classList.remove('open');ecId=null;ecHideTip();};
+  window.ecStep=dir=>{
+    const ids=dictEmps.map(e=>e.id);const i=ids.indexOf(ecId);
+    if(i<0||!ids.length)return;
+    empCardOpen(ids[(i+dir+ids.length)%ids.length]);
+  };
+  document.addEventListener('keydown',e=>{
+    if(!ecId||!$('ecModal').classList.contains('open'))return;
+    if(document.querySelector('.modal-scrim.open:not(#ecModal)'))return;   // поверх відкрите редагування
+    if(e.key==='Escape'){ecClose();}
+  });
+
+  async function ecLoad(){
+    const id=ecId, req=++ecReq;
+    const q=t=>db.from(t).select('*').eq('employee_id',id);
+    const none=Promise.resolve({data:null,error:null});
+    const [n,d,t,v,b,h]=await Promise.all([
+      q('emp_notes').order('created_at',{ascending:false}),
+      q('emp_documents').order('expires_on',{ascending:true,nullsFirst:false}),
+      q('emp_trainings').order('created_at',{ascending:false}),
+      q('emp_vacations').order('date_from',{ascending:false}),
+      accLevel('bot')>=1?q('bot_users'):none,
+      accLevel('budget')>=1?q('hr_entries'):none
+    ]);
+    if(req!==ecReq||id!==ecId)return;
+    const missing=[n,d,t,v].some(x=>x.error&&/does not exist|Could not find|PGRST205|42P01/i.test((x.error.message||'')+(x.error.code||'')));
+    ecD={missing,notes:n.data||[],docs:d.data||[],trainings:t.data||[],vac:v.data||[],
+         bot:b.data,hr:h.data,botAcc:accLevel('bot')>=1,budgetAcc:accLevel('budget')>=1};
+    const r=dictEmps.find(e=>e.id===id);
+    if(r&&r.photo_path&&!ecPhotoCache[r.photo_path]){
+      const {data}=await db.storage.from('emp-files').createSignedUrl(r.photo_path,3600);
+      if(data&&data.signedUrl)ecPhotoCache[r.photo_path]=data.signedUrl;
+    }
+    if(req!==ecReq||id!==ecId)return;
+    ecRender();
+  }
+  window.ecRefresh=()=>{if(ecId&&$('ecModal').classList.contains('open')){if(!dictEmps.some(e=>e.id===ecId)){ecClose();return;}ecRender();}};
+
+  function ecRender(){
+    const r=dictEmps.find(e=>e.id===ecId);if(!r)return;
+    $('ecSide').innerHTML=ecSideHtml(r);
+    const tabs=ecTabs(r);
+    if(!tabs.some(t=>t.k===ecTab))ecTab='overview';
+    $('ecTabs').innerHTML=tabs.map(t=>`<button class="ec-tab" type="button" role="tab" aria-selected="${t.k===ecTab}" onclick="ecSetTab('${t.k}')">${t.t}${t.n!=null&&t.n!==''?`<span class="n${t.hot?' hot':''}">${t.n}</span>`:''}</button>`).join('');
+    const body=$('ecBody');
+    if(!ecD){body.innerHTML='<div class="ec-loading">Завантаження…</div>';return;}
+    const fn={overview:ecOverview,career:ecCareerTab,pay:ecPayTab,docs:ecDocsTab,train:ecTrainTab,vac:ecVacTab,bot:ecBotTab,notes:ecNotesTab}[ecTab];
+    body.innerHTML=(ecD.missing?ecMissingBanner():'')+fn(r);
+    ecWire(body);
+  }
+  window.ecSetTab=k=>{ecTab=k;ecForm=null;ecRender();$('ecBody').scrollTop=0;};
+  function ecTabs(r){
+    const D=ecD||{docs:[],trainings:[],notes:[]};const today=ecToday();
+    const hotDocs=D.docs.filter(d=>{const s=ecDocState(d,today);return s.cls==='bad'||s.cls==='warn';}).length;
+    const t=[{k:'overview',t:'Огляд'},{k:'career',t:"Кар'єра"}];
+    if(!ecD||ecD.budgetAcc)t.push({k:'pay',t:'Фонд оплати'});
+    t.push({k:'docs',t:'Документи',n:hotDocs||(D.docs.length||''),hot:!!hotDocs});
+    t.push({k:'train',t:'Навчання',n:D.trainings.length||''});
+    t.push({k:'vac',t:'Відпустки'});
+    t.push({k:'bot',t:'Бот'});
+    t.push({k:'notes',t:'Нотатки',n:D.notes.length||''});
+    return t;
+  }
+  function ecMissingBanner(){
+    return `<div class="ec-banner"><b>Нові розділи картки ще не підключені.</b> Виконай <code>${EC_SQL}</code> у Supabase → SQL Editor, і тут з'являться фото, теги, документи, навчання, відпустки та нотатки. Огляд, кар'єра й фонд оплати вже працюють.</div>`;
+  }
+  const ecIco={
+    phone:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>',
+    send:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>',
+    edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
+    del:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>',
+    file:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>'
+  };
+  function ecBotRow(){return ecD&&ecD.bot?ecD.bot.find(b=>b.is_authorized)||ecD.bot[0]:null;}
+
+  function ecSideHtml(r){
+    const lvl=ecLevel(), canEdit=lvl>=2, ready=ecD&&!ecD.missing;
+    const gone=empIsDismissed(r), bu=ecBotRow();
+    const photo=r.photo_path&&ecPhotoCache[r.photo_path];
+    const unitPath=r.primary_unit_id?ecUnitPath(r.primary_unit_id):[];
+    const unit=unitPath[unitPath.length-1]||'';
+    const mgr=ecManager(r);
+    const bd=ecD8(r.birthdate), today=ecToday();
+    const age=bd?ecYM(bd,today).y:null;
+    const ten=ecTenure(r);
+    const tg=bu&&bu.username?'https://t.me/'+encodeURIComponent(bu.username):null;
+    const tags=Array.isArray(r.tags)?r.tags:[];
+    let h=`<div class="ec-head">
+      <div class="ec-photo">${photo?`<img src="${orgEsc(photo)}" alt="">`:orgEsc(ecInit(r))}
+        ${canEdit&&ready?`<button class="ec-photo-btn" type="button" onclick="$('ecPhotoIn').click()">${photo?'Змінити фото':'Додати фото'}</button>`:''}</div>
+      <div><h2 id="ecName">${orgEsc(empFull(r))}</h2><div class="ec-sub">${orgEsc([r.position,unit].filter(Boolean).join(' · ')||'Посаду не вказано')}</div></div>
+      <div class="ec-badges">${gone?`<span class="badge warn">Звільнено ${empFmtDate(r.dismissal_date)}</span>`:'<span class="badge ok">Працює</span>'}
+        ${bu&&bu.is_authorized?'<span class="badge info">У боті</span>':r.bot_access?'<span class="badge off">Бот: не увійшов</span>':''}
+        ${ten&&ten.daysLeft!=null&&ten.daysLeft<=30?`<span class="badge warn" title="${ecLong(ten.nextDate)}">Ювілей ${ecYears(ten.next)}</span>`:''}</div>
+    </div>
+    <div class="ec-acts">
+      <a class="ec-act primary${r.phone?'':' dis'}" href="${r.phone?'tel:+'+orgEsc(r.phone):'#'}"${r.phone?'':' aria-disabled="true" tabindex="-1"'}>${ecIco.phone}Дзвінок</a>
+      <a class="ec-act${tg?'':' dis'}" href="${tg||'#'}" target="_blank" rel="noopener"${tg?'':' aria-disabled="true" tabindex="-1"'} title="${tg?'Написати в Telegram':'Немає імені користувача Telegram'}">${ecIco.send}Написати</a>
+      ${canEdit?`<button class="ec-act sq" type="button" aria-label="Редагувати" title="Редагувати" onclick="empEditOpen(${r.id},${qs(r.last_name||'')},${qs(r.first_name||'')},${qs(r.patronymic||'')})">${ecIco.edit}</button>`:''}
+    </div>
+    <div class="ec-props">
+      <div class="ec-prop"><span class="ec-lbl">Телефон</span>${r.phone?`<a href="tel:+${orgEsc(r.phone)}">${empFmtPhone(r.phone)}</a>`:'<span style="color:var(--muted)">не вказано</span>'}</div>
+      <div class="ec-prop"><span class="ec-lbl">Дата народження</span>${bd?`${ecLong(bd)} · ${ecYears(age)}`:'<span style="color:var(--muted)">не вказано</span>'}</div>
+      <div class="ec-prop"><span class="ec-lbl">Підрозділ</span>${unitPath.length?orgEsc(unitPath.join(' › ')):'<span style="color:var(--muted)">не вказано</span>'}</div>
+      <div class="ec-prop"><span class="ec-lbl">Керівник</span>${mgr?`<button class="ec-link" type="button" onclick="empCardOpen(${mgr.emp.id})" style="font-weight:600">${orgEsc(empFull(mgr.emp))}</button><span class="ec-note-s">${orgEsc([mgr.emp.position,mgr.unit.name].filter(Boolean).join(' · '))}</span>`:'<span style="color:var(--muted)">—</span>'}</div>`;
+    if(ready){
+      h+=`<div class="ec-prop"><span class="ec-lbl">Теги</span><div class="ec-tags">${tags.map((t,i)=>`<span class="ec-tag">${orgEsc(t)}${canEdit?`<button type="button" aria-label="Прибрати тег ${orgEsc(t)}" onclick="ecTagDel(${i})">×</button>`:''}</span>`).join('')}
+        ${canEdit?'<input class="ec-tag-in" id="ecTagIn" list="ecTagList" placeholder="+ тег" aria-label="Новий тег" maxlength="30">':(tags.length?'':'<span style="color:var(--muted)">—</span>')}</div></div>`;
+    }
+    h+='</div>';
+    if(ten){
+      h+=`<div class="ec-tenure"><span class="ec-lbl">${ten.gone?'Пропрацював(-ла)':'Стаж у компанії'}</span><b>${ecYMtxt(ten.ym)}</b>`;
+      if(ten.next){
+        h+=`<div class="ec-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${ten.pct}" aria-label="До ювілею"><i style="width:${ten.pct}%"></i></div>
+          <div class="ec-note-s">з ${ecLong(ten.hire)} · до ${ecYears(ten.next)} — ${ten.daysLeft<=60?ecDays(ten.daysLeft):ecYMtxt(ten.left)}</div>`;
+      }else{
+        h+=`<div class="ec-note-s">${empFmtDate(r.hire_date)} – ${empFmtDate(r.dismissal_date)}</div>`;
+      }
+      h+='</div>';
+    }else{
+      h+='<div class="ec-tenure"><span class="ec-lbl">Стаж у компанії</span><span class="ec-note-s">Не вказано дату прийому</span></div>';
+    }
+    return h;
+  }
+
+  // «Потребує уваги» і «Найближче»
+  function ecAttention(r){
+    const out=[], today=ecToday(), D=ecD;
+    D.docs.forEach(d=>{const s=ecDocState(d,today);if(s.cls==='bad'||s.cls==='warn')out.push({cls:s.cls,txt:`${d.title}: ${s.txt.toLowerCase()}`,tab:'docs'});});
+    const failed=D.trainings.filter(t=>t.status==='failed');
+    if(failed.length)out.push({cls:'warn',txt:`Не склав ${failed.length} ${ecPl(failed.length,'курс','курси','курсів')}: «${failed.map(t=>t.title).join('», «')}»`,tab:'train'});
+    const nb=ecNextBirthday(ecD8(r.birthdate),today);
+    if(nb&&!empIsDismissed(r)){const d=ecDiff(today,nb);if(d<=7)out.push({cls:'info',txt:d===0?'Сьогодні день народження!':`День народження ${ecShort(nb)} — через ${ecDays(d)}`});}
+    const ten=ecTenure(r);
+    if(ten&&ten.daysLeft!=null&&ten.daysLeft<=30)out.push({cls:'info',txt:`Ювілей ${ecYears(ten.next)} у компанії — ${ecShort(ten.nextDate)}`});
+    const cur=D.vac.find(v=>ecD8(v.date_from)<=today&&ecD8(v.date_to)>=today);
+    if(cur)out.push({cls:'ok',txt:`${cur.kind==='sick'?'На лікарняному':'У відпустці'} до ${empFmtDate(cur.date_to)}`,tab:'vac'});
+    if(!empIsDismissed(r)){
+      const miss=[!r.phone&&'телефон',!r.position&&'посаду',!r.hire_date&&'дату прийому',!r.primary_unit_id&&'підрозділ',!r.birthdate&&'дату народження'].filter(Boolean);
+      if(miss.length)out.push({cls:'info',txt:'Не заповнено: '+miss.join(', '),edit:ecLevel()>=2});
+    }
+    return out;
+  }
+  function ecUpcoming(r){
+    const ev=[], today=ecToday();
+    const nb=ecNextBirthday(ecD8(r.birthdate),today);
+    if(nb)ev.push({d:nb,txt:`День народження · ${ecYears(nb.getFullYear()-ecD8(r.birthdate).getFullYear())}`});
+    const ten=ecTenure(r);
+    if(ten&&ten.next)ev.push({d:ten.nextDate,txt:`Ювілей ${ecYears(ten.next)} у компанії`});
+    ecD.docs.forEach(d=>{if(d.expires_on){const x=ecD8(d.expires_on);if(x>=today)ev.push({d:x,txt:`Закінчується «${d.title}»`});}});
+    ecD.vac.forEach(v=>{const x=ecD8(v.date_from);if(x>today)ev.push({d:x,txt:`${EC_VK[v.kind]||'Відпустка'}${v.kind==='annual'?' відпустка':''} до ${empFmtDate(v.date_to)}`});});
+    return ev.sort((a,b)=>a.d-b.d).slice(0,5);
+  }
+  function ecOverview(r){
+    const att=ecAttention(r), D=ecD, pay=D.budgetAcc?ecPayroll(D.hr):null;
+    let h='';
+    if(att.length){
+      h+=`<section class="ec-card"><h3>Потребує уваги</h3><div class="ec-att">${att.map(a=>`<div class="ec-att-i ${a.cls}"><span>${orgEsc(a.txt)}</span>${a.tab?`<button type="button" onclick="ecSetTab('${a.tab}')">Відкрити</button>`:a.edit?`<button type="button" onclick="empEditOpen(${r.id},${qs(r.last_name||'')},${qs(r.first_name||'')},${qs(r.patronymic||'')})">Заповнити</button>`:''}</div>`).join('')}</div></section>`;
+    }
+    // KPI
+    const k=[];
+    if(pay){
+      const last=[...pay].reverse().find(p=>p.fact)||[...pay].reverse().find(p=>p.plan);
+      k.push(last?{l:`ФОП, ${EC_MON_N[last.m-1]}`,v:ecMoney(last.fact||last.plan),s:last.fact?`план ${ecMoney(last.plan)}`:'план, факту ще немає'}:{l:'ФОП',v:'—',s:'немає даних у HR-файлі'});
+    }
+    const per=ecCareer(D.hr);
+    const positions=new Set(per.map(p=>p.position).filter(Boolean));if(!positions.size&&r.position)positions.add(r.position);
+    k.push({l:'Посад у компанії',v:positions.size||'—',s:per.length?'остання зміна '+ecIdxTxt(per[0].from):'з HR-файлу'});
+    const done=D.trainings.filter(t=>t.status==='done').length;
+    k.push({l:'Навчання',v:D.trainings.length?`${done} / ${D.trainings.length}`:'—',s:D.trainings.length?'курсів пройдено':'курсів ще немає'});
+    const year=ecToday().getFullYear(), ent=r.vacation_days??24, used=ecVacUsed(D.vac,year);
+    k.push({l:'Відпустка '+year,v:D.missing?'—':ecDays(Math.max(0,ent-used)),s:D.missing?'після підключення':`залишок з ${ent}`});
+    if(!pay){const bu=ecBotRow();k.unshift({l:'Бот',v:bu&&bu.is_authorized?ecSeen(bu.last_seen_at):'—',s:bu?'остання активність':'не підписаний'});}
+    h+=`<div class="ec-kpis">${k.slice(0,4).map(x=>`<div class="ec-kpi"><span class="ec-lbl">${orgEsc(x.l)}</span><b title="${orgEsc(String(x.v))}">${orgEsc(String(x.v))}</b><span>${orgEsc(x.s)}</span></div>`).join('')}</div>`;
+    // Найближче + колеги | нотатки
+    const up=ecUpcoming(r);
+    const col=dictEmps.filter(e=>e.id!==r.id&&r.primary_unit_id&&e.primary_unit_id===r.primary_unit_id&&!empIsDismissed(e));
+    h+=`<div class="ec-grid2"><div style="display:flex;flex-direction:column;gap:18px">
+      <section class="ec-card"><h3>Найближче</h3><div class="ec-list">${up.length?up.map(e=>`<div class="ec-row"><span class="grow">${orgEsc(e.txt)}</span><span class="when">${ecShort(e.d)}${e.d.getFullYear()!==ecToday().getFullYear()?' '+e.d.getFullYear():''}</span></div>`).join(''):'<div class="ec-empty">Подій попереду немає</div>'}</div></section>
+      <section class="ec-card"><h3>Колеги в підрозділі <span class="badge off" style="margin-left:2px">${col.length}</span></h3>${col.length?`<div class="ec-chips">${col.slice(0,16).map(e=>`<button class="ec-chip" type="button" onclick="empCardOpen(${e.id})" title="${orgEsc(e.position||'')}">${orgEsc([e.last_name,e.first_name].filter(Boolean).join(' '))}</button>`).join('')}${col.length>16?`<span class="ec-note-s" style="align-self:center">ще ${col.length-16}</span>`:''}</div>`:'<div class="ec-empty">Немає інших співробітників у цьому підрозділі</div>'}</section>
+    </div>
+    <section class="ec-card"><h3>Останні нотатки<span class="sp"></span>${D.missing?'':`<button class="btn" type="button" onclick="ecSetTab('notes')" style="padding:6px 12px">${ecLevel()>=2?'+ Додати':'Усі'}</button>`}</h3>
+      ${D.notes.length?D.notes.slice(0,3).map(n=>`<div class="ec-note"><p>${orgEsc(n.body)}</p><div class="meta">${orgEsc(n.author||'—')} · ${ecWhen(n.created_at)}</div></div>`).join(''):'<div class="ec-empty">Нотаток ще немає</div>'}
+    </section></div>`;
+    return h;
+  }
+  function ecWhen(ts){const d=new Date(ts);return isNaN(d)?'—':`${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;}
+  function ecSeen(ts){
+    if(!ts)return '—';const d=new Date(ts);const t=ecToday();
+    const days=ecDiff(new Date(d.getFullYear(),d.getMonth(),d.getDate()),t);
+    return days<=0?'сьогодні':days===1?'вчора':ecDays(days)+' тому';
+  }
+
+  function ecCareerTab(r){
+    const D=ecD, per=ecCareer(D.hr);
+    const items=[];
+    const gone=empIsDismissed(r);
+    if(gone)items.push({cls:'ev',t:'Звільнення',s:empFmtDate(r.dismissal_date)});
+    const curIdx=ecToday().getFullYear()*12+ecToday().getMonth();
+    per.forEach((p,i)=>{
+      const open=!gone&&i===0&&p.to>=curIdx-1;
+      items.push({cls:open?'cur':'',t:p.position||'Посаду не вказано',s:`${orgEsc(ecUnitName(p.unit_id)||'Підрозділ')} · ${open?'з '+ecIdxTxt(p.from):ecIdxTxt(p.from)+' – '+ecIdxTxt(p.to)}`});
+    });
+    if(!per.length&&r.position)items.push({cls:gone?'':'cur',t:r.position,s:orgEsc(ecUnitName(r.primary_unit_id)||'')+(r.hire_date?' · з '+empFmtDate(r.hire_date):'')});
+    if(r.hire_date)items.push({cls:'ev',t:'Прийом на роботу',s:empFmtDate(r.hire_date)});
+    let h=`<section class="ec-card"><h3>Кар'єрний шлях</h3>`;
+    h+=items.length?`<ol class="ec-tl">${items.map(x=>`<li class="${x.cls}"><span class="dot"></span><div><b>${orgEsc(x.t)}</b><span>${x.s}</span></div></li>`).join('')}</ol>`:'<div class="ec-empty">Немає даних про посади</div>';
+    h+=`<div class="ec-note-s">${D.budgetAcc?'Посади й періоди беруться з HR-файлів (розділ «Бюджет»). Місяці з тією самою посадою й підрозділом об\'єднуються в один період.':'Періоди з HR-файлів видно лише з доступом до розділу «Бюджет».'}</div></section>`;
+    return h;
+  }
+
+  function ecPayTab(r){
+    const pay=ecPayroll(ecD.hr);
+    const sp=pay.reduce((s,p)=>s+p.plan,0), sf=pay.reduce((s,p)=>s+p.fact,0);
+    const withFact=pay.filter(p=>p.fact>0), pf=withFact.reduce((s,p)=>s+p.plan,0), ff=withFact.reduce((s,p)=>s+p.fact,0);
+    const pct=pf?Math.round(ff/pf*100):null;
+    const max=Math.max(1,...pay.map(p=>Math.max(p.plan,p.fact)));
+    const nice=(v=>{const e=Math.pow(10,Math.floor(Math.log10(v)));const f=v/e;return (f<=1?1:f<=2?2:f<=5?5:10)*e;})(max);
+    const W=720,H=220,L=56,B=28,T=10,cw=(W-L)/12,bw=Math.min(16,cw/2-4);
+    const y=v=>T+(H-T-B)*(1-v/nice);
+    const bar=(x,v,cls)=>{if(!v)return '';const top=y(v),hgt=H-B-top,rr=Math.min(4,hgt);return `<path class="${cls}" d="M${x},${H-B}V${top+rr}q0,-${rr} ${rr},-${rr}h${bw-2*rr}q${rr},0 ${rr},${rr}V${H-B}z"/>`;};
+    let svg=`<svg class="ec-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Фонд оплати праці за 12 місяців, план і факт">`;
+    for(let i=0;i<=4;i++){const v=nice*i/4,yy=y(v);svg+=`<line class="gl" x1="${L}" x2="${W}" y1="${yy}" y2="${yy}"/><text x="${L-8}" y="${yy+4}" text-anchor="end">${v>=1000?Math.round(v/1000)+' тис':Math.round(v)}</text>`;}
+    pay.forEach((p,i)=>{
+      const cx=L+cw*i+cw/2;
+      svg+=`<g class="m" data-tip="${EC_MON_N[p.m-1]} ${p.y}|План: ${ecMoney(p.plan)}|Факт: ${p.fact?ecMoney(p.fact):'—'}${p.plan&&p.fact?'|Виконання: '+Math.round(p.fact/p.plan*100)+'%':''}"><rect class="hit" x="${L+cw*i+2}" y="${T}" width="${cw-4}" height="${H-B-T}" rx="6"/>${bar(cx-bw-1,p.plan,'bp')}${bar(cx+1,p.fact,'bf')}<text x="${cx}" y="${H-8}" text-anchor="middle">${EC_MON_S[p.m-1]}</text></g>`;
+    });
+    svg+='</svg>';
+    const k=[{l:'План за 12 міс.',v:ecMoney(sp)},{l:'Факт за 12 міс.',v:sf?ecMoney(sf):'—'},{l:'Виконання',v:pct==null?'—':pct+'%',s:'за місяці з фактом'},{l:'Середній факт',v:withFact.length?ecMoney(ff/withFact.length):'—',s:'на місяць'}];
+    let h=`<div class="ec-kpis">${k.map(x=>`<div class="ec-kpi"><span class="ec-lbl">${x.l}</span><b>${x.v}</b><span>${x.s||'&nbsp;'}</span></div>`).join('')}</div>`;
+    h+=`<section class="ec-card"><h3>План і факт по місяцях<span class="sp"></span><span class="ec-legend"><span><i style="background:var(--ec-plan)"></i>План</span><span><i style="background:var(--brand)"></i>Факт</span></span></h3>${sp||sf?svg:'<div class="ec-empty">У HR-файлах немає сум для цього співробітника за останні 12 місяців</div>'}</section>`;
+    if(sp||sf){
+      h+=`<section class="ec-card"><h3>Таблиця</h3><div style="overflow-x:auto"><table class="ec-tbl"><thead><tr><th>Місяць</th><th>План</th><th>Факт</th><th>Різниця</th></tr></thead><tbody>${pay.map(p=>`<tr><td>${EC_MON_N[p.m-1]} ${p.y}</td><td>${p.plan?ecMoney(p.plan):'—'}</td><td>${p.fact?ecMoney(p.fact):'—'}</td><td>${p.fact&&p.plan?ecMoney(p.fact-p.plan):'—'}</td></tr>`).join('')}<tr><td>Разом</td><td>${ecMoney(sp)}</td><td>${sf?ecMoney(sf):'—'}</td><td>${sf?ecMoney(ff-pf):'—'}</td></tr></tbody></table></div></section>`;
+    }
+    return h;
+  }
+
+  function ecFormBtns(kind){return `<div class="acts"><button class="btn ghost" type="button" onclick="ecFormOpen(null)">Скасувати</button><button class="btn primary" type="button" onclick="ecSave('${kind}')">Зберегти</button></div>`;}
+  window.ecFormOpen=k=>{ecForm=k;ecRender();const f=$('ecBody').querySelector('.ec-form input,.ec-form textarea');if(f)f.focus();};
+  const ecAddBtn=k=>ecLevel()>=2&&!ecD.missing&&ecForm!==k?`<button class="btn primary" type="button" style="padding:6px 12px" onclick="ecFormOpen('${k}')">+ Додати</button>`:'';
+  const ecDelBtn=(t,id,label)=>ecLevel()>=3&&!ecD.missing?`<button class="ec-mini-del" type="button" aria-label="Видалити ${orgEsc(label)}" title="Видалити" onclick="ecDel('${t}',${id})">${ecIco.del}</button>`:'';
+
+  function ecDocsTab(){
+    const today=ecToday(), docs=ecD.docs;
+    let h=`<section class="ec-card"><h3>Документи<span class="sp"></span>${ecAddBtn('doc')}</h3>`;
+    if(ecForm==='doc')h+=`<div class="ec-form">
+      <div class="w4"><label for="ecDocTitle">Назва</label><input id="ecDocTitle" list="ecDocTitles" placeholder="Напр., Медична книжка" maxlength="120"></div>
+      <div><label for="ecDocIssued">Видано</label><input id="ecDocIssued" class="fp-date"></div>
+      <div><label for="ecDocExp">Дійсний до</label><input id="ecDocExp" class="fp-date" placeholder="безстроковий"></div>
+      <div class="w2"><label>Файл</label><div class="ec-file"><label for="ecDocFile">Вибрати файл</label><input type="file" id="ecDocFile" style="display:none" onchange="$('ecDocFileName').textContent=this.files[0]?this.files[0].name:'не вибрано'"><span id="ecDocFileName">не вибрано</span></div></div>
+      ${ecFormBtns('doc')}</div>`;
+    h+=`<div class="ec-list">${docs.length?docs.map(d=>{const s=ecDocState(d,today);const b=s.cls==='bad'?'warn" style="background:var(--brand-tint);color:var(--brand)':s.cls;
+      return `<div class="ec-row"><span class="grow"><b>${orgEsc(d.title)}</b><span class="meta">${d.issued_on?'видано '+empFmtDate(d.issued_on):''}${d.file_name?(d.issued_on?' · ':'')+orgEsc(d.file_name):''}</span></span>
+        <span class="badge ${b}">${orgEsc(s.txt)}</span>
+        ${d.file_path?`<button class="ec-mini-del" type="button" title="Відкрити файл" aria-label="Відкрити файл ${orgEsc(d.file_name||'')}" onclick="ecOpenFile(${d.id})" style="color:var(--slate)">${ecIco.file}</button>`:''}
+        ${ecDelBtn('emp_documents',d.id,d.title)}</div>`;}).join(''):'<div class="ec-empty">Документів ще немає. Додай медичну книжку, санмінімум тощо — і картка нагадає, коли закінчується термін.</div>'}</div></section>`;
+    return h;
+  }
+  function ecTrainTab(){
+    const tr=ecD.trainings, canEdit=ecLevel()>=2&&!ecD.missing;
+    let h=`<section class="ec-card"><h3>Навчання й тести<span class="sp"></span>${ecAddBtn('train')}</h3>`;
+    if(ecForm==='train')h+=`<div class="ec-form">
+      <div class="w2"><label for="ecTrTitle">Курс або тест</label><input id="ecTrTitle" placeholder="Напр., Касова дисципліна" maxlength="160"></div>
+      <div class="w2"><label for="ecTrLink">Посилання (Collaborator)</label><input id="ecTrLink" type="url" placeholder="https://"></div>
+      <div><label for="ecTrStatus">Статус</label><select id="ecTrStatus">${Object.entries(EC_TR).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select></div>
+      <div><label for="ecTrScore">Бал, %</label><input id="ecTrScore" type="number" min="0" max="100" placeholder="—"></div>
+      <div><label for="ecTrDate">Дата</label><input id="ecTrDate" class="fp-date"></div>
+      <div></div>
+      ${ecFormBtns('train')}</div>`;
+    h+=`<div class="ec-list">${tr.length?tr.map(t=>`<div class="ec-row"><span class="grow"><b>${t.link_url?`<a href="${orgEsc(t.link_url)}" target="_blank" rel="noopener" style="color:inherit">${orgEsc(t.title)}</a>`:orgEsc(t.title)}</b><span class="meta">${[t.score!=null?'бал '+t.score+'%':'',t.completed_on?empFmtDate(t.completed_on):''].filter(Boolean).join(' · ')||'&nbsp;'}</span></span>
+      ${canEdit?`<select class="ec-sel" aria-label="Статус курсу" onchange="ecTrStatus(${t.id},this.value)">${Object.entries(EC_TR).map(([k,v])=>`<option value="${k}"${k===t.status?' selected':''}>${v}</option>`).join('')}</select>`:`<span class="badge ${EC_TR_B[t.status]||'off'}">${EC_TR[t.status]||t.status}</span>`}
+      ${ecDelBtn('emp_trainings',t.id,t.title)}</div>`).join(''):'<div class="ec-empty">Курсів ще немає. Поки що їх вносять вручну, згодом підтягуватимуться з Collaborator.</div>'}</div></section>`;
+    return h;
+  }
+  function ecVacTab(r){
+    const year=ecToday().getFullYear(), ent=r.vacation_days??24, used=ecVacUsed(ecD.vac,year), canEdit=ecLevel()>=2&&!ecD.missing;
+    let h=`<div class="ec-vac">
+      <div class="ec-kpi"><span class="ec-lbl">Норма на рік</span>${canEdit?`<div style="display:flex;align-items:center;gap:8px"><input class="ec-inp" id="ecVacDays" type="number" min="0" max="366" value="${ent}" style="width:84px;font-weight:800;font-size:16px" aria-label="Днів щорічної відпустки на рік" onchange="ecVacDaysSave(this.value)"><span>днів</span></div>`:`<b>${ecDays(ent)}</b>`}<span>щорічна відпустка</span></div>
+      <div class="ec-kpi"><span class="ec-lbl">Використано ${year}</span><b>${ecDays(used)}</b><span>щорічної, разом із запланованими</span></div>
+      <div class="ec-kpi"><span class="ec-lbl">Залишок</span><b style="color:${ent-used<0?'var(--brand)':'var(--ink)'}">${ecDays(ent-used)}</b><span>${ent-used<0?'перевищено норму':'можна запланувати'}</span></div>
+    </div>`;
+    h+=`<section class="ec-card"><h3>Відпустки й відсутності<span class="sp"></span>${ecAddBtn('vac')}</h3>`;
+    if(ecForm==='vac')h+=`<div class="ec-form">
+      <div><label for="ecVacKind">Вид</label><select id="ecVacKind">${Object.entries(EC_VK).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select></div>
+      <div><label for="ecVacFrom">З</label><input id="ecVacFrom" class="fp-date"></div>
+      <div><label for="ecVacTo">По</label><input id="ecVacTo" class="fp-date"></div>
+      <div><label for="ecVacNote">Примітка</label><input id="ecVacNote" maxlength="200"></div>
+      ${ecFormBtns('vac')}</div>`;
+    const today=ecToday();
+    h+=`<div class="ec-list">${ecD.vac.length?ecD.vac.map(v=>{const f=ecD8(v.date_from),t=ecD8(v.date_to),n=ecDiff(f,t)+1;
+      const st=t<today?'<span class="badge off">Минула</span>':f<=today?'<span class="badge ok">Зараз</span>':'<span class="badge info">Запланована</span>';
+      return `<div class="ec-row"><span class="grow"><b>${EC_VK[v.kind]||v.kind} · ${ecDays(n)}</b><span class="meta">${empFmtDate(v.date_from)} – ${empFmtDate(v.date_to)}${v.note?' · '+orgEsc(v.note):''}</span></span>${st}${ecDelBtn('emp_vacations',v.id,'відпустку')}</div>`;}).join(''):'<div class="ec-empty">Відпусток ще не внесено</div>'}</div></section>`;
+    return h;
+  }
+  function ecBotTab(r){
+    if(!ecD.botAcc)return '<section class="ec-card"><h3>Бот «Будь в темі»</h3><div class="ec-empty">Дані бота видно лише з доступом до розділу «Будь в темі».</div></section>';
+    const bu=ecBotRow();
+    const rows=[
+      ['Доступ',r.bot_access?'<span class="badge ok">Дозволено</span>':'<span class="badge off">Не надано</span>'],
+      ['Підписка',bu?(bu.is_authorized?'<span class="badge info">Увійшов у бот</span>':'<span class="badge off">Вийшов або відкликано</span>'):'<span class="badge off">Ще не входив</span>'],
+    ];
+    if(bu){
+      rows.push(['Telegram',bu.username?`<a href="https://t.me/${encodeURIComponent(bu.username)}" target="_blank" rel="noopener">@${orgEsc(bu.username)}</a>`:'без імені користувача']);
+      rows.push(['Підписаний з',ecWhen(bu.created_at)]);
+      rows.push(['Остання активність',ecSeen(bu.last_seen_at)]);
+    }
+    let h=`<section class="ec-card"><h3>Бот «Будь в темі»</h3><div class="ec-list">${rows.map(([a,b])=>`<div class="ec-row"><span class="grow meta" style="font-size:13px">${a}</span><span>${b}</span></div>`).join('')}</div>`;
+    if(!r.bot_access)h+='<div class="ec-note-s">Щоб надати доступ, відкрий редагування, вкажи телефон і познач «Доступ до бота».</div>';
+    return h+'</section>';
+  }
+  function ecNotesTab(){
+    const canAdd=ecLevel()>=2&&!ecD.missing;
+    let h=`<section class="ec-card"><h3>Нотатки HR</h3>`;
+    if(canAdd)h+=`<div class="ec-form" style="grid-template-columns:1fr"><div><label for="ecNoteBody">Нова нотатка</label><textarea id="ecNoteBody" placeholder="Напр., готова до підвищення; погоджено відпустку на грудень" maxlength="2000"></textarea></div><div class="acts"><button class="btn primary" type="button" onclick="ecSave('note')">Додати нотатку</button></div></div>`;
+    h+=`<div>${ecD.notes.length?ecD.notes.map(n=>`<div class="ec-note"><p>${orgEsc(n.body)}</p><div class="meta">${orgEsc(n.author||'—')} · ${ecWhen(n.created_at)}<span style="flex:1"></span>${ecDelBtn('emp_notes',n.id,'нотатку')}</div></div>`).join(''):'<div class="ec-empty">Нотаток ще немає</div>'}</div></section>`;
+    return h;
+  }
+
+  // Події після рендеру: календарі, теги, підказки графіка
+  function ecWire(body){
+    body.querySelectorAll('input.fp-date').forEach(el=>{if(!el._flatpickr)flatpickr(el,{locale:flatpickr.l10ns.uk,disableMobile:true,dateFormat:'Y-m-d',altInput:true,altFormat:'d.m.Y',allowInput:true});});
+    body.querySelectorAll('.ec-chart g.m').forEach(g=>{
+      g.addEventListener('mousemove',e=>ecShowTip(g.dataset.tip,e));
+      g.addEventListener('mouseleave',ecHideTip);
+    });
+    const ti=$('ecTagIn');
+    if(ti){
+      const all=[...new Set(dictEmps.flatMap(e=>Array.isArray(e.tags)?e.tags:[]))].sort();
+      $('ecTagList').innerHTML=all.map(t=>`<option value="${orgEsc(t)}">`).join('');
+      ti.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();ecTagAdd(ti.value);}});
+      ti.addEventListener('change',()=>{if(ti.value&&all.includes(ti.value))ecTagAdd(ti.value);});
+    }
+  }
+  function ecShowTip(s,e){const t=$('ecTip');t.innerHTML=s.split('|').map((x,i)=>i?orgEsc(x):`<b>${orgEsc(x)}</b>`).join('<br>');t.style.display='block';
+    const w=t.offsetWidth;t.style.left=Math.min(e.clientX+14,innerWidth-w-8)+'px';t.style.top=(e.clientY+14)+'px';}
+  function ecHideTip(){const t=$('ecTip');if(t)t.style.display='none';}
+
+  // Збереження
+  async function ecEmpUpdate(patch){
+    const {error}=await db.from('dict_employees').update(patch).eq('id',ecId);
+    if(error){toast('Помилка: '+error.message,'error');return false;}
+    const r=dictEmps.find(e=>e.id===ecId);if(r)Object.assign(r,patch);
+    return true;
+  }
+  async function ecTagAdd(v){
+    v=String(v||'').trim().replace(/\s+/g,' ');if(!v)return;
+    const r=dictEmps.find(e=>e.id===ecId);const tags=Array.isArray(r.tags)?r.tags.slice():[];
+    if(tags.some(t=>t.toLowerCase()===v.toLowerCase())){$('ecTagIn').value='';return;}
+    tags.push(v);if(await ecEmpUpdate({tags})){ecRender();const ti=$('ecTagIn');if(ti)ti.focus();}
+  }
+  window.ecTagDel=async i=>{
+    const r=dictEmps.find(e=>e.id===ecId);const tags=(r.tags||[]).filter((_,k)=>k!==i);
+    if(await ecEmpUpdate({tags}))ecRender();
+  };
+  window.ecVacDaysSave=async v=>{
+    const n=parseInt(v,10);if(!(n>=0&&n<=366)){toast('Вкажи кількість днів від 0 до 366','warn');ecRender();return;}
+    if(await ecEmpUpdate({vacation_days:n})){toast('Норму відпустки збережено','success');ecRender();}
+  };
+  const ecSafeName=n=>String(n||'file').normalize('NFKD').replace(/[^\w.\-]+/g,'_').replace(/_+/g,'_').slice(-80)||'file';
+  window.ecPhotoUpload=async inp=>{
+    const f=inp.files&&inp.files[0];inp.value='';if(!f)return;
+    if(!/^image\//.test(f.type)){toast('Потрібне зображення (JPG, PNG, WebP)','warn');return;}
+    if(f.size>5*1024*1024){toast('Фото до 5 МБ','warn');return;}
+    const r=dictEmps.find(e=>e.id===ecId);const old=r.photo_path;
+    const ext=(f.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+    const path=`photos/${ecId}-${Date.now()}.${ext}`;
+    const up=await db.storage.from('emp-files').upload(path,f,{contentType:f.type,upsert:false});
+    if(up.error){toast('Не вдалося завантажити фото: '+up.error.message,'error');return;}
+    if(!await ecEmpUpdate({photo_path:path})){db.storage.from('emp-files').remove([path]);return;}
+    if(old)db.storage.from('emp-files').remove([old]);
+    const {data}=await db.storage.from('emp-files').createSignedUrl(path,3600);
+    if(data&&data.signedUrl)ecPhotoCache[path]=data.signedUrl;
+    ecRender();renderEmps();toast('Фото оновлено','success');
+  };
+  window.ecOpenFile=async id=>{
+    const d=ecD.docs.find(x=>x.id===id);if(!d||!d.file_path)return;
+    const w=window.open('','_blank');
+    const {data,error}=await db.storage.from('emp-files').createSignedUrl(d.file_path,300);
+    if(error||!data){if(w)w.close();toast('Не вдалося відкрити файл','error');return;}
+    if(w)w.location=data.signedUrl;else location.href=data.signedUrl;
+  };
+  window.ecTrStatus=async(id,status)=>{
+    const patch={status};if(status==='done'||status==='failed'){const t=ecD.trainings.find(x=>x.id===id);if(t&&!t.completed_on)patch.completed_on=empToday();}
+    const {error}=await db.from('emp_trainings').update(patch).eq('id',id);
+    if(error){toast('Помилка: '+error.message,'error');return;}
+    await ecLoad();
+  };
+  window.ecDel=async(table,id)=>{
+    if(!confirm('Видалити запис?'))return;
+    let path=null;
+    if(table==='emp_documents'){const d=ecD.docs.find(x=>x.id===id);path=d&&d.file_path;}
+    const {error}=await db.from(table).delete().eq('id',id);
+    if(error){toast('Помилка: '+error.message,'error');return;}
+    if(path)db.storage.from('emp-files').remove([path]);
+    await ecLoad();
+  };
+  window.ecSave=async kind=>{
+    const v=id=>($(id)&&$(id).value||'').trim();
+    let table,row;
+    if(kind==='note'){
+      const body=v('ecNoteBody');if(!body){$('ecNoteBody').focus();return;}
+      const u=(document.querySelector('.js-user')?.textContent||'').trim();
+      table='emp_notes';row={body,author:u&&u!=='—'?u:null};
+    }else if(kind==='doc'){
+      const title=v('ecDocTitle');if(!title){$('ecDocTitle').focus();return;}
+      const issued_on=v('ecDocIssued')||null, expires_on=v('ecDocExp')||null;
+      if(issued_on&&expires_on&&expires_on<issued_on){toast('Термін дії раніший за дату видачі','warn');return;}
+      table='emp_documents';row={title,issued_on,expires_on};
+      const f=$('ecDocFile').files[0];
+      if(f){
+        if(f.size>20*1024*1024){toast('Файл до 20 МБ','warn');return;}
+        const path=`docs/${ecId}/${Date.now()}-${ecSafeName(f.name)}`;
+        const up=await db.storage.from('emp-files').upload(path,f,{contentType:f.type||'application/octet-stream',upsert:false});
+        if(up.error){toast('Не вдалося завантажити файл: '+up.error.message,'error');return;}
+        row.file_path=path;row.file_name=f.name;
+      }
+    }else if(kind==='train'){
+      const title=v('ecTrTitle');if(!title){$('ecTrTitle').focus();return;}
+      const link=v('ecTrLink');if(link&&!/^https?:\/\//i.test(link)){toast('Посилання має починатися з https://','warn');$('ecTrLink').focus();return;}
+      const sc=v('ecTrScore');const score=sc===''?null:parseInt(sc,10);
+      if(score!=null&&!(score>=0&&score<=100)){toast('Бал від 0 до 100','warn');return;}
+      table='emp_trainings';row={title,link_url:link||null,status:$('ecTrStatus').value,score,completed_on:v('ecTrDate')||null};
+    }else if(kind==='vac'){
+      const date_from=v('ecVacFrom'),date_to=v('ecVacTo');
+      if(!date_from||!date_to){toast('Вкажи дати початку й кінця','warn');return;}
+      if(date_to<date_from){toast('Кінець раніший за початок','warn');return;}
+      table='emp_vacations';row={kind:$('ecVacKind').value,date_from,date_to,note:v('ecVacNote')||null};
+    }
+    row.employee_id=ecId;
+    const {error}=await db.from(table).insert(row);
+    if(error){if(row.file_path)db.storage.from('emp-files').remove([row.file_path]);toast('Помилка: '+error.message,'error');return;}
+    ecForm=null;await ecLoad();toast('Збережено','success');
   };
 
   /* --- Імпорт / Експорт співробітників (Excel або CSV) --- */

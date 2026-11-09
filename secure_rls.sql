@@ -115,3 +115,9 @@ select pg_temp.secure('bot_news',      'bot');
 select pg_temp.secure('bot_faq',       'bot');
 select pg_temp.secure('bot_contacts',  'bot');
 select pg_temp.secure('bot_documents', 'bot');
+
+-- Картка співробітника (employee_card.sql)
+select pg_temp.secure('emp_notes',     'company');
+select pg_temp.secure('emp_documents', 'company');
+select pg_temp.secure('emp_trainings', 'company');
+select pg_temp.secure('emp_vacations', 'company');

@@ -9,7 +9,8 @@ begin
     'matrix_rows','matrix_configs','goals','goal_indicators','goal_types','goal_patterns',
     'dev_plans','dev_sessions','dev_swot','dict_survey_types',
     'budgets','budget_categories','budget_expense_items','budget_entries','hr_files','hr_entries',
-    'bot_users','bot_news','bot_faq','bot_contacts','bot_documents'] loop
+    'bot_users','bot_news','bot_faq','bot_contacts','bot_documents',
+    'emp_notes','emp_documents','emp_trainings','emp_vacations'] loop
     if to_regclass('public.' || t) is null then continue; end if;
     for pol in select policyname from pg_policies where schemaname = 'public' and tablename = t loop
       execute format('drop policy %I on public.%I', pol.policyname, t);
