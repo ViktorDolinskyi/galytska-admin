@@ -1379,7 +1379,7 @@
   .ec-chart{width:100%;height:auto;display:block;overflow:visible}
   .ec-chart text{font:600 11px Manrope,sans-serif;fill:var(--muted)}
   .ec-chart .gl{stroke:var(--line);stroke-width:1}
-  body:has(.modal-scrim.open) .sb-collapse-btn{visibility:hidden}
+  body:has(.modal-scrim.open) .sb-collapse-btn,body:has(.modal-scrim[style*="flex"]) .sb-collapse-btn{visibility:hidden}
   .ec-modal{--ec-plan:#D6CFC8}
   [data-theme="dark"] .ec-modal{--ec-plan:#5C5650}
   @media (prefers-color-scheme: dark){[data-theme="system"] .ec-modal{--ec-plan:#5C5650}}
@@ -1415,6 +1415,42 @@
   }
   #ecModal{padding:20px}
   @media (max-width:900px){#ecModal{padding:12px}}
+  /* ===== Вибір співробітника (чип + пошук) ===== */
+  select.emp-pick.ep-on{display:none!important}
+  .ep{position:relative;width:100%}
+  .ep-box{display:flex;align-items:center;flex-wrap:wrap;gap:6px;min-height:40px;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;padding:4px 32px 4px 6px;background:var(--card);cursor:text;position:relative;transition:border-color .15s,box-shadow .15s}
+  .ep-box:hover{border-color:var(--brand-tint-2)}
+  .ep.open .ep-box{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-tint)}
+  .ep.dis .ep-box{background:var(--page);cursor:default}
+  .ep-chip{display:inline-flex;align-items:center;gap:6px;max-width:100%;background:var(--brand-tint);color:var(--ink);border-radius:20px;padding:3px 6px 3px 3px;font-size:13px;font-weight:700;min-width:0}
+  .ep-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ep-x{all:unset;cursor:pointer;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:15px;line-height:1;color:var(--slate);flex:none}
+  .ep-x:hover{background:var(--brand);color:#fff}
+  .ep-in{flex:1;min-width:60px;border:none!important;outline:none;background:transparent!important;font:inherit;font-size:13.5px;color:var(--ink);padding:5px 4px!important;box-shadow:none!important;width:auto!important}
+  .ep-in::placeholder{color:var(--muted)}
+  .ep .ep-box input.ep-in{background:transparent!important;border:none!important}
+  [data-theme="dark"] .ep-box{background:#1E1C1A}
+  [data-theme="dark"] .ep.sm .ep-box{background:transparent}
+  .ep-chev{position:absolute;right:10px;top:50%;width:16px;height:16px;margin-top:-8px;color:var(--muted);pointer-events:none;transition:transform .15s}
+  .ep.open .ep-chev{transform:rotate(180deg)}
+  .ep.dis .ep-chev{display:none}
+  .ep-ava{width:24px;height:24px;border-radius:50%;background:var(--surface);color:var(--brand);display:grid;place-items:center;font-size:10px;font-weight:800;flex:none;overflow:hidden;letter-spacing:.02em}
+  .ep-chip .ep-ava{background:var(--surface)}
+  .ep-ava img{width:100%;height:100%;object-fit:cover}
+  .ep-drop{position:fixed;z-index:600;display:none;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(27,23,20,.18);max-height:300px;overflow-y:auto;padding:5px;scrollbar-width:thin;scrollbar-color:var(--brand-tint-2) transparent}
+  .ep-opt{display:flex;align-items:center;gap:10px;padding:7px 9px;border-radius:8px;cursor:pointer;color:var(--ink)}
+  .ep-opt .ep-ava{width:30px;height:30px;font-size:11px;background:var(--brand-tint)}
+  .ep-opt.act{background:var(--hover-bg-2)}
+  .ep-opt.sel b{color:var(--brand)}
+  .ep-opt.gone{opacity:.55}
+  .ep-t{display:flex;flex-direction:column;min-width:0;flex:1}
+  .ep-t b{font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ep-t small{font-size:12px;color:var(--slate);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ep-ok{width:16px;height:16px;color:var(--brand);flex:none}
+  .ep-more{font-size:12.5px;color:var(--muted);padding:8px 10px}
+  .ep.sm .ep-box{min-height:34px;padding:2px 28px 2px 4px;border-color:transparent;background:transparent}
+  .ep.sm .ep-box:hover{border-color:var(--line)}
+  .ep.sm .ep-chip{font-size:12.5px}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -2166,7 +2202,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
               <option value="inactive">Неактивний</option>
               <option value="acting">Функція (в.о.)</option>
             </select></div>
-            <div><label id="orgEmpLabel">Керівник</label><select id="orgEmployee" class="modal-sel"><option value="">— Не вказано —</option></select></div>
+            <div><label id="orgEmpLabel">Керівник</label><select id="orgEmployee" class="modal-sel emp-pick"><option value="">— Не вказано —</option></select></div>
             <div><label>Тип структурної одиниці</label><select id="orgUnitType" class="modal-sel"><option value="">— Не вказано —</option></select></div>
             <div><label>Вид структурної одиниці</label><select id="orgUnitKind" class="modal-sel"><option value="">— Не вказано —</option></select></div>
             <div><label>Підпорядковується</label>
@@ -2550,7 +2586,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
               <div class="dpm-section-label">Основна інформація</div>
               <div class="dpm-field">
                 <label class="dpm-label">Співробітник</label>
-                <select class="dpm-input" id="devPEmpId"></select>
+                <select class="dpm-input emp-pick" id="devPEmpId"></select>
               </div>
               <div class="dpm-field">
                 <label class="dpm-label">Роль у плані розвитку</label>
@@ -2678,7 +2714,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
               <div class="form-row" style="margin:0">
                 <label class="form-label">Співробітник</label>
-                <select class="form-input" id="devSEmp"></select>
+                <select class="form-input emp-pick" id="devSEmp"></select>
               </div>
               <div class="form-row" style="margin:0">
                 <label class="form-label">Дата сесії</label>
@@ -3044,7 +3080,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
             <div><label>Email <span style="color:var(--brand)">*</span></label><input id="auEmail" type="email" placeholder="name@company.ua" autocomplete="off"></div>
             <div id="auPassWrap"><label>Пароль</label><input id="auPass" type="password" placeholder="Мінімум 8 символів" autocomplete="new-password"><div class="acc-hint" style="margin:6px 0 0">Залиште порожнім — на email прийде запрошення, і пароль людина задасть сама (безпечніше).</div></div>
             <div><label>ПІБ</label><input id="auName" placeholder="Прізвище Ім'я"></div>
-            <div><label>Співробітник з довідника</label><select id="auEmp" class="modal-sel"></select></div>
+            <div><label>Співробітник з довідника</label><select id="auEmp" class="modal-sel emp-pick"></select></div>
             <div><label>Роль <span style="color:var(--brand)">*</span></label><select id="auRole" class="modal-sel" onchange="accUserPermsRender()"></select></div>
             <label class="acc-switch-row">
               <span><b>Доступ до системи</b><small>Неактивний користувач не зможе увійти</small></span>
@@ -5988,6 +6024,139 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     ecForm=null;await ecLoad();toast('Збережено','success');
   };
 
+  /* --- Вибір співробітника: пошук з підказками, аватар і чип замість звичайного списку ---
+     Працює поверх <select class="emp-pick">: сам select лишається джерелом значення,
+     тож увесь наявний код (.value, onchange) працює як і раніше. */
+  const EP_VAL=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value');
+  let epOpen=null, epSeq=0;
+  const epNorm=s=>String(s||'').toLowerCase().replace(/['ʼ’`]/g,'').replace(/ё/g,'е');
+  function epEmp(opt){const id=opt.dataset.emp||opt.value;return dictEmps.find(e=>String(e.id)===String(id))||null;}
+  function epAva(e,label){
+    const p=e&&e.photo_path&&ecPhotoCache[e.photo_path];
+    const ini=e?ecInit(e):String(label||'').trim().split(/\s+/).slice(0,2).map(w=>w[0]||'').join('');
+    return `<span class="ep-ava">${p?`<img src="${orgEsc(p)}" alt="">`:orgEsc(ini.toUpperCase())}</span>`;
+  }
+  function epSub(e){
+    if(!e)return '';
+    const u=e.primary_unit_id?ecUnitName(e.primary_unit_id):'';
+    return [e.position,u].filter(Boolean).join(' · ');
+  }
+  async function epPhotos(){
+    const need=[...new Set(dictEmps.map(e=>e.photo_path).filter(p=>p&&!ecPhotoCache[p]))];
+    if(!need.length)return false;
+    need.forEach(p=>ecPhotoCache[p]=ecPhotoCache[p]||'');           // не просимо повторно
+    const {data}=await db.storage.from('emp-files').createSignedUrls(need,3600);
+    (data||[]).forEach(x=>{if(x&&x.signedUrl&&x.path)ecPhotoCache[x.path]=x.signedUrl;});
+    return true;
+  }
+  function epItems(sel,q){
+    const words=epNorm(q).split(/\s+/).filter(Boolean);
+    const list=[...sel.options].filter(o=>o.value!=='').map(o=>{
+      const e=epEmp(o);const hay=epNorm(o.textContent+' '+epSub(e));
+      return {o,e,hay,gone:e?empIsDismissed(e):false,first:epNorm(o.textContent).startsWith(words[0]||'')};
+    }).filter(x=>words.every(w=>x.hay.includes(w)));
+    return list.sort((a,b)=>(a.gone-b.gone)||(b.first-a.first));
+  }
+  function epRender(sel){
+    const w=sel._ep;if(!w)return;
+    const opt=sel.selectedOptions[0];const has=opt&&opt.value!=='';
+    const dis=sel.disabled;
+    w.root.classList.toggle('dis',dis);
+    const e=has?epEmp(opt):null;
+    w.chip.innerHTML=has?`${epAva(e,opt.textContent)}<span class="ep-name">${orgEsc(opt.textContent.trim())}</span>${dis?'':`<button type="button" class="ep-x" aria-label="Прибрати ${orgEsc(opt.textContent.trim())}" tabindex="-1">×</button>`}`:'';
+    w.chip.style.display=has?'':'none';
+    w.inp.placeholder=has?'':(sel.dataset.ph||'Почни вводити прізвище…');
+    w.inp.disabled=dis;
+  }
+  function epDraw(sel){
+    const w=sel._ep;const items=epItems(sel,w.inp.value);
+    const cur=EP_VAL.get.call(sel);
+    const max=60, shown=items.slice(0,max);
+    w.items=shown;if(w.act>=shown.length)w.act=shown.length-1;if(w.act<0&&shown.length)w.act=0;
+    w.drop.innerHTML=shown.length?shown.map((x,i)=>`<div class="ep-opt${i===w.act?' act':''}${x.o.value===cur?' sel':''}${x.gone?' gone':''}" role="option" id="${w.id}-o${i}" aria-selected="${x.o.value===cur}" data-i="${i}">
+        ${epAva(x.e,x.o.textContent)}<span class="ep-t"><b>${orgEsc(x.o.textContent.trim())}</b>${epSub(x.e)||x.gone?`<small>${orgEsc(epSub(x.e))}${x.gone?(epSub(x.e)?' · ':'')+'звільнено':''}</small>`:''}</span>
+        ${x.o.value===cur?'<svg class="ep-ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>':''}</div>`).join('')
+      +(items.length>max?`<div class="ep-more">Ще ${items.length-max} — уточни пошук</div>`:'')
+      :`<div class="ep-more">Нікого не знайдено</div>`;
+    w.inp.setAttribute('aria-activedescendant',w.act>=0&&shown.length?`${w.id}-o${w.act}`:'');
+    const a=w.drop.querySelector('.ep-opt.act');if(a)a.scrollIntoView({block:'nearest'});
+  }
+  function epPlace(sel){
+    const w=sel._ep;const r=w.box.getBoundingClientRect();
+    const below=innerHeight-r.bottom, h=Math.min(300,w.drop.scrollHeight||300);
+    w.drop.style.left=Math.max(8,Math.min(r.left,innerWidth-Math.max(r.width,280)-8))+'px';
+    w.drop.style.width=Math.max(r.width,280)+'px';
+    if(below<h+12&&r.top>below){w.drop.style.top='';w.drop.style.bottom=(innerHeight-r.top+4)+'px';}
+    else{w.drop.style.bottom='';w.drop.style.top=(r.bottom+4)+'px';}
+  }
+  function epShow(sel){
+    const w=sel._ep;if(sel.disabled)return;
+    if(epOpen&&epOpen!==sel)epHide(epOpen);
+    epOpen=sel;w.root.classList.add('open');w.inp.setAttribute('aria-expanded','true');
+    w.drop.style.display='block';w.act=-1;epDraw(sel);epPlace(sel);
+    epPhotos().then(ch=>{if(ch&&epOpen===sel){epDraw(sel);epRender(sel);}});
+  }
+  function epHide(sel){
+    const w=sel._ep;if(!w)return;
+    w.root.classList.remove('open');w.inp.setAttribute('aria-expanded','false');
+    w.drop.style.display='none';w.inp.value='';if(epOpen===sel)epOpen=null;
+  }
+  function epSet(sel,v){
+    const old=EP_VAL.get.call(sel);
+    EP_VAL.set.call(sel,v);epRender(sel);
+    if(old!==v){sel.dispatchEvent(new Event('input',{bubbles:true}));sel.dispatchEvent(new Event('change',{bubbles:true}));}
+  }
+  function epInit(sel){
+    if(sel._ep)return;
+    const id='ep'+(++epSeq);
+    const root=document.createElement('div');root.className='ep'+(sel.classList.contains('ep-sm')?' sm':'');
+    root.innerHTML=`<div class="ep-box"><span class="ep-chip"></span><input class="ep-in" type="text" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="${id}-l"><svg class="ep-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 9 6 6 6-6"/></svg></div>`;
+    const drop=document.createElement('div');drop.className='ep-drop';drop.id=id+'-l';drop.setAttribute('role','listbox');
+    document.body.appendChild(drop);
+    sel.after(root);sel.classList.add('ep-on');
+    const w={root,box:root.firstChild,chip:root.querySelector('.ep-chip'),inp:root.querySelector('.ep-in'),drop,id,act:-1,items:[]};
+    sel._ep=w;
+    const lbl=sel.closest('td')?null:sel.id&&document.querySelector(`label[for="${sel.id}"]`)||sel.closest('div')?.querySelector('label');
+    w.inp.setAttribute('aria-label',(lbl&&lbl.textContent.trim())||'Співробітник');
+    // значення, виставлене кодом (sel.value=…), одразу показуємо в полі
+    Object.defineProperty(sel,'value',{configurable:true,get(){return EP_VAL.get.call(this);},set(v){EP_VAL.set.call(this,v);epRender(this);}});
+    new MutationObserver(()=>{epRender(sel);if(epOpen===sel)epDraw(sel);}).observe(sel,{childList:true,subtree:true,attributes:true,attributeFilter:['disabled']});
+    w.box.addEventListener('mousedown',e=>{
+      if(sel.disabled)return;
+      if(e.target.closest('.ep-x')){e.preventDefault();epSet(sel,'');w.inp.focus();epShow(sel);return;}
+      if(e.target!==w.inp){e.preventDefault();w.inp.focus();}
+      if(epOpen!==sel)epShow(sel);
+    });
+    w.inp.addEventListener('focus',()=>{if(epOpen!==sel)epShow(sel);});
+    w.inp.addEventListener('input',()=>{if(epOpen!==sel)epShow(sel);w.act=0;epDraw(sel);epPlace(sel);});
+    w.inp.addEventListener('blur',()=>setTimeout(()=>{if(document.activeElement!==w.inp)epHide(sel);},120));
+    w.inp.addEventListener('keydown',e=>{
+      if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();if(epOpen!==sel)epShow(sel);const n=w.items.length;if(!n)return;w.act=(w.act+(e.key==='ArrowDown'?1:-1)+n)%n;epDraw(sel);}
+      else if(e.key==='Enter'){if(epOpen===sel&&w.items[w.act]){e.preventDefault();e.stopPropagation();epSet(sel,w.items[w.act].o.value);epHide(sel);}}
+      else if(e.key==='Escape'){if(epOpen===sel){e.preventDefault();e.stopPropagation();epHide(sel);}}
+      else if(e.key==='Backspace'&&!w.inp.value&&EP_VAL.get.call(sel)!==''&&[...sel.options].some(o=>o.value==='')){epSet(sel,'');epDraw(sel);}
+      else if(e.key==='Tab'){epHide(sel);}
+    });
+    drop.addEventListener('mousedown',e=>{
+      e.preventDefault();
+      const o=e.target.closest('.ep-opt');if(!o)return;
+      epSet(sel,w.items[+o.dataset.i].o.value);epHide(sel);w.inp.blur();
+    });
+    epRender(sel);
+  }
+  window.empPickAll=root=>(root||document).querySelectorAll('select.emp-pick').forEach(epInit);
+  addEventListener('scroll',e=>{if(epOpen&&!(e.target.closest&&e.target.closest('.ep-drop')))epPlace(epOpen);},true);
+  addEventListener('resize',()=>{if(epOpen)epPlace(epOpen);});
+  // нові select.emp-pick (напр., рядки HR-файлу) підхоплюються автоматично; прибрані — забирають свій список
+  new MutationObserver(ms=>{
+    for(const m of ms){
+      m.addedNodes.forEach(n=>{if(n.nodeType!==1)return;if(n.matches('select.emp-pick'))epInit(n);else if(n.querySelector)n.querySelectorAll('select.emp-pick').forEach(epInit);});
+      m.removedNodes.forEach(n=>{if(n.nodeType!==1)return;const ss=n.matches('select.emp-pick')?[n]:n.querySelectorAll?[...n.querySelectorAll('select.emp-pick')]:[];
+        ss.forEach(s=>{if(s._ep&&!s.isConnected){if(epOpen===s)epOpen=null;s._ep.drop.remove();}});});
+    }
+  }).observe(document.body,{childList:true,subtree:true});
+  empPickAll();
+
   /* --- Імпорт / Експорт співробітників (Excel або CSV) --- */
   // Колонки шаблону. Порядок у файлі не важливий: при імпорті колонки шукаються за назвою.
   const EMP_COLS=['Прізвище',"Ім'я",'По батькові','Дата народження','Підрозділ','Посада','Дата прийому','Дата звільнення','Телефон'];
@@ -7424,7 +7593,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       const sess=id?devSessions.find(s=>s.id===id):null;
       document.getElementById('devSessionTitle').textContent=sess?'Редагувати сесію':'Нова GROW-сесія';
       const empSel=document.getElementById('devSEmp');
-      empSel.innerHTML='<option value="">— Оберіть —</option>'+devPlans.map(p=>`<option value="${p.id}">${esc(devEmpName(p))}${p.role?' · '+esc(p.role):''}</option>`).join('');
+      empSel.innerHTML='<option value="">— Оберіть —</option>'+devPlans.map(p=>`<option value="${p.id}" data-emp="${p.employee_id}">${esc(devEmpName(p))}${p.role?' · '+esc(p.role):''}</option>`).join('');
       empSel.value=sess?sess.plan_id:(presetPlanId||'');
       document.getElementById('devSDate').value=sess?sess.date:new Date().toISOString().slice(0,10);
       ['b1','b2','b3','b4','b5','b6','next'].forEach(k=>{ const el=document.getElementById('devS'+k.charAt(0).toUpperCase()+k.slice(1)); if(el)el.value=sess?sess[k]||'':''; });
@@ -8192,7 +8361,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         const cells=ms.map(m=>{const d=row.data[m]||{p:0,f:0};totP+=d.p;totF+=d.f;
           return `<td style="padding:0;border-left:1px solid var(--line)"><div style="display:flex">${inpP('hfp-'+m,d.p||'')}${inpF('hff-'+m,d.f||'')}</div></td>`;
         }).join('');
-        const sel=`<select class="hfe-emp modal-sel" style="width:100%"><option value="">— оберіть —</option>${empOpts}</select>`;
+        const sel=`<select class="hfe-emp modal-sel emp-pick ep-sm" style="width:100%"><option value="">— оберіть —</option>${empOpts}</select>`;
         const tr=document.createElement('tr');
         tr.dataset.ri=ri; tr.style.borderBottom='1px solid var(--line)';
         tr.innerHTML=`<td style="padding:4px">${sel}</td>
