@@ -1468,6 +1468,41 @@
   .ds-search input{width:100%;box-sizing:border-box;font:inherit;font-size:13px;border:1px solid var(--line);border-radius:8px;padding:7px 10px;outline:none;background:var(--page);color:var(--ink)}
   .ds-search input:focus{border-color:var(--brand)}
   [data-theme="dark"] .ds-opt.act{background:var(--card)}
+  /* ===== Галочки-налаштування як перемикачі, списки — як охайні квадратики ===== */
+  .bot-check input[type=checkbox]{-webkit-appearance:none;appearance:none;width:36px !important;height:20px !important;min-width:36px;border-radius:20px;background:#D9D3CD;border:none;position:relative;cursor:pointer;transition:background .18s;margin:0;padding:0 !important;box-shadow:none !important}
+  .bot-check input[type=checkbox]::before{content:"";position:absolute;width:14px;height:14px;left:3px;top:3px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .18s}
+  .bot-check input[type=checkbox]:checked{background:var(--brand)}
+  .bot-check input[type=checkbox]:checked::before{transform:translateX(16px)}
+  .bot-check input[type=checkbox]:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .bot-check input[type=checkbox]:disabled{opacity:.5;cursor:not-allowed}
+  .bot-check:has(input:disabled){cursor:not-allowed}
+  [data-theme="dark"] .bot-check input[type=checkbox]{background:#4A4541 !important;border:none !important}
+  [data-theme="dark"] .bot-check input[type=checkbox]:checked{background:var(--brand) !important}
+  /* множинний вибір (підрозділи в розсилці) — квадратики з галочкою */
+  .sch-units .bot-check input[type=checkbox]{width:18px !important;height:18px !important;min-width:18px;border-radius:5px;background:var(--surface);border:1.5px solid #CFC8C1}
+  .sch-units .bot-check input[type=checkbox]::before{width:5px;height:9px;left:5px;top:1.5px;border-radius:0;background:none;box-shadow:none;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg) scale(0);transition:transform .12s}
+  .sch-units .bot-check input[type=checkbox]:checked{background:var(--brand);border-color:var(--brand)}
+  .sch-units .bot-check input[type=checkbox]:checked::before{transform:rotate(45deg) scale(1)}
+  .sch-units .bot-check:hover input[type=checkbox]:not(:checked){border-color:var(--brand)}
+  [data-theme="dark"] .sch-units .bot-check input[type=checkbox]{background:#1E1C1A !important;border:1.5px solid #5C5650 !important}
+  [data-theme="dark"] .sch-units .bot-check input[type=checkbox]:checked{background:var(--brand) !important;border-color:var(--brand) !important}
+  .sch-units .bot-check{padding-top:5px;padding-bottom:5px;border-radius:6px}
+
+  /* ===== Поле вибору файлу: зона «перетягни або обери» ===== */
+  label.fz{display:flex !important;align-items:center;gap:12px;border:1.5px dashed var(--line);border-radius:12px;padding:12px 14px;background:var(--page);cursor:pointer;transition:border-color .15s,background .15s;position:relative;margin:0 !important}
+  .fz:hover,.fz.drag{border-color:var(--brand);background:var(--brand-tint)}
+  .fz:focus-within{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-tint)}
+  .fz input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+  .fz-ico{width:38px;height:38px;border-radius:10px;background:var(--surface);color:var(--brand);display:grid;place-items:center;flex:none;border:1px solid var(--line)}
+  .fz-ico svg{width:18px;height:18px}
+  .fz-t{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+  .fz-t b{font-size:13.5px;font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .fz-t b u{color:var(--brand);text-decoration:none}
+  .fz-t small{font-size:12px;color:var(--muted);font-weight:500}
+  .fz-x{all:unset;cursor:pointer;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;color:var(--slate);flex:none;font-size:18px;line-height:1}
+  .fz-x:hover{background:var(--brand);color:#fff}
+  .fz.has{border-style:solid;background:var(--surface)}
+  .fz.has .fz-ico{background:var(--brand-tint);border-color:transparent}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -6277,6 +6312,48 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     addEventListener('resize',()=>{if(cur)place();});
     addEventListener('blur',()=>close());
     document.addEventListener('focusin',e=>{if(cur&&e.target!==cur.sel&&!cur.drop.contains(e.target))close();});
+  })();
+
+  /* --- Поле вибору файлу: зона «перетягни сюди або обери», ім'я й розмір вибраного файлу ---
+     Підхоплює кожен видимий <input type="file"> (крім прихованих і data-native). */
+  (function(){
+    const UP='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>';
+    const DOC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>';
+    const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+    const size=b=>b<1024?b+' Б':b<1048576?Math.round(b/1024)+' КБ':(b/1048576).toFixed(1).replace('.',',')+' МБ';
+    function hint(inp){
+      const a=(inp.accept||'').toLowerCase();if(!a)return 'Будь-який файл';
+      const k=[];if(/image|\.jpe?g|\.png|\.webp/.test(a))k.push('фото');if(/video|\.mp4/.test(a))k.push('відео');if(/\.pdf/.test(a))k.push('PDF');
+      if(/\.docx?/.test(a))k.push('Word');if(/\.xlsx?|\.csv/.test(a))k.push('Excel');if(/\.pptx?/.test(a))k.push('PowerPoint');
+      return k.length?k.join(', '):'Файли: '+a;
+    }
+    function draw(inp){
+      const z=inp._fz, f=inp.files&&inp.files[0];
+      z.classList.toggle('has',!!f);
+      z.querySelector('.fz-ico').innerHTML=f?DOC:UP;
+      z.querySelector('.fz-t').innerHTML=f?`<b>${esc(inp.files.length>1?inp.files.length+' файли':f.name)}</b><small>${size([...inp.files].reduce((s,x)=>s+x.size,0))} · натисни, щоб замінити</small>`
+        :`<b>Перетягни файл сюди або <u>обери</u></b><small>${esc(hint(inp))}</small>`;
+      z.querySelector('.fz-x').style.display=f?'':'none';
+    }
+    function init(inp){
+      if(inp._fz||inp.hidden||'native' in inp.dataset||inp.style.display==='none'||inp.closest('label'))return;
+      const z=document.createElement('label');z.className='fz';
+      z.innerHTML=`<span class="fz-ico"></span><span class="fz-t"></span><button type="button" class="fz-x" aria-label="Прибрати файл">×</button>`;
+      inp.before(z);z.appendChild(inp);inp._fz=z;
+      inp.addEventListener('change',()=>draw(inp));
+      z.querySelector('.fz-x').addEventListener('click',e=>{e.preventDefault();inp.value='';draw(inp);inp.dispatchEvent(new Event('change',{bubbles:true}));});
+      ['dragenter','dragover'].forEach(t=>z.addEventListener(t,e=>{e.preventDefault();z.classList.add('drag');}));
+      ['dragleave','drop'].forEach(t=>z.addEventListener(t,e=>{e.preventDefault();z.classList.remove('drag');}));
+      z.addEventListener('drop',e=>{
+        const fs=e.dataTransfer&&e.dataTransfer.files;if(!fs||!fs.length)return;
+        const dt=new DataTransfer();(inp.multiple?[...fs]:[fs[0]]).forEach(f=>dt.items.add(f));
+        inp.files=dt.files;draw(inp);inp.dispatchEvent(new Event('change',{bubbles:true}));
+      });
+      draw(inp);
+    }
+    const scan=root=>root.querySelectorAll&&root.querySelectorAll('input[type=file]').forEach(init);
+    new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType!==1)return;if(n.matches('input[type=file]'))init(n);else scan(n);}))).observe(document.body,{childList:true,subtree:true});
+    scan(document);
   })();
 
   /* --- Імпорт / Експорт співробітників (Excel або CSV) --- */
