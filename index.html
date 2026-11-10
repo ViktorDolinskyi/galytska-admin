@@ -249,6 +249,48 @@
     box-shadow:0 4px 12px rgba(27,23,20,.2);
   }
 
+  /* ---------- Групи меню ---------- */
+  .nav{overflow-y:auto;overflow-x:hidden;scrollbar-width:thin}
+  .nav-grp-h .nav-chev{width:14px;height:14px;margin-left:auto;color:var(--muted);transition:transform .18s;stroke-width:2.2}
+  .nav-grp.open>.nav-grp-h .nav-chev{transform:rotate(90deg)}
+  .nav-grp-h.has-active{color:var(--ink)}
+  .nav-grp-dot{width:6px;height:6px;border-radius:50%;background:var(--brand);margin-left:auto;display:none;flex:none}
+  .nav-grp:not(.open)>.nav-grp-h.has-active .nav-grp-dot{display:block}
+  .nav-grp:not(.open)>.nav-grp-h.has-active .nav-chev{margin-left:6px}
+  .nav-kids{display:grid;grid-template-rows:0fr;transition:grid-template-rows .2s ease}
+  .nav-grp:not(.open)>.nav-kids{visibility:hidden;transition:grid-template-rows .2s ease,visibility 0s .2s}   /* згорнуті пункти не ловлять Tab */
+  .nav-grp.open>.nav-kids{grid-template-rows:1fr}
+  .nav-kids-in{overflow:hidden;display:flex;flex-direction:column;gap:1px;margin-left:20px;padding-left:9px;border-left:1px solid var(--line)}
+  .nav-kids-in .nav-item{font-size:13px;padding:7px 10px}
+  .nav-kids-in .nav-item svg{width:16px;height:16px}
+  .nav-kids-in .nav-item.active::before{left:-11px}
+  .nav-kids-in .nav-item .nav-grip{width:14px;height:14px;position:absolute;right:6px;top:50%;margin:-7px 0 0}
+  .nav-kids-in .nav-label-txt{text-overflow:ellipsis;min-width:0}
+  @media(prefers-reduced-motion:reduce){.nav-kids,.nav-grp-h .nav-chev{transition:none}}
+  /* згорнутий сайдбар: лише іконки блоків, пункти — у спливному меню */
+  @media(min-width:881px){
+    .app.sb-collapsed .sidebar{z-index:60}   /* спливне меню поверх карток сторінки */
+    .app.sb-collapsed .nav-kids{display:none}
+    .app.sb-collapsed .nav-grp-h .nav-chev{display:none}
+    .app.sb-collapsed .nav-grp-h .nav-grp-dot{position:absolute;top:6px;right:6px;margin:0}
+    .app.sb-collapsed .nav-grp.fly-open>.nav-grp-h{background:var(--hover-bg);color:var(--ink)}
+    .app.sb-collapsed .nav-grp.fly-open>.nav-kids{display:block;visibility:visible;position:fixed;z-index:300;left:68px;min-width:230px;
+      background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 10px 30px rgba(27,23,20,.18)}
+    .app.sb-collapsed .nav-grp.fly-open>.nav-kids::before{content:attr(data-title);display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:6px 10px 4px}
+    .app.sb-collapsed .nav-grp.fly-open .nav-kids-in{margin:0;padding:0;border:0}
+    .app.sb-collapsed .nav-grp.fly-open .nav-kids-in .nav-item{justify-content:flex-start;gap:11px;padding:8px 10px}
+    .app.sb-collapsed .nav-grp.fly-open .nav-kids-in .nav-item .nav-label-txt{max-width:220px;opacity:1;pointer-events:auto}
+    .app.sb-collapsed .nav-grp.fly-open .nav-kids-in .nav-item.active::before{display:none}
+    .app.sb-collapsed .nav-grp.fly-open .nav-kids-in .nav-item:hover::after{display:none}
+    .app.sb-collapsed .nav-grp.fly-open>.nav-grp-h:hover::after{display:none}
+  }
+  /* сторінки, на які ведуть кілька пунктів меню: показати лише свою частину */
+  #view-company[data-mode] #companySeg{display:none}
+  #view-company[data-mode=emp] .co-dict,#view-company[data-mode=dict] .co-emp{display:none}
+  #view-budget[data-mode=budget] #budSeg button:nth-child(2){display:none}
+  #view-budget[data-mode=hrboard] #budSeg,#view-budget[data-mode=hrfiles] #budSeg,
+  #view-budget[data-mode=hrboard] #hrSeg,#view-budget[data-mode=hrfiles] #hrSeg{display:none}
+
   .sb-foot{padding:14px; border-top:1px solid var(--line); display:flex; align-items:center; gap:10px; overflow:hidden; white-space:nowrap;}
   .app.sb-collapsed .sb-foot{padding:10px 8px;justify-content:center;flex-direction:column;gap:6px}
   .avatar{width:34px;height:34px;border-radius:50%;background:var(--brand-tint-2);color:var(--brand);
@@ -1697,73 +1739,111 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       </div>
     </div>
 
-    <nav class="nav">
-      <div class="nav-label">Управління</div>
-      <div id="navSortable">
-      <button class="nav-item active" data-view="dash" data-label="Панель" draggable="true">
+    <nav class="nav" id="mainNav">
+<button type="button" class="nav-item active" data-nav="dash" data-view="dash" data-label="Панель">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
         <span class="nav-label-txt">Панель</span>
+      </button>
+      <div class="nav-grp" data-grp="org">
+      <button type="button" class="nav-item nav-grp-h" data-label="Організація" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>
+        <span class="nav-label-txt">Організація</span>
+        <span class="nav-grp-dot"></span>
+        <svg class="nav-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+      <div class="nav-kids"><div class="nav-kids-in nav-sortable" data-sort="org">
+<button type="button" class="nav-item" data-nav="structure" data-view="company" data-mode="structure" data-label="Структура компанії" draggable="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="9" y="3" width="6" height="5" rx="1"/><rect x="3" y="16" width="6" height="5" rx="1"/><rect x="15" y="16" width="6" height="5" rx="1"/><path d="M12 8v4M6 16v-4h12v4"/></svg>
+        <span class="nav-label-txt">Структура компанії</span>
         <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </button>
-      <button class="nav-item" data-view="proc" data-label="Процеси" draggable="true">
+<button type="button" class="nav-item" data-nav="proc" data-view="proc" data-label="Процеси" draggable="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
         <span class="nav-label-txt">Процеси</span>
         <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </button>
-      <button class="nav-item" data-view="matrix" data-label="Матриці" draggable="true">
+<button type="button" class="nav-item" data-nav="matrix" data-view="matrix" data-label="Матриці відповідальності" draggable="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
         <span class="nav-label-txt">Матриці</span>
         <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </button>
-      <button class="nav-item" data-view="goals" data-label="Цілі" draggable="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-        <span class="nav-label-txt">Цілі</span>
+      </div></div>
+      </div>
+      <div class="nav-grp" data-grp="hr">
+      <button type="button" class="nav-item nav-grp-h" data-label="Персонал (HR)" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg>
+        <span class="nav-label-txt">Персонал (HR)</span>
+        <span class="nav-grp-dot"></span>
+        <svg class="nav-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+      <div class="nav-kids"><div class="nav-kids-in nav-sortable" data-sort="hr">
+<button type="button" class="nav-item" data-nav="emp" data-view="company" data-mode="emp" data-label="Співробітники" draggable="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg>
+        <span class="nav-label-txt">Співробітники</span>
         <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </button>
-      <button class="nav-item" data-view="company" data-label="Компанія" draggable="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>
-        <span class="nav-label-txt">Компанія</span>
-        <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
-      </button>
-      <button class="nav-item" data-view="hr_ops" data-acc="company" data-label="Кадрові операції" draggable="true">
+<button type="button" class="nav-item" data-nav="hr_ops" data-view="hr_ops" data-acc="company" data-label="Кадрові операції" draggable="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><circle cx="10" cy="13" r="2"/><path d="M7 19c.5-1.7 1.6-2.5 3-2.5s2.5.8 3 2.5M15 12h2M15 16h2"/></svg>
         <span class="nav-label-txt">Кадрові операції</span>
         <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </button>
-      <button class="nav-item" data-view="reports" data-label="Звіти" draggable="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
-        <span class="nav-label-txt">Звіти</span>
+<button type="button" class="nav-item" data-nav="hrfiles" data-view="budget" data-mode="hrfiles" data-label="HR-файли" draggable="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 9v12"/></svg>
+        <span class="nav-label-txt">HR-файли</span>
         <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </button>
-      <button class="nav-item" data-view="analytics" data-label="Аналітика" draggable="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M7 15l3-4 3 3 4-6"/></svg>
-        <span class="nav-label-txt">Аналітика</span>
+<button type="button" class="nav-item" data-nav="hrboard" data-view="budget" data-mode="hrboard" data-label="HR-дошка" draggable="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="7"/><rect x="12" y="6" width="3" height="11"/><rect x="17" y="12" width="3" height="5"/></svg>
+        <span class="nav-label-txt">HR-дошка</span>
         <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </button>
-      <button class="nav-item" data-view="budget" data-label="Бюджет" draggable="true">
+<button type="button" class="nav-item" data-nav="dev" data-view="dev" data-label="Розвиток персоналу" draggable="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/><path d="M18 2v4h4"/><path d="M22 2l-4 4"/></svg>
+        <span class="nav-label-txt">Розвиток персоналу</span>
+        <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
+      </button>
+      </div></div>
+      </div>
+      <div class="nav-grp" data-grp="res">
+      <button type="button" class="nav-item nav-grp-h" data-label="Цілі та фінанси" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span class="nav-label-txt">Цілі та фінанси</span>
+        <span class="nav-grp-dot"></span>
+        <svg class="nav-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+      <div class="nav-kids"><div class="nav-kids-in nav-sortable" data-sort="res">
+<button type="button" class="nav-item" data-nav="goals" data-view="goals" data-label="Цілі" draggable="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        <span class="nav-label-txt">Цілі</span>
+        <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
+      </button>
+<button type="button" class="nav-item" data-nav="budget" data-view="budget" data-mode="budget" data-label="Бюджет" draggable="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h2M10 15h4"/></svg>
         <span class="nav-label-txt">Бюджет</span>
         <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </button>
-      <button class="nav-item" data-view="dev" data-label="Розвиток" draggable="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/><path d="M18 2v4h4"/><path d="M22 2l-4 4"/></svg>
-        <span class="nav-label-txt">Розвиток</span>
+<button type="button" class="nav-item" data-nav="reports" data-view="reports" data-label="Звіти" draggable="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
+        <span class="nav-label-txt">Звіти</span>
         <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </button>
-
-      <button class="nav-item" data-view="bot" data-label="Будь в темі" draggable="true">
+<button type="button" class="nav-item" data-nav="analytics" data-view="analytics" data-label="Аналітика" draggable="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M7 15l3-4 3 3 4-6"/></svg>
+        <span class="nav-label-txt">Аналітика</span>
+        <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
+      </button>
+      </div></div>
+      </div>
+<button type="button" class="nav-item" data-nav="bot" data-view="bot" data-label="Будь в темі">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>
         <span class="nav-label-txt">Будь в темі</span>
-        <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </button>
-
-      </div><!-- /navSortable -->
       <div class="nav-label">Система</div>
-      <button class="nav-item" data-view="settings" data-label="Налаштування">
+<button type="button" class="nav-item" data-nav="settings" data-view="settings" data-label="Налаштування">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         <span class="nav-label-txt">Налаштування</span>
       </button>
-      <button class="nav-item nav-sub" data-view="company" data-company-tab="settings" data-label="Довідники" style="display:none">
+<button type="button" class="nav-item" data-nav="dicts" data-view="company" data-mode="dict" data-label="Довідники">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
         <span class="nav-label-txt">Довідники</span>
       </button>
@@ -2337,7 +2417,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         <!-- === Налаштування === -->
         <div id="companyTab-settings" style="display:none">
           <!-- Співробітники -->
-          <div class="card" style="margin-bottom:16px">
+          <div class="card co-emp" style="margin-bottom:16px">
             <div class="card-head">
               <h3>Співробітники</h3>
               <span class="badge info" id="empCount">0</span>
@@ -2361,7 +2441,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
             </table>
           </div>
           <!-- Типи структурних одиниць -->
-          <div class="card" style="margin-bottom:16px">
+          <div class="card co-dict" style="margin-bottom:16px">
             <div class="card-head">
               <h3>Типи структурних одиниць</h3>
               <span class="badge info" id="typeCount">0</span>
@@ -2373,7 +2453,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
             </table>
           </div>
           <!-- Види структурних одиниць -->
-          <div class="card">
+          <div class="card co-dict">
             <div class="card-head">
               <h3>Види структурних одиниць</h3>
               <span class="badge info" id="kindCount">0</span>
@@ -3177,7 +3257,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
               <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px">Довідники системи</div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
 
-                <div class="sett-dir-card" onclick="navTo('company','settings')">
+                <div class="sett-dir-card" onclick="navGo('structure')">
                   <div class="sett-dir-card-icon" style="background:var(--brand-tint);color:var(--brand)">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3"/></svg>
                   </div>
@@ -3188,7 +3268,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
                   <svg class="sett-dir-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18l6-6-6-6"/></svg>
                 </div>
 
-                <div class="sett-dir-card" onclick="navTo('company','settings')">
+                <div class="sett-dir-card" onclick="navGo('emp')">
                   <div class="sett-dir-card-icon" style="background:#F0FDF4;color:#16A34A">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                   </div>
@@ -3780,7 +3860,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
 <script id="matrixData" type="application/json">{"depsP":[],"depsR":[],"pov":[],"resp":[]}</script>
 <script>
   // Перемикання розділів
-  const items = document.querySelectorAll('.nav-item');
+  const items = document.querySelectorAll('.nav-item[data-view]');
   const views = document.querySelectorAll('.view');
   const crumb = document.getElementById('crumb');
   const eyebrow = document.getElementById('eyebrow');
@@ -3799,93 +3879,165 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     reports:'Аналітика та звітність',
     analytics:'Аналітика та звітність',
   };
+  const EYEBROW_MODE={emp:'Управління персоналом',hrfiles:'Управління персоналом',hrboard:'Управління персоналом',dict:'Довідники'};
+  // заголовок сторінки, на яку ведуть кілька пунктів меню (Компанія, Бюджет)
+  const PAGE_HEAD={
+    structure:'Департаменти, відділи й підрозділи компанії.',
+    emp:'Довідник персоналу, імпорт і картки «Досьє».',
+    dict:'Типи й види структурних одиниць.',
+    hrboard:'ФОП за підрозділами: план і факт по місяцях з HR-файлів.',
+    hrfiles:'Планові штатні розписи підрозділів на рік.',
+  };
+  function navPageHead(vEl,btn,mode){
+    const h=vEl.querySelector('.page-head h2'), p=vEl.querySelector('.page-head p');
+    if(!h||!(mode in PAGE_HEAD||mode==='budget')) return;
+    const ic=h.querySelector('.ic');
+    if(!h.dataset.orig){ h.dataset.orig=h.lastChild.textContent; h.dataset.origIc=ic?ic.innerHTML:''; if(p) p.dataset.orig=p.textContent; }
+    const own=mode!=='budget';
+    h.lastChild.textContent=own?btn.dataset.label:h.dataset.orig;
+    if(ic) ic.innerHTML=own?(btn.querySelector('svg:not(.nav-grip)')?.outerHTML||h.dataset.origIc):h.dataset.origIc;
+    if(p) p.textContent=own?PAGE_HEAD[mode]:p.dataset.orig;
+  }
   items.forEach(btn=>{
     btn.addEventListener('click',()=>{
       items.forEach(i=>i.classList.remove('active'));
       btn.classList.add('active');
-      const id = btn.dataset.view;
+      const id = btn.dataset.view, mode = btn.dataset.mode||'';
       views.forEach(v=>v.classList.toggle('active', v.id==='view-'+id));
+      const vEl=document.getElementById('view-'+id);
+      if(vEl){ if(mode) vEl.dataset.mode=mode; else delete vEl.dataset.mode; navPageHead(vEl,btn,mode); }
       crumb.textContent = btn.dataset.label || btn.textContent.trim();
-      if(eyebrow) eyebrow.textContent = EYEBROWS[id] || 'Галицька Свіжина';
-      if(btn.dataset.companyTab) companyTab(btn.dataset.companyTab);
-      else if(id==='company') companyTab('structure');
+      if(eyebrow) eyebrow.textContent = EYEBROW_MODE[mode] || EYEBROWS[id] || 'Галицька Свіжина';
+      if(id==='company' && window.companyTab) companyTab(mode==='emp'||mode==='dict'?'settings':'structure');
       if(id==='dev' && window.devRender) { setTimeout(()=>{ if(window.devTab) window.devTab('plans'); else window.devRender(); },0); }
+      if(id==='budget' && window.budTab){
+        const seg=document.querySelectorAll('#budSeg button'), hseg=document.querySelectorAll('#hrSeg button');
+        if(mode==='hrboard'||mode==='hrfiles'){
+          budTab('hrboard',seg[1]);
+          hrTab(mode==='hrfiles'?'settings':'board',hseg[mode==='hrfiles'?1:0]);
+        } else budTab('table',seg[0]);
+      }
       if(id==='budget' && window.budgetLoad) { setTimeout(budgetLoad, 100); }
       if(id==='bot' && window.botLoad) { setTimeout(botLoad, 100); }
       if(id==='hr_ops' && window.hoLoad) { setTimeout(hoLoad, 50); }
       if(id==='dash' && window.dashLoad) { setTimeout(dashLoad, 100); }
+      navSync(true);
       closeNav();
       document.querySelector('.content').scrollTo({top:0,behavior:'smooth'});
     });
   });
 
-  // ===== Nav drag-and-drop reorder =====
-  (function(){
-    const container = document.getElementById('navSortable');
-    if(!container) return;
-    const NAV_ORDER_KEY = 'gs_nav_order';
-    let dragSrc = null;
+  // ===== Групи меню: розгортання, активний блок, спливне меню у згорнутому сайдбарі =====
+  const NAV_GRP_KEY='gs_nav_groups';
+  let _navOpen={};
+  try{ _navOpen=JSON.parse(localStorage.getItem(NAV_GRP_KEY)||'{}')||{}; }catch(e){}
+  function navSaveGroups(){ try{ localStorage.setItem(NAV_GRP_KEY,JSON.stringify(_navOpen)); }catch(e){} }
+  function navCloseFly(){ document.querySelectorAll('.nav-grp.fly-open').forEach(g=>g.classList.remove('fly-open')); }
+  // openActive=true: блок з активним пунктом розгортається (після переходу)
+  window.navSync=function(openActive){
+    document.querySelectorAll('#mainNav .nav-grp').forEach(g=>{
+      const kids=[...g.querySelectorAll('.nav-item[data-view]')];
+      const visible=kids.some(k=>k.style.display!=='none');
+      g.style.display=visible?'':'none';
+      const act=kids.some(k=>k.classList.contains('active'));
+      const h=g.querySelector('.nav-grp-h');
+      h.classList.toggle('has-active',act);
+      if(act&&openActive&&!_navOpen[g.dataset.grp]){ _navOpen[g.dataset.grp]=true; navSaveGroups(); }
+      const open=!!_navOpen[g.dataset.grp];
+      g.classList.toggle('open',open);
+      h.setAttribute('aria-expanded',open);
+      g.querySelector('.nav-kids').dataset.title=h.dataset.label;
+    });
+  };
+  document.querySelectorAll('#mainNav .nav-grp-h').forEach(h=>{
+    h.addEventListener('click',e=>{
+      e.stopPropagation();
+      const g=h.closest('.nav-grp');
+      const rail=document.querySelector('.app')?.classList.contains('sb-collapsed')&&window.matchMedia('(min-width:881px)').matches;
+      if(rail){
+        const was=g.classList.contains('fly-open');
+        navCloseFly();
+        if(!was){
+          g.classList.add('fly-open');
+          const kids=g.querySelector('.nav-kids'), r=h.getBoundingClientRect();
+          kids.style.top=Math.max(8,Math.min(r.top-6,window.innerHeight-kids.offsetHeight-8))+'px';
+        }
+        return;
+      }
+      _navOpen[g.dataset.grp]=!g.classList.contains('open');
+      navSaveGroups();
+      navSync(false);
+    });
+  });
+  document.addEventListener('click',e=>{ if(!e.target.closest('.nav-grp.fly-open')) navCloseFly(); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') navCloseFly(); });
+  document.querySelectorAll('#mainNav .nav-kids-in .nav-item').forEach(b=>b.addEventListener('click',()=>navCloseFly()));
+  // перехід до пункту меню за його id (data-nav)
+  window.navGo=function(nav){ const b=document.querySelector(`#mainNav .nav-item[data-nav="${nav}"]`); if(b) b.click(); };
+  navSync(true);
 
-    function getNavItems(){ return [...container.querySelectorAll('.nav-item[draggable]')]; }
+  // ===== Nav drag-and-drop reorder (всередині свого блоку) =====
+  (function(){
+    const NAV_ORDER_KEY = 'gs_nav_order2';
+    const lists=[...document.querySelectorAll('#mainNav .nav-sortable')];
+    if(!lists.length) return;
+    let dragSrc = null;
+    const itemsOf=c=>[...c.querySelectorAll(':scope>.nav-item[draggable]')];
 
     function saveOrder(){
-      localStorage.setItem(NAV_ORDER_KEY, JSON.stringify(getNavItems().map(el=>el.dataset.view)));
+      const o={}; lists.forEach(c=>o[c.dataset.sort]=itemsOf(c).map(el=>el.dataset.nav));
+      try{ localStorage.setItem(NAV_ORDER_KEY, JSON.stringify(o)); }catch(e){}
     }
-
     function restoreOrder(){
       try{
-        const order = JSON.parse(localStorage.getItem(NAV_ORDER_KEY)||'null');
-        if(!Array.isArray(order)) return;
-        order.forEach(view=>{
-          const el = container.querySelector(`.nav-item[data-view="${view}"]`);
-          if(el) container.appendChild(el);
+        const o = JSON.parse(localStorage.getItem(NAV_ORDER_KEY)||'null');
+        if(!o||typeof o!=='object') return;
+        lists.forEach(c=>{
+          const order=o[c.dataset.sort]; if(!Array.isArray(order)) return;
+          order.forEach(n=>{ const el=c.querySelector(`:scope>.nav-item[data-nav="${n}"]`); if(el) c.appendChild(el); });
+          // нові пункти, яких ще немає у збереженому порядку, — в кінець
+          itemsOf(c).forEach(el=>{ if(!order.includes(el.dataset.nav)) c.appendChild(el); });
         });
-        // нові розділи, яких ще немає у збереженому порядку, — в кінець
-        getNavItems().forEach(el=>{ if(!order.includes(el.dataset.view)) container.appendChild(el); });
       } catch(e){}
     }
-
     function clearIndicators(){
-      getNavItems().forEach(el=>el.classList.remove('nav-drag-over-top','nav-drag-over-bot','nav-dragging'));
+      document.querySelectorAll('#mainNav .nav-item').forEach(el=>el.classList.remove('nav-drag-over-top','nav-drag-over-bot','nav-dragging'));
     }
-
     restoreOrder();
-
-    container.addEventListener('dragstart', e=>{
-      dragSrc = e.target.closest('.nav-item[draggable]');
-      if(!dragSrc) return;
-      e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/plain', dragSrc.dataset.view);
-      setTimeout(()=>dragSrc.classList.add('nav-dragging'), 0);
+    lists.forEach(container=>{
+      container.addEventListener('dragstart', e=>{
+        dragSrc = e.target.closest('.nav-item[draggable]');
+        if(!dragSrc) return;
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', dragSrc.dataset.nav);
+        setTimeout(()=>dragSrc&&dragSrc.classList.add('nav-dragging'), 0);
+      });
+      container.addEventListener('dragover', e=>{
+        if(!dragSrc||dragSrc.parentNode!==container) return;   // лише в межах свого блоку
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        const over = e.target.closest('.nav-item[draggable]');
+        clearIndicators();
+        dragSrc.classList.add('nav-dragging');
+        if(!over || over === dragSrc) return;
+        const rect = over.getBoundingClientRect();
+        over.classList.add(e.clientY < rect.top + rect.height/2 ? 'nav-drag-over-top' : 'nav-drag-over-bot');
+      });
+      container.addEventListener('dragleave', e=>{
+        if(!container.contains(e.relatedTarget)) clearIndicators();
+      });
+      container.addEventListener('drop', e=>{
+        e.preventDefault();
+        const over = e.target.closest('.nav-item[draggable]');
+        clearIndicators();
+        if(!dragSrc || !over || over === dragSrc || over.parentNode!==container || dragSrc.parentNode!==container) return;
+        const rect = over.getBoundingClientRect();
+        const before = e.clientY < rect.top + rect.height/2;
+        container.insertBefore(dragSrc, before ? over : over.nextSibling);
+        saveOrder();
+      });
+      container.addEventListener('dragend', ()=>{ clearIndicators(); dragSrc=null; });
     });
-
-    container.addEventListener('dragover', e=>{
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-      const over = e.target.closest('.nav-item[draggable]');
-      clearIndicators();
-      if(dragSrc) dragSrc.classList.add('nav-dragging');
-      if(!over || over === dragSrc) return;
-      const rect = over.getBoundingClientRect();
-      over.classList.add(e.clientY < rect.top + rect.height/2 ? 'nav-drag-over-top' : 'nav-drag-over-bot');
-    });
-
-    container.addEventListener('dragleave', e=>{
-      if(!container.contains(e.relatedTarget)) clearIndicators();
-    });
-
-    container.addEventListener('drop', e=>{
-      e.preventDefault();
-      const over = e.target.closest('.nav-item[draggable]');
-      clearIndicators();
-      if(!dragSrc || !over || over === dragSrc) return;
-      const rect = over.getBoundingClientRect();
-      const before = e.clientY < rect.top + rect.height/2;
-      container.insertBefore(dragSrc, before ? over : over.nextSibling);
-      saveOrder();
-    });
-
-    container.addEventListener('dragend', ()=>{ clearIndicators(); dragSrc=null; });
   })();
 
   // Мобільне меню
@@ -4581,7 +4733,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     }
   };
   window.navTo=function(view,tab){
-    const btn=document.querySelector(`.nav-item[data-view="${view}"]`);
+    if(view==='company'){ navGo(tab==='settings'?'emp':'structure'); return; }
+    const btn=document.querySelector(`#mainNav .nav-item[data-nav="${view}"]`)||document.querySelector(`.nav-item[data-view="${view}"]`);
     if(btn)btn.click();
     if(tab){
       setTimeout(()=>{
@@ -5650,8 +5803,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
   };
   window.goToOrgUnit=function(unitId){
     empCloseModal();
-    const navBtn=document.querySelector('.nav-item[data-view="company"]');
-    if(navBtn)navBtn.click();
+    navGo('structure');
     setTimeout(()=>{
       companyTab('structure');
       const row=document.getElementById('orgrow-'+unitId);
@@ -7711,9 +7863,10 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     // меню: приховати розділи без доступу
     document.querySelectorAll('.nav-item[data-view]').forEach(btn=>{
       const k=btn.dataset.acc||btn.dataset.view;
-      if(k==='settings'||btn.classList.contains('nav-sub')) return;
+      if(k==='settings') return;
       btn.style.display=accLevel(k)>0?'':'none';
     });
+    if(window.navSync) navSync(false);   // блок без жодного доступного пункту ховається
     ACC_SECTIONS.forEach(s=>{
       const v=document.getElementById('view-'+s.k);
       if(!v||s.k==='settings') return;               // у налаштуваннях вкладки приховуються цілком (див. нижче)
@@ -7729,7 +7882,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     // якщо відкритий розділ став недоступним — перейти на перший доступний
     const cur=document.querySelector('.nav-item.active');
     if(cur&&cur.style.display==='none'){
-      const first=[...document.querySelectorAll('#navSortable .nav-item')].find(b=>b.style.display!=='none')||document.querySelector('.nav-item[data-view=settings]');
+      const first=[...document.querySelectorAll('#mainNav .nav-item[data-view]')].find(b=>b.style.display!=='none')||document.querySelector('.nav-item[data-view=settings]');
       first.click();
     }
   }
@@ -9137,7 +9290,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       document.querySelectorAll('#budSeg button').forEach(b=>b.classList.remove('on'));
       if(btn) btn.classList.add('on');
       if(tab==='table') budFillUnits();
-      if(tab==='hrboard') hrLoad();
+      if(tab==='hrboard') return hrLoad();
       if(tab==='settings'){
         budgetsLoadRefresh();
         budCatsLoadRefresh().then(()=>budItemsLoadRefresh());
@@ -9158,6 +9311,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       _hrFiles=rf.data||[];
       hrFillUnit();
       await hrRender();
+      if(document.getElementById('hrTab-settings')?.style.display!=='none') hrFilesRender();
     }
 
     function hrFillUnit(){
