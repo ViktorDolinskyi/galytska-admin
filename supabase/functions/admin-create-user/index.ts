@@ -47,6 +47,10 @@ Deno.serve(async (req) => {
   if (password && password.length < 8) return json({ error: "Пароль має містити щонайменше 8 символів" }, 400);
   if (!role_id) return json({ error: "Оберіть роль" }, 400);
 
+  // роль Адміністратора призначає лише Власник; не можна видати роль з більшими правами, ніж маєш сам (roles_v2.sql)
+  const { data: canRole, error: canErr } = await caller.rpc("app_can_assign_role", { p_role: role_id });
+  if (!canErr && canRole === false) return json({ error: "Недостатньо прав, щоб призначити цю роль" }, 403);
+
   const admin = createClient(url, serviceKey, { auth: { persistSession: false } });
   const { data: role } = await admin.from("app_roles").select("id").eq("id", role_id).maybeSingle();
   if (!role) return json({ error: "Такої ролі немає" }, 400);
