@@ -1514,6 +1514,10 @@
   .ho-tbl .who span{font-size:12px;color:var(--slate);display:block}
   .ho-kind{display:inline-flex;align-items:center;gap:7px;font-weight:700;white-space:nowrap}
   .ho-dot{width:8px;height:8px;border-radius:50%;flex:none;display:inline-block}
+  .ho-ico{display:inline-grid;place-items:center;flex:none;color:var(--hc)}
+  .ho-ico svg{width:15px;height:15px}
+  .ho-ico.box{width:28px;height:28px;border-radius:8px;background:color-mix(in srgb,var(--hc) 14%,transparent)}
+  .ho-ico.box svg{width:16px;height:16px}
   .ho-from{color:var(--muted)}
   .ho-to{font-weight:700}
   .ho-arrow{color:var(--muted);padding:0 4px}
@@ -6407,17 +6411,19 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
      Поточний стан людини (посада, підрозділ, графік, ставка, оклад) = результат проведених операцій. */
   const HO_SQL='hr_operations.sql';
   const HO_K={
-    hire:{t:'Прийом',d:'Прийняття на роботу: посада, підрозділ, графік, оклад',c:'#16A34A',pre:'К'},
-    transfer:{t:'Переведення',d:'Зміна посади, підрозділу, графіка або ставки',c:'#2563EB',pre:'К'},
-    pay:{t:'Зміна окладу / ставки',s:'Зміна окладу',d:'Новий оклад або ставка з дати',c:'#7C3AED',pre:'К'},
-    extra:{t:'Додаткова посада',d:'Сумісництво або виконання обов\'язків',c:'#4F46E5',pre:'К'},
-    vacation:{t:'Відпустка',d:'Щорічна, без збереження, навчальна, декретна',c:'#0891B2',pre:'В'},
-    sick:{t:'Лікарняний',d:'Період непрацездатності',c:'#0D9488',pre:''},
-    bonus:{t:'Премія / стягнення',s:'Премія / стягн.',d:'Премія, подяка, догана або утримання',c:'#CA8A04',pre:'К'},
-    personal:{t:'Зміна персональних даних',s:'Перс. дані',d:'Прізвище, ім\'я, по батькові',c:'#8A817A',pre:'К'},
-    dismissal:{t:'Звільнення',d:'Останній робочий день і підстава',c:'#B91C1C',pre:'К'},
-    initial:{t:'Початковий стан',d:'Перенесено з довідника',c:'#9B948E',pre:''}
+    hire:{i:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/>',t:'Прийом',d:'Прийняття на роботу: посада, підрозділ, графік, оклад',c:'#16A34A',pre:'К'},
+    transfer:{i:'<path d="M17 3l4 4-4 4"/><path d="M3 7h18"/><path d="M7 21l-4-4 4-4"/><path d="M21 17H3"/>',t:'Переведення',d:'Зміна посади, підрозділу, графіка або ставки',c:'#2563EB',pre:'К'},
+    pay:{i:'<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/>',t:'Зміна окладу / ставки',s:'Зміна окладу',d:'Новий оклад або ставка з дати',c:'#7C3AED',pre:'К'},
+    extra:{i:'<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><path d="M12 11v6M9 14h6"/>',t:'Додаткова посада',d:'Сумісництво або виконання обов\'язків',c:'#4F46E5',pre:'К'},
+    vacation:{i:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',t:'Відпустка',d:'Щорічна, без збереження, навчальна, декретна',c:'#0891B2',pre:'В'},
+    sick:{i:'<path d="M14 4v10.5a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0z"/><path d="M12 9v6"/>',t:'Лікарняний',d:'Період непрацездатності',c:'#0D9488',pre:''},
+    bonus:{i:'<circle cx="12" cy="8" r="6"/><path d="M15.5 13 17 22l-5-3-5 3 1.5-9"/>',t:'Премія / стягнення',s:'Премія / стягн.',d:'Премія, подяка, догана або утримання',c:'#CA8A04',pre:'К'},
+    personal:{i:'<rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M5 16c.5-1.3 1.6-2 3-2s2.5.7 3 2M14 10h5M14 14h4"/>',t:'Зміна персональних даних',s:'Перс. дані',d:'Прізвище, ім\'я, по батькові',c:'#8A817A',pre:'К'},
+    dismissal:{i:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>',t:'Звільнення',d:'Останній робочий день і підстава',c:'#B91C1C',pre:'К'},
+    initial:{i:'<path d="M4 22V4a1 1 0 0 1 1-1h12l-2 4 2 4H5"/>',t:'Початковий стан',d:'Перенесено з довідника',c:'#9B948E',pre:''}
   };
+  // іконка типу операції: box — у плитці з тонованим тлом (список типів), інакше маленька в кольорі типу
+  const hoIco=(k,box)=>{const K=HO_K[k]||HO_K.initial;return `<span class="ho-ico${box?' box':''}" style="--hc:${K.c}" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${K.i}</svg></span>`;};
   const HO_ORDER=['hire','transfer','pay','extra','vacation','sick','bonus','personal','dismissal'];
   const HO_ST={draft:['Чернетка','off'],pending:['На погодженні','warn'],posted:['Проведено','ok'],cancelled:['Скасовано','off']};
   const HO_VAC={annual:'Щорічна',unpaid:'Без збереження зарплати',study:'Навчальна',maternity:'Декретна',other:'Інша'};
@@ -6509,7 +6515,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
   }
   const hoNw=t=>String(t).split(' · ').map(x=>`<span style="white-space:nowrap">${orgEsc(x)}</span>`).join(' · ');
   const hoWhat=o=>{const s=hoSummary(o);return s.from?`<span class="ho-from">${hoNw(s.from)}</span><span class="ho-arrow">→</span><span class="ho-to">${hoNw(s.to)}</span>`:`<span class="ho-to">${hoNw(s.to)}</span>`;};
-  const hoKindHtml=k=>`<span class="ho-kind"><span class="ho-dot" style="background:${(HO_K[k]||HO_K.initial).c}"></span>${orgEsc((HO_K[k]||{}).s||(HO_K[k]||{}).t||k)}</span>`;
+  const hoKindHtml=k=>`<span class="ho-kind">${hoIco(k)}${orgEsc((HO_K[k]||{}).s||(HO_K[k]||{}).t||k)}</span>`;
   const hoStBadge=s=>`<span class="badge ${HO_ST[s][1]}">${HO_ST[s][0]}</span>`;
 
   /* ---- Журнал ---- */
@@ -6648,8 +6654,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
   function hoRenderModal(){
     if(!hoF)return;
     const ed=hoEditable(), k=hoF.kind, K=HO_K[k]||HO_K.initial;
-    const typesHtml=HO_ORDER.map(t=>`<button type="button" class="ho-type${t===k?' on':''}" aria-pressed="${t===k}" ${ed&&!hoF.id?`onclick="hoSetKind('${t}')"`:(t===k?'':'disabled')}><span class="ho-dot" style="background:${HO_K[t].c}"></span>${HO_K[t].t}</button>`).join('');
-    $('hoTypes').innerHTML=`<h3>${hoF.id?'Операція':'Нова операція'}</h3><span class="ec-lbl">Тип операції</span>${k==='initial'?`<button type="button" class="ho-type on" aria-pressed="true"><span class="ho-dot" style="background:${K.c}"></span>${K.t}</button>`:typesHtml}`;
+    const typesHtml=HO_ORDER.map(t=>`<button type="button" class="ho-type${t===k?' on':''}" aria-pressed="${t===k}" ${ed&&!hoF.id?`onclick="hoSetKind('${t}')"`:(t===k?'':'disabled')}>${hoIco(t,1)}${HO_K[t].t}</button>`).join('');
+    $('hoTypes').innerHTML=`<h3>${hoF.id?'Операція':'Нова операція'}</h3><span class="ec-lbl">Тип операції</span>${k==='initial'?`<button type="button" class="ho-type on" aria-pressed="true">${hoIco(k,1)}${K.t}</button>`:typesHtml}`;
     const r=dictEmps.find(e=>e.id===hoF.employee_id);
     $('hoHead').innerHTML=`<div class="t"><b>${K.t}${r?' · '+orgEsc(empFull(r)):''}</b><span>${K.d}</span></div>${hoStBadge(hoF.status)}
       <button class="ico-btn" type="button" onclick="hoClose()" aria-label="Закрити"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>`;
