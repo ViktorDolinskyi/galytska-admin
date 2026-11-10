@@ -1514,6 +1514,12 @@
   .ho-scroll{overflow-x:auto}
   .ho-tbl{width:100%;border-collapse:collapse;font-size:13px;min-width:860px}
   .ho-tbl th{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+  .ho-tbl th[aria-sort]{padding:0}
+  .ho-sort{all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:flex;align-items:center;gap:5px;padding:10px 12px;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;white-space:nowrap}
+  .ho-sort svg{width:12px;height:12px;flex:none;opacity:.45}
+  .ho-sort:hover{color:var(--ink)} .ho-sort:hover svg{opacity:.8}
+  .ho-sort.on{color:var(--brand)} .ho-sort.on svg{opacity:1}
+  .ho-sort:focus-visible{outline:2px solid var(--brand);outline-offset:-2px;border-radius:6px}
   .ho-tbl td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle;color:var(--ink)}
   .ho-tbl tbody tr{cursor:pointer}
   .ho-tbl tbody tr:hover td{background:var(--hover-bg)}
@@ -6596,8 +6602,11 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
   function hoTableHtml(){
     const rows=hoFiltered();
     if(!rows.length)return `<div class="ec-empty" style="padding:28px;text-align:center">${hoOps.length?'Немає операцій за цими фільтрами':'Операцій ще немає. Натисни «Операція», щоб оформити прийом, переведення чи відпустку.'}</div>`;
+    hoSortRows(rows);
     const shown=rows.slice(0,hoShow);
-    return `<div class="ho-scroll"><table class="ho-tbl"><thead><tr><th style="width:84px">Наказ</th><th style="width:96px">Діє з</th><th style="width:160px">Операція</th><th>Співробітник</th><th>Зміна</th><th style="width:130px">Статус</th><th style="width:120px">Автор</th></tr></thead><tbody>
+    const th=(k,t,w)=>{const on=hoSort.k===k,dir=on?(hoSort.dir>0?'ascending':'descending'):'none';
+      return `<th${w?` style="width:${w}px"`:''} aria-sort="${dir}"><button type="button" class="ho-sort${on?' on':''}" onclick="hoSortBy('${k}')" title="Сортувати">${t}<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${on?(hoSort.dir>0?'<path d="m7 14 5-5 5 5"/>':'<path d="m7 10 5 5 5-5"/>'):'<path d="m8 9 4-4 4 4M8 15l4 4 4-4"/>'}</svg></button></th>`;};
+    return `<div class="ho-scroll"><table class="ho-tbl"><thead><tr>${th('no','Наказ',84)}${th('date','Діє з',96)}${th('kind','Операція',160)}${th('emp','Співробітник')}${th('what','Зміна')}${th('status','Статус',130)}${th('author','Автор',120)}</tr></thead><tbody>
       ${shown.map(o=>{const r=dictEmps.find(e=>e.id===o.employee_id);
         return `<tr class="${o.status==='cancelled'?'cx':''}" onclick="hoOpen(${o.id})">
         <td class="no">${orgEsc(o.order_no||'—')}</td>
@@ -6610,6 +6619,41 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     </tbody></table></div>${rows.length>hoShow?`<div class="ho-more"><button class="btn" type="button" onclick="hoShow+=100;$('hoTable').innerHTML=hoTableHtml()">Показати ще (${rows.length-hoShow})</button></div>`:''}`;
   }
   window.hoTableHtml=hoTableHtml;
+  // Сортування за кліком на заголовок: за зростанням → за спаданням → як було (нові зверху)
+  let hoSort={k:null,dir:1};
+  const HO_ST_ORD={draft:0,pending:1,posted:2,cancelled:3};
+  const hoColl=new Intl.Collator('uk',{numeric:true,sensitivity:'base'});
+  function hoSortKey(o,k){
+    switch(k){
+      case 'no':return o.order_no||'';
+      case 'date':return o.effective_date||'';
+      case 'kind':{const K=HO_K[o.kind]||{};return K.s||K.t||o.kind;}
+      case 'emp':{const r=dictEmps.find(e=>e.id===o.employee_id);return r?empFull(r):'';}
+      case 'what':{const x=hoSummary(o);return (x.to||'')+' '+(x.from||'');}
+      case 'status':return HO_ST_ORD[o.status]??9;
+      case 'author':return o.created_by||'';
+    }
+    return '';
+  }
+  function hoSortRows(rows){
+    const k=hoSort.k;if(!k)return rows;
+    const d=hoSort.dir;
+    rows.sort((a,b)=>{
+      const x=hoSortKey(a,k),y=hoSortKey(b,k);
+      const ex=x===''||x==null,ey=y===''||y==null;
+      if(ex!==ey)return ex?1:-1;                      // порожні — завжди внизу
+      const c=typeof x==='number'?x-y:hoColl.compare(String(x),String(y));
+      return c*d||(a.effective_date<b.effective_date?1:a.effective_date>b.effective_date?-1:b.id-a.id);
+    });
+    return rows;
+  }
+  window.hoSortBy=k=>{
+    if(hoSort.k!==k)hoSort={k,dir:1};
+    else if(hoSort.dir>0)hoSort.dir=-1;
+    else hoSort={k:null,dir:1};
+    $('hoTable').innerHTML=hoTableHtml();
+    const b=document.querySelector(`#hoTable .ho-sort[onclick="hoSortBy('${k}')"]`);if(b)b.focus();
+  };
   window.hoSetF=(k,v,soft)=>{hoFilter[k]=v;hoShow=60;if(soft){$('hoTable').innerHTML=hoTableHtml();return;}hoRender();};
   window.hoQuick=k=>{
     if(k==='pending'||k==='draft'){hoFilter.st=k;hoFilter.period='all';}
