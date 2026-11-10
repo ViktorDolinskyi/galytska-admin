@@ -1525,10 +1525,9 @@
   .ho-tbl .who span{font-size:12px;color:var(--slate);display:block}
   .ho-kind{display:inline-flex;align-items:center;gap:7px;font-weight:700;white-space:nowrap}
   .ho-dot{width:8px;height:8px;border-radius:50%;flex:none;display:inline-block}
-  .ho-ico{display:inline-grid;place-items:center;flex:none;color:var(--slate)}
+  .ho-ico{display:inline-grid;place-items:center;flex:none;color:var(--hc)}
   .ho-ico svg{width:15px;height:15px}
-  .ho-ico.box{width:28px;height:28px;border-radius:8px;background:var(--page);border:1px solid var(--line)}
-  .ho-type.on .ho-ico{color:var(--brand)}
+  .ho-ico.box{width:28px;height:28px;border-radius:8px;background:color-mix(in srgb,var(--hc) 14%,transparent)}
   .ho-ico.box svg{width:16px;height:16px}
   .ho-from{color:var(--muted)}
   .ho-to{font-weight:700}
@@ -1619,15 +1618,15 @@
   /* ===== Вибір співробітника (чип + пошук) ===== */
   select.emp-pick.ep-on{display:none!important}
   .ep{position:relative;width:100%}
-  .ep-box{display:flex;align-items:center;flex-wrap:wrap;gap:6px;min-height:40px;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;padding:4px 32px 4px 6px;background:var(--card);cursor:text;position:relative;transition:border-color .15s,box-shadow .15s}
+  .ep-box{display:flex;align-items:center;flex-wrap:nowrap;gap:6px;min-height:40px;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;padding:4px 32px 4px 6px;background:var(--card);cursor:text;position:relative;transition:border-color .15s,box-shadow .15s}
   .ep-box:hover{border-color:var(--brand-tint-2)}
   .ep.open .ep-box{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-tint)}
   .ep.dis .ep-box{background:var(--page);cursor:default}
-  .ep-chip{display:inline-flex;align-items:center;gap:6px;max-width:100%;background:var(--brand-tint);color:var(--ink);border-radius:20px;padding:3px 6px 3px 3px;font-size:13px;font-weight:700;min-width:0}
+  .ep-chip{display:inline-flex;align-items:center;gap:6px;max-width:100%;flex:0 1 auto;background:var(--brand-tint);color:var(--ink);border-radius:20px;padding:3px 6px 3px 3px;font-size:13px;font-weight:700;min-width:0}
   .ep-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .ep-x{all:unset;cursor:pointer;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:15px;line-height:1;color:var(--slate);flex:none}
   .ep-x:hover{background:var(--brand);color:#fff}
-  .ep-in{flex:1;min-width:60px;border:none!important;outline:none;background:transparent!important;font:inherit;font-size:13.5px;color:var(--ink);padding:5px 4px!important;box-shadow:none!important;width:auto!important}
+  .ep-in{flex:1 1 24px;min-width:24px;border:none!important;outline:none;background:transparent!important;font:inherit;font-size:13.5px;color:var(--ink);padding:5px 4px!important;box-shadow:none!important;width:auto!important}
   .ep-in::placeholder{color:var(--muted)}
   .ep .ep-box input.ep-in{background:transparent!important;border:none!important}
   [data-theme="dark"] .ep-box{background:#1E1C1A}
