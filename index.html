@@ -1564,6 +1564,11 @@
   .ho-log{display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:var(--slate)}
   .ho-foot{display:flex;align-items:center;gap:10px;padding:14px 22px;border-top:1px solid var(--line);flex-wrap:wrap}
   .ho-foot .sp{flex:1}
+  .ho-fz .ho-fz-open{all:unset;cursor:pointer;color:var(--brand);font-weight:700;font-size:12.5px;padding:6px 8px;border-radius:8px;flex:none}
+  .ho-fz .ho-fz-open:hover{background:var(--brand-tint)}
+  div.fz.ho-fz{display:flex;align-items:center;gap:12px;border:1.5px dashed var(--line);border-radius:12px;padding:12px 14px;background:var(--page)}
+  div.fz.ho-fz.has{border-style:solid;background:var(--surface)}
+  .ho-fz-ro .fz-t b{color:var(--muted)}
   .ho-file{font-size:12.5px;color:var(--slate);display:flex;align-items:center;gap:8px;min-height:40px;border:1px dashed var(--line);border-radius:10px;padding:0 12px}
   .ho-file label{all:unset;cursor:pointer;color:var(--brand);font-weight:700}
   .ho-file button{all:unset;cursor:pointer;color:var(--brand);font-weight:700}
@@ -6739,8 +6744,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     }
     h+=`<div class="ho-warns" id="hoWarn"></div>`;
     h+=`<div class="ho-grid">
-      <div class="ho-f w2"><label for="hoBasis">Підстава</label><input id="hoBasis" data-top="basis" maxlength="300" value="${orgEsc(hoF.basis||'')}" placeholder="Напр., заява працівника, подання керівника"></div>
-      <div class="ho-f"><label>Скан наказу</label><div class="ho-file">${hoF.file?orgEsc(hoF.file.name):hoF.file_name?`<button type="button" onclick="hoOpenFile()">${orgEsc(hoF.file_name)}</button>`:'<span>не додано</span>'}<span style="flex:1"></span><label for="hoFileIn">${hoF.file||hoF.file_name?'Замінити':'Додати'}</label><input type="file" id="hoFileIn" style="display:none" accept=".pdf,image/*" onchange="hoPickFile(this)"></div></div>
+      <div class="ho-f w3"><label for="hoBasis">Підстава</label><input id="hoBasis" data-top="basis" maxlength="300" value="${orgEsc(hoF.basis||'')}" placeholder="Напр., заява працівника, подання керівника"></div>
+      <div class="ho-f w3"><label for="hoFileIn">Скан наказу (PDF або фото — до 20 МБ)</label>${hoFileZone()}</div>
       <div class="ho-f w3"><label for="hoNote">Коментар</label><textarea id="hoNote" data-top="note" maxlength="1000" placeholder="Необов'язково">${orgEsc(hoF.note||'')}</textarea></div>
     </div>`;
     if(hoF.id)h+=hoLogHtml();
@@ -6824,7 +6829,25 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     body.querySelectorAll('[data-pay]').forEach(el=>{hoF.pay[el.dataset.pay]=el.value===''?null:+el.value;});
   }
   window.hoToggleNew=()=>{hoCollect();hoF.newPerson=!hoF.newPerson;if(hoF.newPerson)hoF.employee_id=null;hoRenderModal();};
-  window.hoPickFile=inp=>{const f=inp.files&&inp.files[0];if(!f)return;if(f.size>20*1024*1024){toast('Файл до 20 МБ','warn');return;}hoCollect();hoF.file=f;hoRenderModal();};
+  window.hoPickFile=inp=>{const f=inp.files&&inp.files[0];if(!f)return;if(!/^image\//.test(f.type)&&!/pdf$/i.test(f.type)&&!/\.pdf$/i.test(f.name)){toast('Потрібен PDF або фото','warn');return;}if(f.size>20*1024*1024){toast('Файл до 20 МБ','warn');return;}hoCollect();hoF.file=f;hoRenderModal();};
+  // зона файлу наказу: як у решті форм — «перетягни сюди або обери», ім'я й розмір вибраного
+  function hoFileZone(){
+    const ed=hoEditable(), f=hoF.file, saved=!f&&hoF.file_name;
+    const UP='<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/>';
+    const DOC='<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>';
+    const ico=d=>`<span class="fz-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg></span>`;
+    const sz=b=>b<1048576?Math.max(1,Math.round(b/1024))+' КБ':(b/1048576).toFixed(1).replace('.',',')+' МБ';
+    const openBtn=`<button type="button" class="ho-fz-open" onclick="event.preventDefault();event.stopPropagation();hoOpenFile()">Відкрити</button>`;
+    if(!ed){
+      return saved?`<div class="fz has ho-fz">${ico(DOC)}<span class="fz-t"><b>${orgEsc(hoF.file_name)}</b><small>скан наказу</small></span>${openBtn}</div>`
+        :`<div class="fz ho-fz ho-fz-ro">${ico(DOC)}<span class="fz-t"><b>Не додано</b></span></div>`;
+    }
+    const t=f?`<b>${orgEsc(f.name)}</b><small>${sz(f.size)} · натисни, щоб замінити</small>`
+      :saved?`<b>${orgEsc(hoF.file_name)}</b><small>натисни або перетягни файл, щоб замінити</small>`
+      :`<b>Перетягни файл сюди або <u>обери</u></b><small>фото або PDF</small>`;
+    return `<label class="fz ho-fz${f||saved?' has':''}" ondragenter="event.preventDefault();this.classList.add('drag')" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="event.preventDefault();this.classList.remove('drag');hoPickFile(event.dataTransfer)">${ico(f||saved?DOC:UP)}<span class="fz-t">${t}</span>${saved?openBtn:''}${f?`<button type="button" class="fz-x" aria-label="Прибрати файл" onclick="event.preventDefault();event.stopPropagation();hoClearFile()">×</button>`:''}<input type="file" id="hoFileIn" accept=".pdf,image/*" onchange="hoPickFile(this)"></label>`;
+  }
+  window.hoClearFile=()=>{hoCollect();hoF.file=null;hoRenderModal();};
   window.hoOpenFile=async()=>{
     if(!hoF||!hoF.file_path)return;
     const w=window.open('','_blank');
