@@ -1590,6 +1590,86 @@
   .ho-file label{all:unset;cursor:pointer;color:var(--brand);font-weight:700}
   .ho-file button{all:unset;cursor:pointer;color:var(--brand);font-weight:700}
   #hoModal{padding:20px;z-index:115}
+  /* ===== Рекрутинг ===== */
+  .rc-tabs{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px}
+  .rc-tabs .seg .n{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--warn-bg);color:var(--warn);font-size:11px;margin-left:6px}
+  .rc-tag{display:inline-flex;align-items:center;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap;background:var(--page);color:var(--slate);border:1px solid var(--line)}
+  .rc-tag.info{background:var(--info-bg);color:var(--info);border-color:transparent}
+  .rc-tag.warn{background:var(--warn-bg);color:var(--warn);border-color:transparent}
+  .rc-tag.bad{background:var(--brand-tint);color:var(--brand);border-color:transparent}
+  .rc-tag.ok{background:var(--ok-bg);color:var(--ok);border-color:transparent}
+  .badge.bad{background:var(--brand-tint);color:var(--brand)} .badge.bad::before{background:var(--brand)}
+  .rc-sub{font-size:12px;color:var(--slate);display:block;margin-top:2px}
+  .rc-funnel{display:flex;gap:4px;flex-wrap:wrap}
+  .rc-plan{font-size:12px;white-space:nowrap}
+  .rc-plan.ok{color:var(--ok)} .rc-plan.no{color:var(--warn)} .rc-plan.na{color:var(--muted)}
+  .rc-asg{font:inherit;font-size:12.5px;border:1px solid var(--line);border-radius:8px;padding:5px 8px;background:var(--card);color:var(--ink);max-width:170px}
+  .rc-vhead{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;padding:16px;border-bottom:1px solid var(--line)}
+  .rc-vhead .t{flex:1;min-width:220px}
+  .rc-vhead .t b{font-size:18px;font-weight:800;color:var(--ink)}
+  .rc-vhead .meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center;font-size:12.5px;color:var(--slate)}
+  .rc-kb{display:grid;grid-template-columns:repeat(6,minmax(150px,1fr));gap:10px;overflow-x:auto;padding:14px 16px;scrollbar-width:thin}
+  .rc-col{background:var(--page);border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:8px;min-height:160px;min-width:0;border:1.5px dashed transparent}
+  .rc-col.over{border-color:var(--brand);background:var(--brand-tint)}
+  .rc-col.off{opacity:.55}
+  .rc-col h4{margin:0;padding:2px 4px;font-size:12.5px;font-weight:800;color:var(--ink);display:flex;justify-content:space-between;gap:6px}
+  .rc-col h4 span{color:var(--muted);font-variant-numeric:tabular-nums}
+  .rc-col .hint{font-size:11.5px;color:var(--muted);padding:0 4px}
+  .rc-card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 10px;display:flex;flex-direction:column;gap:5px;cursor:pointer;font-size:12.5px;color:var(--ink)}
+  .rc-card:hover{border-color:var(--brand-tint-2)}
+  .rc-card:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .rc-card.dragging{opacity:.4}
+  .rc-card .r{display:flex;align-items:center;gap:8px;min-width:0}
+  .rc-card .r b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+  .rc-card .s{color:var(--slate);font-size:12px}
+  .rc-card .nx{all:unset;cursor:pointer;width:24px;height:24px;border-radius:6px;display:grid;place-items:center;color:var(--slate);flex:none}
+  .rc-card .nx:hover{background:var(--hover-bg);color:var(--brand)}
+  .rc-ava{width:26px;height:26px;border-radius:50%;background:var(--brand-tint);color:var(--brand);display:inline-grid;place-items:center;font-size:11px;font-weight:800;flex:none}
+  .rc-out{padding:0 16px 16px;display:flex;flex-direction:column;gap:8px}
+  .rc-out details{border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+  .rc-out summary{cursor:pointer;font-weight:700;font-size:13px;color:var(--ink)}
+  .rc-out .lst{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-top:10px}
+  #rcModal,#rcAsk{padding:20px}
+  #rcAsk{z-index:120}
+  .rc-modal{background:var(--surface);border-radius:18px;width:100%;max-width:980px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 60px rgba(27,23,20,.3);animation:fade .18s ease}
+  .rc-modal.sm{max-width:520px}
+  .rc-mhead{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line)}
+  .rc-mhead .t{flex:1;min-width:0}
+  .rc-mhead .t b{font-size:17px;font-weight:800;color:var(--ink);display:block}
+  .rc-mhead .t span{font-size:12.5px;color:var(--slate)}
+  .rc-mbody{flex:1;overflow-y:auto;padding:18px 20px;display:flex;flex-direction:column;gap:14px;scrollbar-width:thin}
+  .rc-mfoot{display:flex;align-items:center;gap:10px;padding:12px 20px;border-top:1px solid var(--line);flex-wrap:wrap}
+  .rc-mfoot .sp{flex:1}
+  .rc-2col{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:16px;align-items:start}
+  .rc-box{border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:12px;min-width:0}
+  .rc-box h3{margin:0;font-size:14px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:8px}
+  .rc-box h3 .sp{flex:1}
+  .rc-chk{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer}
+  .rc-chk input{width:16px;height:16px;accent-color:var(--brand)}
+  .rc-note{font-size:12.5px;line-height:1.45;border-radius:10px;padding:9px 12px;background:var(--page);color:var(--slate)}
+  .rc-note.warn{background:var(--warn-bg);color:var(--ink)}
+  .rc-note.ok{background:var(--ok-bg);color:var(--ink)}
+  .rc-stages{display:flex;gap:4px;flex-wrap:wrap}
+  .rc-stg{all:unset;cursor:pointer;font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:7px;background:var(--page);color:var(--slate)}
+  .rc-stg.done{background:var(--ok-bg);color:var(--ok)}
+  .rc-stg.cur{background:var(--brand);color:#fff}
+  .rc-stg[disabled]{cursor:default}
+  .rc-stg:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .rc-app{border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px}
+  .rc-app .h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .rc-app .h b{font-size:13.5px;color:var(--ink)}
+  .rc-verd{display:flex;gap:6px;flex-wrap:wrap}
+  .rc-verd button{all:unset;cursor:pointer;font-size:12.5px;font-weight:700;padding:6px 10px;border-radius:8px;border:1px solid var(--line);color:var(--slate)}
+  .rc-verd button.on{border-color:var(--brand);color:var(--brand);background:var(--brand-tint)}
+  .rc-scores{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .rc-scores label{font-size:12px;color:var(--slate);display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .rc-scores select{font:inherit;font-size:12.5px;border:1px solid var(--line);border-radius:8px;padding:4px 6px;background:var(--card);color:var(--ink)}
+  .rc-tl{display:flex;flex-direction:column;gap:10px;font-size:12.5px;color:var(--ink)}
+  .rc-tl>div{border-left:2px solid var(--line);padding-left:10px}
+  .rc-tl .w{font-size:11.5px;color:var(--muted)}
+  .rc-dup{font-size:12.5px;background:var(--warn-bg);border-radius:10px;padding:8px 12px;color:var(--ink)}
+  @media (max-width:900px){.rc-2col{grid-template-columns:1fr}.rc-kb{grid-template-columns:repeat(6,minmax(200px,1fr))}}
+  @media (max-width:600px){#rcModal,#rcAsk{padding:8px}.rc-scores{grid-template-columns:1fr}}
   /* «Досьє» → Кар'єра */
   .ho-state{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
   .ho-state .ec-kpi b{font-size:15px;white-space:normal}
@@ -1810,6 +1890,11 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
 <button type="button" class="nav-item" data-nav="hr_ops" data-view="hr_ops" data-acc="company" data-label="Кадрові операції" draggable="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><circle cx="10" cy="13" r="2"/><path d="M7 19c.5-1.7 1.6-2.5 3-2.5s2.5.8 3 2.5M15 12h2M15 16h2"/></svg>
         <span class="nav-label-txt">Кадрові операції</span>
+        <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
+      </button>
+<button type="button" class="nav-item" data-nav="recruit" data-view="recruit" data-label="Рекрутинг" draggable="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="10" cy="8" r="4"/><path d="M3 21v-1a6 6 0 0 1 6-6h2"/><circle cx="17" cy="17" r="3"/><path d="m21 21-1.8-1.8"/></svg>
+        <span class="nav-label-txt">Рекрутинг</span>
         <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </button>
 <button type="button" class="nav-item" data-nav="hrboard" data-view="budget" data-mode="hrboard" data-flag="pay" data-label="HR-board" draggable="true">
@@ -2498,6 +2583,16 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         <div id="hoRoot"><div class="ec-loading">Завантаження…</div></div>
       </section>
 
+      <section class="view" id="view-recruit">
+        <div class="page-head">
+          <div>
+            <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="10" cy="8" r="4"/><path d="M3 21v-1a6 6 0 0 1 6-6h2"/><circle cx="17" cy="17" r="3"/><path d="m21 21-1.8-1.8"/></svg></span>Рекрутинг</h2>
+            <p>Заявки керівників, вакансії й кандидати — від потреби до операції «Прийом».</p>
+          </div>
+        </div>
+        <div id="rcRoot"><div class="ec-loading">Завантаження…</div></div>
+      </section>
+
       <!-- модалка підрозділу -->
       <div class="modal-scrim" id="orgModal">
         <div class="modal">
@@ -2564,6 +2659,13 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
           </div>
         </div>
         <datalist id="hoPosList"></datalist><datalist id="hoSchedList"></datalist>
+      </div>
+      <div class="modal-scrim" id="rcModal" onclick="if(event.target===this)rcClose()">
+        <div class="rc-modal" role="dialog" aria-modal="true" aria-labelledby="rcMHead"><div class="rc-mhead" id="rcMHead"></div><div class="rc-mbody" id="rcMBody"></div><div class="rc-mfoot" id="rcMFoot"></div></div>
+        <datalist id="rcPosList"></datalist><datalist id="rcSrcList"></datalist>
+      </div>
+      <div class="modal-scrim" id="rcAsk" onclick="if(event.target===this)rcAskClose()">
+        <div class="rc-modal sm" role="dialog" aria-modal="true" aria-labelledby="rcAHead"><div class="rc-mhead" id="rcAHead"></div><div class="rc-mbody" id="rcABody"></div><div class="rc-mfoot" id="rcAFoot"></div></div>
       </div>
 
       <div class="modal-scrim" id="empModal" onclick="if(event.target===this)empCloseModal()">
@@ -3894,6 +3996,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     goals:'Стратегічний розвиток',
     company:'Структура організації',
     hr_ops:'Управління персоналом',
+    recruit:'Управління персоналом',
     settings:'Налаштування системи',
     dev:'Управління персоналом',
     budget:'Фінансове планування',
@@ -3941,6 +4044,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       if(id==='budget' && window.budgetLoad) { setTimeout(budgetLoad, 100); }
       if(id==='bot' && window.botLoad) { setTimeout(botLoad, 100); }
       if(id==='hr_ops' && window.hoLoad) { setTimeout(hoLoad, 50); }
+      if(id==='recruit' && window.rcLoad) { setTimeout(rcLoad, 50); }
       if(id==='dash' && window.dashLoad) { setTimeout(dashLoad, 100); }
       navSync(true);
       closeNav();
@@ -7175,6 +7279,596 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     return h;
   }
 
+  /* --- Рекрутинг: заявка керівника → погодження → вакансія → кандидати → «Прийом» ---
+     Одна таблиця rc_vacancies веде і заявку, і вакансію (статус показує етап).
+     Кандидат у вакансії — rc_apps (етап воронки), історія й відгуки — rc_events.
+     «Прийняти» викликає rc_hire(): співробітник + операція «Прийом» на погодженні. */
+  const RC_SQL='recruiting.sql';
+  const RC_CAT={mass:['Масова',''],spec:['Спеціаліст','info'],key:['Ключовий спеціаліст','warn'],top:['Топ','bad']};
+  const RC_REASON={replace:'Заміна',new:'Нова позиція',expand:'Розширення',season:'Сезон'};
+  const RC_VST={draft:['Чернетка','off'],pending:['На погодженні','warn'],rejected:['Відхилено','bad'],open:['У роботі','ok'],paused:['Пауза','off'],closed:['Закрито','ok'],cancelled:['Скасовано','off']};
+  const RC_STG=[['new','Новий'],['screen','Скринінг'],['interview','Співбесіда'],['trial','Пробний день'],['offer','Пропозиція'],['hired','Прийнятий']];
+  const RC_STN=Object.assign(Object.fromEntries(RC_STG),{rejected:'Відмова',reserve:'Резерв'});
+  const RC_IDX=Object.fromEntries(RC_STG.map(([k],i)=>[k,i]));
+  const RC_REJ=["Не вийшов на зв'язок","Не з'явився на співбесіду",'Не підійшла зарплата','Мало досвіду','Не пройшов пробний день','Відмовився сам','Інше'];
+  const RC_SRC=['Work.ua','robota.ua','OLX','Рекомендація працівника','Прийшов сам','Соцмережі','Сайт компанії','Інше'];
+  const RC_SCORE=[['exp','Досвід'],['skill','Навички'],['motiv','Мотивація'],['team','Відповідність команді']];
+  const RC_VERD={yes:'👍 Далі',maybe:'🤔 Сумнів',no:'👎 Ні'};
+  let rc={loaded:false,missing:false,vac:[],pay:{},cands:[],apps:[],staff:[],tab:'req',reqF:'pending',vacF:'open',rcpF:'',q:'',open:null,plan:{},busy:false};
+  let rcF=null, rcAskCb=null;                     // відкрита форма модалки / дія діалогу
+  const rcLvl=()=>accLevel('recruit');
+  const rcAll=()=>accScope('recruit')==='all';
+  const rcPay=()=>accFlag('pay');
+  const rcMe=()=>(ACC.me&&ACC.me.id)||null;
+  const rcV=id=>rc.vac.find(v=>v.id===id);
+  const rcC=id=>rc.cands.find(c=>c.id===id);
+  const rcName=c=>c?[c.last_name,c.first_name].filter(Boolean).join(' '):'—';
+  const rcIni=c=>(((c&&c.last_name)||'')[0]||'')+(((c&&c.first_name)||'')[0]||'');
+  const rcCat=k=>{const x=RC_CAT[k]||RC_CAT.mass;return `<span class="rc-tag ${x[1]}">${x[0]}</span>`;};
+  const rcVst=s=>`<span class="badge ${(RC_VST[s]||RC_VST.draft)[1]}">${(RC_VST[s]||RC_VST.draft)[0]}</span>`;
+  const rcUnit=id=>id?(ecUnitName(+id)||'—'):'—';
+  const rcDT=v=>{if(!v)return '';const d=new Date(v);return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;};
+  const rcLocal=v=>{if(!v)return '';const d=new Date(v);const p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;};
+  const rcMoney=v=>v==null||v===''?'':Math.round(v).toLocaleString('uk-UA');
+  const rcRange=p=>!p||(p.sal_from==null&&p.sal_to==null)?'—':[rcMoney(p.sal_from),rcMoney(p.sal_to)].filter(Boolean).join('–')+' ₴';
+  const rcAppsOf=vid=>rc.apps.filter(a=>a.vacancy_id===vid);
+  const rcLive=a=>!['hired','rejected','reserve'].includes(a.stage);
+  const rcIsReq=v=>['draft','pending','rejected'].includes(v.status);
+  const rcCanEditReq=v=>rcLvl()>=2&&(v.status==='draft'||v.status==='rejected'||v.status==='pending')&&(rcAll()||v.created_by===rcMe()||!v.created_by);
+  const rcCanApprove=()=>rcLvl()>=2&&rcAll();
+
+  async function rcLoad(){
+    const [v,c,a,p,s]=await Promise.all([
+      db.from('rc_vacancies').select('*').order('created_at',{ascending:false}).limit(2000),
+      db.from('rc_candidates').select('*').order('created_at',{ascending:false}).limit(5000),
+      db.from('rc_apps').select('*').limit(10000),
+      rcPay()?db.from('rc_vacancy_pay').select('*'):Promise.resolve({data:[]}),
+      db.rpc('rc_staff')
+    ]);
+    rc.missing=hoIsMissing(v.error);
+    if(v.error&&!rc.missing)toast('Рекрутинг: '+v.error.message,'error');
+    rc.vac=v.data||[];rc.cands=c.data||[];rc.apps=a.data||[];rc.staff=s.data||[];
+    rc.pay={};(p.data||[]).forEach(x=>rc.pay[x.vacancy_id]=x);
+    rc.loaded=true;
+    if(rc.open&&!rcV(rc.open))rc.open=null;
+    rcRender();
+  }
+  window.rcLoad=rcLoad;
+
+  function rcRender(){
+    const root=$('rcRoot');if(!root)return;
+    if(!rc.loaded){root.innerHTML='<div class="ec-loading">Завантаження…</div>';return;}
+    if(rc.missing){root.innerHTML=`<div class="ho-banner"><b>Рекрутинг ще не підключено.</b> Виконай <code>${RC_SQL}</code> у Supabase → SQL Editor (після <code>roles_v2.sql</code> і <code>hr_operations.sql</code>): з'являться таблиці заявок, вакансій і кандидатів, роль «Старший рекрутер» і розділ «Рекрутинг» у правах.</div>`;return;}
+    if(rc.open){root.innerHTML=rcBoardHtml();rcWireBoard();return;}
+    const pend=rc.vac.filter(v=>v.status==='pending').length;
+    const tab=(k,t,n)=>`<button type="button" class="${rc.tab===k?'on':''}" onclick="rcTab('${k}')">${t}${n?`<span class="n">${n}</span>`:''}</button>`;
+    let h=`<div class="rc-tabs"><div class="seg" role="tablist">${tab('req','Заявки',pend)}${tab('vac','Вакансії')}${tab('cand','Кандидати')}</div>
+      <div class="ho-filters">${rc.tab==='cand'?`<input type="search" id="rcQ" placeholder="ПІБ або телефон" aria-label="Пошук кандидата" value="${orgEsc(rc.q)}" oninput="rc.q=this.value;$('rcList').innerHTML=rcCandTable()">`:''}
+      ${rcLvl()>=2?(rc.tab==='req'?`<button class="btn primary" type="button" onclick="rcReqNew()">+ Заявка</button>`:rc.tab==='cand'?`<button class="btn primary" type="button" onclick="rcCandNew()">+ Кандидат</button>`:''):''}</div></div>`;
+    if(rc.tab==='req')h+=rcReqHtml();
+    else if(rc.tab==='vac')h+=rcVacHtml();
+    else h+=`<div class="card" style="padding:0;overflow:hidden"><div id="rcList">${rcCandTable()}</div></div>`;
+    root.innerHTML=h;
+    if(rc.tab==='req')rcFillPlans();
+  }
+  window.rcRender=rcRender;
+  window.rcTab=k=>{rc.tab=k;rc.open=null;rcRender();};
+
+  /* ---- Заявки ---- */
+  function rcReqHtml(){
+    const F=[['pending','На погодженні'],['draft','Чернетки'],['rejected','Відхилені'],['approved','Погоджені'],['all','Усі']];
+    const cnt=k=>k==='all'?rc.vac.length:k==='approved'?rc.vac.filter(v=>!rcIsReq(v)).length:rc.vac.filter(v=>v.status===k).length;
+    const rows=rc.vac.filter(v=>rc.reqF==='all'||(rc.reqF==='approved'?!rcIsReq(v):v.status===rc.reqF));
+    let h=`<div class="card" style="padding:0;overflow:hidden"><div class="ho-bar"><div class="ho-chips" role="group" aria-label="Статус заявки">${F.map(([k,t])=>`<button type="button" class="ho-chip${rc.reqF===k?' on':''}" aria-pressed="${rc.reqF===k}" onclick="rc.reqF='${k}';rcRender()">${t} · ${cnt(k)}</button>`).join('')}</div></div>`;
+    if(!rows.length)return h+`<div class="ec-empty" style="padding:28px;text-align:center">${rc.vac.length?'Немає заявок із цим статусом':'Заявок ще немає. Керівник створює заявку кнопкою «+ Заявка», після погодження вона стає вакансією.'}</div></div>`;
+    h+=`<div class="ho-scroll"><table class="ho-tbl"><thead><tr><th>Посада</th><th>Категорія</th><th>Підрозділ</th><th>Причина</th><th>План HR-файлу</th><th>Вихід</th><th>Від кого</th><th>Статус</th></tr></thead><tbody>
+      ${rows.map(v=>`<tr onclick="rcReqOpen(${v.id})"><td><b>${orgEsc(v.position)}</b>${v.qty>1?` ×${v.qty}`:''}</td><td>${rcCat(v.category)}</td><td>${orgEsc(rcUnit(v.unit_id))}</td>
+        <td>${RC_REASON[v.reason]||'—'}${v.reason==='replace'&&v.replace_emp_id?`<span class="rc-sub">${orgEsc(hoEmpName(v.replace_emp_id))}</span>`:''}</td>
+        <td id="rcPlan${v.id}">${rcIsReq(v)?rcPlanCell(v):`<span class="rc-plan na">${orgEsc(v.plan_note||'—')}</span>`}</td>
+        <td class="dt">${empFmtDate(v.start_date)}</td><td style="font-size:12.5px">${orgEsc(v.created_by_name||'—')}</td>
+        <td>${rcVst(v.status)}${v.status==='rejected'&&v.reject_reason?`<span class="rc-sub">${orgEsc(v.reject_reason)}</span>`:''}</td></tr>`).join('')}
+    </tbody></table></div></div>`;
+    return h;
+  }
+  const rcPlanKey=v=>[v.unit_id,v.start_date||'',v.qty,v.reason==='replace'?v.replace_emp_id||'':'',v.id||''].join('|');
+  function rcPlanText(r){
+    if(!r)return ['na','—'];
+    if(!r.file)return ['no','⚠ немає HR-файлу'+(r.year?' на '+r.year:'')];
+    if(r.replace_ok)return ['ok','✓ людина, яку замінюємо, є в плані'];
+    const m=HO_MON_IN[(r.month||1)-1];
+    return r.ok?['ok',`✓ є в плані: вільних ${r.free} у ${m}`]:['no',`⚠ немає в плані: у ${m} ${r.plan} ${ecPl(r.plan,'посада','посади','посад')}, зайнято ${r.active}${r.other?`, інші заявки ${r.other}`:''}`];
+  }
+  function rcPlanCell(v){const r=rc.plan[rcPlanKey(v)];if(r===undefined)return '<span class="rc-plan na">…</span>';const [c,t]=rcPlanText(r);return `<span class="rc-plan ${c}">${t}</span>`;}
+  async function rcPlanFetch(v){
+    const k=rcPlanKey(v);if(k in rc.plan)return rc.plan[k];
+    if(!v.unit_id)return rc.plan[k]=null;
+    const {data,error}=await db.rpc('rc_plan_check',{p_unit:+v.unit_id,p_date:v.start_date||null,p_qty:+v.qty||1,p_replace:v.reason==='replace'&&v.replace_emp_id?+v.replace_emp_id:null,p_vac:v.id||null});
+    return rc.plan[k]=error?null:data;
+  }
+  async function rcFillPlans(){
+    for(const v of rc.vac.filter(rcIsReq)){
+      if(rcPlanKey(v) in rc.plan)continue;
+      await rcPlanFetch(v);const el=$('rcPlan'+v.id);if(el)el.innerHTML=rcPlanCell(v);
+    }
+  }
+
+  /* ---- Модалка заявки / вакансії ---- */
+  function rcOpenModal(){$('rcModal').classList.add('open');}
+  window.rcClose=()=>{$('rcModal').classList.remove('open');rcF=null;};
+  document.addEventListener('keydown',e=>{if(e.key!=='Escape'||document.querySelector('.flatpickr-calendar.open'))return;
+    if($('rcAsk')&&$('rcAsk').classList.contains('open')){e.stopImmediatePropagation();rcAskClose();}
+    else if(rcF&&$('rcModal').classList.contains('open')){e.stopImmediatePropagation();rcClose();}},true);
+  function rcLists(){
+    const pos=[...new Set(dictEmps.map(e=>e.position).concat(rc.vac.map(v=>v.position)).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'uk'));
+    $('rcPosList').innerHTML=pos.map(p=>`<option value="${orgEsc(p)}">`).join('');
+    $('rcSrcList').innerHTML=RC_SRC.map(p=>`<option value="${orgEsc(p)}">`).join('');
+  }
+  window.rcReqNew=()=>{
+    rcF={t:'vac',v:{id:null,position:'',unit_id:null,qty:1,category:'mass',reason:'replace',replace_emp_id:null,start_date:null,schedule:'',requirements:'',trial_day:true,status:'draft',deadline:null,recruiter_id:null},pay:{}};
+    const my=dictEmps.find(e=>e.id===(ACC.me&&ACC.me.employee_id));
+    const head=my&&orgFlatAll().find(({n})=>n.employee_id===my.id);
+    rcF.v.unit_id=head?head.n.id:(my&&my.primary_unit_id)||null;
+    rcVacModal();
+  };
+  window.rcReqOpen=id=>{const v=rcV(id);if(!v)return;rcF={t:'vac',v:JSON.parse(JSON.stringify(v)),pay:Object.assign({},rc.pay[id]||{})};rcVacModal();};
+  function rcVacModal(){
+    rcLists();
+    const v=rcF.v, isReq=rcIsReq(v)||!v.id;
+    const ed=!v.id||(isReq?rcCanEditReq(v):rcLvl()>=2&&rcAll());
+    const dis=ed?'':' disabled';
+    const units=orgFlatAll();
+    const unitEmps=dictEmps.filter(e=>!empIsDismissed(e)&&(!v.unit_id||e.primary_unit_id===+v.unit_id));
+    $('rcMHead').innerHTML=`<div class="t"><b>${v.id?(isReq?'Заявка':'Вакансія')+': '+orgEsc(v.position):'Нова заявка на підбір'}</b><span>${v.id?`${rcVst(v.status)} · від ${orgEsc(v.created_by_name||'—')}, ${empFmtDate((v.created_at||'').slice(0,10))}`:'Після погодження заявка стає вакансією й потрапляє до рекрутера'}</span></div><button class="ico-btn" type="button" onclick="rcClose()" aria-label="Закрити"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>`;
+    let h=`<div class="ho-grid">
+      <div class="ho-f w2"><label for="rcvPos">Посада</label><input id="rcvPos" list="rcPosList" maxlength="120" value="${orgEsc(v.position||'')}" placeholder="Напр., Обвалювальник"${dis}></div>
+      <div class="ho-f"><label for="rcvQty">Кількість людей</label><input id="rcvQty" type="number" min="1" max="100" value="${v.qty||1}"${dis}></div>
+      <div class="ho-f"><label for="rcvUnit">Підрозділ</label><select id="rcvUnit" onchange="rcVacField()"${dis}><option value="">— обери —</option>${units.map(({n,lvl})=>`<option value="${n.id}"${+v.unit_id===n.id?' selected':''}>${'  '.repeat(lvl)}${orgEsc(n.name)}</option>`).join('')}</select></div>
+      <div class="ho-f"><label for="rcvCat">Категорія</label><select id="rcvCat"${dis}>${Object.entries(RC_CAT).map(([k,x])=>`<option value="${k}"${v.category===k?' selected':''}>${x[0]}</option>`).join('')}</select></div>
+      <div class="ho-f"><label for="rcvReason">Причина</label><select id="rcvReason" onchange="rcVacField()"${dis}>${Object.entries(RC_REASON).map(([k,t])=>`<option value="${k}"${v.reason===k?' selected':''}>${t}</option>`).join('')}</select></div>
+      ${v.reason==='replace'?`<div class="ho-f w2"><label for="rcvRepl">Кого замінюємо</label><select id="rcvRepl" class="emp-pick" onchange="rcVacField()"${dis}><option value="">— не вказано —</option>${unitEmps.concat(v.replace_emp_id&&!unitEmps.some(e=>e.id===v.replace_emp_id)?dictEmps.filter(e=>e.id===v.replace_emp_id):[]).map(e=>`<option value="${e.id}"${e.id===v.replace_emp_id?' selected':''}>${orgEsc(empFull(e))}</option>`).join('')}</select></div>`:''}
+      <div class="ho-f"><label for="rcvStart">Бажана дата виходу</label><input id="rcvStart" class="fp-date" value="${v.start_date||''}" placeholder="дд.мм.рррр"${dis}></div>
+      <div class="ho-f"><label for="rcvSched">Графік</label><input id="rcvSched" list="hoSchedList" maxlength="60" value="${orgEsc(v.schedule||'')}"${dis}></div>
+      ${rcPay()?`<div class="ho-f"><label for="rcvFrom">Зарплата від, ₴</label><input id="rcvFrom" type="number" min="0" step="500" value="${rcF.pay.sal_from??''}"${dis}></div><div class="ho-f"><label for="rcvTo">до, ₴</label><input id="rcvTo" type="number" min="0" step="500" value="${rcF.pay.sal_to??''}"${dis}></div>`:''}
+      <div class="ho-f w3"><label for="rcvReq">Вимоги й обов'язки</label><textarea id="rcvReq" maxlength="2000" rows="3"${dis}>${orgEsc(v.requirements||'')}</textarea></div>
+      <div class="w3"><label class="rc-chk"><input type="checkbox" id="rcvTrial"${v.trial_day!==false?' checked':''}${dis}>Пробний день для кандидатів (можна пропустити для окремої людини з поясненням)</label></div>
+    </div>
+    <div id="rcvPlan"></div>`;
+    if(v.id&&(v.status==='pending'&&rcCanApprove()||!isReq&&rcAll()&&rcLvl()>=2)){
+      h+=`<div class="rc-box"><h3>${isReq?'Погодження':'Хто веде'}</h3><div class="ho-grid">
+        <div class="ho-f w2"><label for="rcvRec">Хто веде вакансію</label><select id="rcvRec"><option value="">— ще не призначено —</option>${rcStaffOpts(v.recruiter_id,v.category)}</select></div>
+        <div class="ho-f"><label for="rcvDl">Дедлайн</label><input id="rcvDl" class="fp-date" value="${v.deadline||''}" placeholder="дд.мм.рррр"></div>
+        ${isReq?`<div class="ho-f w3"><label for="rcvRej">Причина відмови (якщо відхиляєш)</label><input id="rcvRej" maxlength="300" value="${orgEsc(v.reject_reason||'')}"></div>`:''}
+      </div>${isReq&&(v.category==='key'||v.category==='top')?'<div class="rc-note">Ключові спеціалісти й топи ведуть HR. Масові позиції й спеціалістів розподіляє старший рекрутер.</div>':''}</div>`;
+    }else if(v.id&&!isReq){
+      h+=`<div class="rc-note">Веде: <b>${orgEsc(v.recruiter_name||'ще не призначено')}</b>${v.deadline?` · дедлайн ${empFmtDate(v.deadline)}`:''}${v.decided_by?` · погодив(ла) ${orgEsc(v.decided_by)} ${empFmtDate((v.decided_at||'').slice(0,10))}`:''}</div>`;
+    }
+    $('rcMBody').innerHTML=h;
+    let f='';
+    if(isReq&&ed){
+      if(v.id&&v.status==='draft')f+=`<button class="btn" type="button" onclick="rcVacDelete()">Видалити</button>`;
+      f+=`<span class="sp"></span>`;
+      if(v.status!=='pending')f+=`<button class="btn" type="button" onclick="rcVacSave('draft')">Зберегти чернетку</button>`;
+      if(v.status==='pending'&&rcCanApprove())f+=`<button class="btn" type="button" onclick="rcVacSave('rejected')">Відхилити</button><button class="btn primary" type="button" onclick="rcVacSave('open')">Погодити</button>`;
+      else f+=`<button class="btn primary" type="button" onclick="rcVacSave('pending')">${v.status==='pending'?'Зберегти':'Надіслати на погодження'}</button>`;
+    }else if(!isReq&&rcLvl()>=2&&(rcAll()||v.recruiter_id===rcMe())){
+      const st=(s,t,p)=>`<button class="btn${p?' primary':''}" type="button" onclick="rcVacSave('${s}')">${t}</button>`;
+      if(v.status==='open')f+=st('paused','Пауза')+st('closed','Закрити')+st('cancelled','Скасувати');
+      else f+=st('open','Відновити');
+      f+=`<span class="sp"></span><button class="btn" type="button" onclick="rcClose();rcBoard(${v.id})">Кандидати</button>${ed?st(v.status,'Зберегти',true):''}`;
+    }else f+=`<span class="sp"></span><button class="btn" type="button" onclick="rcClose()">Закрити</button>`;
+    $('rcMFoot').innerHTML=f;
+    rcOpenModal();
+    $('rcMBody').querySelectorAll('input.fp-date').forEach(el=>{if(!el._flatpickr)flatpickr(el,{locale:flatpickr.l10ns.uk,disableMobile:true,dateFormat:'Y-m-d',altInput:true,altFormat:'d.m.Y',allowInput:true,onChange:()=>{if(el.id==='rcvStart')rcVacPlan();}});});
+    ['rcvQty'].forEach(id=>{const el=$(id);if(el)el.addEventListener('change',rcVacPlan);});
+    rcVacPlan();
+  }
+  function rcStaffOpts(sel,cat){
+    const top=cat==='key'||cat==='top';
+    const list=rc.staff.filter(s=>s.scope!=='unit');
+    const lbl=s=>`${orgEsc(s.full_name||'—')}${s.role_name?' · '+orgEsc(s.role_name):''}`;
+    const g=(t,arr)=>arr.length?`<optgroup label="${t}">${arr.map(s=>`<option value="${s.id}"${s.id===sel?' selected':''}>${lbl(s)}</option>`).join('')}</optgroup>`:'';
+    const hr=list.filter(s=>s.scope==='all'), own=list.filter(s=>s.scope!=='all');
+    return top?g('HR і старші',hr)+g('Рекрутери',own):g('Рекрутери',own)+g('HR і старші',hr);
+  }
+  function rcVacCollect(){
+    const v=rcF.v,val=id=>$(id)?$(id).value:undefined;
+    if($('rcvPos'))v.position=val('rcvPos').trim();
+    if($('rcvQty'))v.qty=Math.max(1,Math.min(100,parseInt(val('rcvQty'),10)||1));
+    if($('rcvUnit'))v.unit_id=val('rcvUnit')?+val('rcvUnit'):null;
+    if($('rcvCat'))v.category=val('rcvCat');
+    if($('rcvReason'))v.reason=val('rcvReason');
+    v.replace_emp_id=v.reason==='replace'&&$('rcvRepl')&&val('rcvRepl')?+val('rcvRepl'):(v.reason==='replace'?v.replace_emp_id:null);
+    if($('rcvStart'))v.start_date=val('rcvStart')||null;
+    if($('rcvSched'))v.schedule=val('rcvSched').trim();
+    if($('rcvReq'))v.requirements=val('rcvReq').trim();
+    if($('rcvTrial'))v.trial_day=$('rcvTrial').checked;
+    if($('rcvRec'))v.recruiter_id=val('rcvRec')||null;
+    if($('rcvDl'))v.deadline=val('rcvDl')||null;
+    if($('rcvRej'))v.reject_reason=val('rcvRej').trim();
+    if($('rcvFrom'))rcF.pay.sal_from=val('rcvFrom')===''?null:+val('rcvFrom');
+    if($('rcvTo'))rcF.pay.sal_to=val('rcvTo')===''?null:+val('rcvTo');
+  }
+  window.rcVacField=()=>{rcVacCollect();rcVacModal();};
+  async function rcVacPlan(){
+    const box=$('rcvPlan');if(!box||!rcF)return;
+    rcVacCollect();const v=rcF.v;
+    if(!rcIsReq(v)&&v.id){box.innerHTML='';return;}
+    if(!v.unit_id){box.innerHTML='<div class="rc-note">Обери підрозділ — перевіримо, чи є позиція в плані HR-файлу.</div>';return;}
+    const r=await rcPlanFetch(v);if(!rcF||rcF.v!==v)return;
+    const [c,t]=rcPlanText(r);
+    box.innerHTML=r?`<div class="rc-note ${c==='ok'?'ok':'warn'}">План HR-файлу: ${t.replace(/^[✓⚠] /,'')}.${c==='ok'?'':' Заявку все одно можна надіслати й погодити.'}</div>`:'';
+    rcF.planNote=r?t.replace(/^[✓⚠] /,''):null;
+  }
+  window.rcVacSave=async status=>{
+    if(rc.busy||!rcF)return;
+    rcVacCollect();const v=rcF.v;
+    if(!v.position){toast('Вкажи посаду','warn');$('rcvPos')&&$('rcvPos').focus();return;}
+    if(!v.unit_id){toast('Обери підрозділ','warn');return;}
+    if(status==='rejected'&&!v.reject_reason){toast('Напиши причину відмови','warn');$('rcvRej')&&$('rcvRej').focus();return;}
+    if(rcF.pay.sal_from!=null&&rcF.pay.sal_to!=null&&rcF.pay.sal_to<rcF.pay.sal_from){toast('Зарплата «до» менша за «від»','warn');return;}
+    rc.busy=true;
+    try{
+      const rec=rc.staff.find(s=>s.id===v.recruiter_id);
+      const row={position:v.position,unit_id:v.unit_id,qty:v.qty,category:v.category,reason:v.reason,replace_emp_id:v.replace_emp_id||null,start_date:v.start_date,schedule:v.schedule||null,requirements:v.requirements||null,trial_day:v.trial_day!==false,status};
+      if($('rcvRec')){row.recruiter_id=v.recruiter_id;row.recruiter_name=rec?rec.full_name:null;row.deadline=v.deadline;}
+      if(status==='pending'&&v.status!=='pending')row.submitted_at=new Date().toISOString();
+      if((status==='open'||status==='rejected')&&rcIsReq(v)){row.decided_by=hoWho();row.decided_at=new Date().toISOString();row.plan_note=rcF.planNote||null;row.reject_reason=status==='rejected'?v.reject_reason:null;}
+      if(status==='closed'&&v.status!=='closed')row.closed_at=new Date().toISOString();
+      let res;
+      if(v.id)res=await db.from('rc_vacancies').update(row).eq('id',v.id).select('*').single();
+      else{row.created_by_name=hoWho();res=await db.from('rc_vacancies').insert(row).select('*').single();}
+      if(res.error){toast('Помилка: '+res.error.message,'error');return;}
+      const saved=res.data;
+      if(rcPay()&&$('rcvFrom')){
+        const p={vacancy_id:saved.id,sal_from:rcF.pay.sal_from??null,sal_to:rcF.pay.sal_to??null};
+        const {error}=p.sal_from==null&&p.sal_to==null?await db.from('rc_vacancy_pay').delete().eq('vacancy_id',saved.id):await db.from('rc_vacancy_pay').upsert(p,{onConflict:'vacancy_id'});
+        if(error)toast('Зарплату не збережено: '+error.message,'warn');
+      }
+      const msg={draft:'Чернетку збережено',pending:v.status==='pending'?'Збережено':'Надіслано на погодження',open:v.status==='open'?'Збережено':(rcIsReq(v)?'Погоджено — вакансія в роботі':'Вакансію відновлено'),rejected:'Заявку відхилено',paused:'Вакансію призупинено',closed:'Вакансію закрито',cancelled:'Вакансію скасовано'}[status];
+      rcClose();await rcLoad();toast(msg,'success');
+    }finally{rc.busy=false;}
+  };
+  window.rcVacDelete=async()=>{
+    if(!rcF||!rcF.v.id||!confirm('Видалити чернетку заявки?'))return;
+    const {error}=await db.from('rc_vacancies').delete().eq('id',rcF.v.id);
+    if(error){toast('Помилка: '+error.message,'error');return;}
+    rcClose();await rcLoad();toast('Видалено','success');
+  };
+
+  /* ---- Вакансії ---- */
+  function rcVacHtml(){
+    const act=rc.vac.filter(v=>!rcIsReq(v));
+    const open=act.filter(v=>v.status==='open');
+    const live=rc.apps.filter(a=>rcLive(a)&&open.some(v=>v.id===a.vacancy_id));
+    const now=Date.now(),wk=now+7*864e5;
+    const soon=rc.apps.filter(a=>[a.interview_at,a.trial_at].some(x=>x&&+new Date(x)>=now-36e5&&+new Date(x)<=wk)&&rcLive(a)).length;
+    const noRec=open.filter(v=>!v.recruiter_id).length;
+    const kpi=(f,l,val,cls,sub)=>`<button class="ho-kpi" type="button" onclick="rc.vacF='${f}';rcRender()"><span class="ec-lbl">${l}</span><b class="${cls}">${val}</b><span>${sub}</span></button>`;
+    let h=`<div class="ho-kpis">${kpi('open','Відкриті вакансії',open.length,'',open.reduce((s,v)=>s+v.qty,0)+' '+ecPl(open.reduce((s,v)=>s+v.qty,0),'людина','людини','людей')+' потрібно')}
+      ${kpi('open','Кандидати у воронці',live.length,'',live.length?'без прийнятих і відмов':'поки нікого')}
+      ${kpi('open','Співбесіди й пробні дні',soon,soon?'ok':'','на найближчі 7 днів')}
+      ${kpi('norec','Без відповідального',noRec,noRec?'warn':'',noRec?'розподіли між рекрутерами':'усі розподілені')}</div>`;
+    const F=[['open','У роботі'],['norec','Без відповідального'],['paused','Пауза'],['closed','Закриті'],['all','Усі']];
+    const recs=[...new Map(act.filter(v=>v.recruiter_id).map(v=>[v.recruiter_id,v.recruiter_name])).entries()];
+    const rows=act.filter(v=>(rc.vacF==='all'||(rc.vacF==='norec'?v.status==='open'&&!v.recruiter_id:rc.vacF==='closed'?['closed','cancelled'].includes(v.status):v.status===rc.vacF))&&(!rc.rcpF||v.recruiter_id===rc.rcpF));
+    h+=`<div class="card" style="padding:0;overflow:hidden"><div class="ho-bar"><div class="ho-chips" role="group" aria-label="Стан вакансії">${F.map(([k,t])=>`<button type="button" class="ho-chip${rc.vacF===k?' on':''}" aria-pressed="${rc.vacF===k}" onclick="rc.vacF='${k}';rcRender()">${t}</button>`).join('')}</div>
+      ${rcAll()&&recs.length?`<div class="ho-filters"><select aria-label="Хто веде" onchange="rc.rcpF=this.value;rcRender()"><option value="">Усі рекрутери</option>${recs.map(([id,n])=>`<option value="${id}"${rc.rcpF===id?' selected':''}>${orgEsc(n||'—')}</option>`).join('')}</select></div>`:''}</div>`;
+    if(!rows.length)return h+`<div class="ec-empty" style="padding:28px;text-align:center">${act.length?'Немає вакансій за цим фільтром':'Вакансій ще немає. Вони з\'являються після погодження заявок.'}</div></div>`;
+    const asg=rcAll()&&rcLvl()>=2;
+    h+=`<div class="ho-scroll"><table class="ho-tbl"><thead><tr><th>Вакансія</th><th>Веде</th><th>Воронка</th>${rcPay()?'<th>Вилка</th>':''}<th>Дедлайн</th><th>Стан</th></tr></thead><tbody>
+      ${rows.map(v=>{const ap=rcAppsOf(v.id),hired=ap.filter(a=>a.stage==='hired').length;
+        const c=k=>ap.filter(a=>a.stage===k).length;
+        const dl=v.deadline?Math.round((new Date(v.deadline)-new Date(empToday()))/864e5):null;
+        return `<tr onclick="rcBoard(${v.id})"><td><b>${orgEsc(v.position)}</b>${v.qty>1?` ×${v.qty}`:''}<span class="rc-sub">${orgEsc(rcUnit(v.unit_id))} · ${(RC_CAT[v.category]||RC_CAT.mass)[0]}</span></td>
+        <td onclick="event.stopPropagation()">${asg&&v.status==='open'?`<select class="rc-asg" aria-label="Хто веде" onchange="rcAssign(${v.id},this.value)"><option value="">— призначити —</option>${rcStaffOpts(v.recruiter_id,v.category)}</select>`:orgEsc(v.recruiter_name||'—')}</td>
+        <td><div class="rc-funnel"><span class="rc-tag">${ap.filter(rcLive).length} у роботі</span>${c('interview')?`<span class="rc-tag info">${c('interview')} співб.</span>`:''}${c('trial')?`<span class="rc-tag info">${c('trial')} проб.</span>`:''}${c('offer')?`<span class="rc-tag ok">${c('offer')} пропоз.</span>`:''}${hired?`<span class="rc-tag ok">прийнято ${hired}/${v.qty}</span>`:''}</div></td>
+        ${rcPay()?`<td class="dt">${rcRange(rc.pay[v.id])}</td>`:''}
+        <td class="dt">${v.deadline?`${empFmtDate(v.deadline)}${v.status==='open'&&dl!=null&&dl<=7?`<span class="rc-sub" style="color:var(--warn)">${dl<0?'прострочено':'за '+ecDays(dl)}</span>`:''}`:'—'}</td>
+        <td>${rcVst(v.status)}</td></tr>`;}).join('')}
+    </tbody></table></div></div>`;
+    return h;
+  }
+  window.rcAssign=async(id,uid)=>{
+    const s=rc.staff.find(x=>x.id===uid);
+    const {error}=await db.from('rc_vacancies').update({recruiter_id:uid||null,recruiter_name:s?s.full_name:null}).eq('id',id);
+    if(error){toast('Помилка: '+error.message,'error');rcRender();return;}
+    const v=rcV(id);if(v){v.recruiter_id=uid||null;v.recruiter_name=s?s.full_name:null;}
+    toast(s?'Вакансію веде '+s.full_name:'Відповідального знято','success');
+  };
+
+  /* ---- Воронка вакансії (канбан) ---- */
+  window.rcBoard=id=>{rc.open=id;rcRender();document.querySelector('.content')&&document.querySelector('.content').scrollTo({top:0});};
+  function rcCardHtml(a){
+    const c=rcC(a.candidate_id)||{};
+    const when=a.stage==='interview'&&a.interview_at?'Співбесіда '+rcDT(a.interview_at):a.stage==='trial'&&a.trial_at?'Пробний день '+rcDT(a.trial_at):a.stage==='offer'&&a.offer_start?'Вихід '+empFmtDate(a.offer_start):a.stage==='rejected'?a.reject_reason||'':a.trial_skipped&&RC_IDX[a.stage]>RC_IDX.trial?'без пробного дня':'';
+    const nx=rcLvl()>=2&&RC_IDX[a.stage]!=null&&a.stage!=='hired';
+    return `<div class="rc-card" draggable="${rcLvl()>=2&&a.stage!=='hired'}" data-app="${a.id}" tabindex="0" role="button" onclick="rcCandOpen(${a.candidate_id},${a.id})" onkeydown="if(event.key==='Enter')rcCandOpen(${a.candidate_id},${a.id})">
+      <div class="r"><span class="rc-ava">${orgEsc(rcIni(c).toUpperCase())}</span><b>${orgEsc(rcName(c))}</b>${nx?`<button class="nx" type="button" title="На наступний етап" aria-label="На наступний етап" onclick="event.stopPropagation();rcMove(${a.id},'${RC_STG[RC_IDX[a.stage]+1][0]}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 18 6-6-6-6"/></svg></button>`:''}</div>
+      ${c.source?`<span class="s">${orgEsc(c.source)}</span>`:''}${when?`<span class="rc-tag ${a.stage==='rejected'?'bad':'info'}" style="align-self:flex-start;white-space:normal">${orgEsc(when)}</span>`:''}</div>`;
+  }
+  function rcBoardHtml(){
+    const v=rcV(rc.open);if(!v)return '';
+    const ap=rcAppsOf(v.id), hired=ap.filter(a=>a.stage==='hired').length;
+    let h=`<div class="card" style="padding:0;overflow:hidden"><div class="rc-vhead">
+      <button class="ico-btn" type="button" onclick="rc.open=null;rc.tab='vac';rcRender()" aria-label="До вакансій" title="До вакансій"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg></button>
+      <div class="t"><b>${orgEsc(v.position)}${v.qty>1?` ×${v.qty}`:''}</b><div class="meta">${orgEsc(rcUnit(v.unit_id))} · ${rcCat(v.category)} ${rcVst(v.status)} <span>Веде: ${orgEsc(v.recruiter_name||'не призначено')}</span>${v.deadline?`<span>· дедлайн ${empFmtDate(v.deadline)}</span>`:''}<span>· прийнято ${hired}/${v.qty}</span>${rcPay()&&rc.pay[v.id]?`<span>· ${rcRange(rc.pay[v.id])}</span>`:''}${v.trial_day===false?'<span class="rc-tag">без пробного дня</span>':''}</div></div>
+      <button class="btn" type="button" onclick="rcReqOpen(${v.id})">Деталі</button>${rcLvl()>=2&&v.status==='open'?`<button class="btn primary" type="button" onclick="rcCandNew(${v.id})">+ Кандидат</button>`:''}</div>
+      <div class="rc-kb">${RC_STG.map(([k,t])=>{const list=ap.filter(a=>a.stage===k);
+        return `<div class="rc-col${k==='trial'&&v.trial_day===false?' off':''}" data-stage="${k}"><h4>${t}<span>${list.length}</span></h4>${k==='trial'&&v.trial_day===false?'<div class="hint">Пробний день у цій вакансії вимкнено</div>':''}${k==='hired'&&!list.length?'<div class="hint">Перетягни сюди, щоб створити «Прийом»</div>':''}${list.map(rcCardHtml).join('')}</div>`;}).join('')}</div>`;
+    const rej=ap.filter(a=>a.stage==='rejected'), res=ap.filter(a=>a.stage==='reserve');
+    const why={};rej.forEach(a=>{const r=a.reject_reason||'без причини';why[r]=(why[r]||0)+1;});
+    h+=`<div class="rc-out"><details${rej.length?'':' hidden'}><summary>Відмова · ${rej.length}${rej.length?` <span class="rc-sub" style="display:inline;margin-left:6px">${Object.entries(why).map(([k,n])=>orgEsc(k)+' '+n).join(', ')}</span>`:''}</summary><div class="lst rc-col" data-stage="rejected" style="background:none;min-height:0;padding:0">${rej.map(rcCardHtml).join('')}</div></details>
+      <details${res.length?'':' hidden'}><summary>Резерв · ${res.length}</summary><div class="lst rc-col" data-stage="reserve" style="background:none;min-height:0;padding:0">${res.map(rcCardHtml).join('')}</div></details>
+      ${rcLvl()>=2?'<div class="ec-note-s" style="font-size:12px;color:var(--muted)">Перетягуй картки між етапами або тисни стрілку на картці. Відмова й резерв — у картці кандидата.</div>':''}</div></div>`;
+    return h;
+  }
+  function rcWireBoard(){
+    if(rcLvl()<2)return;
+    let drag=null;
+    document.querySelectorAll('#rcRoot .rc-card[draggable=true]').forEach(el=>{
+      el.addEventListener('dragstart',e=>{drag=+el.dataset.app;el.classList.add('dragging');e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain',String(drag));}catch(_){}});
+      el.addEventListener('dragend',()=>{el.classList.remove('dragging');document.querySelectorAll('#rcRoot .rc-col.over').forEach(c=>c.classList.remove('over'));});
+    });
+    document.querySelectorAll('#rcRoot .rc-col[data-stage]').forEach(col=>{
+      col.addEventListener('dragover',e=>{if(drag==null)return;e.preventDefault();col.classList.add('over');});
+      col.addEventListener('dragleave',()=>col.classList.remove('over'));
+      col.addEventListener('drop',e=>{e.preventDefault();col.classList.remove('over');const id=drag;drag=null;if(id!=null)rcMove(id,col.dataset.stage);});
+    });
+  }
+
+  /* ---- Зміна етапу ---- */
+  async function rcEvent(app,kind,body,extra){
+    const a=rc.apps.find(x=>x.id===app)||{};
+    const row=Object.assign({app_id:app||null,candidate_id:a.candidate_id||extra&&extra.candidate_id,kind,body,author:hoWho()},extra||{});
+    const {error}=await db.from('rc_events').insert(row);
+    if(error)toast('Історію не записано: '+error.message,'warn');
+  }
+  window.rcMove=async(appId,stage,opts)=>{
+    const a=rc.apps.find(x=>x.id===appId);if(!a||a.stage===stage)return;
+    if(a.stage==='hired'){toast('Кандидата вже прийнято — зміни робляться в «Кадрових операціях»','warn');return;}
+    const v=rcV(a.vacancy_id)||{};opts=opts||{};
+    if(stage==='hired')return rcHireAsk(appId);
+    if(stage==='rejected'&&opts.reason==null){
+      return rcAsk({title:'Відмова кандидату',sub:rcName(rcC(a.candidate_id)),ok:'Відмовити',
+        html:`<div class="ho-f"><label for="rcaRej">Причина</label><select id="rcaRej">${RC_REJ.map(r=>`<option>${orgEsc(r)}</option>`).join('')}</select></div><div class="ho-f"><label for="rcaRejT">Коментар (необов'язково)</label><input id="rcaRejT" maxlength="300"></div>`,
+        onOk:()=>{const r=$('rcaRej').value,t=$('rcaRejT').value.trim();return rcMove(appId,'rejected',{reason:t?r+': '+t:r});}});
+    }
+    const needTrial=v.trial_day!==false&&!a.trial_skipped&&RC_IDX[stage]>RC_IDX.trial&&(RC_IDX[a.stage]??-1)<RC_IDX.trial;
+    if(needTrial&&opts.skip==null){
+      return rcAsk({title:'Без пробного дня?',sub:rcName(rcC(a.candidate_id)),ok:'Пропустити пробний день',
+        html:`<div class="rc-note">У цій вакансії пробний день стоїть за замовчуванням. Щоб перейти далі без нього, коротко поясни чому.</div><div class="ho-f"><label for="rcaSkip">Пояснення</label><input id="rcaSkip" maxlength="300" placeholder="Напр., працював у нас раніше на цій посаді"></div>`,
+        onOk:()=>{const t=$('rcaSkip').value.trim();if(!t){toast('Напиши пояснення','warn');$('rcaSkip').focus();return false;}return rcMove(appId,stage,Object.assign({},opts,{skip:t}));}});
+    }
+    if((stage==='interview'||stage==='trial')&&opts.at===undefined){
+      const cur=stage==='interview'?a.interview_at:a.trial_at;
+      return rcAsk({title:stage==='interview'?'Співбесіда':'Пробний день',sub:rcName(rcC(a.candidate_id)),ok:'Перенести',
+        html:`<div class="ho-f"><label for="rcaAt">Коли (можна вказати пізніше)</label><input id="rcaAt" type="datetime-local" value="${rcLocal(cur)}"></div>`,
+        onOk:()=>{const x=$('rcaAt').value;return rcMove(appId,stage,Object.assign({},opts,{at:x?new Date(x).toISOString():null}));}});
+    }
+    const patch={stage,updated_at:new Date().toISOString()};
+    if(stage==='rejected')patch.reject_reason=opts.reason;
+    if(opts.skip){patch.trial_skipped=true;patch.trial_skip_reason=opts.skip;}
+    if(stage==='interview'&&opts.at!==undefined)patch.interview_at=opts.at;
+    if(stage==='trial'&&opts.at!==undefined)patch.trial_at=opts.at;
+    const {data,error}=await db.from('rc_apps').update(patch).eq('id',appId).select('*').single();
+    if(error){toast('Помилка: '+error.message,'error');return false;}
+    Object.assign(a,data||patch);
+    await rcEvent(appId,'stage',`→ ${RC_STN[stage]}${opts.reason?': '+opts.reason:''}${opts.skip?' (без пробного дня: '+opts.skip+')':''}${opts.at?' · '+rcDT(opts.at):''}`);
+    if(rcF&&rcF.t==='cand')await rcCandRefresh();
+    rcRender();
+    return true;
+  };
+
+  /* ---- Діалог (причина, дата, прийом) ---- */
+  function rcAsk(o){
+    $('rcAHead').innerHTML=`<div class="t"><b>${orgEsc(o.title)}</b>${o.sub?`<span>${orgEsc(o.sub)}</span>`:''}</div><button class="ico-btn" type="button" onclick="rcAskClose()" aria-label="Закрити"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>`;
+    $('rcABody').innerHTML=o.html;
+    $('rcAFoot').innerHTML=`<span class="sp"></span><button class="btn" type="button" onclick="rcAskClose()">${o.cancel||'Скасувати'}</button>${o.ok?`<button class="btn primary" type="button" id="rcAOk">${orgEsc(o.ok)}</button>`:''}`;
+    rcAskCb=o.onOk;
+    $('rcAsk').classList.add('open');
+    $('rcABody').querySelectorAll('input.fp-date').forEach(el=>{if(!el._flatpickr)flatpickr(el,{locale:flatpickr.l10ns.uk,disableMobile:true,dateFormat:'Y-m-d',altInput:true,altFormat:'d.m.Y',allowInput:true});});
+    if($('rcAOk'))$('rcAOk').onclick=async()=>{if(rc.busy)return;rc.busy=true;let r;try{r=await rcAskCb();}finally{rc.busy=false;}if(r!==false)rcAskClose();};
+    const f=$('rcABody').querySelector('input:not([type=hidden]),select');if(f)setTimeout(()=>f.focus(),30);
+  }
+  window.rcAskClose=()=>{$('rcAsk').classList.remove('open');rcAskCb=null;};
+
+  function rcHireAsk(appId){
+    const a=rc.apps.find(x=>x.id===appId);if(!a)return;
+    const v=rcV(a.vacancy_id)||{}, c=rcC(a.candidate_id)||{};
+    if(v.trial_day!==false&&!a.trial_skipped&&(RC_IDX[a.stage]??-1)<RC_IDX.trial)return rcMove(appId,'offer');   // спершу пробний день або пояснення
+    const units=orgFlatAll(), p=rc.pay[v.id]||{};
+    rcAsk({title:'Прийняти на роботу',sub:rcName(c)+' · '+(v.position||''),ok:'Створити «Прийом»',
+      html:`<div class="rc-note">Створиться співробітник у довіднику й операція «Прийом» зі статусом «На погодженні». Проводить її HR у розділі «Кадрові операції».</div>
+      <div class="ho-grid" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+        <div class="ho-f"><label for="rchStart">Дата виходу</label><input id="rchStart" class="fp-date" value="${a.offer_start||v.start_date||empToday()}"></div>
+        <div class="ho-f"><label for="rchPos">Посада</label><input id="rchPos" list="rcPosList" value="${orgEsc(v.position||'')}"></div>
+        <div class="ho-f"><label for="rchUnit">Підрозділ</label><select id="rchUnit">${units.map(({n,lvl})=>`<option value="${n.id}"${+v.unit_id===n.id?' selected':''}>${'  '.repeat(lvl)}${orgEsc(n.name)}</option>`).join('')}</select></div>
+        <div class="ho-f"><label for="rchSched">Графік</label><input id="rchSched" list="hoSchedList" value="${orgEsc(v.schedule||'')}"></div>
+        <div class="ho-f"><label for="rchRate">Ставка</label><select id="rchRate">${[[1,'Повна'],[0.75,'0,75'],[0.5,'0,5'],[0.25,'0,25']].map(([x,t])=>`<option value="${x}">${t}</option>`).join('')}</select></div>
+        ${rcPay()?`<div class="ho-f"><label for="rchSal">Оклад, ₴</label><input id="rchSal" type="number" min="0" step="500" value="${p.sal_from??''}"></div>`:''}
+      </div>`,
+      onOk:async()=>{
+        const start=$('rchStart').value;if(!start){toast('Вкажи дату виходу','warn');return false;}
+        const sal=$('rchSal')&&$('rchSal').value!==''?+$('rchSal').value:null;
+        const {data,error}=await db.rpc('rc_hire',{p_app:appId,p_start:start,p_position:$('rchPos').value.trim()||null,p_unit:+$('rchUnit').value||null,p_schedule:$('rchSched').value.trim()||null,p_rate:+$('rchRate').value||1,p_salary:sal});
+        if(error){toast('Не вдалося: '+error.message,'error',7000);return false;}
+        rcAskClose();if(rcF&&rcF.t==='cand')rcClose();
+        await loadAllDicts();await rcLoad();if(window.hoLoaded!==undefined&&hoLoaded)hoLoad();
+        rcAsk({title:'«Прийом» створено',sub:rcName(c),cancel:'Готово',ok:accLevel('company')>=1?'Відкрити «Кадрові операції»':null,
+          html:`<div class="rc-note ok">Наказ ${orgEsc(data&&data.order_no||'')} на погодженні з ${empFmtDate(start)}.${data&&data.rehire?' Людина вже була в довіднику (колишній співробітник) — використано її картку.':''}${data&&data.closed?' Вакансію закрито: потрібну кількість людей прийнято.':''}</div>`,
+          onOk:()=>{navGo('hr_ops');return true;}});
+        return false;
+      }});
+  }
+
+  /* ---- Кандидати ---- */
+  function rcCandTable(){
+    const q=epNorm(rc.q).trim(), qd=rc.q.replace(/\D/g,'');
+    const rows=rc.cands.filter(c=>!q||epNorm(empFull(c)).includes(q)||(qd.length>=3&&(c.phone||'').includes(qd)));
+    if(!rows.length)return `<div class="ec-empty" style="padding:28px;text-align:center">${rc.cands.length?'Нікого не знайдено':'Кандидатів ще немає. Додай першого кнопкою «+ Кандидат».'}</div>`;
+    return `<div class="ho-scroll"><table class="ho-tbl"><thead><tr><th>Кандидат</th><th>Телефон</th><th>Джерело</th><th>Вакансії</th><th>Додано</th></tr></thead><tbody>
+      ${rows.slice(0,300).map(c=>{const ap=rc.apps.filter(a=>a.candidate_id===c.id);
+        return `<tr onclick="rcCandOpen(${c.id})"><td class="who"><b>${orgEsc(empFull(c))}</b>${c.city?`<span>${orgEsc(c.city)}</span>`:''}</td><td class="dt">${c.phone?empFmtPhone(c.phone):'—'}</td><td style="font-size:12.5px">${orgEsc(c.source||'—')}</td>
+        <td><div class="rc-funnel">${ap.length?ap.map(a=>{const v=rcV(a.vacancy_id);return `<span class="rc-tag ${a.stage==='hired'?'ok':a.stage==='rejected'?'bad':rcLive(a)?'info':''}">${orgEsc(v?v.position:'вакансія')}: ${RC_STN[a.stage]}</span>`;}).join(''):'<span class="rc-tag">без вакансії</span>'}</div></td>
+        <td class="dt">${empFmtDate((c.created_at||'').slice(0,10))}<span class="rc-sub">${orgEsc(c.created_by_name||'')}</span></td></tr>`;}).join('')}
+    </tbody></table></div>${rows.length>300?'<div class="ho-more ec-empty">Показано 300 — уточни пошук</div>':''}`;
+  }
+  window.rcCandNew=vid=>{rcF={t:'cand',c:{id:null,last_name:'',first_name:'',patronymic:'',phone:'',email:'',city:'',source:'',referrer_emp_id:null,experience:'',note:''},vid:vid||null,app:null,events:[],dupes:[],file:null,verd:null};rcCandModal();};
+  window.rcCandOpen=async(id,appId)=>{
+    const c=rcC(id);if(!c)return;
+    rcF={t:'cand',c:JSON.parse(JSON.stringify(c)),vid:null,app:appId||null,events:[],dupes:[],file:null,verd:null};
+    rcCandModal();await rcCandRefresh();
+  };
+  async function rcCandRefresh(){
+    if(!rcF||rcF.t!=='cand'||!rcF.c.id)return;
+    const {data}=await db.from('rc_events').select('*').eq('candidate_id',rcF.c.id).order('created_at',{ascending:false});
+    if(!rcF)return;rcF.events=data||[];rcCandModal(true);
+  }
+  function rcCandModal(keep){
+    if(!rcF||rcF.t!=='cand')return;
+    rcLists();
+    if(keep&&rcF)rcCandCollect();
+    const c=rcF.c, ed=rcLvl()>=2&&(!c.id||true), dis=ed?'':' disabled';
+    const apps=c.id?rc.apps.filter(a=>a.candidate_id===c.id):[];
+    $('rcMHead').innerHTML=`<span class="rc-ava" style="width:40px;height:40px;font-size:14px">${orgEsc((rcIni(c)||'+').toUpperCase())}</span><div class="t"><b>${c.id?orgEsc(empFull(c)):'Новий кандидат'}</b><span>${c.id?`Додано ${empFmtDate((c.created_at||'').slice(0,10))}${c.created_by_name?' · '+orgEsc(c.created_by_name):''}${c.employee_id?' · <span class="rc-tag ok">співробітник</span>':''}`:'Заповни контакти й обери вакансію'}</span></div><button class="ico-btn" type="button" onclick="rcClose()" aria-label="Закрити"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>`;
+    const openV=rc.vac.filter(v=>v.status==='open');
+    let left=`<div class="rc-box"><h3>Дані</h3><div class="ho-grid" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+      <div class="ho-f"><label for="rccLn">Прізвище</label><input id="rccLn" maxlength="60" value="${orgEsc(c.last_name||'')}"${dis}></div>
+      <div class="ho-f"><label for="rccFn">Ім'я</label><input id="rccFn" maxlength="60" value="${orgEsc(c.first_name||'')}"${dis}></div>
+      <div class="ho-f"><label for="rccPt">По батькові</label><input id="rccPt" maxlength="60" value="${orgEsc(c.patronymic||'')}"${dis}></div>
+      <div class="ho-f"><label for="rccPh">Телефон</label><input id="rccPh" inputmode="tel" maxlength="20" value="${c.phone?empFmtPhone(c.phone).replace(/&[^;]+;/g,''):''}" placeholder="+380 …" onchange="rcDupCheck()"${dis}></div>
+      <div class="ho-f"><label for="rccEm">Email</label><input id="rccEm" type="email" maxlength="120" value="${orgEsc(c.email||'')}"${dis}></div>
+      <div class="ho-f"><label for="rccCity">Місто</label><input id="rccCity" maxlength="60" value="${orgEsc(c.city||'')}"${dis}></div>
+      <div class="ho-f"><label for="rccSrc">Джерело</label><input id="rccSrc" list="rcSrcList" maxlength="60" value="${orgEsc(c.source||'')}" onchange="rcCandModal(true)"${dis}></div>
+      ${/рекоменд/i.test(c.source||'')||c.referrer_emp_id?`<div class="ho-f"><label for="rccRef">Хто порекомендував</label><select id="rccRef" class="emp-pick"${dis}><option value="">—</option>${dictEmps.filter(e=>!empIsDismissed(e)).map(e=>`<option value="${e.id}"${e.id===c.referrer_emp_id?' selected':''}>${orgEsc(empFull(e))}</option>`).join('')}</select></div>`:'<div></div>'}
+      <div class="ho-f w3" style="grid-column:1/-1"><label for="rccExp">Досвід</label><textarea id="rccExp" rows="2" maxlength="1000"${dis}>${orgEsc(c.experience||'')}</textarea></div>
+      <div class="ho-f" style="grid-column:1/-1"><label for="rccNote">Нотатка</label><textarea id="rccNote" rows="2" maxlength="2000"${dis}>${orgEsc(c.note||'')}</textarea></div>
+      <div class="ho-f" style="grid-column:1/-1"><label>Резюме</label>${c.cv_path?`<div class="ho-file"><button type="button" onclick="rcCvOpen()">${orgEsc(c.cv_name||'резюме')}</button>${ed?'<span style="flex:1"></span><label for="rccCv">замінити</label>':''}</div>`:''}<input type="file" id="rccCv" accept=".pdf,.doc,.docx,image/*" ${c.cv_path?'style="display:none"':''} onchange="rcCvPick(this)"${dis}>${rcF.file?`<div class="rc-sub">Буде завантажено: ${orgEsc(rcF.file.name)}</div>`:''}</div>
+    </div><div id="rccDup">${rcDupHtml()}</div>
+    ${!c.id?`<div class="ho-f"><label for="rccVac">Вакансія</label><select id="rccVac"><option value="">— поки без вакансії —</option>${openV.map(v=>`<option value="${v.id}"${v.id===rcF.vid?' selected':''}>${orgEsc(v.position)} · ${orgEsc(rcUnit(v.unit_id))}</option>`).join('')}</select></div>`:''}</div>`;
+    let right='';
+    if(c.id){
+      right+=`<div class="rc-box"><h3>Вакансії<span class="sp"></span>${rcLvl()>=2&&openV.some(v=>!apps.some(a=>a.vacancy_id===v.id))?`<select class="rc-asg" aria-label="Додати до вакансії" onchange="if(this.value)rcAddApp(+this.value)"><option value="">+ до вакансії…</option>${openV.filter(v=>!apps.some(a=>a.vacancy_id===v.id)).map(v=>`<option value="${v.id}">${orgEsc(v.position)} · ${orgEsc(rcUnit(v.unit_id))}</option>`).join('')}</select>`:''}</h3>
+        ${apps.length?apps.map(a=>rcAppHtml(a)).join(''):'<div class="ec-empty">Кандидат ще не в жодній вакансії</div>'}</div>`;
+      right+=`<div class="rc-box"><h3>Відгуки й історія</h3>${rcLvl()>=2?`
+        <div class="rc-verd" role="group" aria-label="Висновок">${Object.entries(RC_VERD).map(([k,t])=>`<button type="button" class="${rcF.verd===k?'on':''}" aria-pressed="${rcF.verd===k}" onclick="rcCandCollect();rcF.verd=rcF.verd==='${k}'?null:'${k}';rcCandModal(true)">${t}</button>`).join('')}</div>
+        ${rcF.verd?`<div class="rc-scores">${RC_SCORE.map(([k,t])=>`<label>${t}<select data-sc="${k}"><option value="">—</option>${[1,2,3,4,5].map(n=>`<option${(rcF.sc||{})[k]==n?' selected':''}>${n}</option>`).join('')}</select></label>`).join('')}</div>`:''}
+        <div class="ho-f"><textarea id="rccEv" rows="2" maxlength="2000" placeholder="${rcF.verd?'Як пройшла співбесіда чи пробний день':'Нотатка: дзвінок, домовленості…'}">${orgEsc(rcF.evText||'')}</textarea></div>
+        <div><button class="btn" type="button" onclick="rcAddEvent()">${rcF.verd?'Додати відгук':'Додати нотатку'}</button></div>`:''}
+        <div class="rc-tl">${rcF.events.length?rcF.events.map(e=>{const a=rc.apps.find(x=>x.id===e.app_id),v=a&&rcV(a.vacancy_id);
+          const sc=e.score&&Object.keys(e.score).length?' · '+RC_SCORE.filter(([k])=>e.score[k]).map(([k,t])=>t+' '+e.score[k]).join(', '):'';
+          return `<div><div>${e.verdict?`<b>${RC_VERD[e.verdict]}</b> `:''}${e.kind==='stage'?'<b>Етап</b> ':e.kind==='hire'?'<b>Прийом</b> ':''}${orgEsc(e.body||'')}${orgEsc(sc)}</div><div class="w">${rcDT(e.created_at)} · ${orgEsc(e.author||'—')}${v?' · '+orgEsc(v.position):''}</div></div>`;}).join(''):'<div class="ec-empty">Подій ще немає</div>'}</div></div>`;
+    }
+    $('rcMBody').innerHTML=c.id?`<div class="rc-2col"><div style="display:flex;flex-direction:column;gap:14px;min-width:0">${left}</div><div style="display:flex;flex-direction:column;gap:14px;min-width:0">${right}</div></div>`:left;
+    $('rcMFoot').innerHTML=`${c.id&&rcLvl()>=3&&!c.employee_id?'<button class="btn" type="button" onclick="rcCandDelete()">Видалити кандидата</button>':''}<span class="sp"></span><button class="btn" type="button" onclick="rcClose()">${ed?'Скасувати':'Закрити'}</button>${ed?`<button class="btn primary" type="button" onclick="rcCandSave()">${c.id?'Зберегти':'Додати кандидата'}</button>`:''}`;
+    if(!$('rcModal').classList.contains('open'))rcOpenModal();
+    $('rcMBody').querySelectorAll('input.fp-date').forEach(el=>{if(!el._flatpickr)flatpickr(el,{locale:flatpickr.l10ns.uk,disableMobile:true,dateFormat:'Y-m-d',altInput:true,altFormat:'d.m.Y',allowInput:true});});
+    if(rcF.app){const el=$('rcApp'+rcF.app);if(el)el.scrollIntoView({block:'nearest'});}
+  }
+  window.rcCandModal=rcCandModal;
+  function rcAppHtml(a){
+    const v=rcV(a.vacancy_id)||{}, ed=rcLvl()>=2&&a.stage!=='hired';
+    const cur=RC_IDX[a.stage]??-1;
+    return `<div class="rc-app" id="rcApp${a.id}"><div class="h"><b>${orgEsc(v.position||'Вакансія')}</b><span class="rc-sub" style="margin:0">${orgEsc(rcUnit(v.unit_id))}</span><span style="flex:1"></span>${a.stage==='rejected'?`<span class="rc-tag bad">Відмова${a.reject_reason?': '+orgEsc(a.reject_reason):''}</span>`:a.stage==='reserve'?'<span class="rc-tag">Резерв</span>':''}</div>
+      <div class="rc-stages">${RC_STG.map(([k,t],i)=>`<button type="button" class="rc-stg${a.stage===k?' cur':i<cur?' done':''}"${ed&&a.stage!==k?` onclick="rcMove(${a.id},'${k}')"`:' disabled'}${k==='trial'&&v.trial_day===false?' style="opacity:.5"':''}>${t}${k==='trial'&&a.trial_skipped?' ✕':''}</button>`).join('')}</div>
+      ${a.trial_skipped?`<div class="rc-sub" style="margin:0">Без пробного дня: ${orgEsc(a.trial_skip_reason||'')}</div>`:''}
+      ${ed?`<div class="ho-grid" style="grid-template-columns:repeat(2,minmax(0,1fr))"><div class="ho-f"><label for="rcaI${a.id}">Співбесіда</label><input id="rcaI${a.id}" type="datetime-local" value="${rcLocal(a.interview_at)}" onchange="rcAppDate(${a.id},'interview_at',this.value)"></div>
+        <div class="ho-f"><label for="rcaT${a.id}">Пробний день</label><input id="rcaT${a.id}" type="datetime-local" value="${rcLocal(a.trial_at)}" onchange="rcAppDate(${a.id},'trial_at',this.value)"${v.trial_day===false?' disabled':''}></div></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">${a.stage!=='rejected'?`<button class="btn" type="button" onclick="rcMove(${a.id},'rejected')">Відмова</button>`:''}${a.stage!=='reserve'?`<button class="btn" type="button" onclick="rcMove(${a.id},'reserve')">У резерв</button>`:''}${a.stage==='rejected'||a.stage==='reserve'?`<button class="btn" type="button" onclick="rcMove(${a.id},'new')">Повернути у воронку</button>`:''}<span style="flex:1"></span>${v.status==='open'||v.status==='paused'?`<button class="btn primary" type="button" onclick="rcMove(${a.id},'hired')">Прийняти</button>`:''}</div>`
+        :a.stage==='hired'?`<div class="rc-note ok">Прийнято${a.offer_start?' з '+empFmtDate(a.offer_start):''}. «Прийом» проводить HR у розділі «Кадрові операції».</div>`:`${a.interview_at?`<div class="rc-sub">Співбесіда ${rcDT(a.interview_at)}</div>`:''}${a.trial_at?`<div class="rc-sub">Пробний день ${rcDT(a.trial_at)}</div>`:''}`}
+    </div>`;
+  }
+  window.rcAppDate=async(id,k,val)=>{
+    const a=rc.apps.find(x=>x.id===id);if(!a)return;
+    const iso=val?new Date(val).toISOString():null;
+    const {error}=await db.from('rc_apps').update({[k]:iso,updated_at:new Date().toISOString()}).eq('id',id);
+    if(error){toast('Помилка: '+error.message,'error');return;}
+    a[k]=iso;await rcEvent(id,k==='interview_at'?'interview':'trial',(k==='interview_at'?'Співбесіда':'Пробний день')+': '+(iso?rcDT(iso):'скасовано'));
+    toast('Збережено','success');await rcCandRefresh();
+  };
+  function rcCandCollect(){
+    if(!rcF||rcF.t!=='cand')return;const c=rcF.c,val=id=>$(id)?$(id).value.trim():undefined;
+    const m={rccLn:'last_name',rccFn:'first_name',rccPt:'patronymic',rccEm:'email',rccCity:'city',rccSrc:'source',rccExp:'experience',rccNote:'note'};
+    Object.entries(m).forEach(([id,k])=>{const x=val(id);if(x!==undefined)c[k]=x;});
+    if($('rccPh'))c.phone=empNormPhone($('rccPh').value);
+    if($('rccRef'))c.referrer_emp_id=$('rccRef').value?+$('rccRef').value:null;
+    if($('rccVac'))rcF.vid=$('rccVac').value?+$('rccVac').value:null;
+    if($('rccEv'))rcF.evText=$('rccEv').value;
+    const sc={};document.querySelectorAll('#rcMBody [data-sc]').forEach(s=>{if(s.value)sc[s.dataset.sc]=+s.value;});if(rcF.verd)rcF.sc=sc;
+  }
+  function rcDupHtml(){
+    if(!rcF||!rcF.dupes.length)return '';
+    return `<div class="rc-dup">⚠ Цей телефон уже є: ${rcF.dupes.map(d=>`<b>${orgEsc(d.name)}</b> (${d.kind==='employee'?'співробітник, ':'кандидат, '}${orgEsc(d.info||'')})`).join('; ')}</div>`;
+  }
+  window.rcDupCheck=async()=>{
+    rcCandCollect();const ph=rcF.c.phone;
+    if(!ph||ph.length<10){rcF.dupes=[];$('rccDup').innerHTML='';return;}
+    const {data}=await db.rpc('rc_phone_dupes',{p_phone:ph,p_except:rcF.c.id||null});
+    if(!rcF)return;rcF.dupes=data||[];$('rccDup').innerHTML=rcDupHtml();
+  };
+  window.rcCvPick=inp=>{const f=inp.files&&inp.files[0];if(!f)return;if(f.size>20*1024*1024){toast('Файл до 20 МБ','warn');inp.value='';return;}rcCandCollect();rcF.file=f;rcCandModal(true);};
+  window.rcCvOpen=async()=>{
+    const p=rcF&&rcF.c.cv_path;if(!p)return;
+    const {data,error}=await db.storage.from('rc-files').createSignedUrl(p,600);
+    if(error||!data){toast('Не вдалося відкрити файл','error');return;}
+    window.open(data.signedUrl,'_blank','noopener');
+  };
+  window.rcCandSave=async()=>{
+    if(rc.busy||!rcF)return;
+    rcCandCollect();const c=rcF.c;
+    if(!c.last_name){toast('Вкажи прізвище','warn');$('rccLn').focus();return;}
+    if(c.phone&&!/^380\d{9}$/.test(c.phone)){toast('Телефон у форматі +380 XX XXX XX XX','warn');$('rccPh').focus();return;}
+    if(c.email&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(c.email)){toast('Перевір email','warn');$('rccEm').focus();return;}
+    rc.busy=true;
+    try{
+      if(!c.id&&c.phone&&!rcF.dupes.length){const {data}=await db.rpc('rc_phone_dupes',{p_phone:c.phone,p_except:null});if(data&&data.length){rcF.dupes=data;$('rccDup').innerHTML=rcDupHtml();toast('Цей телефон уже є в базі — перевір, натисни «Додати» ще раз, якщо це інша людина','warn',6000);return;}}
+      const row={last_name:c.last_name,first_name:c.first_name||null,patronymic:c.patronymic||null,phone:c.phone||null,email:c.email||null,city:c.city||null,source:c.source||null,referrer_emp_id:c.referrer_emp_id||null,experience:c.experience||null,note:c.note||null};
+      let res;
+      if(c.id)res=await db.from('rc_candidates').update(row).eq('id',c.id).select('*').single();
+      else{row.created_by_name=hoWho();res=await db.from('rc_candidates').insert(row).select('*').single();}
+      if(res.error){toast('Помилка: '+res.error.message,'error');return;}
+      const saved=res.data, isNew=!c.id;
+      if(rcF.file){
+        const path=`cv/${saved.id}/${Date.now()}-${ecSafeName(rcF.file.name)}`;
+        const up=await db.storage.from('rc-files').upload(path,rcF.file,{contentType:rcF.file.type||'application/octet-stream',upsert:false});
+        if(up.error)toast('Резюме не завантажено: '+up.error.message,'warn');
+        else{const old=saved.cv_path;await db.from('rc_candidates').update({cv_path:path,cv_name:rcF.file.name}).eq('id',saved.id);saved.cv_path=path;saved.cv_name=rcF.file.name;if(old)db.storage.from('rc-files').remove([old]);}
+        rcF.file=null;
+      }
+      const i=rc.cands.findIndex(x=>x.id===saved.id);if(i>=0)rc.cands[i]=saved;else rc.cands.unshift(saved);
+      if(isNew&&rcF.vid){
+        const {data,error}=await db.from('rc_apps').insert({vacancy_id:rcF.vid,candidate_id:saved.id,source:/рекоменд/i.test(saved.source||'')?'referral':'manual'}).select('*').single();
+        if(error)toast('До вакансії не додано: '+error.message,'warn');else{rc.apps.push(data);await rcEvent(data.id,'stage','Додано до вакансії');}
+      }
+      toast(isNew?'Кандидата додано':'Збережено','success');
+      if(isNew){rcClose();rcRender();}else{rcF.c=JSON.parse(JSON.stringify(saved));rcCandModal();rcRender();}
+    }finally{rc.busy=false;}
+  };
+  window.rcAddApp=async vid=>{
+    rcCandCollect();
+    const {data,error}=await db.from('rc_apps').insert({vacancy_id:vid,candidate_id:rcF.c.id,source:'manual'}).select('*').single();
+    if(error){toast('Помилка: '+error.message,'error');return;}
+    rc.apps.push(data);rcF.app=data.id;await rcEvent(data.id,'stage','Додано до вакансії');
+    await rcCandRefresh();rcRender();
+  };
+  window.rcAddEvent=async()=>{
+    rcCandCollect();const t=(rcF.evText||'').trim();
+    if(!t&&!rcF.verd){toast('Напиши нотатку або обери висновок','warn');return;}
+    const apps=rc.apps.filter(a=>a.candidate_id===rcF.c.id);
+    const app=rcF.app&&apps.find(a=>a.id===rcF.app)||apps.find(rcLive)||apps[0];
+    const sc=rcF.verd&&rcF.sc&&Object.keys(rcF.sc).length?rcF.sc:null;
+    const {error}=await db.from('rc_events').insert({app_id:app?app.id:null,candidate_id:rcF.c.id,kind:rcF.verd?'feedback':'note',body:t||null,verdict:rcF.verd,score:sc,author:hoWho()});
+    if(error){toast('Помилка: '+error.message,'error');return;}
+    rcF.evText='';rcF.verd=null;rcF.sc=null;await rcCandRefresh();toast('Додано','success');
+  };
+  window.rcCandDelete=async()=>{
+    if(!rcF||!rcF.c.id||!confirm('Видалити кандидата з усією історією?'))return;
+    const {error}=await db.from('rc_candidates').delete().eq('id',rcF.c.id);
+    if(error){toast('Помилка: '+error.message,'error');return;}
+    if(rcF.c.cv_path)db.storage.from('rc-files').remove([rcF.c.cv_path]);
+    rcClose();await rcLoad();toast('Видалено','success');
+  };
+
   /* --- Вибір співробітника: пошук з підказками, аватар і чип замість звичайного списку ---
      Працює поверх <select class="emp-pick">: сам select лишається джерелом значення,
      тож увесь наявний код (.value, onchange) працює як і раніше. */
@@ -7897,7 +8591,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
   const ACC_SECTIONS=[
     {k:'dash',l:'Панель'},{k:'proc',l:'Процеси'},{k:'matrix',l:'Матриці'},{k:'goals',l:'Цілі'},
     {k:'company',l:'Компанія'},{k:'reports',l:'Звіти'},{k:'analytics',l:'Аналітика'},{k:'budget',l:'Бюджет'},
-    {k:'dev',l:'Розвиток'},{k:'bot',l:'Будь в темі'},{k:'settings',l:'Налаштування (довідники, система)'},
+    {k:'dev',l:'Розвиток'},{k:'recruit',l:'Рекрутинг'},{k:'bot',l:'Будь в темі'},{k:'settings',l:'Налаштування (довідники, система)'},
     {k:'access',l:'Користувачі та доступ'},
   ];
   const ACC_LEVELS=['Немає','Перегляд','Редагування','Повний'];
@@ -7908,7 +8602,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     {k:'approve',l:'Погодження кадрових операцій',d:'проводити й скасовувати операції людей у своєму обсязі'},
   ];
   // розділи, де діє обсяг даних
-  const ACC_SCOPED={company:'Досьє, кадрові операції',budget:'бюджети, HR-файли',dev:'плани розвитку, сесії'};
+  const ACC_SCOPED={company:'Досьє, кадрові операції',budget:'бюджети, HR-файли',dev:'плани розвитку, сесії',recruit:'заявки й вакансії: «Тільки свої» — які людина веде або створила'};
   const ACC_SCOPES=[{k:'own',l:'Тільки свої'},{k:'unit',l:'Мій підрозділ'},{k:'all',l:'Вся компанія'}];
   const ACC={me:null,levels:null,scopes:{},ready:false,v2:false,roles:[],perms:[],users:[],userPerms:[],roleSel:null,userEdit:null,ov:{}};
 
@@ -7944,7 +8638,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
   // роль обмежує дані людини (своє / підрозділ) — тоді потрібна прив'язка до співробітника
   function accRoleNeedsEmp(roleId){
     if(accRoleIsAdmin(roleId)) return false;
-    return Object.keys(ACC_SCOPED).some(k=>accRolePerm(roleId,k)>0&&accRoleScope(roleId,k)!=='all');
+    return Object.keys(ACC_SCOPED).some(k=>accRolePerm(roleId,k)>0&&(k==='recruit'?accRoleScope(roleId,k)==='unit':accRoleScope(roleId,k)!=='all'));
   }
 
   async function accInit(session){
