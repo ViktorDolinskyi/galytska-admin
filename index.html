@@ -2682,7 +2682,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
               <h3>Співробітники</h3>
               <span class="badge info" id="empCount">0</span>
               <div style="display:flex;gap:8px;margin-left:auto;align-items:center;flex-wrap:wrap;justify-content:flex-end">
-                <label class="emp-q"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="empQ" placeholder="ПІБ, посада або телефон" aria-label="Пошук співробітника" oninput="empSearch(this.value)" autocomplete="off"></label>
+                <label class="emp-q"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="empQ" placeholder="ПІБ, посада, підрозділ" aria-label="Пошук співробітника" oninput="empSearch(this.value)" autocomplete="off"></label>
                 <button class="btn" onclick="empTemplateXlsx()" title="Порожній шаблон Excel для заповнення">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;margin-right:4px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Шаблон
                 </button>
@@ -2697,8 +2697,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
               </div>
             </div>
             <table>
-              <thead><tr><th>ПІБ</th><th>Посада</th><th style="width:190px">Телефон</th><th style="width:130px">Дата народження</th><th style="width:130px">Дата прийому</th><th style="width:80px"></th></tr></thead>
-              <tbody id="empBody"><tr><td colspan="6" class="empty">Немає записів</td></tr></tbody>
+              <thead><tr><th>ПІБ</th><th>Посада</th><th>Підрозділ</th><th style="width:190px">Телефон</th><th style="width:130px">Дата народження</th><th style="width:130px">Дата прийому</th><th style="width:80px"></th></tr></thead>
+              <tbody id="empBody"><tr><td colspan="7" class="empty">Немає записів</td></tr></tbody>
             </table>
           </div>
           <!-- Типи структурних одиниць -->
@@ -3760,13 +3760,13 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
             <div class="bday-form">
               <label class="bot-check"><input type="checkbox" id="bdPersonal">Надсилати особисте привітання іменинникові</label>
               <div><label>Текст особистого привітання</label><textarea id="bdPersonalText" rows="3"></textarea>
-                <div class="bot-field-note">{ім'я} і {прізвище} підставляються автоматично.</div></div>
+                <div class="bot-field-note">{ім'я}, {прізвище} і {посада} підставляються автоматично.</div></div>
               <div><label>Картинки до особистого привітання</label><div class="bd-gal" id="bdGal_personal_images"></div>
                 <div class="bot-field-note">До кожного привітання бот бере випадкову картинку, не ту, що минулого разу. JPG, PNG або WEBP до 10 МБ; можна вибрати кілька одразу. Без картинок привітання прийде текстом.</div></div>
               <label class="bot-check"><input type="checkbox" id="bdDigest">Повідомляти всіх підписників, хто сьогодні святкує</label>
               <div><label>Заголовок, коли іменинників кілька</label><input id="bdDigestText"></div>
               <div><label>Заголовок, коли іменинник один</label><input id="bdDigestTextOne">
-                <div class="bot-field-note">Якщо лишити порожнім, бот візьме заголовок для кількох. Підпис унизу («Привітай колегу» / «Привітай колег») бот змінює сам.</div></div>
+                <div class="bot-field-note">Якщо лишити порожнім, бот візьме заголовок для кількох. Підпис унизу («Привітай колегу» / «Привітай колег») бот змінює сам. Кожен іменинник у списку: «Прізвище Ім'я — посада» (посада з довідника співробітників; якщо її немає — підрозділ).</div></div>
               <div><label>Картинки до повідомлення для всіх</label><div class="bd-gal" id="bdGal_digest_images"></div>
                 <div class="bot-field-note">Щодня бот бере випадкову картинку (не вчорашню), однакову для всіх підписників.</div></div>
               <div style="max-width:180px"><label>Час надсилання (Київ)</label><input id="bdTime" class="fp-time" readonly></div>
@@ -6041,7 +6041,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
   window.empSearch=v=>{empQ=v||'';renderEmps();};
   function empMatch(r,q){
     const words=q.toLowerCase().replace(/[ʼ’`]/g,"'").split(/\s+/).filter(Boolean);
-    const hay=[r.last_name,r.first_name,r.patronymic,r.position].join(' ').toLowerCase().replace(/[ʼ’`]/g,"'");
+    const hay=[r.last_name,r.first_name,r.patronymic,r.position,empUnitName(r.primary_unit_id)].join(' ').toLowerCase().replace(/[ʼ’`]/g,"'");
     const ph=String(r.phone||'').replace(/\D/g,'');
     return words.every(w=>{const d=w.replace(/\D/g,'');return hay.includes(w)||(d.length>=3&&d===w.replace(/[\s()+-]/g,'')&&ph.includes(d));});
   }
@@ -6052,13 +6052,14 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     tbody.innerHTML=rows.map(r=>{const gone=empIsDismissed(r);return `<tr${gone?' style="opacity:.55"':''}>
       <td class="t-name"><button class="ec-link" type="button" onclick="empCardOpen(${r.id})" title="Відкрити картку">${orgEsc(empFull(r))}</button>${gone?' <span class="badge warn" title="Звільнено '+empFmtDate(r.dismissal_date)+'">Звільнено</span>':''}</td>
       <td style="color:var(--slate);font-size:13px">${orgEsc(r.position||'—')}</td>
+      <td style="color:var(--slate);font-size:13px">${orgEsc(empUnitName(r.primary_unit_id)||'—')}</td>
       <td style="color:var(--slate);font-size:13px;white-space:nowrap">${r.phone?empFmtPhone(r.phone):'—'}${r.bot_access?' <span class="badge ok" title="Доступ до бота">Бот</span>':''}</td>
       <td style="color:var(--slate);font-size:13px">${empFmtDate(r.birthdate)}</td>
       <td style="color:var(--slate);font-size:13px">${empFmtDate(r.hire_date)}</td>
       <td><div class="row-act" id="empAct-${r.id}">
         <button class="ico-btn" onclick="empEditOpen(${r.id},${qs(r.last_name||'')},${qs(r.first_name||'')},${qs(r.patronymic||'')})">${_eIco}</button>
         <button class="ico-btn del" onclick="empAskDel(${r.id})">${_dIco}</button>
-      </div></td></tr>`;}).join('')||`<tr><td colspan="6" class="empty">${q?'Нікого не знайдено за «'+orgEsc(q)+'»':'Немає записів'}</td></tr>`;
+      </div></td></tr>`;}).join('')||`<tr><td colspan="7" class="empty">${q?'Нікого не знайдено за «'+orgEsc(q)+'»':'Немає записів'}</td></tr>`;
   }
   window.empAskDel=id=>{
     const el=document.getElementById('empAct-'+id);
@@ -9457,7 +9458,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     const map={},roots=[];
     data.forEach(r=>{map[r.id]={id:r.id,name:r.name,head:r.head||'',employee_id:r.employee_id||null,unit_type_id:r.unit_type_id||null,unit_kind_id:r.unit_kind_id||null,status:r.status||'active',children:[],collapsed:collapsed.has(r.id)};});
     data.forEach(r=>{const n=map[r.id];if(r.parent_id&&map[r.parent_id])map[r.parent_id].children.push(n);else roots.push(n);});
-    orgData=roots;orgRender();
+    orgData=roots;orgRender();renderEmps();
   }
   // Додати / редагувати -> Supabase
   window.orgSave=async()=>{
@@ -12022,7 +12023,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         hint:'Усі співробітники з довідника «Компанія» і їхній стан у боті. Увійти можуть ті, кому дозволено доступ і вказано телефон. Якщо забрати доступ (або вказати дату звільнення), бот закриється для людини одразу; повернення доступу знову відкриває бот без повторного входу.',
         load:empBotLoad, arrange:empBotArrange,
         cols:[['ПІБ',r=>`<b>${esc([r.last_name,r.first_name,r.patronymic].filter(Boolean).join(' '))}</b>${r._bu&&r._bu.username?`<div class="bot-clip">@${esc(r._bu.username)}</div>`:''}`],
-              ['Підрозділ',r=>esc(_units[r.primary_unit_id]||'—')],['Телефон',r=>r.phone?fmtPhone(r.phone):'—'],
+              ['Посада',r=>esc(r.position||'—')],['Підрозділ',r=>esc(_units[r.primary_unit_id]||'—')],['Телефон',r=>r.phone?fmtPhone(r.phone):'—'],
               ['Стан у боті',r=>EMPB_ST[r._st].badge],
               ['Остання активність',r=>r._bu&&r._st==='in'?empBotSeen(r._bu.last_seen_at):'—']],
         rowClick:true, modalTitle:'Працівник', form:empBotForm,
@@ -12358,12 +12359,12 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       rows.forEach(r=>{ if(r._st!=='gone') cnt.all++; cnt[r._st==='nophone'?'wait':r._st]++; });
       const F=[['all','Усі працюючі'],['in','У боті'],['wait','Ще не увійшли'],['none','Без доступу'],['gone','Звільнені']];
       $('botFilt').innerHTML=F.map(([k,l])=>`<button type="button" class="seg-f" aria-pressed="${_empB.f===k}" onclick="empBotFilter('${k}')">${l}<i>${cnt[k]}</i></button>`).join('')
-        +`<input type="search" id="empBotQ" placeholder="Пошук: ПІБ, телефон, підрозділ" aria-label="Пошук працівника" value="${esc(_empB.q)}" oninput="empBotSearch(this.value)">`;
+        +`<input type="search" id="empBotQ" placeholder="Пошук: ПІБ, посада, підрозділ" aria-label="Пошук працівника" value="${esc(_empB.q)}" oninput="empBotSearch(this.value)">`;
       const order={in:0,wait:1,nophone:1,none:2,gone:3};
       const w=_empB.q.toLowerCase().replace(/[^0-9a-zа-яіїєґ' ]/gi,' ').split(/\s+/).filter(Boolean);
       return rows.filter(r=>_empB.f==='all'?r._st!=='gone':_empB.f==='wait'?(r._st==='wait'||r._st==='nophone'):r._st===_empB.f)
         .filter(r=>{ if(!w.length) return true;
-          const hay=[r.last_name,r.first_name,r.patronymic,r.phone,_units[r.primary_unit_id],r._bu&&r._bu.username].filter(Boolean).join(' ').toLowerCase();
+          const hay=[r.last_name,r.first_name,r.patronymic,r.position,r.phone,_units[r.primary_unit_id],r._bu&&r._bu.username].filter(Boolean).join(' ').toLowerCase();
           return w.every(x=>hay.includes(x)); })
         .sort((a,b)=>_empB.f==='all'?(order[a._st]-order[b._st])||0:0);
     }
