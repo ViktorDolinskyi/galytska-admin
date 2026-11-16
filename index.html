@@ -1560,6 +1560,83 @@
   .hs-act{white-space:nowrap;display:flex;gap:4px;align-items:center}
   #hsRoot .rc-tabs .seg{max-width:100%;flex-wrap:wrap}
   @media (max-width:600px){#hsModal,#hsAsk{padding:8px}.hs-rooms{grid-template-columns:1fr}.hs-per b{min-width:0}.hs-bal b{font-size:14px}}
+  /* аналітика хостелу: категоріальні кольори перевірені валідатором (світла й темна теми) */
+  :root{--hs-c1:#2a78d6;--hs-c2:#eb6834;--hs-c3:#1baf7a;--hs-free:#cde2fb;--hs-rep:#fab219;--hs-sto:#c9c4bd}
+  [data-theme="dark"]{--hs-c1:#3987e5;--hs-c2:#d95926;--hs-c3:#199e70;--hs-free:#22416a;--hs-rep:#c98500;--hs-sto:#4a4642}
+  @media (prefers-color-scheme: dark){[data-theme="system"]{--hs-c1:#3987e5;--hs-c2:#d95926;--hs-c3:#199e70;--hs-free:#22416a;--hs-rep:#c98500;--hs-sto:#4a4642}}
+  .hsa-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:12px}
+  .hsa-kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:6px;min-width:0}
+  .hsa-kpi:first-child{background:var(--brand-tint);border-color:transparent}
+  .hsa-kpi .h{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;font-size:12.5px;color:var(--slate);font-weight:600}
+  .hsa-kpi .ic{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--page);color:var(--ink);flex:none}
+  .hsa-kpi:first-child .ic{background:var(--surface)}
+  .hsa-kpi .ic svg{width:16px;height:16px;stroke-width:2}
+  .hsa-kpi b{font-size:26px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.1}
+  .hsa-kpi .f{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .hsa-d{font-size:11.5px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--page);color:var(--slate)}
+  .hsa-d.ok{background:var(--ok-bg);color:var(--ok)} .hsa-d.bad{background:var(--warn-bg);color:var(--warn)}
+  .hsa-dl{font-size:11.5px;color:var(--muted)}
+  .hsa-grid>.card{margin:0}
+  .hsa-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr) minmax(0,1fr);gap:12px;align-items:stretch}
+  .hsa-avail{grid-column:1} .hsa-rev{grid-column:2} .hsa-att{grid-column:3;grid-row:span 2}
+  .hsa-mov{grid-column:1/2} .hsa-mix{grid-column:2}
+  .hsa-fl{grid-column:1/3}
+  .hsa-c{padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+  .hsa-ch{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .hsa-ch h3{margin:0;font-size:15px;font-weight:800;color:var(--ink)}
+  .hsa-ch .sub{font-size:12px;color:var(--muted)}
+  .hsa-ch .sp{flex:1}
+  .hsa-big{font-size:18px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+  .hsa-empty{font-size:13px;color:var(--muted);padding:24px 8px;text-align:center;line-height:1.5}
+  .hsa-stack{display:flex;gap:2px;height:44px;border-radius:10px;overflow:hidden}
+  .hsa-stack .s{min-width:6px}
+  .hsa-stack .s:first-child{border-radius:10px 0 0 10px} .hsa-stack .s:last-child{border-radius:0 10px 10px 0}
+  .hsa-stack .s.hsa-on{filter:brightness(1.08);outline:2px solid var(--ink);outline-offset:-2px}
+  .s.busy,.mk.busy{background:var(--hs-c1)} .s.free,.mk.free{background:var(--hs-free)} .s.rep,.mk.rep{background:var(--hs-rep)} .s.sto,.mk.sto{background:var(--hs-sto)}
+  .hsa-av{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px}
+  .hsa-av .i{display:flex;gap:10px;align-items:stretch}
+  .hsa-av .mk{width:4px;border-radius:2px;flex:none}
+  .hsa-av span{font-size:12px;color:var(--slate)} .hsa-av b{display:block;font-size:22px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+  .hsa-lg{display:flex;gap:14px;font-size:12px;color:var(--slate);margin-top:-4px}
+  .hsa-lg span{display:inline-flex;align-items:center;gap:6px}
+  .hsa-lg .ln{width:16px;height:0;border-top:2px solid var(--hs-c1)} .hsa-lg .ln.dash{border-top:2px dashed var(--muted)}
+  .hsa-lg .sq,.hsa-leg .sq{width:10px;height:10px;border-radius:3px;display:inline-block}
+  .sq.c1{background:var(--hs-c1)} .sq.c2{background:var(--hs-c2)}
+  .hsa-plot{position:relative;width:100%}
+  .hsa-svg{width:100%;height:auto;display:block;overflow:visible}
+  .hsa-svg .gr{stroke:var(--line);stroke-width:1}
+  .hsa-svg .ax{fill:var(--muted);font-size:11px;font-family:inherit}
+  .hsa-svg .l{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+  .hsa-svg .l.c1{stroke:var(--hs-c1)} .hsa-svg .l.dash{stroke:var(--muted);stroke-dasharray:5 4}
+  .hsa-svg .hit{fill:transparent;cursor:crosshair}
+  .hsa-svg .xh{stroke:var(--slate);stroke-width:1;stroke-dasharray:3 3}
+  .hsa-svg .dot{fill:var(--hs-c1);stroke:var(--surface);stroke-width:2}
+  .hsa-svg .bar.c1{fill:var(--hs-c1)} .hsa-svg .bar.c2{fill:var(--hs-c2)}
+  .hsa-svg .bar.hsa-on{opacity:.8}
+  .hsa-svg .dn-v{fill:var(--ink);font-size:24px;font-weight:800;font-family:inherit}
+  .hsa-svg path[data-tip],.hsa-svg circle[data-tip]{stroke:var(--surface);stroke-width:2}
+  .hsa-donut{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .hsa-donut svg{width:160px;flex:none}
+  .hsa-leg{display:flex;flex-direction:column;gap:10px;flex:1;min-width:150px}
+  .hsa-leg div{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--slate)}
+  .hsa-leg b{color:var(--ink);min-width:38px;font-variant-numeric:tabular-nums}
+  .hsa-leg em{margin-left:auto;font-style:normal;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+  .hsa-bars{display:flex;flex-direction:column;gap:12px}
+  .hsa-bars .r{display:grid;grid-template-columns:80px 1fr 44px 50px;align-items:center;gap:10px;font-size:13px}
+  .hsa-bars .l{color:var(--slate)} .hsa-bars b{color:var(--ink);text-align:right;font-variant-numeric:tabular-nums} .hsa-bars .n{color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+  .hsa-bars .t{height:8px;border-radius:4px;background:var(--hs-free);overflow:hidden}
+  .hsa-bars .t span{display:block;height:100%;background:var(--hs-c1);border-radius:4px}
+  .hsa-free{font-size:12.5px;color:var(--slate);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .hsa-free .rc-tag{cursor:pointer;font:inherit;font-size:11.5px;font-weight:700}
+  .hsa-tasks{display:flex;flex-direction:column;gap:8px}
+  .hsa-task{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;background:var(--page);border-left:3px solid var(--hs-c1)}
+  .hsa-task.warn{border-left-color:var(--hs-rep)} .hsa-task.bad{border-left-color:var(--brand)}
+  .hsa-task b{font-size:13px;color:var(--ink);font-weight:700} .hsa-task span{font-size:12px;color:var(--slate)}
+  .hsa-task:hover{background:var(--hover-bg)} .hsa-task:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+  .hsa-tip{position:fixed;z-index:200;display:none;pointer-events:none;background:var(--ink);color:var(--surface);border-radius:8px;padding:7px 10px;font-size:12px;box-shadow:0 8px 24px rgba(0,0,0,.18);max-width:240px}
+  .hsa-tip b{display:block;font-weight:700;margin-bottom:2px} .hsa-tip span{display:block;opacity:.85;font-variant-numeric:tabular-nums}
+  @media (max-width:1100px){.hsa-grid{grid-template-columns:1fr 1fr}.hsa-avail,.hsa-mov{grid-column:1}.hsa-rev{grid-column:1/3;grid-row:1}.hsa-att{grid-column:2;grid-row:auto}.hsa-mix{grid-column:2}.hsa-fl{grid-column:1/3}}
+  @media (max-width:700px){.hsa-kpis{grid-template-columns:1fr 1fr}.hsa-grid{grid-template-columns:1fr}.hsa-grid>*{grid-column:1!important;grid-row:auto!important}.hsa-kpi b{font-size:21px}}
   /* ===== Кадрові операції ===== */
   .ho-banner{background:var(--warn-bg);color:var(--ink);border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.5;margin-bottom:16px}
   .ho-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
@@ -8050,15 +8127,18 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     if(!hs.loaded){root.innerHTML='<div class="ec-loading">Завантаження…</div>';return;}
     if(hs.missing){root.innerHTML=`<div class="ho-banner"><b>Хостел ще не підключено.</b> Виконай <code>${HS_SQL}</code> у Supabase → SQL Editor: з'являться кімнати 101–306, тарифи, роль «Комендант хостелу» і розділ «Хостел» у правах. Потім <code>hostel_import.sql</code> перенесе поточних мешканців з таблиці.</div>`;return;}
     const tab=(k,t)=>`<button type="button" class="${hs.tab===k?'on':''}" onclick="hsTab('${k}')">${t}</button>`;
-    let h=`<div class="rc-tabs"><div class="seg" role="tablist">${tab('grid','Кімнати')}${tab('people','Мешканці')}${tab('pay','Оплати')}${hsLvl()>=3?tab('set','Налаштування'):''}</div>
+    let h=`<div class="rc-tabs"><div class="seg" role="tablist">${tab('grid','Кімнати')}${tab('stat','Аналітика')}${tab('people','Мешканці')}${tab('pay','Оплати')}${hsLvl()>=3?tab('set','Налаштування'):''}</div>
       <div class="ho-filters">${hs.tab==='people'?`<input type="search" id="hsQ" placeholder="ПІБ, телефон, кімната" aria-label="Пошук мешканця" value="${orgEsc(hs.q)}" oninput="hs.q=this.value;$('hsList').innerHTML=hsPeopleTable()">`:''}
       ${hs.tab==='people'||hs.tab==='pay'?`<button class="btn" type="button" onclick="hsExport()">Excel</button>`:''}
-      ${hsLvl()>=2&&hs.tab!=='set'?`<button class="btn primary" type="button" onclick="hsNew()">+ Заселити</button>`:''}</div></div>`;
+      ${hsLvl()>=2&&hs.tab!=='set'&&hs.tab!=='stat'?`<button class="btn primary" type="button" onclick="hsNew()">+ Заселити</button>`:''}</div></div>`;
     if(hs.tab==='grid')h+=hsGridHtml();
     else if(hs.tab==='people')h+=hsPeopleHtml();
     else if(hs.tab==='pay')h+=hsPayHtml();
+    else if(hs.tab==='stat')h+=hsaHtml();
     else h+=hsSetHtml();
     root.innerHTML=h;
+    hsaWire();
+    if(hs.tab==='stat')hsaFit();
   }
   window.hsRender=hsRender;
   window.hsTab=k=>{hs.tab=k;hsRender();};
@@ -8500,6 +8580,206 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rep.length?rep:[{'Період':'—'}]),'Оплати за періоди');
     XLSX.writeFile(wb,'Хостел_'+hsToday()+'.xlsx');
   };
+
+  /* ---- Аналітика хостелу ---- */
+  const HSA_KC={employee:'var(--hs-c1)',master:'var(--hs-c2)',guest:'var(--hs-c3)'};
+  const hsaMon=['січ','лют','бер','кві','тра','чер','лип','сер','вер','жов','лис','гру'];
+  function hsaDelta(cur,prev,goodUp){
+    if(!prev&&!cur)return '<span class="hsa-d">без змін</span>';
+    if(!prev)return '<span class="hsa-d">новий показник</span>';
+    const p=Math.round((cur-prev)/prev*100);
+    const up=p>=0, good=goodUp==null?null:(up===goodUp);
+    return `<span class="hsa-d ${good==null?'':good?'ok':'bad'}">${up?'▲':'▼'} ${Math.abs(p)}%</span><span class="hsa-dl">до попередніх 30 днів</span>`;
+  }
+  // скільки ліжок зайнято на дату
+  const hsaBusyOn=d=>hs.stays.filter(s=>s.check_in<=d&&(!s.check_out||s.check_out>d)).length;
+  function hsaStats(){
+    const t=hsToday(), a30=hsAdd(t,-30), a60=hsAdd(t,-60);
+    const inR=(d,a,b)=>d&&d>a&&d<=b;
+    const ins=hs.stays.filter(s=>inR(s.check_in,a30,t)&&!/Перенесено з таблиці/.test(s.note||'')).length, insP=hs.stays.filter(s=>inR(s.check_in,a60,a30)&&!/Перенесено з таблиці/.test(s.note||'')).length;
+    // переселення не рахуємо як виїзд: є нове проживання тієї ж людини з тією ж датою
+    const realOut=s=>s.check_out&&!hs.stays.some(x=>x.id!==s.id&&hsPerson(x)===hsPerson(s)&&x.check_in===s.check_out);
+    const outs=hs.stays.filter(s=>realOut(s)&&inR(s.check_out,a30,t)).length, outsP=hs.stays.filter(s=>realOut(s)&&inR(s.check_out,a60,a30)).length;
+    const paid=hs.pays.filter(p=>inR(p.paid_on,a30,t)).reduce((x,p)=>x+(+p.amount||0),0), paidP=hs.pays.filter(p=>inR(p.paid_on,a60,a30)).reduce((x,p)=>x+(+p.amount||0),0);
+    const beds=hs.rooms.filter(r=>r.status==='active').reduce((x,r)=>x+(+r.beds||0),0);
+    const busy=hsaBusyOn(t), busyP=hsaBusyOn(a30);
+    return {ins,insP,outs,outsP,paid,paidP,beds,busy,busyP,realOut};
+  }
+  function hsaKpi(lbl,val,delta,icon){
+    return `<div class="hsa-kpi"><div class="h"><span>${lbl}</span><span class="ic" aria-hidden="true">${icon}</span></div><b>${val}</b><div class="f">${delta}</div></div>`;
+  }
+  const HSA_IC={
+    in:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5M15 12H3"/></svg>',
+    out:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg>',
+    pay:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M15 9.5c-.5-1-1.6-1.5-3-1.5-1.7 0-3 .9-3 2s1 1.7 3 2 3 .9 3 2-1.3 2-3 2c-1.4 0-2.5-.5-3-1.5M12 6v2M12 16v2"/></svg>',
+    bed:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 18V6M3 14h18v4M21 14v-2a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="11" r="2"/></svg>'
+  };
+
+  function hsaHtml(){
+    const S=hsaStats();
+    const pct=S.beds?Math.round(S.busy/S.beds*100):0, pctP=S.beds?Math.round(S.busyP/S.beds*100):0;
+    let h=`<div class="hsa-kpis">
+      ${hsaKpi('Заїзди за 30 днів',S.ins,hsaDelta(S.ins,S.insP,null),HSA_IC.in)}
+      ${hsaKpi('Виїзди за 30 днів',S.outs,hsaDelta(S.outs,S.outsP,null),HSA_IC.out)}
+      ${hsaKpi('Оплачено за 30 днів',hsMoney(S.paid)+' ₴',hsaDelta(S.paid,S.paidP,true),HSA_IC.pay)}
+      ${hsaKpi('Заповнення',pct+'%',`<span class="hsa-d ${pct>=pctP?'ok':'bad'}">${pct>=pctP?'▲':'▼'} ${Math.abs(pct-pctP)} п.п.</span><span class="hsa-dl">${S.busy} з ${S.beds} ліжок</span>`,HSA_IC.bed)}
+    </div>
+    <div class="hsa-grid">
+      <div class="card hsa-c hsa-avail">${hsaAvail()}</div>
+      <div class="card hsa-c hsa-rev">${hsaRev()}</div>
+      <div class="card hsa-c hsa-att">${hsaAttention()}</div>
+      <div class="card hsa-c hsa-mov">${hsaMoves(S)}</div>
+      <div class="card hsa-c hsa-mix">${hsaMix()}</div>
+      <div class="card hsa-c hsa-fl">${hsaFloors()}</div>
+    </div>`;
+    return h;
+  }
+
+  // ліжка: зайнято / вільно / ремонт / склад
+  function hsaAvail(){
+    let busy=0,free=0,rep=0,sto=0;
+    hs.rooms.forEach(r=>{const n=+r.beds||0,b=hsRoomStays(r).length;
+      if(r.status==='active'){busy+=Math.min(b,n);free+=Math.max(0,n-b);} else if(r.status==='repair')rep+=n; else sto+=n;});
+    const tot=busy+free+rep+sto||1;
+    const seg=[['busy','Зайнято',busy],['free','Вільно',free],['rep','На ремонті',rep],['sto','Склад',sto]];
+    return `<div class="hsa-ch"><h3>Ліжка зараз</h3><span class="sub">${busy+free} житлових із ${busy+free+rep+sto}</span></div>
+      <div class="hsa-stack" role="img" aria-label="${seg.map(s=>s[1]+' '+s[2]).join(', ')}">${seg.filter(s=>s[2]).map(([k,l,v])=>`<div class="s ${k}" style="flex:${v}" data-tip="${l}: ${v} (${Math.round(v/tot*100)}%)"></div>`).join('')}</div>
+      <div class="hsa-av">${seg.map(([k,l,v])=>`<div class="i"><span class="mk ${k}"></span><div><span>${l}</span><b>${v}</b></div></div>`).join('')}</div>`;
+  }
+
+  // оплати й нарахування по пів місяця, останні 12 періодів
+  function hsaPeriods(n){
+    const out=[];let p=hsPeriod(hsToday());
+    for(let i=0;i<n;i++){out.unshift(p);p=hsPeriod(hsAdd(p.from,-1));}
+    return out;
+  }
+  function hsaRev(Wd){
+    const P=hsaPeriods(12);
+    const pd=P.map(p=>hs.pays.filter(x=>(x.period_from||hsPerOf(x.paid_on))===p.from).reduce((a,x)=>a+(+x.amount||0),0));
+    const ch=P.map(p=>hs.charges.filter(c=>(c.manual?hsPerOf(c.period_from):c.period_from)===p.from).reduce((a,c)=>a+(+c.amount||0),0));
+    const tot=pd.reduce((a,b)=>a+b,0);
+    const head=`<div class="hsa-ch"><h3>Оплати</h3><span class="sub">останні 6 місяців, по пів місяця</span><span class="sp"></span><b class="hsa-big">${hsMoney(tot)} ₴</b></div>
+      <div class="hsa-lg"><span><i class="ln c1"></i>Оплачено</span><span><i class="ln dash"></i>Нараховано</span></div>`;
+    if(!tot&&!ch.some(Boolean))return head+`<div class="hsa-empty">Оплат і нарахувань ще немає. Графік з'явиться після першого нарахування у вкладці «Оплати».</div>`;
+    const W=Math.max(300,Wd||640),H=230,L=48,R=10,T=12,B=26,iw=W-L-R,ih=H-T-B;
+    const max=Math.max(...pd,...ch,1), step=hsaNice(max/4), top=step*4;
+    const x=i=>L+(P.length===1?iw/2:i*iw/(P.length-1)), y=v=>T+ih-(v/top)*ih;
+    const path=a=>a.map((v,i)=>`${i?'L':'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join('');
+    let g='';
+    for(let k=0;k<=4;k++){const v=step*k;g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" class="gr"/><text x="${L-8}" y="${y(v)+4}" class="ax" text-anchor="end">${hsaShort(v)}</text>`;}
+    P.forEach((p,i)=>{if(i%2===0)g+=`<text x="${x(i)}" y="${H-8}" class="ax" text-anchor="middle">${hsaMon[hsD(p.from).getMonth()]}</text>`;});
+    const area=path(pd)+`L${x(P.length-1)},${y(0)}L${x(0)},${y(0)}Z`;
+    const hits=P.map((p,i)=>`<rect class="hit" x="${x(i)-iw/(P.length-1)/2}" y="${T}" width="${iw/(P.length-1)}" height="${ih}" data-i="${i}" data-tip="${p.label}|Оплачено: ${hsMoney(pd[i])} ₴|Нараховано: ${hsMoney(ch[i])} ₴"/>`).join('');
+    return head+`<div class="hsa-plot"><svg viewBox="0 0 ${W} ${H}" class="hsa-svg" role="img" aria-label="Оплачено й нараховано по періодах">
+      <defs><linearGradient id="hsaGr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--hs-c1)" stop-opacity=".22"/><stop offset="1" stop-color="var(--hs-c1)" stop-opacity="0"/></linearGradient></defs>
+      ${g}<path d="${area}" fill="url(#hsaGr)"/><path d="${path(ch)}" class="l dash"/><path d="${path(pd)}" class="l c1"/>
+      <line class="xh" x1="0" x2="0" y1="${T}" y2="${T+ih}" style="display:none"/><circle class="dot" r="5" style="display:none"/>
+      ${hits}</svg></div>`;
+  }
+  const hsaNice=v=>{if(v<=0)return 1;const e=Math.pow(10,Math.floor(Math.log10(v))),f=v/e;return (f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*e;};
+  const hsaShort=v=>v>=1e6?(v/1e6).toLocaleString('uk-UA',{maximumFractionDigits:1})+' млн':v>=1e3?(v/1e3).toLocaleString('uk-UA',{maximumFractionDigits:1})+' тис':String(v);
+
+  // заїзди й виїзди по місяцях
+  function hsaMoves(S,Wd){
+    const M=[];const d=hsD(hsToday());for(let i=5;i>=0;i--){const m=new Date(d.getFullYear(),d.getMonth()-i,1);M.push(hsISO(m).slice(0,7));}
+    const imp=s=>/Перенесено з таблиці/.test(s.note||'');
+    const moved=s=>hs.stays.some(x=>x.id!==s.id&&hsPerson(x)===hsPerson(s)&&x.check_out===s.check_in);
+    const ins=M.map(m=>hs.stays.filter(s=>!imp(s)&&!moved(s)&&String(s.check_in).startsWith(m)).length);
+    const outs=M.map(m=>hs.stays.filter(s=>S.realOut(s)&&String(s.check_out).startsWith(m)).length);
+    const head=`<div class="hsa-ch"><h3>Заїзди й виїзди</h3><span class="sub">по місяцях</span></div><div class="hsa-lg"><span><i class="sq c1"></i>Заїзди</span><span><i class="sq c2"></i>Виїзди</span></div>`;
+    if(!ins.some(Boolean)&&!outs.some(Boolean))return head+`<div class="hsa-empty">Ще немає заселень і виселень, зроблених у системі. Перенесені з таблиці мешканці тут не рахуються.</div>`;
+    const W=Math.max(260,Wd||420),H=210,L=28,R=6,T=10,B=26,iw=W-L-R,ih=H-T-B, top=Math.max(4,Math.ceil(Math.max(...ins,...outs)/4)*4);
+    const y=v=>T+ih-v/top*ih, gw=iw/M.length, bw=Math.min(16,(gw-14)/2);
+    let g='';for(let k=0;k<=4;k++){const v=top/4*k;g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" class="gr"/><text x="${L-6}" y="${y(v)+4}" class="ax" text-anchor="end">${v}</text>`;}
+    const bar=(cx,v,c,tip)=>{const h=Math.max(0,y(0)-y(v));if(!v)return '';const r=Math.min(4,h);return `<path class="bar ${c}" d="M${cx},${y(0)}V${y(v)+r}q0,-${r} ${r},-${r}h${bw-2*r}q${r},0 ${r},${r}V${y(0)}Z" data-tip="${tip}"/>`;};
+    M.forEach((m,i)=>{const c=L+gw*i+gw/2, lab=hsaMon[+m.slice(5)-1]+' '+m.slice(2,4);
+      g+=bar(c-bw-1,ins[i],'c1',`${lab}|Заїзди: ${ins[i]}`)+bar(c+1,outs[i],'c2',`${lab}|Виїзди: ${outs[i]}`)+`<text x="${c}" y="${H-8}" class="ax" text-anchor="middle">${hsaMon[+m.slice(5)-1]}</text>`;});
+    return head+`<div class="hsa-plot"><svg viewBox="0 0 ${W} ${H}" class="hsa-svg" role="img" aria-label="Заїзди й виїзди по місяцях">${g}</svg></div>`;
+  }
+
+  // мешканці зараз за типом — кільце
+  function hsaMix(){
+    const live=hs.stays.filter(hsLive);
+    const K=Object.keys(HS_KIND).map(k=>[k,HS_KIND[k][0],live.filter(s=>s.kind===k).length]);
+    const tot=live.length;
+    const head=`<div class="hsa-ch"><h3>Хто живе</h3><span class="sub">${tot} ${ecPl(tot,'людина','людини','людей')}</span></div>`;
+    if(!tot)return head+`<div class="hsa-empty">Зараз ніхто не живе</div>`;
+    const R=62,r=40,cx=80,cy=80;let a0=-Math.PI/2,arcs='';
+    const nz=K.filter(k=>k[2]);
+    nz.forEach(([k,l,v])=>{
+      const gap=nz.length>1?0.03:0, a1=a0+v/tot*Math.PI*2;
+      const s=a0+gap/2,e=Math.max(s+0.001,a1-gap/2), big=e-s>Math.PI?1:0;
+      const p=(rad,ang)=>`${(cx+rad*Math.cos(ang)).toFixed(2)},${(cy+rad*Math.sin(ang)).toFixed(2)}`;
+      arcs+=nz.length===1?`<circle cx="${cx}" cy="${cy}" r="${(R+r)/2}" fill="none" stroke="${HSA_KC[k]}" stroke-width="${R-r}" data-tip="${l}: ${v}"/>`
+        :`<path d="M${p(R,s)}A${R},${R} 0 ${big} 1 ${p(R,e)}L${p(r,e)}A${r},${r} 0 ${big} 0 ${p(r,s)}Z" fill="${HSA_KC[k]}" data-tip="${l}: ${v} (${Math.round(v/tot*100)}%)"/>`;
+      a0=a1;
+    });
+    return head+`<div class="hsa-donut"><svg viewBox="0 0 160 160" class="hsa-svg" role="img" aria-label="${K.map(k=>k[1]+' '+k[2]).join(', ')}">${arcs}<text x="80" y="78" text-anchor="middle" class="dn-v">${tot}</text><text x="80" y="96" text-anchor="middle" class="ax">живуть</text></svg>
+      <div class="hsa-leg">${K.map(([k,l,v])=>`<div><i class="sq" style="background:${HSA_KC[k]}"></i><b>${tot?Math.round(v/tot*100):0}%</b><span>${l}</span><em>${v}</em></div>`).join('')}</div></div>`;
+  }
+
+  // заповнення по поверхах
+  function hsaFloors(){
+    const F=[...new Set(hs.rooms.map(r=>r.floor))].sort((a,b)=>a-b).map(f=>{
+      const rs=hs.rooms.filter(r=>r.floor===f&&r.status==='active');
+      const beds=rs.reduce((a,r)=>a+(+r.beds||0),0), busy=rs.reduce((a,r)=>a+Math.min(hsRoomStays(r).length,+r.beds||0),0);
+      return {f,beds,busy,p:beds?Math.round(busy/beds*100):0};
+    });
+    const best=hs.rooms.filter(r=>r.status==='active'&&hsFreeBeds(r).length).sort((a,b)=>hsFreeBeds(b).length-hsFreeBeds(a).length).slice(0,3);
+    return `<div class="hsa-ch"><h3>Заповнення по поверхах</h3></div>
+      <div class="hsa-bars">${F.map(x=>`<div class="r" data-tip="${x.f} поверх|Зайнято ${x.busy} з ${x.beds} ліжок"><span class="l">${x.f} поверх</span><span class="t"><span style="width:${x.p}%"></span></span><b>${x.p}%</b><span class="n">${x.busy}/${x.beds}</span></div>`).join('')}</div>
+      ${best.length?`<div class="hsa-free"><span>Найбільше вільних місць:</span> ${best.map(r=>`<button type="button" class="rc-tag" onclick="hsNew(${r.id})">${orgEsc(r.no)} · ${hsFreeBeds(r).length}</button>`).join(' ')}</div>`:''}`;
+  }
+
+  // що потребує уваги
+  function hsaAttention(){
+    const items=[];
+    const per=hsPeriod(hsToday()), prev=hsPeriod(hsAdd(per.from,-1));
+    if(hs.stays.some(s=>s.check_in<=prev.to&&(!s.check_out||s.check_out>prev.from))&&!hs.charges.some(c=>!c.manual&&c.period_from===prev.from))
+      items.push({w:'warn',t:`Не нараховано за ${prev.label}`,d:'Відкрийте «Оплати» і натисніть «Нарахувати за період»',a:`hs.per='${prev.from}';hsTab('pay')`});
+    const debt={};hs.stays.forEach(s=>{const b=hsBal(s),k=hsPerson(s);if(b>0&&(!debt[k]||hsLive(s)))debt[k]={s,b};});
+    Object.values(debt).sort((a,b)=>b.b-a.b).slice(0,4).forEach(({s,b})=>items.push({w:hsLive(s)?'':'bad',t:`${s.full_name}: борг ${hsMoney(b)} ₴`,d:hsLive(s)?`кімната ${(hsRoom(s.room_id)||{}).no||'—'}`:`виїхав(ла) ${empFmtDate(s.check_out)}, борг не закрито`,a:`hsOpen(${s.id})`}));
+    const soon=hs.stays.filter(s=>s.check_out&&s.check_out>hsToday()&&s.check_out<=hsAdd(hsToday(),7));
+    soon.forEach(s=>items.push({w:'',t:`${s.full_name} виїжджає ${empFmtDate(s.check_out)}`,d:`кімната ${(hsRoom(s.room_id)||{}).no||'—'}`,a:`hsOpen(${s.id})`}));
+    const longG=hs.stays.filter(s=>hsLive(s)&&s.kind!=='employee'&&hsDays(s.check_in,hsToday())>30);
+    longG.slice(0,3).forEach(s=>items.push({w:'',t:`${HS_KIND[s.kind][0]} ${s.full_name} живе ${hsDays(s.check_in,hsToday())} днів`,d:'перевірте, чи це ще актуально',a:`hsOpen(${s.id})`}));
+    const noEmp=hs.stays.filter(s=>hsLive(s)&&s.kind==='employee'&&!s.employee_id).length;
+    if(noEmp)items.push({w:'',t:`${noEmp} ${ecPl(noEmp,'працівник','працівники','працівників')} не прив'язані до довідника`,d:'відкрийте картку і виберіть співробітника',a:`hs.st='live';hs.kind='employee';hsTab('people')`});
+    return `<div class="hsa-ch"><h3>Потребує уваги</h3><span class="sp"></span>${items.length?`<span class="rc-tag warn">${items.length}</span>`:''}</div>
+      ${items.length?`<div class="hsa-tasks">${items.slice(0,8).map(i=>`<button type="button" class="hsa-task ${i.w}" onclick="${i.a}"><b>${orgEsc(i.t)}</b><span>${orgEsc(i.d)}</span></button>`).join('')}</div>`:'<div class="hsa-empty">Усе гаразд: боргів і незакритих періодів немає.</div>'}`;
+  }
+
+  // перемалювати графіки під фактичну ширину картки, щоб підписи були читабельні
+  function hsaFit(){
+    const S=hsaStats();
+    [['.hsa-rev',w=>hsaRev(w)],['.hsa-mov',w=>hsaMoves(S,w)]].forEach(([sel,fn])=>{
+      const c=document.querySelector('#hsRoot '+sel);if(!c)return;
+      const w=Math.round(c.clientWidth-32);if(w>0)c.innerHTML=fn(w);
+    });
+  }
+  let hsaRT=null;
+  window.addEventListener('resize',()=>{clearTimeout(hsaRT);hsaRT=setTimeout(()=>{if(hs.tab==='stat'&&$('view-hostel')&&$('view-hostel').classList.contains('active'))hsaFit();},150);});
+
+  // підказки й перехрестя на графіках
+  function hsaWire(){
+    const root=$('hsRoot');if(!root||root.dataset.hsaWired)return;root.dataset.hsaWired='1';
+    let tip=$('hsaTip');if(!tip){tip=document.createElement('div');tip.id='hsaTip';tip.className='hsa-tip';tip.setAttribute('role','tooltip');document.body.appendChild(tip);}
+    const hide=()=>{tip.style.display='none';root.querySelectorAll('.hsa-svg .xh,.hsa-svg .dot').forEach(e=>e.style.display='none');root.querySelectorAll('.hsa-on').forEach(e=>e.classList.remove('hsa-on'));};
+    root.addEventListener('mousemove',e=>{
+      const el=e.target.closest('[data-tip]');if(!el||!root.contains(el)||!el.closest('.hsa-grid')){hide();return;}
+      const [h,...rest]=el.dataset.tip.split('|');
+      tip.innerHTML=`<b>${orgEsc(h)}</b>${rest.map(x=>`<span>${orgEsc(x)}</span>`).join('')}`;tip.style.display='block';
+      const w=tip.offsetWidth,hh=tip.offsetHeight;let lx=e.clientX+14,ly=e.clientY-hh-12;if(lx+w>innerWidth-8)lx=e.clientX-w-14;if(ly<8)ly=e.clientY+16;
+      tip.style.left=lx+'px';tip.style.top=ly+'px';
+      root.querySelectorAll('.hsa-on').forEach(x=>x!==el&&x.classList.remove('hsa-on'));el.classList.add('hsa-on');
+      if(el.classList.contains('hit')){
+        const svg=el.ownerSVGElement, xh=svg.querySelector('.xh'), dot=svg.querySelector('.dot'), cx=+el.getAttribute('x')+(+el.getAttribute('width'))/2;
+        const pts=svg.querySelector('.l.c1').getAttribute('d').match(/[ML][\d.]+,[\d.]+/g), pt=pts[+el.dataset.i].slice(1).split(',');
+        xh.setAttribute('x1',cx);xh.setAttribute('x2',cx);xh.style.display='';dot.setAttribute('cx',pt[0]);dot.setAttribute('cy',pt[1]);dot.style.display='';
+      }
+    });
+    root.addEventListener('mouseleave',hide);
+  }
 
   /* --- Вибір співробітника: пошук з підказками, аватар і чип замість звичайного списку ---
      Працює поверх <select class="emp-pick">: сам select лишається джерелом значення,
