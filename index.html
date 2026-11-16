@@ -1492,6 +1492,74 @@
   }
   #ecModal{padding:20px}
   @media (max-width:900px){#ecModal{padding:12px}}
+  /* ===== Хостел ===== */
+  #hsModal,#hsAsk{padding:20px} #hsAsk{z-index:120}
+  .hs-fl{margin-bottom:14px}
+  .hs-floor{margin-bottom:20px}
+  .hs-floor h3{font-size:13px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--slate);margin:0 0 10px}
+  .hs-rooms{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+  .hs-room{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow);min-width:0}
+  .hs-room.off{opacity:.6;box-shadow:none}
+  .hs-rh{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .hs-rh b{font-size:17px;font-weight:800;color:var(--ink)}
+  .hs-rh .pl{font-size:11.5px;color:var(--muted)}
+  .hs-rh .sp{flex:1}
+  .hs-rh .cnt{font-size:12.5px;font-weight:700;color:var(--slate);font-variant-numeric:tabular-nums}
+  .hs-rn{font-size:12px;color:var(--muted);margin-top:-4px}
+  .hs-beds{display:flex;flex-direction:column;gap:4px}
+  .hs-bed{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:9px;min-height:40px;font-size:13px;width:100%}
+  button.hs-bed{cursor:pointer}
+  .hs-bed .no{flex:none;width:20px;height:20px;border-radius:6px;display:grid;place-items:center;font-size:11px;font-weight:800;background:var(--page);color:var(--slate)}
+  .hs-bed .who{flex:1;min-width:0;display:flex;flex-direction:column}
+  .hs-bed .who b{font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hs-bed .who span{font-size:11.5px;color:var(--slate)}
+  .hs-bed.busy{background:var(--hover-bg);border:1px solid var(--line)}
+  .hs-bed.busy:hover,.hs-bed.busy:focus-visible{border-color:var(--brand-tint-2)}
+  .hs-bed.busy .no{background:var(--ink);color:var(--surface)}
+  .hs-bed.over{border-style:dashed}
+  .hs-bed.free{border:1px dashed var(--line);color:var(--muted)}
+  .hs-bed.free .who span{color:var(--muted)}
+  .hs-bed.free .add{font-size:12px;font-weight:700;color:var(--brand);opacity:0}
+  button.hs-bed.free:hover .add,button.hs-bed.free:focus-visible .add{opacity:1}
+  button.hs-bed.free:hover{border-color:var(--brand-tint-2);background:var(--brand-tint)}
+  .hs-bed:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+  .hs-debt{flex:none;font-size:11px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--warn-bg);color:var(--warn);white-space:nowrap}
+  .hs-debt.plus{background:var(--ok-bg);color:var(--ok)}
+  .hs-per{display:flex;align-items:center;gap:8px}
+  .hs-per b{font-size:14px;color:var(--ink);min-width:170px;text-align:center}
+  .hs-per .ico-btn{font-size:18px;font-weight:700;line-height:1}
+  .hs-hint{font-size:12.5px;color:var(--slate)}
+  .hs-pt .r{text-align:right}
+  .hs-pt tr.hs-tot td{font-weight:800;background:var(--page);cursor:default}
+  .hs-calc{color:var(--muted);font-style:italic}
+  .btn.hs-sm{padding:5px 10px;font-size:12px}
+  .hs-kind{align-self:flex-start}
+  .hs-tv{font-size:13.5px;font-weight:700;color:var(--ink);padding:9px 0;display:flex;flex-direction:column}
+  .hs-tv span{font-size:11.5px;font-weight:600;color:var(--slate)}
+  .hs-bal{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .hs-bal div{background:var(--page);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column}
+  .hs-bal span{font-size:11.5px;color:var(--slate);font-weight:600}
+  .hs-bal b{font-size:16px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+  .hs-bal .warn{background:var(--warn-bg)} .hs-bal .warn b{color:var(--warn)}
+  .hs-bal .ok{background:var(--ok-bg)} .hs-bal .ok b{color:var(--ok)}
+  .hs-led{display:flex;flex-direction:column;max-height:300px;overflow-y:auto;scrollbar-width:thin}
+  .hs-li{display:flex;align-items:center;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line);font-size:13px}
+  .hs-li .d{flex:none;width:78px;color:var(--slate);font-variant-numeric:tabular-nums;font-size:12px}
+  .hs-li .w{flex:1;min-width:0;color:var(--ink)}
+  .hs-li .w span{display:block;font-size:11.5px;color:var(--muted)}
+  .hs-li .a{font-weight:700;font-variant-numeric:tabular-nums;color:var(--warn)}
+  .hs-li.pay .a{color:var(--ok)}
+  .hs-x{all:unset;cursor:pointer;width:24px;height:24px;display:grid;place-items:center;border-radius:6px;color:var(--muted);font-size:16px}
+  .hs-x:hover{color:var(--brand);background:var(--brand-tint)}
+  .hs-x:focus-visible{outline:2px solid var(--brand)}
+  .hs-set td{padding:6px 8px}
+  .hs-set tbody tr{cursor:default}
+  .hs-in{font:inherit;font-size:13px;border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--card);color:var(--ink);min-width:0;width:100%;box-sizing:border-box;min-height:34px}
+  .hs-in.w3{width:64px} .hs-in.w5{width:80px} .hs-in.w6{width:100px}
+  .hs-in:focus{border-color:var(--brand);outline:none;box-shadow:0 0 0 3px var(--brand-tint)}
+  .hs-act{white-space:nowrap;display:flex;gap:4px;align-items:center}
+  #hsRoot .rc-tabs .seg{max-width:100%;flex-wrap:wrap}
+  @media (max-width:600px){#hsModal,#hsAsk{padding:8px}.hs-rooms{grid-template-columns:1fr}.hs-per b{min-width:0}.hs-bal b{font-size:14px}}
   /* ===== Кадрові операції ===== */
   .ho-banner{background:var(--warn-bg);color:var(--ink);border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.5;margin-bottom:16px}
   .ho-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
@@ -1900,6 +1968,11 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
 <button type="button" class="nav-item" data-nav="hrboard" data-view="budget" data-mode="hrboard" data-flag="pay" data-label="HR-board" draggable="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="7"/><rect x="12" y="6" width="3" height="11"/><rect x="17" y="12" width="3" height="5"/></svg>
         <span class="nav-label-txt">HR-board</span>
+        <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
+      </button>
+<button type="button" class="nav-item" data-nav="hostel" data-view="hostel" data-label="Хостел" draggable="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 20V9l10-6 10 6v11"/><path d="M6 20v-6h12v6"/><path d="M6 17h12"/><path d="M8 14v-1.5a1.5 1.5 0 0 1 1.5-1.5h1A1.5 1.5 0 0 1 12 12.5V14"/></svg>
+        <span class="nav-label-txt">Хостел</span>
         <svg class="nav-grip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1" fill="currentColor"/><circle cx="15" cy="5" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="19" r="1" fill="currentColor"/><circle cx="15" cy="19" r="1" fill="currentColor"/></svg>
       </button>
 <button type="button" class="nav-item" data-nav="dev" data-view="dev" data-label="Розвиток персоналу" draggable="true">
@@ -2593,6 +2666,16 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         <div id="rcRoot"><div class="ec-loading">Завантаження…</div></div>
       </section>
 
+      <section class="view" id="view-hostel">
+        <div class="page-head">
+          <div>
+            <h2><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 20V9l10-6 10 6v11"/><path d="M6 20v-6h12v6"/><path d="M6 17h12"/><path d="M8 14v-1.5a1.5 1.5 0 0 1 1.5-1.5h1A1.5 1.5 0 0 1 12 12.5V14"/></svg></span>Хостел</h2>
+            <p>Кімнати й ліжка, заселення та виселення, нарахування за пів місяця, оплати й борги.</p>
+          </div>
+        </div>
+        <div id="hsRoot"><div class="ec-loading">Завантаження…</div></div>
+      </section>
+
       <!-- модалка підрозділу -->
       <div class="modal-scrim" id="orgModal">
         <div class="modal">
@@ -2666,6 +2749,13 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       </div>
       <div class="modal-scrim" id="rcAsk" onclick="if(event.target===this)rcAskClose()">
         <div class="rc-modal sm" role="dialog" aria-modal="true" aria-labelledby="rcAHead"><div class="rc-mhead" id="rcAHead"></div><div class="rc-mbody" id="rcABody"></div><div class="rc-mfoot" id="rcAFoot"></div></div>
+      </div>
+
+      <div class="modal-scrim" id="hsModal" onclick="if(event.target===this)hsClose()">
+        <div class="rc-modal" role="dialog" aria-modal="true" aria-labelledby="hsMHead"><div class="rc-mhead" id="hsMHead"></div><div class="rc-mbody" id="hsMBody"></div><div class="rc-mfoot" id="hsMFoot"></div></div>
+      </div>
+      <div class="modal-scrim" id="hsAsk" onclick="if(event.target===this)hsAskClose()">
+        <div class="rc-modal sm" role="dialog" aria-modal="true" aria-labelledby="hsAHead"><div class="rc-mhead" id="hsAHead"></div><div class="rc-mbody" id="hsABody"></div><div class="rc-mfoot" id="hsAFoot"></div></div>
       </div>
 
       <div class="modal-scrim" id="empModal" onclick="if(event.target===this)empCloseModal()">
@@ -3997,6 +4087,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     company:'Структура організації',
     hr_ops:'Управління персоналом',
     recruit:'Управління персоналом',
+    hostel:'Управління персоналом',
     settings:'Налаштування системи',
     dev:'Управління персоналом',
     budget:'Фінансове планування',
@@ -4045,6 +4136,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       if(id==='bot' && window.botLoad) { setTimeout(botLoad, 100); }
       if(id==='hr_ops' && window.hoLoad) { setTimeout(hoLoad, 50); }
       if(id==='recruit' && window.rcLoad) { setTimeout(rcLoad, 50); }
+      if(id==='hostel' && window.hsLoad) { setTimeout(hsLoad, 50); }
       if(id==='dash' && window.dashLoad) { setTimeout(dashLoad, 100); }
       navSync(true);
       closeNav();
@@ -7869,6 +7961,546 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     rcClose();await rcLoad();toast('Видалено','success');
   };
 
+  /* --- Хостел: кімнати й ліжка, проживання, нарахування за пів місяця, оплати й борги ---
+     Таблиці hs_* (hostel.sql). Тариф: індивідуальна ставка мешканця, інакше найконкретніше
+     правило з hs_tariffs (кімната + тип → кімната → тип → загальне). Борг рахується по людині
+     (усі її проживання разом): нараховано − оплачено. */
+  const HS_SQL='hostel.sql';
+  const HS_KIND={employee:['Працівник',''],master:['Майстер','info'],guest:['Гість','warn']};
+  const HS_UNIT={half:'за пів місяця',month:'за місяць',day:'за добу'};
+  const HS_METHOD={cash:'Готівка',card:'Картка',salary:'Утримання з з/п'};
+  const HS_RST={active:['',''],repair:['На ремонті','warn'],storage:['Склад','off']};
+  const HS_GEN={any:'',m:'Чоловіча',f:'Жіноча'};
+  const HS_MON=['січня','лютого','березня','квітня','травня','червня','липня','серпня','вересня','жовтня','листопада','грудня'];
+  let hs={loaded:false,missing:false,rooms:[],tariffs:[],stays:[],charges:[],pays:[],tab:'grid',floor:'all',q:'',st:'live',kind:'all',per:null,busy:false};
+  let hsF=null, hsAskCb=null;
+  const hsLvl=()=>accLevel('hostel');
+  const hsMoney=v=>Math.round(+v||0).toLocaleString('uk-UA');
+  const hsISO=d=>{const p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;};
+  const hsToday=()=>hsISO(new Date());
+  const hsD=s=>{const [y,m,d]=String(s).slice(0,10).split('-').map(Number);return new Date(y,m-1,d);};
+  const hsAdd=(s,n)=>{const d=hsD(s);d.setDate(d.getDate()+n);return hsISO(d);};
+  const hsDays=(a,b)=>Math.round((hsD(b)-hsD(a))/864e5);          // b − a у днях
+  const hsRoom=id=>hs.rooms.find(r=>r.id===id);
+  const hsStay=id=>hs.stays.find(s=>s.id===id);
+  const hsLive=s=>!s.check_out||s.check_out>hsToday();
+  const hsKindTag=k=>{const x=HS_KIND[k]||HS_KIND.employee;return `<span class="rc-tag ${x[1]}">${x[0]}</span>`;};
+  const hsPerson=s=>s.employee_id?'e'+s.employee_id:'n'+String(s.full_name||'').trim().toLowerCase();
+
+  // період: 1–15 або 16–кінець місяця
+  function hsPeriod(iso){
+    const d=hsD(iso||hsToday()),y=d.getFullYear(),m=d.getMonth();
+    const last=new Date(y,m+1,0).getDate();
+    const first=d.getDate()<=15;
+    const from=hsISO(new Date(y,m,first?1:16)),to=hsISO(new Date(y,m,first?15:last));
+    return {from,to,days:first?15:last-15,mdays:last,label:`${first?'1–15':'16–'+last} ${HS_MON[m]} ${y}`,short:`${first?'1-15':'16-'+last}.${String(m+1).padStart(2,'0')}.${String(y).slice(2)}`};
+  }
+  const hsPerOf=iso=>hsPeriod(iso).from;
+
+  // тариф для проживання на дату
+  function hsTariff(s,onDate){
+    if(s.rate!=null&&s.rate!=='')return {name:'Індивідуальна ставка',amount:+s.rate,unit:s.rate_unit||'half',own:true};
+    const d=onDate||hsToday();
+    const ok=hs.tariffs.filter(t=>t.active!==false&&(!t.kind||t.kind===s.kind)&&(!t.room_id||t.room_id===s.room_id)&&(!t.valid_from||t.valid_from<=d));
+    ok.sort((a,b)=>((b.room_id?2:0)+(b.kind?1:0))-((a.room_id?2:0)+(a.kind?1:0))||String(b.valid_from||'').localeCompare(String(a.valid_from||'')));
+    return ok[0]?{name:ok[0].name,amount:+ok[0].amount,unit:ok[0].unit,id:ok[0].id}:null;
+  }
+  const hsTariffTxt=t=>t?`${hsMoney(t.amount)} ₴ ${HS_UNIT[t.unit]||''}`:'немає тарифу';
+
+  // скільки днів людина жила в періоді й скільки це коштує (день виїзду не рахується)
+  function hsCalc(s,per){
+    const a=s.check_in>per.from?s.check_in:per.from;
+    const endEx=s.check_out?(s.check_out<=hsAdd(per.to,1)?s.check_out:hsAdd(per.to,1)):hsAdd(per.to,1);
+    const days=Math.max(0,hsDays(a,endEx));
+    if(!days)return {days:0,amount:0,t:null};
+    const t=hsTariff(s,per.from);
+    if(!t)return {days,amount:0,t:null};
+    const amount=t.unit==='day'?t.amount*days:t.unit==='month'?t.amount*days/per.mdays:t.amount*days/per.days;
+    return {days,amount:Math.round(amount),t};
+  }
+
+  function hsSums(){
+    const by={};
+    const add=(s,k,v)=>{const p=hsPerson(s);(by[p]=by[p]||{ch:0,pd:0});by[p][k]+=+v||0;};
+    hs.charges.forEach(c=>{const s=hsStay(c.stay_id);if(s)add(s,'ch',c.amount);});
+    hs.pays.forEach(p=>{const s=hsStay(p.stay_id);if(s)add(s,'pd',p.amount);});
+    hs.sum=by;
+  }
+  const hsBal=s=>{const x=hs.sum&&hs.sum[hsPerson(s)];return x?x.ch-x.pd:0;};
+  const hsDebtTag=s=>{const b=hsBal(s);return b>0?`<span class="hs-debt">борг ${hsMoney(b)} ₴</span>`:b<0?`<span class="hs-debt plus">аванс ${hsMoney(-b)} ₴</span>`:'';};
+
+  async function hsLoad(){
+    const [r,t,s,c,p]=await Promise.all([
+      db.from('hs_rooms').select('*').order('sort').order('no'),
+      db.from('hs_tariffs').select('*').order('id'),
+      db.from('hs_stays').select('*').order('check_in',{ascending:false}).limit(10000),
+      db.from('hs_charges').select('*').limit(50000),
+      db.from('hs_payments').select('*').order('paid_on',{ascending:false}).limit(50000)
+    ]);
+    hs.missing=hoIsMissing(r.error);
+    if(r.error&&!hs.missing)toast('Хостел: '+r.error.message,'error');
+    hs.rooms=r.data||[];hs.tariffs=t.data||[];hs.stays=s.data||[];hs.charges=c.data||[];hs.pays=p.data||[];
+    if(!hs.per)hs.per=hsPerOf(hsToday());
+    hsSums();hs.loaded=true;hsRender();
+  }
+  window.hsLoad=hsLoad;
+
+  function hsRender(){
+    const root=$('hsRoot');if(!root)return;
+    if(!hs.loaded){root.innerHTML='<div class="ec-loading">Завантаження…</div>';return;}
+    if(hs.missing){root.innerHTML=`<div class="ho-banner"><b>Хостел ще не підключено.</b> Виконай <code>${HS_SQL}</code> у Supabase → SQL Editor: з'являться кімнати 101–306, тарифи, роль «Комендант хостелу» і розділ «Хостел» у правах. Потім <code>hostel_import.sql</code> перенесе поточних мешканців з таблиці.</div>`;return;}
+    const tab=(k,t)=>`<button type="button" class="${hs.tab===k?'on':''}" onclick="hsTab('${k}')">${t}</button>`;
+    let h=`<div class="rc-tabs"><div class="seg" role="tablist">${tab('grid','Кімнати')}${tab('people','Мешканці')}${tab('pay','Оплати')}${hsLvl()>=3?tab('set','Налаштування'):''}</div>
+      <div class="ho-filters">${hs.tab==='people'?`<input type="search" id="hsQ" placeholder="ПІБ, телефон, кімната" aria-label="Пошук мешканця" value="${orgEsc(hs.q)}" oninput="hs.q=this.value;$('hsList').innerHTML=hsPeopleTable()">`:''}
+      ${hs.tab==='people'||hs.tab==='pay'?`<button class="btn" type="button" onclick="hsExport()">Excel</button>`:''}
+      ${hsLvl()>=2&&hs.tab!=='set'?`<button class="btn primary" type="button" onclick="hsNew()">+ Заселити</button>`:''}</div></div>`;
+    if(hs.tab==='grid')h+=hsGridHtml();
+    else if(hs.tab==='people')h+=hsPeopleHtml();
+    else if(hs.tab==='pay')h+=hsPayHtml();
+    else h+=hsSetHtml();
+    root.innerHTML=h;
+  }
+  window.hsRender=hsRender;
+  window.hsTab=k=>{hs.tab=k;hsRender();};
+
+  /* ---- Кімнати (шахматка) ---- */
+  function hsGridHtml(){
+    const act=hs.rooms.filter(r=>r.status==='active');
+    const beds=act.reduce((a,r)=>a+(+r.beds||0),0);
+    const live=hs.stays.filter(hsLive);
+    const busy=live.filter(s=>{const r=hsRoom(s.room_id);return r&&r.status==='active';}).length;
+    const debt=Object.values(hs.sum||{}).reduce((a,x)=>a+Math.max(0,x.ch-x.pd),0);
+    const debtors=Object.values(hs.sum||{}).filter(x=>x.ch-x.pd>0).length;
+    let h=`<div class="ho-kpis">
+      <button type="button" class="ho-kpi" onclick="hs.floor='all';hsRender()"><span>Місць</span><b>${beds}</b><span>${act.length} ${ecPl(act.length,'кімната','кімнати','кімнат')}</span></button>
+      <button type="button" class="ho-kpi" onclick="hs.tab='people';hs.st='live';hsRender()"><span>Живуть</span><b>${live.length}</b><span>${beds?Math.round(busy/beds*100):0}% заповнення</span></button>
+      <button type="button" class="ho-kpi" onclick="hs.floor='free';hsRender()"><span>Вільно</span><b class="ok">${Math.max(0,beds-busy)}</b><span>ліжок зараз</span></button>
+      <button type="button" class="ho-kpi" onclick="hs.tab='people';hs.st='debt';hsRender()"><span>Борг</span><b class="${debt?'warn':''}">${hsMoney(debt)} ₴</b><span>${debtors} ${ecPl(debtors,'людина','людини','людей')}</span></button></div>`;
+    const floors=[...new Set(hs.rooms.map(r=>r.floor))].sort((a,b)=>a-b);
+    const F=[['all','Усі поверхи']].concat(floors.map(f=>[String(f),f+' поверх'])).concat([['free','Є вільні місця']]);
+    h+=`<div class="ho-chips hs-fl" role="group" aria-label="Поверх">${F.map(([k,t])=>`<button type="button" class="ho-chip${hs.floor===k?' on':''}" aria-pressed="${hs.floor===k}" onclick="hs.floor='${k}';hsRender()">${t}</button>`).join('')}</div>`;
+    if(!hs.rooms.length)return h+`<div class="card ec-empty" style="padding:28px;text-align:center">Кімнат ще немає. Додайте їх у вкладці «Налаштування».</div>`;
+    floors.filter(f=>hs.floor==='all'||hs.floor==='free'||String(f)===hs.floor).forEach(f=>{
+      let rooms=hs.rooms.filter(r=>r.floor===f);
+      if(hs.floor==='free')rooms=rooms.filter(r=>r.status==='active'&&hsFreeBeds(r).length);
+      if(!rooms.length)return;
+      h+=`<div class="hs-floor"><h3>${f} поверх</h3><div class="hs-rooms">${rooms.map(hsRoomCard).join('')}</div></div>`;
+    });
+    return h;
+  }
+  const hsRoomStays=r=>hs.stays.filter(s=>s.room_id===r.id&&hsLive(s));
+  const hsFreeBeds=r=>{const t=new Set(hsRoomStays(r).map(s=>s.bed_no));const out=[];for(let i=1;i<=(+r.beds||0);i++)if(!t.has(i))out.push(i);return out;};
+  function hsRoomCard(r){
+    const st=hsRoomStays(r), n=Math.max(+r.beds||0,...st.map(s=>s.bed_no),0);
+    const rs=HS_RST[r.status]||HS_RST.active;
+    let beds='';
+    for(let i=1;i<=n;i++){
+      const s=st.find(x=>x.bed_no===i);
+      if(s)beds+=`<button type="button" class="hs-bed busy${i>(+r.beds||0)?' over':''}" onclick="hsOpen(${s.id})"><span class="no">${i}</span><span class="who"><b>${orgEsc(s.full_name)}</b><span>${s.kind!=='employee'?HS_KIND[s.kind][0]+' · ':''}з ${empFmtDate(s.check_in)}${s.check_out?' · виїзд '+empFmtDate(s.check_out):''}</span></span>${hsDebtTag(s)}</button>`;
+      else beds+=r.status==='active'&&hsLvl()>=2?`<button type="button" class="hs-bed free" onclick="hsNew(${r.id},${i})"><span class="no">${i}</span><span class="who"><span>вільно</span></span><span class="add">+ Заселити</span></button>`
+        :`<div class="hs-bed free"><span class="no">${i}</span><span class="who"><span>${r.status==='active'?'вільно':'—'}</span></span></div>`;
+    }
+    return `<div class="hs-room${r.status!=='active'?' off':''}"><div class="hs-rh"><b>${orgEsc(r.no)}</b>${r.plan_no?`<span class="pl">на плані ${orgEsc(r.plan_no)}</span>`:''}${HS_GEN[r.gender]?`<span class="rc-tag">${HS_GEN[r.gender]}</span>`:''}${rs[0]?`<span class="rc-tag ${rs[1]}">${rs[0]}</span>`:''}<span class="sp"></span><span class="cnt">${st.length}/${+r.beds||0}</span></div>
+      ${r.note&&r.status==='active'?`<div class="hs-rn">${orgEsc(r.note)}</div>`:''}<div class="hs-beds">${beds||`<div class="ec-empty">${orgEsc(r.note||'Без ліжок')}</div>`}</div></div>`;
+  }
+
+  /* ---- Мешканці ---- */
+  function hsPeopleRows(){
+    const q=hs.q.trim().toLowerCase();
+    return hs.stays.filter(s=>{
+      if(hs.st==='live'&&!hsLive(s))return false;
+      if(hs.st==='gone'&&hsLive(s))return false;
+      if(hs.st==='debt'&&hsBal(s)<=0)return false;
+      if(hs.kind!=='all'&&s.kind!==hs.kind)return false;
+      if(q){const r=hsRoom(s.room_id);if(![s.full_name,s.phone,s.dept,r&&r.no].join(' ').toLowerCase().includes(q))return false;}
+      return true;
+    }).filter((s,i,a)=>hs.st!=='debt'||a.findIndex(x=>hsPerson(x)===hsPerson(s))===i)
+      .sort((a,b)=>{const ra=hsRoom(a.room_id),rb=hsRoom(b.room_id);return hs.st==='gone'?String(b.check_out).localeCompare(String(a.check_out)):String(ra&&ra.no).localeCompare(String(rb&&rb.no))||a.bed_no-b.bed_no;});
+  }
+  function hsPeopleHtml(){
+    const S=[['live','Живуть'],['gone','Виїхали'],['debt','З боргом'],['all','Усі']];
+    const K=[['all','Усі'],['employee','Працівники'],['master','Майстри'],['guest','Гості']];
+    return `<div class="card" style="padding:0;overflow:hidden"><div class="ho-bar"><div class="ho-chips" role="group" aria-label="Статус">${S.map(([k,t])=>`<button type="button" class="ho-chip${hs.st===k?' on':''}" aria-pressed="${hs.st===k}" onclick="hs.st='${k}';hsRender()">${t}</button>`).join('')}</div>
+      <div class="ho-chips" role="group" aria-label="Тип мешканця">${K.map(([k,t])=>`<button type="button" class="ho-chip${hs.kind===k?' on':''}" aria-pressed="${hs.kind===k}" onclick="hs.kind='${k}';hsRender()">${t}</button>`).join('')}</div></div>
+      <div id="hsList">${hsPeopleTable()}</div></div>`;
+  }
+  function hsPeopleTable(){
+    const rows=hsPeopleRows();
+    if(!rows.length)return `<div class="ec-empty" style="padding:28px;text-align:center">${hs.stays.length?'Нікого не знайдено':'Мешканців ще немає. Натисніть «+ Заселити» або виконайте hostel_import.sql.'}</div>`;
+    return `<div class="ho-scroll"><table class="ho-tbl"><thead><tr><th>ПІБ</th><th>Тип</th><th>Кімната</th><th>Заїзд</th><th>Виїзд</th><th>Телефон</th><th>Тариф</th><th style="text-align:right">Борг</th></tr></thead><tbody>
+      ${rows.map(s=>{const r=hsRoom(s.room_id),b=hsBal(s);return `<tr onclick="hsOpen(${s.id})"><td class="who"><b>${orgEsc(s.full_name)}</b>${s.dept?`<span class="rc-sub">${orgEsc(s.dept)}</span>`:''}</td><td>${hsKindTag(s.kind)}</td>
+        <td class="dt">${r?orgEsc(r.no):'—'} · ${s.bed_no}</td><td class="dt">${empFmtDate(s.check_in)}</td><td class="dt">${s.check_out?empFmtDate(s.check_out):'—'}</td>
+        <td class="dt">${orgEsc(s.phone||'—')}</td><td style="font-size:12.5px">${hsTariffTxt(hsTariff(s))}</td>
+        <td class="dt" style="text-align:right;font-weight:700;color:${b>0?'var(--warn)':b<0?'var(--ok)':'var(--slate)'}">${b?hsMoney(b)+' ₴':'—'}</td></tr>`;}).join('')}
+    </tbody></table></div>`;
+  }
+
+  /* ---- Оплати за період ---- */
+  function hsPerRows(per){
+    return hs.stays.filter(s=>s.check_in<=per.to&&(!s.check_out||s.check_out>per.from))
+      .map(s=>{
+        const ch=hs.charges.filter(c=>c.stay_id===s.id&&!c.manual&&c.period_from===per.from);
+        const pd=hs.pays.filter(p=>p.stay_id===s.id&&(p.period_from||hsPerOf(p.paid_on))===per.from).reduce((a,p)=>a+(+p.amount||0),0);
+        const calc=hsCalc(s,per);
+        return {s,calc,charged:ch.length?ch.reduce((a,c)=>a+(+c.amount||0),0):null,paid:pd};
+      }).filter(x=>x.calc.days||x.charged!=null||x.paid)
+      .sort((a,b)=>{const ra=hsRoom(a.s.room_id),rb=hsRoom(b.s.room_id);return String(ra&&ra.no).localeCompare(String(rb&&rb.no))||a.s.bed_no-b.s.bed_no;});
+  }
+  function hsPayHtml(){
+    const per=hsPeriod(hs.per), rows=hsPerRows(per);
+    const done=rows.some(x=>x.charged!=null);
+    const tot=rows.reduce((a,x)=>{a.c+=x.charged!=null?x.charged:x.calc.amount;a.p+=x.paid;return a;},{c:0,p:0});
+    let h=`<div class="card" style="padding:0;overflow:hidden"><div class="ho-bar"><div class="hs-per"><button type="button" class="ico-btn" aria-label="Попередній період" onclick="hsPerGo(-1)">‹</button><b>${per.label}</b><button type="button" class="ico-btn" aria-label="Наступний період" onclick="hsPerGo(1)">›</button></div>
+      <div class="ho-filters"><span class="hs-hint">${done?'Нараховано':'Ще не нараховано: суми розраховані за тарифом'}</span>${hsLvl()>=2?`<button class="btn${done?'':' primary'}" type="button" onclick="hsCharge()"${hs.busy?' disabled':''}>${done?'Перерахувати':'Нарахувати за період'}</button>`:''}</div></div>`;
+    if(!rows.length)h+=`<div class="ec-empty" style="padding:28px;text-align:center">У цьому періоді ніхто не жив</div>`;
+    else h+=`<div class="ho-scroll"><table class="ho-tbl hs-pt"><thead><tr><th>ПІБ</th><th>Тип</th><th>Кімната</th><th>Днів</th><th>Тариф</th><th class="r">Нараховано</th><th class="r">Оплачено за період</th><th class="r">Загальний борг</th><th></th></tr></thead><tbody>
+      ${rows.map(x=>{const r=hsRoom(x.s.room_id),b=hsBal(x.s);return `<tr onclick="hsOpen(${x.s.id})"><td class="who"><b>${orgEsc(x.s.full_name)}</b></td><td>${hsKindTag(x.s.kind)}</td><td class="dt">${r?orgEsc(r.no):'—'} · ${x.s.bed_no}</td><td class="dt">${x.calc.days}</td>
+        <td style="font-size:12.5px">${hsTariffTxt(x.calc.t||hsTariff(x.s,per.from))}</td>
+        <td class="dt r">${x.charged!=null?hsMoney(x.charged):`<span class="hs-calc">${hsMoney(x.calc.amount)}</span>`}</td><td class="dt r">${x.paid?hsMoney(x.paid):'—'}</td>
+        <td class="dt r" style="font-weight:700;color:${b>0?'var(--warn)':b<0?'var(--ok)':'var(--slate)'}">${b?hsMoney(b):'—'}</td>
+        <td onclick="event.stopPropagation()">${hsLvl()>=2?`<button type="button" class="btn hs-sm" onclick="hsPay(${x.s.id},'${per.from}')">+ Оплата</button>`:''}</td></tr>`;}).join('')}
+      <tr class="hs-tot"><td colspan="5">Разом · ${rows.length} ${ecPl(rows.length,'людина','людини','людей')}</td><td class="dt r">${hsMoney(tot.c)}</td><td class="dt r">${hsMoney(tot.p)}</td><td colspan="2"></td></tr>
+    </tbody></table></div>`;
+    h+=`</div>`+hsReportHtml();
+    return h;
+  }
+  window.hsPerGo=n=>{const p=hsPeriod(hs.per);hs.per=n<0?hsPerOf(hsAdd(p.from,-1)):hsPerOf(hsAdd(p.to,1));hsRender();};
+
+  // звіт «Оплати за місяці»: по періодах, з розподілом працівники / майстри / гості
+  function hsReport(){
+    const by={};
+    const row=k=>by[k]=by[k]||{employee:0,master:0,guest:0,total:0,ch:0};
+    hs.pays.forEach(p=>{const s=hsStay(p.stay_id);if(!s)return;const r=row(p.period_from||hsPerOf(p.paid_on));r[s.kind]+=+p.amount||0;r.total+=+p.amount||0;});
+    hs.charges.forEach(c=>{const r=row(c.manual?hsPerOf(c.period_from):c.period_from);r.ch+=+c.amount||0;});
+    return Object.keys(by).sort().reverse().map(k=>({per:hsPeriod(k),...by[k]}));
+  }
+  function hsReportHtml(){
+    const rows=hsReport();
+    if(!rows.length)return '';
+    const t=rows.reduce((a,r)=>{['employee','master','guest','total','ch'].forEach(k=>a[k]+=r[k]);return a;},{employee:0,master:0,guest:0,total:0,ch:0});
+    return `<div class="card" style="padding:0;overflow:hidden;margin-top:16px"><div class="ho-bar"><b style="font-size:14px">Оплати за періоди</b><span class="hs-hint">за датою періоду оплати</span></div><div class="ho-scroll"><table class="ho-tbl hs-pt"><thead><tr><th>Період</th><th class="r">Працівники</th><th class="r">Майстри</th><th class="r">Гості</th><th class="r">Оплачено разом</th><th class="r">Нараховано</th></tr></thead><tbody>
+      ${rows.map(r=>`<tr onclick="hs.per='${r.per.from}';hsRender()"><td>${r.per.label}</td><td class="dt r">${hsMoney(r.employee)}</td><td class="dt r">${hsMoney(r.master)}</td><td class="dt r">${hsMoney(r.guest)}</td><td class="dt r"><b>${hsMoney(r.total)}</b></td><td class="dt r">${hsMoney(r.ch)}</td></tr>`).join('')}
+      <tr class="hs-tot"><td>Разом</td><td class="dt r">${hsMoney(t.employee)}</td><td class="dt r">${hsMoney(t.master)}</td><td class="dt r">${hsMoney(t.guest)}</td><td class="dt r">${hsMoney(t.total)}</td><td class="dt r">${hsMoney(t.ch)}</td></tr></tbody></table></div></div>`;
+  }
+
+  // нарахувати за період: автонарахування періоду перезаписуються, ручні коригування лишаються
+  window.hsCharge=async()=>{
+    if(hs.busy||hsLvl()<2)return;
+    const per=hsPeriod(hs.per);
+    const rows=hs.stays.filter(s=>s.check_in<=per.to&&(!s.check_out||s.check_out>per.from)).map(s=>({s,c:hsCalc(s,per)})).filter(x=>x.c.days);
+    const noT=rows.filter(x=>!x.c.t).length;
+    if(noT&&!confirm(`${noT} ${ecPl(noT,'мешканець','мешканці','мешканців')} без тарифу — їм нарахується 0. Продовжити?`))return;
+    hs.busy=true;hsRender();
+    try{
+      const del=await db.from('hs_charges').delete().eq('period_from',per.from).eq('manual',false);
+      if(del.error)throw del.error;
+      if(rows.length){
+        const ins=await db.from('hs_charges').insert(rows.map(x=>({stay_id:x.s.id,period_from:per.from,period_to:per.to,days:x.c.days,amount:x.c.amount,manual:false,note:x.c.t?`${x.c.t.name}: ${hsTariffTxt(x.c.t)}`:'немає тарифу'})));
+        if(ins.error)throw ins.error;
+      }
+      toast(`Нараховано: ${rows.length} ${ecPl(rows.length,'людина','людини','людей')}`,'success');
+    }catch(e){toast('Помилка: '+e.message,'error');}
+    hs.busy=false;await hsLoad();
+  };
+
+  /* ---- Модалка проживання ---- */
+  function hsOpenModal(){$('hsModal').classList.add('open');}
+  window.hsClose=()=>{$('hsModal').classList.remove('open');hsF=null;};
+  document.addEventListener('keydown',e=>{if(e.key!=='Escape'||document.querySelector('.flatpickr-calendar.open'))return;
+    if($('hsAsk')&&$('hsAsk').classList.contains('open')){e.stopImmediatePropagation();hsAskClose();}
+    else if(hsF&&$('hsModal').classList.contains('open')){e.stopImmediatePropagation();hsClose();}},true);
+
+  window.hsNew=(roomId,bed)=>{
+    if(hsLvl()<2)return;
+    let r=roomId?hsRoom(roomId):null;
+    if(!r){r=hs.rooms.find(x=>x.status==='active'&&hsFreeBeds(x).length);}
+    hsF={s:{id:null,room_id:r?r.id:null,bed_no:r?(bed&&hsFreeBeds(r).includes(bed)?bed:hsFreeBeds(r)[0]||1):1,kind:'employee',employee_id:null,full_name:'',phone:'',dept:'',check_in:hsToday(),check_out:null,rate:null,rate_unit:'half',note:''}};
+    hsModal();
+  };
+  window.hsOpen=id=>{const s=hsStay(id);if(!s)return;hsF={s:{...s}};hsModal();};
+
+  function hsRoomOpts(sel){
+    return hs.rooms.filter(r=>r.status==='active'||r.id===sel).map(r=>`<option value="${r.id}"${r.id===sel?' selected':''}>${orgEsc(r.no)} · вільно ${hsFreeBeds(r).length}/${+r.beds||0}</option>`).join('');
+  }
+  function hsBedOpts(roomId,sel,selfId){
+    const r=hsRoom(roomId);if(!r)return '';
+    const taken=new Map(hs.stays.filter(s=>s.room_id===r.id&&hsLive(s)&&s.id!==selfId).map(s=>[s.bed_no,s.full_name]));
+    let o='';for(let i=1;i<=Math.max(+r.beds||0,sel||0);i++)o+=`<option value="${i}"${i===sel?' selected':''}${taken.has(i)?' disabled':''}>Ліжко ${i}${taken.has(i)?' — '+orgEsc(taken.get(i)):''}</option>`;
+    return o;
+  }
+
+  function hsModal(){
+    const s=hsF.s, ed=hsLvl()>=2, dis=ed?'':' disabled', isNew=!s.id;
+    const r=hsRoom(s.room_id);
+    $('hsMHead').innerHTML=`<div class="t"><b>${isNew?'Заселення':orgEsc(s.full_name)}</b><span>${isNew?'Нове проживання':`Кімната ${r?orgEsc(r.no):'—'} · ліжко ${s.bed_no} · ${hsLive(s)?(s.check_out?'виїжджає '+empFmtDate(s.check_out):'живе з '+empFmtDate(s.check_in)):'виїхав(ла) '+empFmtDate(s.check_out)}`}</span></div>${isNew?'':hsKindTag(s.kind)}<button class="ico-btn" type="button" aria-label="Закрити" onclick="hsClose()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>`;
+    const emps=dictEmps.filter(e=>!empIsDismissed(e)||e.id===s.employee_id);
+    const t=hsTariff(s);
+    let h=`<div class="rc-2col"><div class="rc-box"><h3>Хто живе</h3>
+      <div class="seg hs-kind" role="radiogroup" aria-label="Тип мешканця">${Object.entries(HS_KIND).map(([k,[l]])=>`<button type="button" class="${s.kind===k?'on':''}" onclick="hsKind('${k}')"${dis}>${l}</button>`).join('')}</div>
+      <div class="ho-grid">
+      ${s.kind==='employee'?`<div class="ho-f w3"><label for="hsEmp">Співробітник з довідника</label><select id="hsEmp" class="emp-pick" onchange="hsEmpPick(this.value)"${dis}><option value="">— не з довідника —</option>${emps.map(e=>`<option value="${e.id}"${e.id===s.employee_id?' selected':''}>${orgEsc(empFull(e))}</option>`).join('')}</select></div>`:''}
+      <div class="ho-f w2"><label for="hsName">ПІБ</label><input id="hsName" value="${orgEsc(s.full_name||'')}" placeholder="Прізвище Ім'я"${dis}></div>
+      <div class="ho-f"><label for="hsPhone">Телефон</label><input id="hsPhone" type="tel" value="${orgEsc(s.phone||'')}"${dis}></div>
+      <div class="ho-f w3"><label for="hsDept">${s.kind==='guest'?'Від кого / мета':s.kind==='master'?'Організація / роботи':'Відділ, посада'}</label><input id="hsDept" value="${orgEsc(s.dept||'')}"${dis}></div>
+      <div class="ho-f"><label for="hsRoom">Кімната</label><select id="hsRoom" onchange="hsRoomPick(this.value)"${dis}>${hsRoomOpts(s.room_id)}</select></div>
+      <div class="ho-f"><label for="hsBed">Ліжко</label><select id="hsBed"${dis}>${hsBedOpts(s.room_id,s.bed_no,s.id)}</select></div>
+      <div class="ho-f"><label for="hsIn">Дата заїзду</label><input id="hsIn" type="date" value="${s.check_in||''}"${dis}></div>
+      <div class="ho-f"><label for="hsRate">Індивідуальна ставка, ₴</label><input id="hsRate" type="number" min="0" step="50" value="${s.rate??''}" placeholder="за тарифом"${dis}></div>
+      <div class="ho-f"><label for="hsRateU">Одиниця</label><select id="hsRateU"${dis}>${Object.entries(HS_UNIT).map(([k,l])=>`<option value="${k}"${(s.rate_unit||'half')===k?' selected':''}>${l}</option>`).join('')}</select></div>
+      <div class="ho-f"><label>Тариф зараз</label><div class="hs-tv">${hsTariffTxt(t)}${t&&!t.own?`<span>${orgEsc(t.name)}</span>`:''}</div></div>
+      <div class="ho-f w3"><label for="hsNote">Примітка</label><textarea id="hsNote" rows="2"${dis}>${orgEsc(s.note||'')}</textarea></div>
+      </div></div>`;
+    h+=isNew?`<div class="rc-box"><h3>Як рахується оплата</h3><div class="rc-note">Нарахування робиться двічі на місяць (1–15 і 16–кінець місяця) у вкладці «Оплати». Якщо людина живе не весь період, сума рахується пропорційно дням.<br><br>Тариф підбирається автоматично за типом мешканця й кімнатою. Індивідуальна ставка має пріоритет.</div></div></div>`
+      :hsLedgerHtml(s)+'</div>';
+    $('hsMBody').innerHTML=h;
+    const live=!isNew&&!s.check_out;
+    $('hsMFoot').innerHTML=`${!isNew&&hsLvl()>=3?`<button class="btn" type="button" onclick="hsDelete()" style="color:var(--brand)">Видалити</button>`:''}<span class="sp"></span>
+      ${live&&ed?`<button class="btn" type="button" onclick="hsMove()">Переселити</button><button class="btn" type="button" onclick="hsOut()">Виселити</button>`:''}
+      ${!isNew&&s.check_out&&ed?`<button class="btn" type="button" onclick="hsUndoOut()">Скасувати виселення</button>`:''}
+      ${ed?`<button class="btn primary" type="button" onclick="hsSave()">${isNew?'Заселити':'Зберегти'}</button>`:''}`;
+    hsOpenModal();
+  }
+  function hsLedgerHtml(s){
+    const p=hsPerson(s), ids=new Set(hs.stays.filter(x=>hsPerson(x)===p).map(x=>x.id));
+    const L=[...hs.charges.filter(c=>ids.has(c.stay_id)).map(c=>({d:c.manual?c.period_from:c.period_from,t:'c',x:c})),
+             ...hs.pays.filter(x=>ids.has(x.stay_id)).map(x=>({d:x.paid_on,t:'p',x}))].sort((a,b)=>String(b.d).localeCompare(String(a.d))||(a.t==='p'?-1:1));
+    const b=hsBal(s), ed=hsLvl()>=2;
+    const sumC=L.filter(l=>l.t==='c').reduce((a,l)=>a+(+l.x.amount||0),0), sumP=L.filter(l=>l.t==='p').reduce((a,l)=>a+(+l.x.amount||0),0);
+    return `<div class="rc-box"><h3>Розрахунки<span class="sp"></span>${ed?`<button type="button" class="btn hs-sm" onclick="hsAdj(${s.id})">Коригування</button><button type="button" class="btn primary hs-sm" onclick="hsPay(${s.id})">+ Оплата</button>`:''}</h3>
+      <div class="hs-bal"><div><span>Нараховано</span><b>${hsMoney(sumC)} ₴</b></div><div><span>Оплачено</span><b>${hsMoney(sumP)} ₴</b></div><div class="${b>0?'warn':b<0?'ok':''}"><span>${b<0?'Аванс':'Борг'}</span><b>${hsMoney(Math.abs(b))} ₴</b></div></div>
+      ${L.length?`<div class="hs-led">${L.map(l=>l.t==='c'
+        ?`<div class="hs-li"><span class="d">${l.x.manual?empFmtDate(l.x.period_from):hsPeriod(l.x.period_from).short}</span><span class="w">${l.x.manual?'Коригування':`Нарахування · ${l.x.days||0} ${ecPl(l.x.days||0,'день','дні','днів')}`}${l.x.note?`<span>${orgEsc(l.x.note)}</span>`:''}</span><span class="a">${+l.x.amount<0?'−':'+'}${hsMoney(Math.abs(l.x.amount))}</span>${ed&&l.x.manual?`<button type="button" class="hs-x" aria-label="Видалити коригування" onclick="hsDelRow('hs_charges',${l.x.id})">×</button>`:''}</div>`
+        :`<div class="hs-li pay"><span class="d">${empFmtDate(l.x.paid_on)}</span><span class="w">Оплата · ${HS_METHOD[l.x.method]||l.x.method}${l.x.period_from?` · за ${hsPeriod(l.x.period_from).short}`:''}${l.x.note||l.x.author?`<span>${orgEsc([l.x.note,l.x.author].filter(Boolean).join(' · '))}</span>`:''}</span><span class="a">−${hsMoney(l.x.amount)}</span>${hsLvl()>=3?`<button type="button" class="hs-x" aria-label="Видалити оплату" onclick="hsDelRow('hs_payments',${l.x.id})">×</button>`:''}</div>`).join('')}</div>`
+        :'<div class="ec-empty">Нарахувань і оплат ще немає</div>'}
+      ${hs.stays.filter(x=>hsPerson(x)===p).length>1?`<div class="rc-note">Історія проживання: ${hs.stays.filter(x=>hsPerson(x)===p).sort((a,b)=>String(a.check_in).localeCompare(String(b.check_in))).map(x=>`${orgEsc((hsRoom(x.room_id)||{}).no||'—')} з ${empFmtDate(x.check_in)}${x.check_out?' до '+empFmtDate(x.check_out):''}`).join(' → ')}</div>`:''}
+    </div>`;
+  }
+  function hsGrab(){
+    const s=hsF.s,v=id=>$(id)?$(id).value:'';
+    if($('hsEmp'))s.employee_id=v('hsEmp')?+v('hsEmp'):null;
+    s.full_name=v('hsName').trim();s.phone=v('hsPhone').trim();s.dept=v('hsDept').trim();
+    s.room_id=+v('hsRoom')||s.room_id;s.bed_no=+v('hsBed')||s.bed_no;s.check_in=v('hsIn')||s.check_in;
+    s.rate=v('hsRate')===''?null:+v('hsRate');s.rate_unit=v('hsRateU')||'half';s.note=v('hsNote').trim();
+  }
+  window.hsKind=k=>{hsGrab();hsF.s.kind=k;if(k!=='employee')hsF.s.employee_id=null;hsModal();};
+  window.hsRoomPick=id=>{hsGrab();const r=hsRoom(+id);hsF.s.room_id=+id;hsF.s.bed_no=r?(hsFreeBeds(r)[0]||1):1;hsModal();};
+  window.hsEmpPick=id=>{
+    const e=dictEmps.find(x=>x.id===+id);if(!e)return;
+    $('hsName').value=empFull(e);if(e.phone&&!$('hsPhone').value)$('hsPhone').value=e.phone;
+    $('hsDept').value=[e.primary_unit_id?ecUnitName(+e.primary_unit_id):'',e.position].filter(Boolean).join(', ');
+  };
+  window.hsSave=async()=>{
+    hsGrab();const s=hsF.s;
+    if(!s.full_name){toast('Вкажіть ПІБ','error');return;}
+    if(!s.room_id){toast('Оберіть кімнату','error');return;}
+    if(!s.check_in){toast('Вкажіть дату заїзду','error');return;}
+    const busy=hs.stays.find(x=>x.id!==s.id&&x.room_id===s.room_id&&x.bed_no===s.bed_no&&hsLive(x)&&(!s.check_out||s.check_out>hsToday()));
+    if(busy){toast(`Ліжко зайняте: ${busy.full_name}`,'error');return;}
+    const same=!s.id&&hs.stays.find(x=>hsLive(x)&&hsPerson(x)===hsPerson(s));
+    if(same&&!confirm(`${same.full_name} вже живе в кімнаті ${(hsRoom(same.room_id)||{}).no}. Заселити ще раз?`))return;
+    const row={room_id:s.room_id,bed_no:s.bed_no,kind:s.kind,employee_id:s.employee_id,full_name:s.full_name,phone:s.phone||null,dept:s.dept||null,check_in:s.check_in,rate:s.rate,rate_unit:s.rate!=null?s.rate_unit:null,note:s.note||null};
+    const q=s.id?db.from('hs_stays').update(row).eq('id',s.id).select().single():db.from('hs_stays').insert(row).select().single();
+    const {data,error}=await q;
+    if(error){toast('Помилка: '+(/hs_stays_bed_live|duplicate/.test(error.message)?'ліжко вже зайняте':error.message),'error');return;}
+    toast(s.id?'Збережено':'Заселено','success');
+    await hsLoad();hsF={s:{...(hsStay(data&&data.id)||s)}};hsModal();
+  };
+
+  /* ---- Діалоги: оплата, коригування, виселення, переселення ---- */
+  function hsAsk(title,body,okText,cb){
+    $('hsAHead').innerHTML=`<div class="t"><b>${title}</b></div><button class="ico-btn" type="button" aria-label="Закрити" onclick="hsAskClose()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>`;
+    $('hsABody').innerHTML=body;
+    $('hsAFoot').innerHTML=`<span class="sp"></span><button class="btn" type="button" onclick="hsAskClose()">Скасувати</button><button class="btn primary" type="button" id="hsAOk">${okText}</button>`;
+    hsAskCb=cb;$('hsAOk').onclick=async()=>{const b=$('hsAOk');b.disabled=true;try{if(await hsAskCb()!==false)hsAskClose();}finally{if($('hsAOk'))b.disabled=false;}};
+    $('hsAsk').classList.add('open');
+    const f=$('hsABody').querySelector('input,select');if(f)setTimeout(()=>f.focus(),30);
+  }
+  window.hsAskClose=()=>{$('hsAsk').classList.remove('open');hsAskCb=null;};
+  const hsAfter=async id=>{await hsLoad();if(hsF&&$('hsModal').classList.contains('open')){const s=hsStay(id)||hsStay(hsF.s.id);if(s){hsF={s:{...s}};hsModal();}else hsClose();}};
+
+  window.hsPay=(id,perFrom)=>{
+    const s=hsStay(id);if(!s)return;
+    const ids=new Set(hs.stays.filter(x=>hsPerson(x)===hsPerson(s)).map(x=>x.id));
+    const lastCh=hs.charges.filter(c=>ids.has(c.stay_id)&&!c.manual).map(c=>c.period_from).sort().pop();
+    const per=hsPeriod(perFrom||lastCh||hsToday()), b=hsBal(s);
+    const opts=[];let p=hsPeriod(hsAdd(per.from,-62));for(let i=0;i<8;i++){opts.push(p);p=hsPeriod(hsAdd(p.to,1));}
+    hsAsk(`Оплата · ${orgEsc(s.full_name)}`,`<div class="ho-grid">
+      <div class="ho-f"><label for="hsPA">Сума, ₴</label><input id="hsPA" type="number" min="1" step="50" value="${b>0?Math.round(b):''}"></div>
+      <div class="ho-f"><label for="hsPD">Дата</label><input id="hsPD" type="date" value="${hsToday()}"></div>
+      <div class="ho-f"><label for="hsPM">Спосіб</label><select id="hsPM">${Object.entries(HS_METHOD).map(([k,l])=>`<option value="${k}">${l}</option>`).join('')}</select></div>
+      <div class="ho-f w3"><label for="hsPP">За період</label><select id="hsPP">${opts.map(o=>`<option value="${o.from}"${o.from===per.from?' selected':''}>${o.label}</option>`).join('')}</select></div>
+      <div class="ho-f w3"><label for="hsPN">Примітка</label><input id="hsPN" placeholder="Напр., утримано з з/п за жовтень"></div></div>
+      <div class="rc-note">${b>0?`Поточний борг: <b>${hsMoney(b)} ₴</b>`:b<0?`Аванс: ${hsMoney(-b)} ₴`:'Боргу немає'}</div>`,'Внести',async()=>{
+        const a=+$('hsPA').value;if(!(a>0)){toast('Вкажіть суму','error');return false;}
+        const {error}=await db.from('hs_payments').insert({stay_id:s.id,amount:a,paid_on:$('hsPD').value||hsToday(),method:$('hsPM').value,period_from:$('hsPP').value||null,note:$('hsPN').value.trim()||null,author:hoWho()});
+        if(error){toast('Помилка: '+error.message,'error');return false;}
+        toast('Оплату внесено','success');await hsAfter(s.id);
+      });
+  };
+  window.hsAdj=id=>{
+    const s=hsStay(id);if(!s)return;
+    hsAsk(`Коригування · ${orgEsc(s.full_name)}`,`<div class="ho-grid">
+      <div class="ho-f"><label for="hsJA">Сума, ₴</label><input id="hsJA" type="number" step="50" placeholder="+ борг, − знижка"></div>
+      <div class="ho-f"><label for="hsJD">Дата</label><input id="hsJD" type="date" value="${hsToday()}"></div><div></div>
+      <div class="ho-f w3"><label for="hsJN">Причина</label><input id="hsJN" placeholder="Напр., борг з таблиці на 15.11"></div></div>
+      <div class="rc-note">Додатна сума збільшує борг (наприклад, старий борг або зіпсоване майно), від'ємна зменшує (знижка, перерахунок).</div>`,'Додати',async()=>{
+        const a=+$('hsJA').value;if(!a){toast('Вкажіть суму','error');return false;}
+        const n=$('hsJN').value.trim();if(!n){toast('Вкажіть причину','error');return false;}
+        const d=$('hsJD').value||hsToday();
+        const {error}=await db.from('hs_charges').insert({stay_id:s.id,period_from:d,period_to:d,amount:a,manual:true,note:n});
+        if(error){toast('Помилка: '+error.message,'error');return false;}
+        toast('Додано','success');await hsAfter(s.id);
+      });
+  };
+  // перерахувати автонарахування одного мешканця в періоді (після виселення / переселення)
+  async function hsRecalc(s,perFrom){
+    const per=hsPeriod(perFrom), c=hsCalc(s,per);
+    const ex=hs.charges.find(x=>x.stay_id===s.id&&!x.manual&&x.period_from===per.from);
+    if(!ex)return;
+    if(!c.days)await db.from('hs_charges').delete().eq('id',ex.id);
+    else await db.from('hs_charges').update({days:c.days,amount:c.amount}).eq('id',ex.id);
+  }
+  window.hsOut=()=>{
+    const s=hsF&&hsStay(hsF.s.id);if(!s)return;
+    hsAsk(`Виселення · ${orgEsc(s.full_name)}`,`<div class="ho-grid"><div class="ho-f"><label for="hsOD">Дата виїзду</label><input id="hsOD" type="date" value="${hsToday()}"></div>
+      <div class="ho-f w2"><label for="hsON">Примітка</label><input id="hsON" placeholder="Напр., звільнився, ключ здав"></div></div>
+      <div class="rc-note">День виїзду не оплачується. Якщо період уже нараховано, суму буде перераховано за фактичні дні.${hsBal(s)>0?` <b>Борг: ${hsMoney(hsBal(s))} ₴.</b>`:''}</div>`,'Виселити',async()=>{
+        const d=$('hsOD').value;if(!d){toast('Вкажіть дату','error');return false;}
+        if(d<s.check_in){toast('Дата виїзду раніше за заїзд','error');return false;}
+        const n=$('hsON').value.trim();
+        const {error}=await db.from('hs_stays').update({check_out:d,note:n?[s.note,n].filter(Boolean).join(' · '):s.note}).eq('id',s.id);
+        if(error){toast('Помилка: '+error.message,'error');return false;}
+        await hsRecalc({...s,check_out:d},hsPerOf(d));
+        toast('Виселено','success');await hsAfter(s.id);
+      });
+  };
+  window.hsUndoOut=async()=>{
+    const s=hsF&&hsStay(hsF.s.id);if(!s)return;
+    if(hs.stays.some(x=>x.id!==s.id&&x.room_id===s.room_id&&x.bed_no===s.bed_no&&hsLive(x))){toast('Ліжко вже зайняте, скористайтеся «Переселити»','error');return;}
+    const {error}=await db.from('hs_stays').update({check_out:null}).eq('id',s.id);
+    if(error){toast('Помилка: '+error.message,'error');return;}
+    toast('Виселення скасовано','success');await hsAfter(s.id);
+  };
+  window.hsMove=()=>{
+    const s=hsF&&hsStay(hsF.s.id);if(!s)return;
+    const r0=hs.rooms.find(r=>r.id!==s.room_id&&r.status==='active'&&hsFreeBeds(r).length)||hsRoom(s.room_id);
+    hsAsk(`Переселення · ${orgEsc(s.full_name)}`,`<div class="ho-grid">
+      <div class="ho-f"><label for="hsMR">Кімната</label><select id="hsMR" onchange="$('hsMB').innerHTML=hsBedOptsFree(+this.value)">${hsRoomOpts(r0&&r0.id)}</select></div>
+      <div class="ho-f"><label for="hsMB">Ліжко</label><select id="hsMB">${hsBedOptsFree(r0&&r0.id)}</select></div>
+      <div class="ho-f"><label for="hsMD">З дати</label><input id="hsMD" type="date" value="${hsToday()}"></div></div>
+      <div class="rc-note">Поточне проживання закриється цією датою, а нове почнеться з неї. Борг і оплати лишаються за людиною.</div>`,'Переселити',async()=>{
+        const rid=+$('hsMR').value,bed=+$('hsMB').value,d=$('hsMD').value;
+        if(!rid||!bed||!d){toast('Заповніть кімнату, ліжко й дату','error');return false;}
+        if(d<s.check_in){toast('Дата раніше за заїзд','error');return false;}
+        if(rid===s.room_id&&bed===s.bed_no){toast('Це те саме ліжко','error');return false;}
+        if(hs.stays.some(x=>x.id!==s.id&&x.room_id===rid&&x.bed_no===bed&&hsLive(x))){toast('Ліжко зайняте','error');return false;}
+        let e=(await db.from('hs_stays').update({check_out:d}).eq('id',s.id)).error;
+        if(e){toast('Помилка: '+e.message,'error');return false;}
+        const {id,created_at,created_by,check_out,...rest}=s;
+        const ins=await db.from('hs_stays').insert({...rest,room_id:rid,bed_no:bed,check_in:d,check_out:null,note:s.note}).select().single();
+        if(ins.error){await db.from('hs_stays').update({check_out:s.check_out||null}).eq('id',s.id);toast('Помилка: '+ins.error.message,'error');return false;}
+        await hsRecalc({...s,check_out:d},hsPerOf(d));
+        toast('Переселено','success');await hsAfter(ins.data.id);
+      });
+  };
+  window.hsBedOptsFree=rid=>{const r=hsRoom(rid);if(!r)return '';const f=hsFreeBeds(r);return f.length?f.map(i=>`<option value="${i}">Ліжко ${i}</option>`).join(''):'<option value="">немає вільних</option>';};
+  window.hsDelRow=async(t,id)=>{
+    if(!confirm(t==='hs_payments'?'Видалити оплату?':'Видалити коригування?'))return;
+    const {error}=await db.from(t).delete().eq('id',id);
+    if(error){toast('Помилка: '+error.message,'error');return;}
+    await hsAfter(hsF&&hsF.s.id);
+  };
+  window.hsDelete=async()=>{
+    const s=hsF&&hsStay(hsF.s.id);if(!s)return;
+    if(!confirm(`Видалити проживання «${s.full_name}» разом з його нарахуваннями й оплатами? Якщо людина просто виїхала, натисніть «Виселити».`))return;
+    const {error}=await db.from('hs_stays').delete().eq('id',s.id);
+    if(error){toast('Помилка: '+error.message,'error');return;}
+    hsClose();await hsLoad();toast('Видалено','success');
+  };
+
+  /* ---- Налаштування: кімнати й тарифи ---- */
+  function hsSetHtml(){
+    const ro=hs.rooms.map(r=>`<tr data-room="${r.id}"><td><input class="hs-in w5" value="${orgEsc(r.no)}" data-k="no" aria-label="Номер"></td><td><input class="hs-in w3" type="number" min="1" value="${r.floor}" data-k="floor" aria-label="Поверх"></td><td><input class="hs-in w3" type="number" min="0" max="20" value="${r.beds}" data-k="beds" aria-label="Ліжок"></td>
+      <td><select class="hs-in" data-k="gender" aria-label="Для кого">${Object.entries({any:'Будь-хто',m:'Чоловіча',f:'Жіноча'}).map(([k,l])=>`<option value="${k}"${r.gender===k?' selected':''}>${l}</option>`).join('')}</select></td>
+      <td><select class="hs-in" data-k="status" aria-label="Статус">${Object.entries({active:'Житлова',repair:'На ремонті',storage:'Склад'}).map(([k,l])=>`<option value="${k}"${r.status===k?' selected':''}>${l}</option>`).join('')}</select></td>
+      <td><input class="hs-in w5" value="${orgEsc(r.plan_no||'')}" data-k="plan_no" aria-label="Номер на плані"></td><td><input class="hs-in" value="${orgEsc(r.note||'')}" data-k="note" aria-label="Примітка"></td>
+      <td class="hs-act"><button type="button" class="btn hs-sm" onclick="hsRoomSave(${r.id})">Зберегти</button><button type="button" class="hs-x" aria-label="Видалити кімнату" onclick="hsRoomDel(${r.id})">×</button></td></tr>`).join('');
+    const kinds={'':'Усі',...Object.fromEntries(Object.entries(HS_KIND).map(([k,[l]])=>[k,l]))};
+    const to=hs.tariffs.map(t=>`<tr data-tar="${t.id}"><td><input class="hs-in" value="${orgEsc(t.name)}" data-k="name" aria-label="Назва"></td>
+      <td><select class="hs-in" data-k="kind" aria-label="Тип мешканця">${Object.entries(kinds).map(([k,l])=>`<option value="${k}"${(t.kind||'')===k?' selected':''}>${l}</option>`).join('')}</select></td>
+      <td><select class="hs-in" data-k="room_id" aria-label="Кімната"><option value="">Будь-яка</option>${hs.rooms.map(r=>`<option value="${r.id}"${t.room_id===r.id?' selected':''}>${orgEsc(r.no)}</option>`).join('')}</select></td>
+      <td><input class="hs-in w6" type="number" min="0" step="50" value="${t.amount}" data-k="amount" aria-label="Сума"></td>
+      <td><select class="hs-in" data-k="unit" aria-label="Одиниця">${Object.entries(HS_UNIT).map(([k,l])=>`<option value="${k}"${t.unit===k?' selected':''}>${l}</option>`).join('')}</select></td>
+      <td><input class="hs-in" type="date" value="${t.valid_from||''}" data-k="valid_from" aria-label="Діє з"></td>
+      <td><label class="rc-chk"><input type="checkbox" data-k="active"${t.active!==false?' checked':''}> діє</label></td>
+      <td><input class="hs-in" value="${orgEsc(t.note||'')}" data-k="note" aria-label="Примітка"></td>
+      <td class="hs-act"><button type="button" class="btn hs-sm" onclick="hsTarSave(${t.id})">Зберегти</button><button type="button" class="hs-x" aria-label="Видалити тариф" onclick="hsTarDel(${t.id})">×</button></td></tr>`).join('');
+    return `<div class="card" style="padding:0;overflow:hidden"><div class="ho-bar"><b style="font-size:14px">Тарифи</b><button class="btn primary hs-sm" type="button" onclick="hsTarAdd()">+ Тариф</button></div>
+      <div class="rc-note" style="margin:12px 16px 0">Для кожного мешканця діє найточніше правило: кімната + тип мешканця, потім кімната, потім тип мешканця, потім загальне. Серед однакових береться те, що діє з пізнішої дати. Індивідуальна ставка в картці мешканця важливіша за будь-який тариф. Так можна задати «свої / не свої», окремі ціни на кімнати й змінити ціну з певної дати, не чіпаючи минулі періоди.</div>
+      <div class="ho-scroll"><table class="ho-tbl hs-set"><thead><tr><th>Назва</th><th>Тип мешканця</th><th>Кімната</th><th>Сума, ₴</th><th>Одиниця</th><th>Діє з</th><th></th><th>Примітка</th><th></th></tr></thead><tbody>${to||'<tr><td colspan="9" class="ec-empty">Тарифів немає</td></tr>'}</tbody></table></div></div>
+      <div class="card" style="padding:0;overflow:hidden;margin-top:16px"><div class="ho-bar"><b style="font-size:14px">Кімнати</b><button class="btn primary hs-sm" type="button" onclick="hsRoomAdd()">+ Кімната</button></div>
+      <div class="ho-scroll"><table class="ho-tbl hs-set"><thead><tr><th>Номер</th><th>Поверх</th><th>Ліжок</th><th>Для кого</th><th>Статус</th><th>На плані</th><th>Примітка</th><th></th></tr></thead><tbody>${ro}</tbody></table></div></div>`;
+  }
+  const hsRowVals=tr=>{const o={};tr.querySelectorAll('[data-k]').forEach(i=>{o[i.dataset.k]=i.type==='checkbox'?i.checked:i.value;});return o;};
+  window.hsRoomSave=async id=>{
+    const v=hsRowVals(document.querySelector(`.hs-set tr[data-room="${id}"]`));
+    if(!v.no.trim()){toast('Вкажіть номер','error');return;}
+    const r=hsRoom(id), live=hsRoomStays(r).length;
+    if(+v.beds<Math.max(0,...hsRoomStays(r).map(s=>s.bed_no))){toast(`У кімнаті живуть люди на ліжках до №${Math.max(...hsRoomStays(r).map(s=>s.bed_no))}. Спершу переселіть їх.`,'error');return;}
+    if(v.status!=='active'&&live&&!confirm(`У кімнаті живе ${live}. Все одно змінити статус?`))return;
+    const {error}=await db.from('hs_rooms').update({no:v.no.trim(),floor:+v.floor||1,beds:+v.beds||0,gender:v.gender,status:v.status,plan_no:v.plan_no.trim()||null,note:v.note.trim()||null,sort:(+v.floor||1)*100+(parseInt(v.no,10)%100||0)}).eq('id',id);
+    if(error){toast('Помилка: '+error.message,'error');return;}
+    toast('Збережено','success');await hsLoad();
+  };
+  window.hsRoomAdd=async()=>{
+    const last=hs.rooms[hs.rooms.length-1];
+    let n=last?String((parseInt(last.no,10)||0)+1):'101';while(hs.rooms.some(r=>r.no===n))n=String(+n+1);
+    const {error}=await db.from('hs_rooms').insert({no:n,floor:last?last.floor:1,beds:2,sort:parseInt(n,10)||0});
+    if(error){toast('Помилка: '+error.message,'error');return;}
+    await hsLoad();
+  };
+  window.hsRoomDel=async id=>{
+    const r=hsRoom(id);
+    if(hs.stays.some(s=>s.room_id===id)){toast('У кімнаті є історія проживання. Поставте статус «Склад» або «На ремонті».','error');return;}
+    if(!confirm(`Видалити кімнату ${r.no}?`))return;
+    const {error}=await db.from('hs_rooms').delete().eq('id',id);
+    if(error){toast('Помилка: '+error.message,'error');return;}
+    await hsLoad();
+  };
+  window.hsTarSave=async id=>{
+    const v=hsRowVals(document.querySelector(`.hs-set tr[data-tar="${id}"]`));
+    if(!v.name.trim()||v.amount===''){toast('Вкажіть назву й суму','error');return;}
+    const {error}=await db.from('hs_tariffs').update({name:v.name.trim(),kind:v.kind||null,room_id:v.room_id?+v.room_id:null,amount:+v.amount,unit:v.unit,valid_from:v.valid_from||'2025-01-01',active:!!v.active,note:v.note.trim()||null}).eq('id',id);
+    if(error){toast('Помилка: '+error.message,'error');return;}
+    toast('Збережено. Уже нараховані періоди не змінюються, натисніть «Перерахувати», якщо треба.','success');await hsLoad();
+  };
+  window.hsTarAdd=async()=>{
+    const {error}=await db.from('hs_tariffs').insert({name:'Новий тариф',kind:null,unit:'half',amount:0,valid_from:hsToday()});
+    if(error){toast('Помилка: '+error.message,'error');return;}
+    await hsLoad();
+  };
+  window.hsTarDel=async id=>{
+    if(!confirm('Видалити тариф? Якщо він діяв раніше, краще зняти позначку «діє».'))return;
+    const {error}=await db.from('hs_tariffs').delete().eq('id',id);
+    if(error){toast('Помилка: '+error.message,'error');return;}
+    await hsLoad();
+  };
+
+  /* ---- Excel ---- */
+  window.hsExport=()=>{
+    if(!window.XLSX){toast('Excel ще завантажується','error');return;}
+    const wb=XLSX.utils.book_new();
+    const people=hs.stays.slice().sort((a,b)=>String((hsRoom(a.room_id)||{}).no).localeCompare(String((hsRoom(b.room_id)||{}).no))||a.bed_no-b.bed_no)
+      .map(s=>({'Кімната':(hsRoom(s.room_id)||{}).no,'Ліжко':s.bed_no,'ПІБ':s.full_name,'Тип':HS_KIND[s.kind][0],'Відділ / від кого':s.dept||'','Телефон':s.phone||'','Заїзд':empFmtDate(s.check_in),'Виїзд':s.check_out?empFmtDate(s.check_out):'','Тариф':hsTariffTxt(hsTariff(s)),'Борг, ₴':Math.round(hsBal(s))}));
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(people),'Мешканці');
+    const per=hsPeriod(hs.per);
+    const pr=hsPerRows(per).map(x=>({'ПІБ':x.s.full_name,'Тип':HS_KIND[x.s.kind][0],'Кімната':(hsRoom(x.s.room_id)||{}).no,'Ліжко':x.s.bed_no,'Днів':x.calc.days,'Нараховано, ₴':x.charged!=null?x.charged:x.calc.amount,'Оплачено, ₴':x.paid,'Загальний борг, ₴':Math.round(hsBal(x.s))}));
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(pr),per.short.replace(/\./g,'-'));
+    const rep=hsReport().map(r=>({'Період':r.per.label,'Працівники':r.employee,'Майстри':r.master,'Гості':r.guest,'Оплачено разом':r.total,'Нараховано':r.ch}));
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rep.length?rep:[{'Період':'—'}]),'Оплати за періоди');
+    XLSX.writeFile(wb,'Хостел_'+hsToday()+'.xlsx');
+  };
+
   /* --- Вибір співробітника: пошук з підказками, аватар і чип замість звичайного списку ---
      Працює поверх <select class="emp-pick">: сам select лишається джерелом значення,
      тож увесь наявний код (.value, onchange) працює як і раніше. */
@@ -8591,7 +9223,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
   const ACC_SECTIONS=[
     {k:'dash',l:'Панель'},{k:'proc',l:'Процеси'},{k:'matrix',l:'Матриці'},{k:'goals',l:'Цілі'},
     {k:'company',l:'Компанія'},{k:'reports',l:'Звіти'},{k:'analytics',l:'Аналітика'},{k:'budget',l:'Бюджет'},
-    {k:'dev',l:'Розвиток'},{k:'recruit',l:'Рекрутинг'},{k:'bot',l:'Будь в темі'},{k:'settings',l:'Налаштування (довідники, система)'},
+    {k:'dev',l:'Розвиток'},{k:'recruit',l:'Рекрутинг'},{k:'hostel',l:'Хостел'},{k:'bot',l:'Будь в темі'},{k:'settings',l:'Налаштування (довідники, система)'},
     {k:'access',l:'Користувачі та доступ'},
   ];
   const ACC_LEVELS=['Немає','Перегляд','Редагування','Повний'];
