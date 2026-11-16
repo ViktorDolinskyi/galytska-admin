@@ -1492,6 +1492,11 @@
   }
   #ecModal{padding:20px}
   @media (max-width:900px){#ecModal{padding:12px}}
+  .emp-q{display:flex;align-items:center;gap:6px;height:38px;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:var(--card);color:var(--muted);min-width:240px}
+  .emp-q svg{width:15px;height:15px;flex:none;stroke-width:2}
+  .emp-q input{all:unset;flex:1;min-width:0;font-size:13px;color:var(--ink)}
+  .emp-q:focus-within{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-tint)}
+  @media (max-width:700px){.emp-q{min-width:0;width:100%}}
   /* ===== Хостел ===== */
   #hsModal,#hsAsk{padding:20px} #hsAsk{z-index:120}
   .hs-fl{margin-bottom:14px}
@@ -2676,7 +2681,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
             <div class="card-head">
               <h3>Співробітники</h3>
               <span class="badge info" id="empCount">0</span>
-              <div style="display:flex;gap:8px;margin-left:auto;align-items:center">
+              <div style="display:flex;gap:8px;margin-left:auto;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+                <label class="emp-q"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="empQ" placeholder="ПІБ, посада або телефон" aria-label="Пошук співробітника" oninput="empSearch(this.value)" autocomplete="off"></label>
                 <button class="btn" onclick="empTemplateXlsx()" title="Порожній шаблон Excel для заповнення">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;margin-right:4px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Шаблон
                 </button>
@@ -6031,10 +6037,19 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
   function empSetDate(id,v){const fp=window._fpEmpDates&&_fpEmpDates[id];if(fp){if(v)fp.setDate(v,false);else fp.clear();}else $(id).value=v||'';}
   function empIsDismissed(r){return !!(r.dismissal_date&&r.dismissal_date<=empToday());}
   function empFmtPhone(p){return /^380\d{9}$/.test(p||'')?`+${p.slice(0,3)} ${p.slice(3,5)} ${p.slice(5,8)} ${p.slice(8,10)} ${p.slice(10)}`:orgEsc(p||'');}
+  let empQ='';
+  window.empSearch=v=>{empQ=v||'';renderEmps();};
+  function empMatch(r,q){
+    const words=q.toLowerCase().replace(/[ʼ’`]/g,"'").split(/\s+/).filter(Boolean);
+    const hay=[r.last_name,r.first_name,r.patronymic,r.position].join(' ').toLowerCase().replace(/[ʼ’`]/g,"'");
+    const ph=String(r.phone||'').replace(/\D/g,'');
+    return words.every(w=>{const d=w.replace(/\D/g,'');return hay.includes(w)||(d.length>=3&&d===w.replace(/[\s()+-]/g,'')&&ph.includes(d));});
+  }
   function renderEmps(){
     const tbody=document.getElementById('empBody');if(!tbody)return;
-    document.getElementById('empCount').textContent=dictEmps.length;
-    tbody.innerHTML=dictEmps.map(r=>{const gone=empIsDismissed(r);return `<tr${gone?' style="opacity:.55"':''}>
+    const q=empQ.trim(), rows=q?dictEmps.filter(r=>empMatch(r,q)):dictEmps;
+    document.getElementById('empCount').textContent=q?`${rows.length} з ${dictEmps.length}`:dictEmps.length;
+    tbody.innerHTML=rows.map(r=>{const gone=empIsDismissed(r);return `<tr${gone?' style="opacity:.55"':''}>
       <td class="t-name"><button class="ec-link" type="button" onclick="empCardOpen(${r.id})" title="Відкрити картку">${orgEsc(empFull(r))}</button>${gone?' <span class="badge warn" title="Звільнено '+empFmtDate(r.dismissal_date)+'">Звільнено</span>':''}</td>
       <td style="color:var(--slate);font-size:13px">${orgEsc(r.position||'—')}</td>
       <td style="color:var(--slate);font-size:13px;white-space:nowrap">${r.phone?empFmtPhone(r.phone):'—'}${r.bot_access?' <span class="badge ok" title="Доступ до бота">Бот</span>':''}</td>
@@ -6043,7 +6058,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       <td><div class="row-act" id="empAct-${r.id}">
         <button class="ico-btn" onclick="empEditOpen(${r.id},${qs(r.last_name||'')},${qs(r.first_name||'')},${qs(r.patronymic||'')})">${_eIco}</button>
         <button class="ico-btn del" onclick="empAskDel(${r.id})">${_dIco}</button>
-      </div></td></tr>`;}).join('')||'<tr><td colspan="6" class="empty">Немає записів</td></tr>';
+      </div></td></tr>`;}).join('')||`<tr><td colspan="6" class="empty">${q?'Нікого не знайдено за «'+orgEsc(q)+'»':'Немає записів'}</td></tr>`;
   }
   window.empAskDel=id=>{
     const el=document.getElementById('empAct-'+id);
