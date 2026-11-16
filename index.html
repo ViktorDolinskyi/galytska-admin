@@ -1670,6 +1670,7 @@
   .ho-sort:hover{color:var(--ink)} .ho-sort:hover svg{opacity:.8}
   .ho-sort.on{color:var(--brand)} .ho-sort.on svg{opacity:1}
   .ho-sort:focus-visible{outline:2px solid var(--brand);outline-offset:-2px;border-radius:6px}
+  th.gs-sort-th .ho-sort{padding:0;white-space:normal;line-height:1.3}
   .ho-tbl td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle;color:var(--ink)}
   .ho-tbl tbody tr{cursor:pointer}
   .ho-tbl tbody tr:hover td{background:var(--hover-bg)}
@@ -2697,7 +2698,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
               </div>
             </div>
             <table>
-              <thead><tr><th>ПІБ</th><th>Посада</th><th>Підрозділ</th><th style="width:190px">Телефон</th><th style="width:130px">Дата народження</th><th style="width:130px">Дата прийому</th><th style="width:80px"></th></tr></thead>
+              <thead id="empHead"><tr><th>ПІБ</th><th>Підрозділ</th><th>Посада</th><th style="width:190px">Телефон</th><th style="width:130px">Дата народження</th><th style="width:130px">Дата прийому</th><th style="width:80px"></th></tr></thead>
               <tbody id="empBody"><tr><td colspan="7" class="empty">Немає записів</td></tr></tbody>
             </table>
           </div>
@@ -6009,6 +6010,20 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
   document.getElementById('typeName').addEventListener('keydown',e=>{if(e.key==='Enter')typeSave();});
   document.getElementById('kindName').addEventListener('keydown',e=>{if(e.key==='Enter')kindSave();});
 
+  /* ===== Сортування таблиць кліком по шапці (asc → desc → без сортування) ===== */
+  const _sortIco=(on,dir)=>`<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${on?(dir>0?'<path d="m7 14 5-5 5 5"/>':'<path d="m7 10 5 5 5-5"/>'):'<path d="m8 9 4-4 4 4M8 15l4 4 4-4"/>'}</svg>`;
+  window.gsSortTh=(label,key,st,fn,w)=>{const on=st.k===key;
+    return `<th class="gs-sort-th"${w?` style="width:${w}px"`:''} aria-sort="${on?(st.dir>0?'ascending':'descending'):'none'}"><button type="button" class="ho-sort${on?' on':''}" onclick="${fn}('${key}')" title="Сортувати">${label}${_sortIco(on,st.dir)}</button></th>`;};
+  window.gsSortStep=(st,key)=>{ if(st.k!==key){st.k=key;st.dir=1;} else if(st.dir>0) st.dir=-1; else {st.k=null;st.dir=1;} };
+  window.gsSortRows=(rows,get,st)=>{
+    if(!st.k) return rows;
+    const val=r=>{const v=get(r,st.k);return v==null?'':String(v).trim();};
+    return rows.map((r,i)=>[r,val(r),i]).sort((a,b)=>{
+      if(!a[1]!==!b[1]) return a[1]?-1:1; // порожні завжди внизу
+      return (a[1].localeCompare(b[1],'uk',{numeric:true,sensitivity:'base'})*st.dir)||a[2]-b[2];
+    }).map(x=>x[0]);
+  };
+
   /* ===== Довідники ===== */
   const _eIco='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
   const _dIco='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>';
@@ -6045,14 +6060,20 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     const ph=String(r.phone||'').replace(/\D/g,'');
     return words.every(w=>{const d=w.replace(/\D/g,'');return hay.includes(w)||(d.length>=3&&d===w.replace(/[\s()+-]/g,'')&&ph.includes(d));});
   }
+  const empSort={k:null,dir:1};
+  const EMP_SORT={name:r=>empFull(r),unit:r=>empUnitName(r.primary_unit_id),pos:r=>r.position,phone:r=>r.phone,bd:r=>r.birthdate,hire:r=>r.hire_date};
+  window.empSortBy=k=>{gsSortStep(empSort,k);renderEmps();const b=document.querySelector(`#empHead .ho-sort[onclick="empSortBy('${k}')"]`);if(b)b.focus();};
   function renderEmps(){
     const tbody=document.getElementById('empBody');if(!tbody)return;
-    const q=empQ.trim(), rows=q?dictEmps.filter(r=>empMatch(r,q)):dictEmps;
+    const head=document.getElementById('empHead');
+    if(head) head.innerHTML='<tr>'+gsSortTh('ПІБ','name',empSort,'empSortBy')+gsSortTh('Підрозділ','unit',empSort,'empSortBy')+gsSortTh('Посада','pos',empSort,'empSortBy')
+      +gsSortTh('Телефон','phone',empSort,'empSortBy',190)+gsSortTh('Дата народження','bd',empSort,'empSortBy',130)+gsSortTh('Дата прийому','hire',empSort,'empSortBy',130)+'<th style="width:80px"></th></tr>';
+    const q=empQ.trim(), rows=gsSortRows(q?dictEmps.filter(r=>empMatch(r,q)):dictEmps,(r,k)=>EMP_SORT[k](r),empSort);
     document.getElementById('empCount').textContent=q?`${rows.length} з ${dictEmps.length}`:dictEmps.length;
     tbody.innerHTML=rows.map(r=>{const gone=empIsDismissed(r);return `<tr${gone?' style="opacity:.55"':''}>
       <td class="t-name"><button class="ec-link" type="button" onclick="empCardOpen(${r.id})" title="Відкрити картку">${orgEsc(empFull(r))}</button>${gone?' <span class="badge warn" title="Звільнено '+empFmtDate(r.dismissal_date)+'">Звільнено</span>':''}</td>
-      <td style="color:var(--slate);font-size:13px">${orgEsc(r.position||'—')}</td>
       <td style="color:var(--slate);font-size:13px">${orgEsc(empUnitName(r.primary_unit_id)||'—')}</td>
+      <td style="color:var(--slate);font-size:13px">${orgEsc(r.position||'—')}</td>
       <td style="color:var(--slate);font-size:13px;white-space:nowrap">${r.phone?empFmtPhone(r.phone):'—'}${r.bot_access?' <span class="badge ok" title="Доступ до бота">Бот</span>':''}</td>
       <td style="color:var(--slate);font-size:13px">${empFmtDate(r.birthdate)}</td>
       <td style="color:var(--slate);font-size:13px">${empFmtDate(r.hire_date)}</td>
@@ -12022,10 +12043,12 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       employees:{table:'dict_employees',title:'Працівники і доступ до бота',single:'доступ',order:[['last_name',true]],noAdd:true,noDel:true,
         hint:'Усі співробітники з довідника «Компанія» і їхній стан у боті. Увійти можуть ті, кому дозволено доступ і вказано телефон. Якщо забрати доступ (або вказати дату звільнення), бот закриється для людини одразу; повернення доступу знову відкриває бот без повторного входу.',
         load:empBotLoad, arrange:empBotArrange,
-        cols:[['ПІБ',r=>`<b>${esc([r.last_name,r.first_name,r.patronymic].filter(Boolean).join(' '))}</b>${r._bu&&r._bu.username?`<div class="bot-clip">@${esc(r._bu.username)}</div>`:''}`],
-              ['Посада',r=>esc(r.position||'—')],['Підрозділ',r=>esc(_units[r.primary_unit_id]||'—')],['Телефон',r=>r.phone?fmtPhone(r.phone):'—'],
-              ['Стан у боті',r=>EMPB_ST[r._st].badge],
-              ['Остання активність',r=>r._bu&&r._st==='in'?empBotSeen(r._bu.last_seen_at):'—']],
+        cols:[['ПІБ',r=>`<b>${esc([r.last_name,r.first_name,r.patronymic].filter(Boolean).join(' '))}</b>${r._bu&&r._bu.username?`<div class="bot-clip">@${esc(r._bu.username)}</div>`:''}`,r=>[r.last_name,r.first_name,r.patronymic].filter(Boolean).join(' ')],
+              ['Підрозділ',r=>esc(_units[r.primary_unit_id]||'—'),r=>_units[r.primary_unit_id]],['Посада',r=>esc(r.position||'—'),r=>r.position],
+              ['Телефон',r=>r.phone?fmtPhone(r.phone):'—',r=>r.phone],
+              ['Стан у боті',r=>EMPB_ST[r._st].badge,r=>({in:1,wait:2,nophone:3,none:4,gone:5})[r._st]],
+              ['Остання активність',r=>r._bu&&r._st==='in'?empBotSeen(r._bu.last_seen_at):'—',r=>r._bu&&r._st==='in'&&r._bu.last_seen_at?String(9e12-Date.parse(r._bu.last_seen_at)):'']],
+        sortSt:{k:null,dir:1},
         rowClick:true, modalTitle:'Працівник', form:empBotForm,
         read:()=>{ const on=$('botF_bot_access').checked; return on&&!(_edit&&_edit.phone)?{err:'Для доступу до бота потрібен телефон — вкажи його в картці працівника'}:{bot_access:on}; },
         afterSave:()=>{ if(typeof loadAllDicts==='function') loadAllDicts(); }},
@@ -12368,6 +12391,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
           return w.every(x=>hay.includes(x)); })
         .sort((a,b)=>_empB.f==='all'?(order[a._st]-order[b._st])||0:0);
     }
+    window.botSortBy=k=>{ const c=cfg(); if(!c||!c.sortSt) return; gsSortStep(c.sortSt,k); if(c===TABS.employees) _empB.useCache=true;
+      botRender().then(()=>{ const b=document.querySelector(`#botHead .ho-sort[onclick="botSortBy('${k}')"]`); if(b) b.focus(); }); };
     window.empBotFilter=k=>{ _empB.f=k; _empB.useCache=true; botRender(); };
     let _empBT=null;
     window.empBotSearch=v=>{ _empB.q=v; clearTimeout(_empBT); _empBT=setTimeout(()=>{ _empB.useCache=true; botRender().then(()=>{ const i=$('empBotQ'); if(i){ i.focus(); i.setSelectionRange(i.value.length,i.value.length); } }); },200); };
@@ -12380,7 +12405,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       $('botAddBtn').textContent=catOnly?'+ Додати підрозділ':'+ Додати';
       $('botAddBtn').style.display=c.noAdd?'none':'';
       const cols=catOnly?c.cols.slice(1):c.cols;
-      $('botHead').innerHTML='<tr>'+cols.map(x=>`<th>${x[0]}</th>`).join('')+'<th></th></tr>';
+      const sortable=!!c.sortSt;
+      $('botHead').innerHTML='<tr>'+cols.map((x,i)=>sortable&&x[2]?gsSortTh(x[0],String(i),c.sortSt,'botSortBy'):`<th>${x[0]}</th>`).join('')+'<th></th></tr>';
       const span=cols.length+1, body=$('botBody');
       body.innerHTML=`<tr><td colspan="${span}" class="empty">Завантаження…</td></tr>`;
       let q=db.from(c.table).select('*');
@@ -12398,6 +12424,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       let rows=data||[];
       if(c===TABS.categories&&_catSection) rows=rows.filter(r=>r.section===_catSection);
       _rows=c.arrange?c.arrange(rows):rows;
+      if(sortable) _rows=gsSortRows(_rows,(r,k)=>cols[+k]&&cols[+k][2]?cols[+k][2](r):'',c.sortSt);
       $('botCount').textContent=_rows.length;
       if(c===TABS.contacts) fillDepts();
       if(!_rows.length){body.innerHTML=`<tr><td colspan="${span}" class="empty">Поки що порожньо${c.noAdd?'':'. Натисни «'+esc($('botAddBtn').textContent)+'», щоб додати перше.'}</td></tr>`;return;}
