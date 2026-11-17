@@ -416,6 +416,8 @@
   .sch-chip input:focus-visible+span{outline:2px solid var(--brand);outline-offset:2px}
   .sch-target{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:8px}
   .sch-units{max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:8px;padding:6px 10px;display:flex;flex-direction:column;gap:2px}
+  .ns-box{border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:12px}
+  .ns-modes{display:flex;flex-wrap:wrap;gap:16px}
   .sch-hist{font-size:12.5px;color:var(--muted);display:flex;flex-direction:column;gap:4px;max-height:160px;overflow:auto}
   .bot-tbl .bot-acts .ico-btn{display:inline-grid;place-items:center;margin-left:4px}
   .bot-check{display:flex !important;align-items:center;gap:10px;cursor:pointer;font-size:13.5px !important;font-weight:600 !important;color:var(--ink) !important;margin:0 !important}
@@ -12064,14 +12066,16 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
 
     const TABS={
       news:{table:'bot_news',title:'Новини компанії',single:'новину',order:[['created_at',false]],section:'news',
-        hint:'Новина з «Надіслати всім» приходить підписникам протягом хвилини.',
-        cols:[['Дата',r=>fmtDate(r.created_at)],['Заголовок',r=>`<b>${esc(r.title)}</b>${clip(r.body)}${attachTags(r)}`],
-              ['Статус',r=>yesNo(r.is_published,'Опубліковано','Чернетка')],
-              ['Розсилка',r=>r.notified_at?`<span class="badge ok">Надіслано ${fmtDT(r.notified_at)}</span>`:r.notify?'<span class="badge warn">Очікує</span>':'—']],
+        hint:'«Надіслати одразу» — новина прийде підписникам протягом хвилини. «За розкладом» — у вибраний день і час (один раз або регулярно), усім або окремим підрозділам.',
+        prepare:newsPrepare, returnRow:true, post:newsSchedApply,
+        afterOpen:()=>{newsSendMode();botPickers($('botForm'));},
+        cols:[['Дата',r=>fmtDate(r.publish_at&&new Date(r.publish_at)<=new Date()?r.publish_at:r.created_at)],['Заголовок',r=>`<b>${esc(r.title)}</b>${clip(r.body)}${attachTags(r)}`],
+              ['Статус',r=>!r.is_published?yesNo(false,'','Чернетка'):r.publish_at&&new Date(r.publish_at)>new Date()?`<span class="badge info">У боті з ${fmtDT(r.publish_at)}</span>`:yesNo(true,'Опубліковано')],
+              ['Розсилка',r=>newsSendCell(r)]],
         fields:[['title','Заголовок','text',true],['body','Текст','textarea',true],
                 ['file','Фото або файл (необов\'язково)','file',false,'Фото з коротким текстом (до 1000 символів) прийде одним повідомленням з підписом.'],
                 ['is_published','Опубліковано (видно в боті)','check'],
-                ['notify','Надіслати всім підписникам','check']],
+                ['send','Надсилання підписникам','newssend']],
         defaults:{is_published:true,notify:false}},
       vacancies:{table:'bot_vacancies',title:'Вакансії',single:'вакансію',order:[['sort_order',true],['created_at',false]],
         hint:'У боті: Новини → Вакансії. Закрита вакансія (зніми «Показувати») зникає з бота, але лишається тут.',
@@ -12198,6 +12202,16 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       return `
         <div><label>Назва${star}</label><input id="sF_title" type="text" value="${esc(v.title)}" placeholder="Напр.: Нагадування про табель"><div class="bot-field-note">Бачите лише ви в адмінці.</div></div>
         <div><label>Текст повідомлення${star}</label><textarea id="sF_body" rows="6" maxlength="4000">${esc(v.body)}</textarea><div class="bot-field-note">Саме цей текст отримають підписники в Telegram.</div></div>
+        ${schedFields(v)}
+        <div><label class="bot-check"><input type="checkbox" id="sF_active" ${v.is_active!==false?'checked':''}>Розсилка активна</label></div>
+        ${schedHist(hist)}`;
+    }
+    const schedHist=hist=>hist.length?`<div><label>Останні відправки</label><div class="sch-hist">${hist.map(h=>`<div>${fmtDT(h.sent_at)} · ${h.status==='sent'?`доставлено ${h.delivered} з ${h.recipients}`:h.status==='skipped'?'пропущено':'помилка'}${h.planned_at?'':' · вручну'}${h.note?' · '+esc(h.note):''}</div>`).join('')}</div></div>`:'';
+    // Поля розкладу (повторення, час, дата, дні, кому) — спільні для розсилок і новин
+    function schedFields(v){
+      const kind=v.kind||'once', wd=new Set(v.weekdays||[]), tu=new Set((v.target_units||[]).map(String));
+      const star=' <span style="color:var(--brand)">*</span>';
+      return `
         <div class="sch-row">
           <div><label>Повторення</label><select id="sF_kind" class="modal-sel" onchange="schedKind()">${Object.entries(KINDS).map(([k,l])=>`<option value="${k}" ${k===kind?'selected':''}>${l}</option>`).join('')}</select></div>
           <div><label>Час (за Києвом)</label><input id="sF_time" class="fp-time" value="${hm(v.send_time)||'09:00'}" readonly></div>
@@ -12215,9 +12229,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
             <div id="sF_units" class="sch-units">${_unitList.map(u=>`<label class="bot-check" style="padding-left:${u.depth*18}px"><input type="checkbox" value="${u.id}" ${tu.has(String(u.id))?'checked':''}>${esc(u.name)}</label>`).join('')||'<div class="bot-field-note">У «Компанії» ще немає підрозділів</div>'}</div>
             <div class="bot-field-note">Разом із вкладеними підрозділами. Отримають підписники, у яких цей підрозділ указано основним у довіднику працівників.</div>
           </div>
-        </div>
-        <div><label class="bot-check"><input type="checkbox" id="sF_active" ${v.is_active!==false?'checked':''}>Розсилка активна</label></div>
-        ${hist.length?`<div><label>Останні відправки</label><div class="sch-hist">${hist.map(h=>`<div>${fmtDT(h.sent_at)} · ${h.status==='sent'?`доставлено ${h.delivered} з ${h.recipients}`:h.status==='skipped'?'пропущено':'помилка'}${h.planned_at?'':' · вручну'}${h.note?' · '+esc(h.note):''}</div>`).join('')}</div></div>`:''}`;
+        </div>`;
     }
     window.schedKind=function(){
       const k=$('sF_kind').value;
@@ -12231,10 +12243,16 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
     };
     function schedRead(){
       const g=id=>$(id).value.trim();
-      const p={title:g('sF_title'),body:g('sF_body'),kind:g('sF_kind'),send_time:g('sF_time'),send_date:g('sF_date')||null,
-               weekdays:null,month_day:null,ends_on:null,target_units:null,is_active:$('sF_active').checked};
-      if(!p.title) return {err:'Вкажи назву розсилки',el:'sF_title'};
-      if(!p.body) return {err:'Напиши текст повідомлення',el:'sF_body'};
+      const title=g('sF_title'), body=g('sF_body');
+      if(!title) return {err:'Вкажи назву розсилки',el:'sF_title'};
+      if(!body) return {err:'Напиши текст повідомлення',el:'sF_body'};
+      const p=schedReadFields();
+      return p.err?p:{title,body,...p,is_active:$('sF_active').checked};
+    }
+    function schedReadFields(){
+      const g=id=>$(id).value.trim();
+      const p={kind:g('sF_kind'),send_time:g('sF_time'),send_date:g('sF_date')||null,
+               weekdays:null,month_day:null,ends_on:null,target_units:null};
       if(!/^\d{2}:\d{2}/.test(p.send_time)) return {err:'Вкажи час відправки',el:'sF_time'};
       if((p.kind==='once'||p.kind==='yearly')&&!p.send_date) return {err:'Вкажи дату',el:'sF_date'};
       if(p.kind==='weekly'){ p.weekdays=[...document.querySelectorAll('#sF_wdWrap input:checked')].map(x=>+x.value); if(!p.weekdays.length) return {err:'Обери хоча б один день тижня'}; }
@@ -12251,6 +12269,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       hint:'Бот сам надсилає повідомлення за розкладом (час київський). «Надіслати зараз» — разова відправка поза розкладом.',
       missing:'Таблиці розсилок ще не створені. Виконай database/schedules.sql бота в Supabase → SQL Editor.',
       prepare:schedPrepare, form:schedForm, read:schedRead, returnRow:true,
+      arrange:rows=>rows.filter(r=>r.news_id==null),   // розклади новин — у «Новинах компанії»
       afterOpen:()=>{schedKind();schedTo();botPickers($('botForm'));},
       cols:[['Розсилка',r=>`<b>${esc(r.title)}</b>${clip(r.body)}`],['Розклад',r=>esc(schedText(r))],['Кому',r=>esc(schedTarget(r))],
             ['Наступна',r=>r.send_now?'<span class="badge warn">Надсилається…</span>':r.next_run_at?fmtDT(r.next_run_at):r.is_active?'<span class="badge off">Завершено</span>':'—'],
@@ -12260,6 +12279,82 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       saved:row=>!row?'Збережено':row.is_active&&!row.next_run_at
         ?['Збережено, але цей час уже минув — розсилка не відбудеться. Зміни дату або час.','warn']
         :row.is_active?'Збережено. Наступна відправка: '+fmtDT(row.next_run_at):'Збережено (розсилку вимкнено)'};
+
+    // ---- Новини за розкладом: рядок bot_schedules з news_id (database/news_schedule.sql бота) ----
+    let _newsSch={}, _newsSchOk=true, _newsSend=null;
+    async function newsPrepare(){
+      await schedPrepare();
+      const {data,error}=await db.from('bot_schedules').select('*').not('news_id','is',null);
+      _newsSchOk=!error; _newsSch={};
+      (data||[]).forEach(x=>{_newsSch[x.news_id]=x;});
+    }
+    function newsSendCell(r){
+      const s=_newsSch[r.id];
+      if(s){
+        const last=(_lastLog[s.id]||[])[0];
+        const nxt=s.send_now?'<span class="badge warn">Надсилається…</span>':s.next_run_at?'наступна '+fmtDT(s.next_run_at):s.is_active?'<span class="badge off">Завершено</span>':'<span class="badge off">Вимкнено</span>';
+        return `<div>🗓 ${esc(schedText(s))}</div><div class="bot-clip">${esc(schedTarget(s))} · ${nxt}${last&&last.status==='sent'?` · востаннє ${fmtDT(last.sent_at)}`:''}</div>`;
+      }
+      return r.notified_at?`<span class="badge ok">Надіслано ${fmtDT(r.notified_at)}</span>`:r.notify?'<span class="badge warn">Очікує</span>':'—';
+    }
+    function newsSendHtml(v){
+      const s=_edit&&_newsSch[_edit.id], sent=_edit&&_edit.notified_at;
+      const mode=s?'sched':v.notify&&!sent?'now':'none';
+      const hidden=s?!!(_edit.publish_at&&new Date(_edit.publish_at)>new Date()):!_edit;  // нова новина — прихована до відправки
+      const firstSent=s&&s.last_sent_at;
+      return `<div><label>Надсилання підписникам</label><div class="ns-box">
+        <div class="ns-modes">
+          <label class="bot-check"><input type="radio" name="nsMode" value="none" ${mode==='none'?'checked':''} onchange="newsSendMode()">Не надсилати</label>
+          <label class="bot-check"><input type="radio" name="nsMode" value="now" ${mode==='now'?'checked':''} ${sent?'disabled':''} onchange="newsSendMode()">Надіслати одразу</label>
+          <label class="bot-check"><input type="radio" name="nsMode" value="sched" ${mode==='sched'?'checked':''} onchange="newsSendMode()">За розкладом</label>
+        </div>
+        ${sent?`<div class="bot-field-note">Уже надіслано всім ${fmtDT(sent)}. Щоб надіслати ще раз — обери «За розкладом».</div>`:''}
+        <div id="nsSched">
+          ${_newsSchOk?`<div style="display:flex;flex-direction:column;gap:12px">${schedFields(s||{kind:'once',send_time:'09:00'})}
+          <div><label class="bot-check"><input type="checkbox" id="nsHide" ${hidden?'checked':''} ${firstSent?'disabled':''}>Показати новину в боті лише в момент першої відправки</label>${firstSent?'<div class="bot-field-note">Новину вже надіслано, вона є в боті.</div>':''}</div>
+          ${s?`<div><label class="bot-check"><input type="checkbox" id="nsActive" ${s.is_active!==false?'checked':''}>Розклад активний</label></div>`:''}
+          ${schedHist(s?(_lastLog[s.id]||[]).slice(0,10):[])}</div>`
+          :'<div class="bot-field-note" style="color:var(--brand)">Щоб планувати новини, виконай database/news_schedule.sql бота в Supabase → SQL Editor.</div>'}
+        </div>
+      </div></div>`;
+    }
+    window.newsSendMode=function(){
+      const el=document.querySelector('input[name=nsMode]:checked'); if(!el) return;
+      $('nsSched').style.display=el.value==='sched'?'':'none';
+      if($('sF_kind')){ schedKind(); schedTo(); }
+    };
+    function newsSendRead(){
+      const mode=(document.querySelector('input[name=nsMode]:checked')||{}).value||'none';
+      if(mode!=='sched') return {mode};
+      if(!_newsSchOk) return {err:'Спершу виконай database/news_schedule.sql бота в Supabase'};
+      const p=schedReadFields(); if(p.err) return p;
+      return {mode,sched:{...p,is_active:$('nsActive')?$('nsActive').checked:true},hide:$('nsHide')&&!$('nsHide').disabled?$('nsHide').checked:null};
+    }
+    async function newsSchedApply(row){
+      const ns=_newsSend; _newsSend=null;
+      if(!row||!ns) return null;
+      const cur=_newsSch[row.id];
+      if(ns.mode!=='sched'){
+        if(cur){ const {error}=await db.from('bot_schedules').delete().eq('id',cur.id); if(error) return ['Новину збережено, але розклад не прибрано: '+esc(error.message),'error']; }
+        if(row.publish_at&&new Date(row.publish_at)>new Date()) await db.from('bot_news').update({publish_at:new Date().toISOString()}).eq('id',row.id);
+        return null;
+      }
+      const sp={...ns.sched,title:row.title,body:null,news_id:row.id};
+      const u=(document.querySelector('.js-user')?.textContent||'').trim();
+      if(!cur) sp.created_by=u&&u!=='—'?u:null;
+      const res=await (cur?db.from('bot_schedules').update(sp).eq('id',cur.id):db.from('bot_schedules').insert(sp)).select();
+      if(res.error) return ['Новину збережено, але розклад — ні: '+esc(res.error.message),'error'];
+      const s=(res.data||[])[0];
+      if(ns.hide!==null){
+        const now=new Date();
+        const pub=ns.hide&&s&&s.next_run_at?s.next_run_at
+          :(row.publish_at&&new Date(row.publish_at)<=now?row.publish_at:now.toISOString());
+        if(pub!==row.publish_at) await db.from('bot_news').update({publish_at:pub}).eq('id',row.id);
+      }
+      if(!s||!s.is_active) return 'Збережено (розклад вимкнено)';
+      if(!s.next_run_at) return ['Новину збережено, але цей час уже минув — відправки не буде. Зміни дату або час.','warn'];
+      return 'Збережено. Новину буде надіслано '+fmtDT(s.next_run_at)+(ns.hide&&!s.last_sent_at?' — тоді ж вона з\'явиться в боті':'');
+    }
 
     window.botSendNow=async function(id){
       const {error}=await db.from('bot_schedules').update({send_now:true}).eq('id',id);
@@ -12610,6 +12705,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
           const sent=name==='notify'&&_edit&&_edit.notified_at;
           return `<div><label class="bot-check"><input type="checkbox" id="botF_${name}" ${val?'checked':''} ${sent?'disabled':''}>${label}</label>${sent?`<div class="bot-field-note">Уже надіслано ${fmtDT(_edit.notified_at)}</div>`:''}</div>`;
         }
+        if(type==='newssend') return newsSendHtml(v);
         if(type==='textarea') return `<div><label>${label}${star}</label><textarea id="botF_${name}" rows="7">${esc(val)}</textarea>${n}</div>`;
         if(type==='select') return `<div><label>${label}${star}</label><select id="botF_${name}">${selOpts(opts(v),val,req?undefined:'— не вибрано —')}</select>${n}</div>`;
         if(type==='cat'){
@@ -12638,6 +12734,13 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         if(r.err){toast(r.err,'warn'); const el=r.el&&$(r.el); if(el) ((el._flatpickr&&el._flatpickr.altInput)||el).focus(); return;}
         payload=r;
       } else for(const [name,label,type,req] of c.fields){
+        if(type==='newssend'){
+          const r=newsSendRead();
+          if(r.err){toast(r.err,'warn'); const el=r.el&&$(r.el); if(el) ((el._flatpickr&&el._flatpickr.altInput)||el).focus(); return;}
+          _newsSend=r;
+          if(!(_edit&&_edit.notified_at)) payload.notify=r.mode==='now';
+          continue;
+        }
         const el=$('botF_'+name);
         if(type==='check'){ if(!el.disabled) payload[name]=el.checked; continue; }
         if(type==='cat'||(type==='select'&&/_id$/.test(name))){ payload[name]=el.value?parseInt(el.value,10):null; continue; }
@@ -12681,7 +12784,9 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
         toast(/duplicate key/.test(res.error.message)?'Такий запис уже існує (наприклад, цей телефон уже вказано в іншого співробітника)':'Помилка: '+esc(res.error.message),'error');
         return;
       }
-      if(c.saved){ const m=c.saved((res.data||[])[0]); Array.isArray(m)?toast(m[0],m[1],6000):toast(m,'success',5000); }
+      const pm=c.post?await c.post((res.data||[])[0]):null;
+      if(pm) Array.isArray(pm)?toast(pm[0],pm[1],6000):toast(pm,'success',5000);
+      else if(c.saved){ const m=c.saved((res.data||[])[0]); Array.isArray(m)?toast(m[0],m[1],6000):toast(m,'success',5000); }
       else toast(c===TABS.news&&payload.notify&&!(_edit&&_edit.notified_at)?'Збережено. Бот розішле новину протягом хвилини':'Збережено','success');
       botClose(); botLoad(); if(c.afterSave) c.afterSave();
     };
