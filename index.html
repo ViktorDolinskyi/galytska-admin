@@ -6791,7 +6791,7 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
 
   async function hoLoad(){
     const [o,p,f]=await Promise.all([
-      db.from('hr_operations').select('*').order('effective_date',{ascending:false}).order('id',{ascending:false}).limit(5000),
+      db.from('hr_operations').select('*').order('effective_date',{ascending:false}).order('id',{ascending:false}),
       hoBud()?db.from('hr_op_pay').select('*'):Promise.resolve({data:[]}),
       hoBud()?db.from('hr_files').select('id,unit_id,year'):Promise.resolve({data:[]})
     ]);
@@ -7525,9 +7525,9 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
 
   async function rcLoad(){
     const [v,c,a,p,s]=await Promise.all([
-      db.from('rc_vacancies').select('*').order('created_at',{ascending:false}).limit(2000),
-      db.from('rc_candidates').select('*').order('created_at',{ascending:false}).limit(5000),
-      db.from('rc_apps').select('*').limit(10000),
+      db.from('rc_vacancies').select('*').order('created_at',{ascending:false}),
+      db.from('rc_candidates').select('*').order('created_at',{ascending:false}),
+      db.from('rc_apps').select('*'),
       rcPay()?db.from('rc_vacancy_pay').select('*'):Promise.resolve({data:[]}),
       db.rpc('rc_staff')
     ]);
@@ -9468,7 +9468,49 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvbWVyZ25wcXNqdWZxcGVodnlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MTA3NjEsImV4cCI6MjA5NzI4Njc2MX0.uFCvBwl3osBS9AIbMDqefRH87PQH1Xqqff07-d2lsTM';              // ← встав свій anon/public key
   // посилання з листа (запрошення / скидання пароля): після входу треба задати пароль; читаємо до того, як клієнт очистить адресу
   const _authLinkType=new URLSearchParams(location.hash.slice(1)).get('type');
-  const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  /* Supabase віддає за запит не більше «Max Rows» рядків (типово 1000). Щоб адмінка бачила все
+     (1280+ співробітників, ~9 тис. заявок рекрутингу тощо), кожен GET-список до /rest/v1 вантажимо
+     частинами по 1000 (limit/offset) і склеюємо. Явний .limit()/.range() поважаємо як верхню межу. */
+  const DB_PAGE=1000;
+  async function dbPagedFetch(input,init){
+    const f=window.fetch.bind(window);
+    try{
+      const method=((init&&init.method)||(input&&input.method)||'GET').toUpperCase();
+      const url=new URL(typeof input==='string'?input:(input.url||String(input)));
+      const h=new Headers((init&&init.headers)||undefined);
+      if(method!=='GET'||!url.pathname.startsWith('/rest/v1/')||url.pathname.startsWith('/rest/v1/rpc/')
+         ||/vnd\.pgrst\.object/.test(h.get('Accept')||'')) return f(input,init);
+      const q=url.searchParams;
+      const start=+(q.get('offset')||0);
+      const cap=q.has('limit')?+q.get('limit'):Infinity;      // скільки рядків просив код
+      if(cap<=DB_PAGE) return f(input,init);
+      const page=async(off,n)=>{const u=new URL(url);u.searchParams.set('offset',off);u.searchParams.set('limit',n);return f(u.toString(),init);};
+      const r0=await page(start,Math.min(DB_PAGE,cap));
+      if(!r0.ok) return r0;
+      let rows=await r0.clone().json();
+      if(!Array.isArray(rows)||rows.length<Math.min(DB_PAGE,cap)) return r0;
+      // без унікального порядку Postgres може перемішати рядки між сторінками — додаємо id в кінець сортування, якщо він є
+      const ord=q.get('order')||'';
+      if(rows[0]&&'id' in rows[0]&&!/(^|,)id\./.test(ord)){
+        url.searchParams.set('order',ord?ord+',id.asc':'id.asc');
+        const r=await page(start,Math.min(DB_PAGE,cap)); if(!r.ok) return r;
+        rows=await r.json();
+      }
+      while(rows.length<cap){
+        const n=Math.min(DB_PAGE,cap-rows.length);
+        const r=await page(start+rows.length,n);
+        if(!r.ok) return r;
+        const d=await r.json(); rows.push(...d);
+        if(d.length<n) break;
+      }
+      const hd=new Headers(r0.headers);
+      const total=(r0.headers.get('content-range')||'').split('/')[1]||'*';
+      hd.set('content-range',rows.length?`${start}-${start+rows.length-1}/${total}`:`*/${total}`);
+      hd.delete('content-length');
+      return new Response(JSON.stringify(rows),{status:200,statusText:'OK',headers:hd});
+    }catch(e){ return f(input,init); }
+  }
+  const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {global:{fetch:dbPagedFetch}});
 
   // Завантаження структури з бази та побудова дерева
   async function orgLoad(){
