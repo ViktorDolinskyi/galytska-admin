@@ -9384,9 +9384,11 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       const {error}=await db.from('dict_employees').insert(toInsert.slice(i,i+CH));
       if(error)errors.push('Додавання (рядки '+(i+1)+'–'+Math.min(i+CH,toInsert.length)+'): '+(/duplicate key/.test(error.message)?'такий телефон уже є в базі':error.message));
     }
-    for(let i=0;i<toUpdate.length;i+=CH){
-      const {error}=await db.from('dict_employees').upsert(toUpdate.slice(i,i+CH),{onConflict:'id'});
-      if(error)errors.push('Оновлення: '+(/duplicate key/.test(error.message)?'такий телефон уже є в базі':error.message));
+    // id у dict_employees — GENERATED ALWAYS, тож upsert (INSERT … ON CONFLICT) з id не можна; оновлюємо кожен рядок через UPDATE … WHERE id
+    for(let i=0;i<toUpdate.length;i+=10){
+      const part=toUpdate.slice(i,i+10);
+      const res=await Promise.all(part.map(o=>{const {id,...patch}=o;return db.from('dict_employees').update(patch).eq('id',id);}));
+      res.forEach((r,k)=>{if(r.error){const o=part[k];errors.push('Оновлення «'+[o.last_name,o.first_name].filter(Boolean).join(' ')+'»: '+(/duplicate key/.test(r.error.message)?'такий телефон уже є в базі':r.error.message));}});
     }
 
     btn.disabled=false;btn.textContent='Імпортувати';
