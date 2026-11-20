@@ -456,6 +456,77 @@
   .bot-mod-txt{flex:1;min-width:0}
   .bot-mod-txt h3{font-size:14px;font-weight:800;margin:0 0 4px}
   .bot-mod-txt p{font-size:12.5px;color:var(--muted);margin:0;line-height:1.45}
+
+  /* ---- Будь в темі → Головне меню (конструктор меню бота) ---- */
+  .mn-wrap{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+  .mn-main{flex:999 1 520px;min-width:0;display:flex;flex-direction:column;gap:12px}
+  .mn-side{flex:1 1 360px;max-width:420px;display:flex;flex-direction:column;gap:16px;position:sticky;top:12px}
+  .mn-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .mn-head h3{margin:0;font-size:16px;font-weight:800}
+  .mn-head .mn-note{font-size:12.5px;color:var(--slate)}
+  .mn-head .btn:first-of-type{margin-left:auto}
+  .mn-rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .mn-card{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;cursor:pointer;overflow:hidden;box-shadow:var(--shadow);transition:border-color .12s,box-shadow .12s,opacity .12s;min-width:0}
+  .mn-card.full{grid-column:1/-1}
+  .mn-card:hover{border-color:var(--muted)}
+  .mn-card.on{border-color:var(--brand);box-shadow:0 0 0 3px rgba(213,43,30,.16)}
+  .mn-card.off{opacity:.5}
+  .mn-card.drag{opacity:.35}
+  .mn-card.over{border-style:dashed;border-color:var(--brand)}
+  .mn-top{display:flex;align-items:flex-start;gap:10px;padding:14px 14px 4px}
+  .mn-emo{font-size:22px;line-height:30px;min-width:26px;text-align:center}
+  .mn-tt{flex:1;min-width:0;display:flex;flex-direction:column}
+  .mn-name{font-family:Unbounded,Manrope,sans-serif;font-size:16px;font-weight:700;line-height:30px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+  .mn-kind{font-size:12px;color:var(--slate)}
+  .mn-arr{display:flex;gap:4px}
+  .mn-arr button{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;padding:0;cursor:pointer}
+  .mn-arr button:hover{background:var(--hover-bg)}
+  .mn-arr button:disabled{opacity:.35;cursor:default}
+  .mn-arr svg{width:14px;height:14px}
+  .mn-intro{padding:0 14px 10px 50px;font-size:13px;color:var(--slate);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mn-bar{margin:0 10px 10px;padding:8px 12px;border-radius:10px;display:flex;align-items:center;gap:10px;background:var(--page)}
+  .mn-card.on .mn-bar{background:var(--brand-tint)}
+  .mn-num{min-width:22px;height:22px;padding:0 6px;border-radius:6px;background:var(--card);color:var(--ink);font-size:12px;font-weight:800;display:grid;place-items:center;box-sizing:border-box}
+  .mn-bar span:not(.mn-num){font-size:13px;color:var(--slate)}
+  .mn-bar button{margin-left:auto;border:0;background:none;color:var(--brand);font:inherit;font-size:13px;font-weight:800;padding:4px 0;cursor:pointer}
+  .mn-add{height:60px;border-radius:14px;border:1.5px dashed var(--line);background:transparent;color:var(--slate);font:inherit;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
+  .mn-add:hover{border-color:var(--brand);color:var(--brand)}
+  .mn-ed{padding:16px 18px;display:flex;flex-direction:column;gap:12px;margin:0}
+  .mn-ed label{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:700;color:var(--slate)}
+  .mn-ed input,.mn-ed textarea{font:inherit;font-size:14px;font-weight:500;border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:var(--surface);color:var(--ink);box-sizing:border-box;width:100%}
+  .mn-ed textarea{resize:vertical;min-height:70px}
+  .mn-ed .mn-g2{display:grid;grid-template-columns:76px minmax(0,1fr);gap:10px}
+  .mn-ed .mn-g2 input:first-child{text-align:center;font-size:18px}
+  .mn-seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:var(--page);border-radius:10px;padding:3px;gap:3px}
+  .mn-seg button{height:34px;border-radius:8px;border:0;font:inherit;font-size:13px;font-weight:700;background:transparent;color:var(--slate);cursor:pointer}
+  .mn-seg button.on{background:var(--brand);color:#fff}
+  .mn-ed .mn-row{display:flex;align-items:center;gap:10px}
+  .mn-ed .mn-del{margin-left:auto;border:0;background:none;color:var(--brand);font:inherit;font-size:13px;font-weight:800;cursor:pointer}
+  .mn-ed .mn-small{font-size:12px;color:var(--slate);line-height:1.45;font-weight:500}
+  .mn-tg{background:#0E1621;border-radius:16px;overflow:hidden;border:1px solid var(--line);color:#F5F5F5}
+  .mn-tg-h{padding:11px 14px;background:#17212B;display:flex;align-items:center;gap:10px}
+  .mn-tg-av{width:32px;height:32px;border-radius:50%;background:#D52B1E;display:grid;place-items:center;color:#fff;font-weight:800;font-size:12px;flex:none}
+  .mn-tg-h b{display:block;font-size:13.5px;color:#fff}
+  .mn-tg-h small{font-size:12px;color:#8DA2B5}
+  .mn-tg-chat{padding:14px;min-height:120px;display:flex;flex-direction:column;justify-content:flex-end}
+  .mn-tg-msg{align-self:flex-start;max-width:88%;background:#182533;border-radius:12px 12px 12px 4px;padding:9px 12px;font-size:14px;line-height:1.45;white-space:pre-line;word-break:break-word}
+  .mn-tg-msg .mn-tg-ib{display:block;margin-top:8px;text-align:center;padding:7px;border-radius:8px;background:#2B5278;font-weight:700;font-size:13px}
+  .mn-tg-kb{background:#17212B;padding:8px;display:flex;flex-direction:column;gap:6px}
+  .mn-tg-ph{display:flex;align-items:center;gap:8px;padding:2px 4px 6px;font-size:13px;color:#8DA2B5}
+  .mn-tg-ph span{padding:4px 10px;border-radius:99px;background:#2B5278;color:#fff;font-weight:700;font-size:12px}
+  .mn-tg-r{display:grid;gap:6px}
+  .mn-tg-r span{display:block;text-align:center;padding:10px 6px;border-radius:8px;font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#232E3C}
+  .mn-tg-r span.on{background:#2B5278}
+  .ui-grp{border-top:1px solid var(--line);padding:14px 22px 16px}
+  .ui-grp:first-of-type{border-top:0}
+  .ui-grp h4{margin:0 0 10px;font-size:14px;font-weight:800;display:flex;align-items:center;gap:8px}
+  .ui-f{display:grid;grid-template-columns:200px minmax(0,1fr);gap:8px 14px;align-items:start;margin-bottom:8px}
+  .ui-f>span{font-size:12.5px;font-weight:700;color:var(--slate);padding-top:9px}
+  .ui-f input,.ui-f textarea{font:inherit;font-size:13.5px;border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--surface);color:var(--ink);box-sizing:border-box;width:100%}
+  .ui-f textarea{resize:vertical;min-height:58px}
+  .ui-sub{margin:8px 0 0 0;padding:10px 0 2px 14px;border-left:2px solid var(--line)}
+  .ui-sub>b{display:block;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  @media (max-width:700px){ .ui-f{grid-template-columns:1fr} .ui-f>span{padding-top:0} .mn-side{position:static;max-width:none} .mn-rows{grid-template-columns:1fr 1fr} }
   .filters{display:flex;gap:10px;align-items:center;margin-left:auto;flex-wrap:wrap}
   .pill{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
   .pill svg{width:15px;height:15px;stroke-width:2}
@@ -3753,6 +3824,43 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
               <thead id="botHead"></thead>
               <tbody id="botBody"><tr><td class="empty">Завантаження…</td></tr></tbody>
             </table>
+          </div>
+        </div>
+
+        <div id="botMenu" style="display:none">
+          <div class="mn-wrap">
+            <div class="mn-main">
+              <div class="mn-head">
+                <h3>Кнопки меню</h3><span class="badge info" id="mnCount">0</span>
+                <span class="mn-note">Порядок: зверху вниз, зліва направо. Дві «половинки» поспіль стають в один ряд. Картку можна перетягнути.</span>
+              </div>
+              <div class="mn-head" style="margin-top:-4px">
+                <span class="mn-note" id="mnState"></span>
+                <button class="btn" type="button" onclick="mnReset()">Скинути до стандартного</button>
+                <button class="btn primary" type="button" id="mnSaveBtn" onclick="mnSave()">Зберегти меню</button>
+              </div>
+              <div class="mn-rows" id="mnRows"></div>
+              <button type="button" class="mn-add" onclick="mnAddLink()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Додати кнопку-посилання (сайт, форма, Collaborator)</button>
+            </div>
+            <div class="mn-side">
+              <div class="card mn-ed" id="mnEd"></div>
+              <div class="mn-tg" aria-label="Попередній перегляд у Telegram">
+                <div class="mn-tg-h"><span class="mn-tg-av">ГС</span><div><b>Будь в темі | Галицька Свіжина</b><small>так побачить працівник</small></div></div>
+                <div class="mn-tg-chat"><div class="mn-tg-msg" id="mnTgMsg"></div></div>
+                <div class="mn-tg-kb"><div class="mn-tg-ph"><span>Меню</span>Обери розділ</div><div id="mnTgKb" style="display:flex;flex-direction:column;gap:6px"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="botUi" style="display:none">
+          <div class="card">
+            <div class="card-head">
+              <h3>Назви вкладок і підказки в адмінці</h3>
+              <button class="btn primary" type="button" id="uiSaveBtn" onclick="uiSave()" style="margin-left:auto">Зберегти</button>
+            </div>
+            <div class="bot-hint-row">Тут змінюються назви вкладок цього розділу адмінки, заголовки блоків і сірий текст-підказка під ними. Порожнє поле — стандартний текст (він видно сірим). Назви кнопок у самому боті — у вкладці «Кнопки бота».</div>
+            <div id="uiBody"></div>
           </div>
         </div>
 
@@ -12378,6 +12486,8 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
 
     // Навігація: розділи — як у меню бота, всередині — вкладки (матеріали / підрозділи тощо)
     const BOT_NAV=[
+      {id:'menu',ico:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 14h18M12 14v6"/>',label:'Головне меню',subs:[['menu','Кнопки бота'],['adminui','Назви в адмінці']]},
+      'sep',
       {id:'news',ico:'<path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/>',label:'Новини',subs:[['news','Новини компанії'],['birthdays','Дні народження'],['vacancies','Вакансії']]},
       {id:'docs',ico:'<path d="M9 3h6v3H9z"/><path d="M9 4.5H6a2 2 0 0 0-2 2V20a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6.5a2 2 0 0 0-2-2h-3"/><path d="M8 12h8M8 16h5"/>',label:'Документи',subs:[['documents','Документи'],['cat:docs','Підрозділи']]},
       {id:'contacts',ico:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/>',label:'Контакти',subs:[['contacts','Контакти']]},
@@ -12406,16 +12516,18 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       _catSection=tab.startsWith('cat:')?tab.slice(4):null;
       if(_catSection) tab='categories';
       _tab=tab;
-      const soon=tab==='soon', bday=tab==='birthdays';
-      $('botTableCard').style.display=soon||bday?'none':'';
-      $('botSoon').style.display=soon?'':'none';
-      $('botBday').style.display=bday?'':'none';
-      if(bday) bdLoad(); else if(!soon) botRender();
+      botPanels(tab);
+      if(tab==='birthdays') bdLoad(); else if(tab==='menu') mnLoad(); else if(tab==='adminui') uiRender(); else if(tab!=='soon') botRender();
     };
+    const BOT_PANELS={soon:'botSoon',birthdays:'botBday',menu:'botMenu',adminui:'botUi'};
+    function botPanels(tab){
+      $('botTableCard').style.display=BOT_PANELS[tab]?'none':'';
+      Object.entries(BOT_PANELS).forEach(([t,id])=>{ $(id).style.display=t===tab?'':'none'; });
+    }
 
     (function(){ let t=null; try{ t=localStorage.getItem(BOT_TAB_KEY); }catch(e){} if(t==='users')t='employees'; t=navOf(t)?t:'news';
       botNavRender(t); _catSection=t.startsWith('cat:')?t.slice(4):null; _tab=_catSection?'categories':t;
-      if(_tab==='soon'||_tab==='birthdays'){ $('botTableCard').style.display='none'; $(_tab==='soon'?'botSoon':'botBday').style.display=''; } })();
+      botPanels(_tab); })();
 
     async function loadKpi(){
       const today=new Date();today.setHours(0,0,0,0);
@@ -12578,7 +12690,188 @@ document.getElementById('authPass').addEventListener('keydown',function(e){if(e.
       $('botDeptList').innerHTML=[...set].sort().map(d=>`<option value="${esc(d)}">`).join('');
     }
 
-    window.botLoad=async function(){ await Promise.all([loadKpi(), loadHealth(), _tab==='soon'?null:_tab==='birthdays'?bdLoad():botRender()]); };
+    // ---- Головне меню бота: конструктор (bot_settings.bot_menu; бот підтягує зміни щохвилини) ----
+    const MN_DEF=[
+      {id:'news',emoji:'📰',name:'Новини',intro:'',hint:'Обери розділ:'},
+      {id:'docs',emoji:'📋',name:'Документи',intro:'',hint:'Обери розділ:'},
+      {id:'contacts',emoji:'📞',name:'Контакти',intro:'',hint:'(список контактів)'},
+      {id:'profile',emoji:'👤',name:'Мій профіль',intro:'',hint:'(дані працівника)'},
+      {id:'faq',emoji:'❓',name:'Запитання та відповіді',intro:'',hint:'Обери тему:'},
+      {id:'learning',emoji:'🎓',name:'Навчання',intro:'',hint:'Обери розділ:'},
+    ];
+    const MN_KIND={news:'Розділ «Новини»',docs:'Розділ «Документи»',contacts:'Розділ «Контакти»',profile:'Розділ «Мій профіль»',faq:'Розділ «Запитання»',learning:'Розділ «Навчання»'};
+    const MN_RESERVED=['🏠 Головне меню','❓ FAQ','💼 Кадрові'];
+    const mnDefaults=()=>MN_DEF.map(d=>({id:d.id,kind:'section',emoji:d.emoji,name:d.name,intro:'',url:'',wide:false,visible:true}));
+    const mnLabel=it=>((it.emoji||'').trim()?it.emoji.trim()+' ':'')+(it.name||'').trim().replace(/\s+/g,' ');
+    let _mn={items:mnDefaults(),sel:'news',old:{},saved:{},dirty:false,loaded:false};
+    function mnNormalize(v){
+      const def=mnDefaults(), byId=Object.fromEntries(def.map(d=>[d.id,d])), out=[], used=new Set();
+      ((v&&Array.isArray(v.items))?v.items:[]).forEach(r=>{
+        if(!r||!r.id||used.has(r.id)) return;
+        const sec=!!byId[r.id];
+        out.push({id:String(r.id),kind:sec?'section':'link',emoji:r.emoji||'',name:r.name||(sec?byId[r.id].name:''),intro:r.intro||'',url:sec?'':(r.url||''),wide:!!r.wide,visible:r.visible!==false});
+        used.add(r.id);
+      });
+      def.forEach(d=>{ if(!used.has(d.id)) out.push(d); });
+      return out;
+    }
+    window.mnLoad=async function(){
+      $('mnState').textContent='Завантаження…';
+      const {data,error}=await db.from('bot_settings').select('value,updated_at').eq('key','bot_menu').maybeSingle();
+      if(error){ $('mnState').textContent='Не вдалося завантажити меню: '+error.message; }
+      else{
+        const v=(data&&data.value)||{};
+        _mn.items=mnNormalize(v); _mn.old=(v.old&&typeof v.old==='object')?v.old:{};
+        _mn.saved=Object.fromEntries(_mn.items.map(i=>[i.id,mnLabel(i)]));
+        _mn.dirty=false; _mn.loaded=true;
+        if(!_mn.items.some(i=>i.id===_mn.sel)) _mn.sel=_mn.items[0].id;
+        $('mnState').textContent=data?'Збережено '+fmtDT(data.updated_at):'Зараз у боті стандартне меню';
+      }
+      const can=accLevel('bot')>=2;
+      $('mnSaveBtn').disabled=!can; $('mnSaveBtn').title=can?'':'Немає прав на зміну';
+      mnRender();
+    };
+    function mnPack(list){
+      const rows=[]; let i=0;
+      while(i<list.length){
+        const a=list[i];
+        if(a.wide||i+1>=list.length||list[i+1].wide){ rows.push([a]); i++; }
+        else { rows.push([a,list[i+1]]); i+=2; }
+      }
+      return rows;
+    }
+    const MN_UP='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>';
+    const MN_DN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+    function mnCards(){
+      const it=_mn.items, n=it.length;
+      $('mnCount').textContent=it.filter(x=>x.visible).length+' з '+n;
+      $('mnRows').innerHTML=mnPack(it).map(row=>row.map(x=>{
+        const i=it.indexOf(x), id=esc(x.id);
+        const intro=x.kind==='link'?(x.url||'посилання не вказано'):(x.intro||MN_DEF.find(d=>d.id===x.id).hint);
+        return `<div class="mn-card${row.length===1?' full':''}${x.id===_mn.sel?' on':''}${x.visible?'':' off'}" draggable="true" data-id="${id}" onclick="mnPick('${id}')">
+          <div class="mn-top"><span class="mn-emo">${esc(x.emoji||'·')}</span>
+            <div class="mn-tt"><span class="mn-name">${esc(x.name||'Без назви')}</span><span class="mn-kind">${x.kind==='link'?'Посилання':MN_KIND[x.id]}${x.visible?'':' · приховано'}</span></div>
+            <div class="mn-arr"><button type="button" aria-label="Вище" ${i===0?'disabled':''} onclick="event.stopPropagation();mnMove('${id}',-1)">${MN_UP}</button><button type="button" aria-label="Нижче" ${i===n-1?'disabled':''} onclick="event.stopPropagation();mnMove('${id}',1)">${MN_DN}</button></div></div>
+          <div class="mn-intro">${esc(intro)}</div>
+          <div class="mn-bar"><span class="mn-num">${i+1}</span><span>${x.wide?'На всю ширину':'Половина ряду'}</span>
+            <button type="button" onclick="event.stopPropagation();mnSet('${id}','wide',${!x.wide})">${x.wide?'⇤ Зробити половиною':'⇥ На всю ширину'}</button></div>
+        </div>`; }).join('')).join('');
+    }
+    function mnPreview(){
+      const cur=_mn.items.find(x=>x.id===_mn.sel)||_mn.items[0];
+      const body=cur.kind==='link'?(cur.intro||''):(cur.intro||MN_DEF.find(d=>d.id===cur.id).hint);
+      $('mnTgMsg').innerHTML=`${esc(cur.emoji||'')} <b>${esc(cur.name||'Без назви')}</b>${body?'\n\n'+esc(body):''}${cur.kind==='link'?'<span class="mn-tg-ib">Відкрити ↗</span>':''}`;
+      $('mnTgKb').innerHTML=mnPack(_mn.items.filter(x=>x.visible)).map(r=>`<div class="mn-tg-r" style="grid-template-columns:${r.length===1?'1fr':'1fr 1fr'}">${r.map(x=>`<span class="${x.id===cur.id?'on':''}">${esc(mnLabel(x)||'Без назви')}</span>`).join('')}</div>`).join('');
+    }
+    function mnEditor(){
+      const cur=_mn.items.find(x=>x.id===_mn.sel)||_mn.items[0], link=cur.kind==='link';
+      $('mnEd').innerHTML=`<div class="mn-row"><b style="font-size:15px">Кнопка</b><span class="mn-small">${link?'Посилання':MN_KIND[cur.id]}</span></div>
+        <div class="mn-g2"><label>Емодзі<input id="mnEmoji" maxlength="8" value="${esc(cur.emoji||'')}" oninput="mnInput('emoji',this.value)"></label>
+          <label>Назва на кнопці<input id="mnName" maxlength="38" value="${esc(cur.name||'')}" placeholder="${link?'Напр., Наш сайт':esc(MN_DEF.find(d=>d.id===cur.id).name)}" oninput="mnInput('name',this.value)"></label></div>
+        ${link?`<label>Посилання<input id="mnUrl" value="${esc(cur.url||'')}" placeholder="https://…" oninput="mnInput('url',this.value)"></label>`:''}
+        <label>${link?'Текст над кнопкою «Відкрити»':'Текст під заголовком, коли розділ відкрито'}<textarea id="mnIntro" rows="3" placeholder="${link?'Необов\'язково':esc(MN_DEF.find(d=>d.id===cur.id).hint)+' (стандартно)'}" oninput="mnInput('intro',this.value)">${esc(cur.intro||'')}</textarea></label>
+        <div><label style="margin-bottom:5px">Ширина</label><div class="mn-seg"><button type="button" class="${cur.wide?'':'on'}" onclick="mnSet('${esc(cur.id)}','wide',false)">Половина ряду</button><button type="button" class="${cur.wide?'on':''}" onclick="mnSet('${esc(cur.id)}','wide',true)">На всю ширину</button></div></div>
+        <div class="mn-row"><label class="bot-check" style="flex-direction:row;color:var(--ink)"><input type="checkbox" ${cur.visible?'checked':''} onchange="mnSet('${esc(cur.id)}','visible',this.checked)">Показувати в меню</label>
+          ${link?`<button type="button" class="mn-del" onclick="mnRemove('${esc(cur.id)}')">Видалити кнопку</button>`:''}</div>
+        <div class="mn-small">${link?'У Telegram кнопка меню не відкриває сайт сама: бот надішле повідомлення з кнопкою «Відкрити».':'Після збереження нова назва з\'явиться в боті протягом хвилини. Стара кнопка в людей теж відкриє розділ, і клавіатура оновиться сама.'}</div>`;
+    }
+    function mnRender(){ mnCards(); mnEditor(); mnPreview(); }
+    function mnDirty(){ _mn.dirty=true; $('mnState').textContent='Є незбережені зміни'; }
+    window.mnPick=id=>{ _mn.sel=id; mnRender(); };
+    window.mnInput=(k,v)=>{ const cur=_mn.items.find(x=>x.id===_mn.sel); if(!cur) return; cur[k]=v; mnDirty(); mnCards(); mnPreview(); };
+    window.mnSet=(id,k,v)=>{ const x=_mn.items.find(i=>i.id===id); if(!x) return; x[k]=v; _mn.sel=id; mnDirty(); mnRender(); };
+    window.mnMove=(id,d)=>{ const it=_mn.items, i=it.findIndex(x=>x.id===id), j=i+d; if(i<0||j<0||j>=it.length) return; [it[i],it[j]]=[it[j],it[i]]; _mn.sel=id; mnDirty(); mnRender(); };
+    window.mnAddLink=()=>{ let n=1; while(_mn.items.some(x=>x.id==='link'+n)) n++;
+      _mn.items.push({id:'link'+n,kind:'link',emoji:'🔗',name:'',intro:'',url:'',wide:true,visible:true}); _mn.sel='link'+n; mnDirty(); mnRender(); $('mnName')?.focus(); };
+    window.mnRemove=id=>{ if(!confirm('Видалити цю кнопку з меню?')) return; _mn.items=_mn.items.filter(x=>x.id!==id); _mn.sel=_mn.items[0].id; mnDirty(); mnRender(); };
+    window.mnReset=()=>{ if(!confirm('Повернути стандартне меню? Зміни застосуються після «Зберегти меню».')) return; _mn.items=mnDefaults(); _mn.sel='news'; mnDirty(); mnRender(); };
+    // перетягування карток
+    document.addEventListener('dragstart',e=>{ const c=e.target.closest&&e.target.closest('.mn-card'); if(!c) return; _mn.drag=c.dataset.id; c.classList.add('drag'); e.dataTransfer.effectAllowed='move'; try{e.dataTransfer.setData('text/plain',c.dataset.id);}catch(_){} });
+    document.addEventListener('dragend',()=>{ document.querySelectorAll('.mn-card.drag,.mn-card.over').forEach(c=>c.classList.remove('drag','over')); _mn.drag=null; });
+    document.addEventListener('dragover',e=>{ const c=e.target.closest&&e.target.closest('.mn-card'); if(!c||!_mn.drag) return; e.preventDefault();
+      document.querySelectorAll('.mn-card.over').forEach(x=>{ if(x!==c) x.classList.remove('over'); }); if(c.dataset.id!==_mn.drag) c.classList.add('over'); });
+    document.addEventListener('drop',e=>{ const c=e.target.closest&&e.target.closest('.mn-card'); if(!c||!_mn.drag) return; e.preventDefault();
+      const it=_mn.items, from=it.findIndex(x=>x.id===_mn.drag), to=it.findIndex(x=>x.id===c.dataset.id);
+      if(from<0||to<0||from===to) return; const [m]=it.splice(from,1); it.splice(to,0,m); _mn.sel=m.id; mnDirty(); mnRender(); });
+    window.addEventListener('beforeunload',e=>{ if(_mn.dirty&&_tab==='menu'){ e.preventDefault(); e.returnValue=''; } });
+    window.mnSave=async function(){
+      const it=_mn.items.map(x=>({...x,emoji:(x.emoji||'').trim(),name:(x.name||'').trim().replace(/\s+/g,' '),intro:(x.intro||'').trim(),url:(x.url||'').trim()}));
+      const bad=(x,msg)=>{ _mn.sel=x.id; mnRender(); toast(msg,'warn'); return false; };
+      const seen={};
+      for(const x of it){
+        if(!x.name) return bad(x,'Вкажи назву кнопки');
+        if(x.kind==='link'&&!/^(https?|tg):\/\/\S+$/i.test(x.url)) return bad(x,'Вкажи посилання, що починається з https://');
+        const l=mnLabel(x);
+        if(l.length>40) return bad(x,'Назва задовга для кнопки: до 40 символів разом з емодзі');
+        if(MN_RESERVED.includes(l)) return bad(x,'Така назва зайнята службовою кнопкою бота');
+        if(x.visible&&seen[l]) return bad(x,'Дві кнопки з однаковою назвою: «'+l+'»');
+        if(x.visible) seen[l]=1;
+      }
+      // старі назви — щоб кнопки на старій клавіатурі в людей теж працювали
+      const old={...(_mn.old||{})};
+      it.forEach(x=>{ const prev=_mn.saved[x.id]; if(prev&&prev!==mnLabel(x)) old[prev]=x.id; delete old[mnLabel(x)]; });
+      const ids=new Set(it.map(x=>x.id));
+      const oldKeep=Object.fromEntries(Object.entries(old).filter(([,v])=>ids.has(v)).slice(-40));
+      const value={items:it.map(x=>({id:x.id,kind:x.kind,emoji:x.emoji,name:x.name,intro:x.intro,...(x.kind==='link'?{url:x.url}:{}),wide:!!x.wide,visible:!!x.visible})),old:oldKeep};
+      const btn=$('mnSaveBtn'); btn.disabled=true;
+      const {error}=await db.from('bot_settings').upsert({key:'bot_menu',value,updated_at:new Date().toISOString()});
+      btn.disabled=false;
+      if(error){ toast('Помилка: '+esc(error.message),'error'); return; }
+      _mn.items=it; _mn.old=oldKeep; _mn.saved=Object.fromEntries(it.map(i=>[i.id,mnLabel(i)])); _mn.dirty=false;
+      $('mnState').textContent='Збережено щойно'; mnRender();
+      toast('Меню збережено. У боті зміниться протягом хвилини','success');
+    };
+
+    // ---- Назви вкладок і підказки цього розділу адмінки (bot_settings.admin_bot_ui) ----
+    const UI_ORIG={tabs:{},subs:{},titles:{},hints:{}};
+    BOT_NAV.forEach(g=>{ if(g==='sep') return; UI_ORIG.tabs[g.id]=g.label; g.subs.forEach(([t,l])=>{ UI_ORIG.subs[t]=l; }); });
+    let _ui={tabs:{},subs:{},titles:{},hints:{}}, _uiFetched=false;
+    function uiOrigTabs(){ Object.keys(TABS).forEach(k=>{ if(!(k in UI_ORIG.titles)){ UI_ORIG.titles[k]=TABS[k].title; UI_ORIG.hints[k]=TABS[k].hint||''; } }); }
+    function uiApply(){
+      uiOrigTabs();
+      BOT_NAV.forEach(g=>{ if(g==='sep') return; g.label=_ui.tabs[g.id]||UI_ORIG.tabs[g.id];
+        g.subs.forEach(s=>{ s[1]=_ui.subs[s[0]]||UI_ORIG.subs[s[0]]; }); });
+      Object.keys(TABS).forEach(k=>{ TABS[k].title=_ui.titles[k]||UI_ORIG.titles[k]; TABS[k].hint=_ui.hints[k]||UI_ORIG.hints[k]; });
+      let cur='news'; try{ cur=localStorage.getItem(BOT_TAB_KEY)||cur; }catch(e){}
+      botNavRender(navOf(cur)?cur:'news');
+      const c=TABS[_tab]; if(c&&!(_tab==='categories'&&_catSection)){ $('botTabTitle').textContent=c.title; $('botHint').textContent=c.hint||''; }
+    }
+    async function uiFetch(){
+      if(_uiFetched) return; _uiFetched=true;
+      const {data,error}=await db.from('bot_settings').select('value').eq('key','admin_bot_ui').maybeSingle();
+      if(error){ _uiFetched=false; return; }
+      const v=(data&&data.value)||{};
+      ['tabs','subs','titles','hints'].forEach(k=>{ _ui[k]=(v[k]&&typeof v[k]==='object')?v[k]:{}; });
+      uiApply();
+    }
+    window.uiRender=function(){
+      uiOrigTabs();
+      const fld=(kind,key,label,ta)=>{ const val=_ui[kind][key]||'', ph=(kind==='tabs'?UI_ORIG.tabs:kind==='subs'?UI_ORIG.subs:kind==='titles'?UI_ORIG.titles:UI_ORIG.hints)[key]||'';
+        return `<div class="ui-f"><span>${label}</span>${ta?`<textarea data-k="${kind}" data-id="${esc(key)}" rows="2" placeholder="${esc(ph)}">${esc(val)}</textarea>`:`<input data-k="${kind}" data-id="${esc(key)}" maxlength="60" value="${esc(val)}" placeholder="${esc(ph)}">`}</div>`; };
+      $('uiBody').innerHTML=BOT_NAV.filter(g=>g!=='sep').map(g=>`<div class="ui-grp"><h4>${esc(UI_ORIG.tabs[g.id])}</h4>
+        ${fld('tabs',g.id,'Назва вкладки')}
+        ${g.subs.map(([t])=>{ const tk=t.startsWith('cat:')?null:t, tab=tk&&TABS[tk];
+          if(g.subs.length<2&&!tab) return '';
+          return `<div class="ui-sub"><b>${esc(UI_ORIG.subs[t])}</b>
+            ${g.subs.length>1?fld('subs',t,'Назва підвкладки'):''}
+            ${tab?fld('titles',tk,'Заголовок блоку')+fld('hints',tk,'Підказка під заголовком',true):''}</div>`; }).join('')}
+      </div>`).join('');
+      const can=accLevel('bot')>=2; $('uiSaveBtn').disabled=!can; $('uiSaveBtn').title=can?'':'Немає прав на зміну';
+    };
+    window.uiSave=async function(){
+      const v={tabs:{},subs:{},titles:{},hints:{}};
+      document.querySelectorAll('#uiBody [data-k]').forEach(el=>{ const t=el.value.trim().replace(el.tagName==='INPUT'?/\s+/g:/[ \t]+/g,' '); if(t) v[el.dataset.k][el.dataset.id]=t; });
+      const btn=$('uiSaveBtn'); btn.disabled=true;
+      const {error}=await db.from('bot_settings').upsert({key:'admin_bot_ui',value:v,updated_at:new Date().toISOString()});
+      btn.disabled=false;
+      if(error){ toast('Помилка: '+esc(error.message),'error'); return; }
+      _ui=v; uiApply(); uiRender(); toast('Назви збережено','success');
+    };
+
+    window.botLoad=async function(){
+      await uiFetch();
+      await Promise.all([loadKpi(), loadHealth(), _tab==='soon'?null:_tab==='birthdays'?bdLoad():_tab==='menu'?mnLoad():_tab==='adminui'?uiRender():botRender()]);
+    };
 
     // ---- Дні народження: налаштування (bot_settings.birthday) і найближчі 30 днів ----
     const BD_DEF={personal_enabled:false,personal_text:"З днем народження, {ім'я}! 🎉",digest_enabled:false,digest_text:'🎂 Сьогодні день народження святкують:',digest_text_one:'🎂 Сьогодні день народження святкує:',send_time:'09:00'};
